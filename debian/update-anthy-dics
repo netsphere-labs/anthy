@@ -1,0 +1,38 @@
+#!/bin/sh
+
+DICDIR=/var/lib/anthy
+METADICDIR=/usr/share/anthy/dic
+CANNADIC='gcanna.ctd gcannaf.ctd'
+EXTRADIC="$METADICDIR/*.t"
+CONFIG='/etc/anthy/diclist'
+
+OLDDIR=`pwd`
+cd $METADICDIR
+
+for file in $CANNADIC; do
+	case $file in
+	*.ctd)
+		if test -f $file; then metadics="$metadics $file"; fi
+		;;
+	esac
+done
+
+addondics=$(sort -u $CONFIG| tr '\n' ' '| sed 's/\ $//')
+
+for file in $addondics; do
+	if test -f $file; then
+		metadics="$metadics $file"
+	fi
+done
+
+echo -n 'Updating anthy.dic...'
+
+if test -f $DICDIR/anthy.dic; then
+	rm -f $DICDIR/anthy.dic
+fi
+
+/usr/bin/mkanthydic -o $DICDIR/anthy.dic $metadics -uc $METADICDIR/udict > /dev/null 2>&1
+
+cd $OLDDIR
+
+echo 'done.'

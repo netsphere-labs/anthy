@@ -1,0 +1,10 @@
+Anthy for Debian
+----------------
+
+Anthy is Japanese input method made by Heke Project.
+If you want to use user customized dictionary, see dic-tool-usage.txt.
+
+Developer documents are moved to libanthy-dev since 3322-1.
+
+Documantations for this package are Japanese only.
+ -- Masahito Omote <omote@debian.org>, Sat, 20 Oct 2001 00:38:29 +0900
