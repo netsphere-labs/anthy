@@ -8,8 +8,8 @@ Standards-Version: 3.6.1.0
 Package: anthy
 Architecture: any
 Replaces: anthy-cannadic, anthy-cannadic-2ch
-Depends: ${shlibs:Depends}
-Coflicts: anthy-cannadic, anthy-cannadic-2ch
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Conflicts: anthy-cannadic, anthy-cannadic-2ch
 Description: A Japanese input method (backend, dictionary and utility)
  Anthy is a Japanese input method working on X11 and emacs. It converts
  Hiragana text to Kana Kanji mixed text. It is implemented as a library
