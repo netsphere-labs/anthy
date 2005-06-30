@@ -3,3 +3,4 @@ usr/share/emacs/site-lisp/anthy/anthy-dic.el
 usr/share/emacs/site-lisp/anthy/anthy-conf.el
 usr/share/emacs/site-lisp/anthy/anthy-isearch.el
 usr/share/emacs/site-lisp/anthy/anthy-azik.el
+usr/share/emacs/site-lisp/anthy/anthy-kyuri.el
