@@ -1,3 +1,12 @@
+anthy (6724-1) unstable; urgency=low
+
+  * New upstream release which adds variant for 'ChaSen'. (closes: Bug#319491)
+  * Fix FTBFS of not installing anthy-kyuri.el. (closes: Bug#317075)
+  * postrm: Add cleanup /var/lib/anthy on purge. (closes: Bug#319723)
+  * update-anthy-config: Sync with the upstream creation process.
+
+ -- Masahito Omote <omote@debian.org>  Thu, 28 Jul 2005 22:00:49 +0900
+
 anthy (6700-1) unstable; urgency=low
 
   * New upstream release

@@ -2,9 +2,8 @@ usr/bin/anthy-agent
 usr/bin/anthy-dic-tool
 usr/bin/mkanthydic
 usr/sbin/update-anthy-dics
-usr/share/anthy/*.depword
+usr/share/anthy/anthy.dep
 usr/share/anthy/*.txt
 usr/share/anthy/typetab
-usr/share/anthy/conjugate.table
 usr/share/anthy/dic/*
 etc/anthy/anthy-conf

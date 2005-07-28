@@ -1,7 +1,7 @@
 Template: anthy/dictionaries
 Type: multiselect
 Choices: ${dictionaries}
-Default: base.t extra.t
+Default: base.t, extra.t
 Description: Which add-on dictionaries you like to use?
  Anthy package can add add-on dictionary to system dictionary. Now, these
  following dictionaries are available.

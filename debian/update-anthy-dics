@@ -4,26 +4,42 @@ DICDIR=/var/lib/anthy
 METADICDIR=/usr/share/anthy/dic
 CANNADIC='gcanna.ctd gcannaf.ctd'
 EXTRADIC="$METADICDIR/*.t"
+
 CONFIG='/etc/anthy/diclist'
+DICTCONFIG='/etc/anthy/dict.args'
+TMPDICTCONFIG='/tmp/dict.args.XXXXXX'
 
 OLDDIR=`pwd`
 cd $METADICDIR
 
+mktemp $TMPDICTCONFIG > /dev/null 2>&1
+
 for file in $CANNADIC; do
 	case $file in
 	*.ctd)
-		if test -f $file; then metadics="$metadics $file"; fi
+		if test -f $file; then
+			echo "read $METADICDIR/$file" >> $TMPDICTCONFIG
+		fi
 		;;
 	esac
 done
+
+echo "read $METADICDIR/katakana.t" >> $TMPDICTCONFIG
+echo "read $METADICDIR/adjust.t" >> $TMPDICTCONFIG
+echo "read $METADICDIR/name.t" >> $TMPDICTCONFIG
+echo "read $METADICDIR/compound.t" >> $TMPDICTCONFIG
 
 addondics=$(sort -u $CONFIG| tr '\n' ' '| sed 's/\ $//')
 
 for file in $addondics; do
 	if test -f $file; then
-		metadics="$metadics $file"
+		echo "read $METADICDIR/$file" >> $TMPDICTCONFIG
 	fi
 done
+
+echo "read_uc $METADICDIR/udict" >> $TMPDICTCONFIG
+echo "write anthy.dic" >> $TMPDICTCONFIG
+echo "done" >> $TMPDICTCONFIG
 
 echo -n 'Updating anthy.dic...'
 
@@ -31,7 +47,10 @@ if test -f $DICDIR/anthy.dic; then
 	rm -f $DICDIR/anthy.dic
 fi
 
-/usr/bin/mkanthydic -o $DICDIR/anthy.dic $metadics -uc $METADICDIR/udict > /dev/null 2>&1
+mv $TMPDICTCONFIG $DICTCONFIG
+
+cd $DICDIR
+/usr/bin/mkanthydic -f $DICTCONFIG > /dev/null 2>&1
 
 cd $OLDDIR
 

@@ -105,7 +105,8 @@ binary-indep: build-indep install
 
 	install -d $(CURDIR)/debian/tmp/$(ELISPDIR)
 
-	for i in anthy-conf anthy-dic anthy anthy-isearch anthy-azik; do \
+	for i in anthy-conf anthy-dic anthy anthy-isearch \
+		 anthy-kyuri anthy-azik; do \
 		install -m 644 $(CURDIR)/src-util/$$i.el \
 			$(CURDIR)/debian/tmp/$(ELISPDIR)/$$i.el; \
 	done
