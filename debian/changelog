@@ -1,3 +1,11 @@
+anthy (7500-1) unstable; urgency=low
+
+  * New upstream release
+  * update-anthy-config: Sync with the upstream creation process.
+  * Standards-Version: 3.6.2.2
+
+ -- Masahito Omote <omote@debian.org>  Fri,  7 Apr 2006 14:40:16 +0900
+
 anthy (6724-1) unstable; urgency=low
 
   * New upstream release which adds variant for 'ChaSen'. (closes: Bug#319491)
@@ -77,7 +85,7 @@ anthy (5822-1) unstable; urgency=low
     for selecting what dictionary you use.
   * update-anthy-dics: Utilily for generating Anthy's dictionary.
   * This change fixes FTBFS which is caused by generation of Anthy's
-    dictionary. (closes: Bugs#271152)
+    dictionary. (closes: Bug#271152)
   * 03_change_anthy_dic_path.dpatch: Patch for changing path to
     /var/lib/anthy.
 

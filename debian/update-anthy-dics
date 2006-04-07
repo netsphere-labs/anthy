@@ -5,6 +5,10 @@ METADICDIR=/usr/share/anthy/dic
 CANNADIC='gcanna.ctd gcannaf.ctd'
 EXTRADIC="$METADICDIR/*.t"
 
+MATRIXDIR=/var/lib/anthy/mkmatrix
+DEPGRAPHDIR=/var/lib/anthy/depgraph
+WORDDICDIR=/var/lib/anthy/mkworddic
+
 CONFIG='/etc/anthy/diclist'
 DICTCONFIG='/etc/anthy/dict.args'
 TMPDICTCONFIG='/tmp/dict.args.XXXXXX'
@@ -37,20 +41,53 @@ for file in $addondics; do
 	fi
 done
 
+echo "read $METADICDIR/placename.t" >> $TMPDICTCONFIG
+echo "build_reverse_dict" >> $TMPDICTCONFIG
 echo "read_uc $METADICDIR/udict" >> $TMPDICTCONFIG
-echo "write anthy.dic" >> $TMPDICTCONFIG
+echo "write anthy.wdic" >> $TMPDICTCONFIG
 echo "done" >> $TMPDICTCONFIG
 
 echo -n 'Updating anthy.dic...'
+
+rm -rf $MATRIXDIR; mkdir $MATRIXDIR
+rm -rf $WORDDICDIR; mkdir $WORDDICDIR
+rm -rf $DEPGRAPHDIR; mkdir $DEPGRAPHDIR
+
+cp /etc/anthy/anthy-conf /var/lib/anthy
 
 if test -f $DICDIR/anthy.dic; then
 	rm -f $DICDIR/anthy.dic
 fi
 
+if test -f $MATRIXDIR/matrix; then
+	rm -f $MATRIXDIR/matrix
+fi
+
+if test -f $WORDDICDIR/anthy.wdic; then
+	rm -f $WORDDICDIR/anthy.wdic
+fi
+
 mv $TMPDICTCONFIG $DICTCONFIG
 
+cd $MATRIXDIR
+/usr/bin/mkmatrix /usr/share/anthy/matrix/parsed.txt -o ./matrix
+
+cd $WORDDICDIR
+/usr/bin/mkworddic -f $DICTCONFIG > /dev/null 2>&1
+
+cd $DEPGRAPHDIR
+for i in /usr/share/anthy/depgraph/*.depword; do
+	ln -s $i $DEPGRAPHDIR/`basename $i`
+done
+ln -s /usr/share/anthy/depgraph/indepword.txt 
+
+ln -s /usr/share/anthy/depgraph/conjugate.table $DEPGRAPHDIR
+/usr/bin/mkdepgraph 
+
 cd $DICDIR
-/usr/bin/mkanthydic -f $DICTCONFIG > /dev/null 2>&1
+/usr/bin/mkfiledic -p ./
+
+rm -f /var/lib/anthy/anthy-conf
 
 cd $OLDDIR
 

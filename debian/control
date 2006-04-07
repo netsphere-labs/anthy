@@ -3,7 +3,7 @@ Section: utils
 Priority: optional
 Maintainer: Masahito Omote <omote@debian.org>
 Build-Depends: debhelper (>> 4.0.0), autotools-dev, dpatch (>= 1.11), debconf (>= 0.5)
-Standards-Version: 3.6.1.0
+Standards-Version: 3.6.2.2
 
 Package: anthy
 Architecture: any

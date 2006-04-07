@@ -20,6 +20,9 @@ endif
 version=0
 
 METADICDIR=usr/share/anthy/dic
+DEPWORDDIR=usr/share/anthy/depgraph
+MATRIXDIR=usr/share/anthy/matrix
+
 DICDIR=var/lib/anthy
 ELISPDIR=usr/share/emacs/site-lisp/anthy
 
@@ -80,23 +83,49 @@ install: build
 		$(CURDIR)/debian/tmp/usr/include/anthy/xstr.h
 	install -m 644 include/wtype.h \
 		$(CURDIR)/debian/tmp/usr/include/anthy/wtype.h
-	install -m 755 mkanthydic/.libs/mkanthydic \
-		$(CURDIR)/debian/tmp/usr/bin/mkanthydic
+
+	install -m 755 mkanthydic/mkfiledic \
+		$(CURDIR)/debian/tmp/usr/bin/mkfiledic
+	install -m 755 mkworddic/.libs/mkworddic \
+		$(CURDIR)/debian/tmp/usr/bin/mkworddic
+	install -m 755 depgraph/.libs/mkdepgraph \
+		$(CURDIR)/debian/tmp/usr/bin/mkdepgraph
+	install -m 755 mkmatrix/.libs/mkmatrix \
+		$(CURDIR)/debian/tmp/usr/bin/mkmatrix
+	
 	install -m 755 debian/update-anthy-dics \
 		$(CURDIR)/debian/tmp/usr/sbin/update-anthy-dics
 
+	rm -rf $(CURDIR)/debian/tmp/$(MATRIXDIR)
 	install -d $(CURDIR)/debian/tmp/$(METADICDIR)
+	install -d $(CURDIR)/debian/tmp/$(DEPWORDDIR)
+	install -d $(CURDIR)/debian/tmp/$(MATRIXDIR)
 	install -m 644 cannadic/gcanna.ctd \
 			$(CURDIR)/debian/tmp/$(METADICDIR)/gcanna.ctd
 	install -m 644 cannadic/gcannaf.ctd \
 			$(CURDIR)/debian/tmp/$(METADICDIR)/gcannaf.ctd
 
-	cd $(CURDIR)/mkanthydic; \
+	cd $(CURDIR)/mkworddic; \
 		for i in *.t; do \
 			install -m 644 $$i $(CURDIR)/debian/tmp/$(METADICDIR); \
-		done; \
+		done;
 	cd $(CURDIR)
-	install -m 644 mkanthydic/udict \
+
+	cd $(CURDIR)/depgraph; \
+		for i in *.depword; do \
+			install -m 644 $$i $(CURDIR)/debian/tmp/$(DEPWORDDIR); \
+		done;
+	cd $(CURDIR)/depgraph; \
+		install -m 644 conjugate.table $(CURDIR)/debian/tmp/$(DEPWORDDIR)
+	cd $(CURDIR)/depgraph; \
+		install -m 644 indepword.txt $(CURDIR)/debian/tmp/$(DEPWORDDIR)
+
+	cd $(CURDIR)/mkmatrix; \
+		install -m 644 parsed.txt $(CURDIR)/debian/tmp/$(MATRIXDIR)
+		
+
+	cd $(CURDIR)
+	install -m 644 mkworddic/udict \
 			$(CURDIR)/debian/tmp/$(METADICDIR)/udict
 
 binary-indep: build-indep install
