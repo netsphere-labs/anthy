@@ -121,7 +121,7 @@ install: build
 		install -m 644 indepword.txt $(CURDIR)/debian/tmp/$(DEPWORDDIR)
 
 	cd $(CURDIR)/mkmatrix; \
-		install -m 644 parsed.txt $(CURDIR)/debian/tmp/$(MATRIXDIR)
+		install -m 644 dep.sorted $(CURDIR)/debian/tmp/$(MATRIXDIR)
 		
 
 	cd $(CURDIR)

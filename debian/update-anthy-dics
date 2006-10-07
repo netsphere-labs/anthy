@@ -16,7 +16,11 @@ TMPDICTCONFIG='/tmp/dict.args.XXXXXX'
 OLDDIR=`pwd`
 cd $METADICDIR
 
-mktemp $TMPDICTCONFIG > /dev/null 2>&1
+TMPDICTCONFIG=$(mktemp $TMPDICTCONFIG)
+if [ $? != 0 ]; then
+	echo "mktemp failed, aborting" 1>&2
+	exit 1
+fi
 
 for file in $CANNADIC; do
 	case $file in

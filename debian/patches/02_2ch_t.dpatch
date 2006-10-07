@@ -24,8 +24,8 @@ exit 0
 
 @DPATCH@
 
---- anthy-5414.orig/mkanthydic/2ch.t
-+++ anthy-5414/mkanthydic/2ch.t
+--- anthy-5414.orig/mkworddic/2ch.t
++++ anthy-5414/mkworddic/2ch.t
 @@ -0,0 +1,5055 @@
 +# 2ch用語のCanna形式辞書
 +# HARUYAMA Seigo haruyama@unixuser.org

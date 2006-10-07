@@ -1,3 +1,12 @@
+anthy (7900-1) unstable; urgency=low
+
+  * New upstream release
+  * Correct extract path of 2ch.t. (closes: Bug#361184)
+  * Correct use of mktemp in update-anthy-dics. (closes: Bug#330341)
+  * Fix typo in debian/anthy-el.README.Debian. (closes: Bug#376263).
+
+ -- Masahito Omote <omote@debian.org>  Sat,  7 Oct 2006 21:37:03 +0900
+
 anthy (7500-1) unstable; urgency=low
 
   * New upstream release
