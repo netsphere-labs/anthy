@@ -1,3 +1,15 @@
+anthy (7900-2) unstable; urgency=low
+
+  * Standards-Version: 3.7.2.2
+  * debian/compat: set 5. Bump Depends: debhelper >> 5.
+  * update-anthy-dic: Fix matrix path, remove unused files, and code cleanup.
+    (closes: Bug#361500, Bug#391748)
+  * Transit to po-debconf and fix typo in anthy.templates. (closes: Bug#295803)
+  * Fix undefined non-weak symbols in libanthy.so and libanthyinput.so.
+    (closes: Bug#392528)
+
+ -- Masahito Omote <omote@debian.org>  Thu, 19 Oct 2006 23:50:00 +0900
+
 anthy (7900-1) unstable; urgency=low
 
   * New upstream release

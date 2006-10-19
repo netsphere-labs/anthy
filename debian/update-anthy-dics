@@ -6,6 +6,8 @@ CANNADIC='gcanna.ctd gcannaf.ctd'
 EXTRADIC="$METADICDIR/*.t"
 
 MATRIXDIR=/var/lib/anthy/mkmatrix
+METAMATRIXFILE=/usr/share/anthy/matrix/dep.sorted
+
 DEPGRAPHDIR=/var/lib/anthy/depgraph
 WORDDICDIR=/var/lib/anthy/mkworddic
 
@@ -74,7 +76,7 @@ fi
 mv $TMPDICTCONFIG $DICTCONFIG
 
 cd $MATRIXDIR
-/usr/bin/mkmatrix /usr/share/anthy/matrix/parsed.txt -o ./matrix
+/usr/bin/mkmatrix $METAMATRIXFILE -o ./matrix
 
 cd $WORDDICDIR
 /usr/bin/mkworddic -f $DICTCONFIG > /dev/null 2>&1

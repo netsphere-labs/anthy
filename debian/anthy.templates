@@ -2,10 +2,10 @@ Template: anthy/dictionaries
 Type: multiselect
 Choices: ${dictionaries}
 Default: base.t, extra.t
-Description: Which add-on dictionaries you like to use?
- Anthy package can add add-on dictionary to system dictionary. Now, these
- following dictionaries are available.
+_Description: Which add-on dictionaries would you like to use:
+ Anthy package can add add-on dictionaries to system dictionary. Now, these
+ following dictionaries are available:
  .
-  base.t: Anthy specific words which is compatible with cannadic.
-  extra.t: Anthy specific words which is not incompatible with cannadic.
+  base.t: Anthy specific words which are compatible with cannadic.
+  extra.t: Anthy specific words which are not incompatible with cannadic.
   2ch.t: Dialects used in 2ch, the biggest Japanese web discussion group.
