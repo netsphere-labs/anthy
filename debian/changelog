@@ -1,3 +1,21 @@
+anthy (7900-2.1) unstable; urgency=low
+
+  * Non-maintainer upload to fix longstanding l10n issues
+  * Debconf translations:
+    - French added. Closes: #395144
+    - Czech added. Closes: #396051
+    - Swedish added. Closes: #331006
+    - Russian added. Sent during the call for updates of the NMU campaign
+  * Avoid a double negation in debconf templates. Closes: #295945
+  * Lintian fixes:
+    - rewrite the debconf template to make it compliant with the 
+      Developer's Reference recommendations
+    - unmark Choices for translation as it only contains a variable
+    - Remove the useless debian/anthy.conffiles which only lists a file 
+      in /etc
+
+ -- Christian Perrier <bubulle@debian.org>  Wed, 15 Nov 2006 07:57:08 +0100
+
 anthy (7900-2) unstable; urgency=low
 
   * Standards-Version: 3.7.2.2

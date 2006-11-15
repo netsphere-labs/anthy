@@ -1,34 +1,35 @@
+# translation of anthy_debconf_ru.po to Russian
 #
 #    Translators, if you are not familiar with the PO format, gettext
 #    documentation is worth reading, especially sections dedicated to
 #    this format, e.g. by running:
 #         info -n '(gettext)PO Files'
 #         info -n '(gettext)Header Entry'
-#
 #    Some information specific to po-debconf are available at
 #            /usr/share/doc/po-debconf/README-trans
-#         or http://www.debian.org/intl/l10n/po-debconf/README-trans
-#
+#         or http://www.debian.org/intl/l10n/po-debconf/README-trans#
 #    Developers do not need to manually edit POT or PO files.
 #
-#, fuzzy
+# Yuri Kozlov <kozlov.y@gmail.com>, 2006.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: 7900-2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-11-15 08:23+0100\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"PO-Revision-Date: 2006-11-22 21:50+0300\n"
+"Last-Translator: Yuri Kozlov <kozlov.y@gmail.com>\n"
+"Language-Team: Russian <debian-l10n-russian@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Generator: KBabel 1.11.2\n"
+"Plural-Forms:  nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #. Type: multiselect
 #. Description
 #: ../anthy.templates:1001
 msgid "Add-on dictionaries to use:"
-msgstr ""
+msgstr "Дополнительные словари:"
 
 #. Type: multiselect
 #. Description
@@ -37,6 +38,8 @@ msgid ""
 "The anthy package can use add-on dictionaries to the system dictionary. the "
 "following dictionaries are currently available:"
 msgstr ""
+"Пакет anthy может использовать дополнительные словари "
+"совместно с системным словарём. Доступны следующие словари:"
 
 #. Type: multiselect
 #. Description
@@ -46,3 +49,7 @@ msgid ""
 " extra.t: Anthy specific words which are compatible with cannadic.\n"
 " 2ch.t: Dialects used in 2ch, the biggest Japanese web discussion group."
 msgstr ""
+" base.t: Anthy-специфичные слова, совместимые с cannadic.\n"
+" extra.t: Anthy-специфичные слова, совместимые с cannadic.\n"
+" 2ch.t: Диалекты, используемые в 2ch, самом большом японском веб-форуме."
+
