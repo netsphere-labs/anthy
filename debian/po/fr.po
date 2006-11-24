@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: anthy_7900-2\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2006-11-15 08:23+0100\n"
+"Report-Msgid-Bugs-To: omote@debian.org\n"
+"POT-Creation-Date: 2006-11-25 00:36+0900\n"
 "PO-Revision-Date: 2006-10-23 11:16+0200\n"
 "Last-Translator: Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>\n"
 "Language-Team: French <debian-l10n-french@lists.debian.org>\n"
@@ -33,9 +33,10 @@ msgstr ""
 #. Type: multiselect
 #. Description
 #: ../anthy.templates:1001
+#, fuzzy
 msgid ""
 " base.t: Anthy specific words which are compatible with cannadic.\n"
-" extra.t: Anthy specific words which are compatible with cannadic.\n"
+" extra.t: Anthy specific words which are not compatible with cannadic.\n"
 " 2ch.t: Dialects used in 2ch, the biggest Japanese web discussion group."
 msgstr ""
 " - base.t  : Mots spécifiques à anthy, compatibles avec cannadic ;\n"
