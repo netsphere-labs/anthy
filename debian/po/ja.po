@@ -1,15 +1,16 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: anthy_7900-2\n"
+"Project-Id-Version: 7900-3\n"
 "Report-Msgid-Bugs-To: omote@debian.org\n"
 "POT-Creation-Date: 2006-11-25 00:36+0900\n"
-"PO-Revision-Date: 2006-11-28 01:52+0100\n"
-"Last-Translator: Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>\n"
-"Language-Team: French <debian-l10n-french@lists.debian.org>\n"
+"PO-Revision-Date: 2007-01-18 03:58+0900\n"
+"Last-Translator: Jonny <jonny@csc.jp>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -18,7 +19,7 @@ msgstr ""
 #. Description
 #: ../anthy.templates:1001
 msgid "Add-on dictionaries to use:"
-msgstr "Dictionnaires supplémentaires à utiliser :"
+msgstr "使用するアドオン辞書:"
 
 #. Type: multiselect
 #. Description
@@ -27,8 +28,8 @@ msgid ""
 "The anthy package can use add-on dictionaries to the system dictionary. the "
 "following dictionaries are currently available:"
 msgstr ""
-"Le paquet anthy peut ajouter des dictionnaires supplémentaires au "
-"dictionnaire système. Les dictionnaires suivants sont disponibles :"
+"anthy パッケージはシステム辞書にアドオン辞書を使用することができます。次の"
+"辞書が現在利用可能です:"
 
 #. Type: multiselect
 #. Description
@@ -38,7 +39,6 @@ msgid ""
 " extra.t: Anthy specific words which are not compatible with cannadic.\n"
 " 2ch.t: Dialects used in 2ch, the biggest Japanese web discussion group."
 msgstr ""
-" base.t  : Mots spécifiques à anthy, compatibles avec cannadic ;\n"
-" extra.t : Mots spécifiques à anthy, incompatibles avec cannadic ;\n"
-" 2ch.t   : Dialectes utilisés sur 2ch, le plus grand groupe de\n"
-"           discussions japonais."
+" base.t: cannadic と互換性のある Anthy 独特の単語。\n"
+" extra.t: cannadic と互換性のない Anthy 独特の単語。\n"
+" 2ch.t: 最も大きな日本のウェブディスカッショングループ、2ch で使われる方言。"
