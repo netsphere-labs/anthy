@@ -5,9 +5,6 @@ METADICDIR=/usr/share/anthy/dic
 CANNADIC='gcanna.ctd gcannaf.ctd'
 EXTRADIC="$METADICDIR/*.t"
 
-MATRIXDIR=/var/lib/anthy/mkmatrix
-METAMATRIXFILE=/usr/share/anthy/matrix/dep.sorted
-
 DEPGRAPHDIR=/var/lib/anthy/depgraph
 WORDDICDIR=/var/lib/anthy/mkworddic
 
@@ -24,6 +21,8 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
+echo "set_input_encoding eucjp" >> $TMPDICTCONFIG
+echo "set_exclude_wtypes #CN #CNS" >> $TMPDICTCONFIG
 for file in $CANNADIC; do
 	case $file in
 	*.ctd)
@@ -33,6 +32,7 @@ for file in $CANNADIC; do
 		;;
 	esac
 done
+echo "clear_exclude_wtypes" >> $TMPDICTCONFIG
 
 echo "read $METADICDIR/katakana.t" >> $TMPDICTCONFIG
 echo "read $METADICDIR/adjust.t" >> $TMPDICTCONFIG
@@ -50,12 +50,12 @@ done
 echo "read $METADICDIR/placename.t" >> $TMPDICTCONFIG
 echo "build_reverse_dict" >> $TMPDICTCONFIG
 echo "read_uc $METADICDIR/udict" >> $TMPDICTCONFIG
+echo "set_dict_encoding utf8" >> $TMPDICTCONFIG
 echo "write anthy.wdic" >> $TMPDICTCONFIG
 echo "done" >> $TMPDICTCONFIG
 
 echo -n 'Updating anthy.dic...'
 
-rm -rf $MATRIXDIR; mkdir $MATRIXDIR
 rm -rf $WORDDICDIR; mkdir $WORDDICDIR
 rm -rf $DEPGRAPHDIR; mkdir $DEPGRAPHDIR
 
@@ -65,18 +65,11 @@ if test -f $DICDIR/anthy.dic; then
 	rm -f $DICDIR/anthy.dic
 fi
 
-if test -f $MATRIXDIR/matrix; then
-	rm -f $MATRIXDIR/matrix
-fi
-
 if test -f $WORDDICDIR/anthy.wdic; then
 	rm -f $WORDDICDIR/anthy.wdic
 fi
 
 mv $TMPDICTCONFIG $DICTCONFIG
-
-cd $MATRIXDIR
-/usr/bin/mkmatrix $METAMATRIXFILE -o ./matrix
 
 cd $WORDDICDIR
 /usr/bin/mkworddic -f $DICTCONFIG > /dev/null 2>&1

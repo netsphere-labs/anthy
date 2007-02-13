@@ -5,4 +5,3 @@ var/cache/anthy
 usr/share/anthy
 usr/share/anthy/dic
 usr/share/anthy/depgraph
-usr/share/anthy/matrix

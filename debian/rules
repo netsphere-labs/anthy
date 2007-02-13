@@ -80,6 +80,7 @@ install: build
 	install -d $(CURDIR)/debian/tmp/usr/sbin
 
 #	-mv debian/tmp/usr/share/anthy/anthy-conf debian/tmp/etc/anthy
+	sed -i -e 's/zipcode.t/dic\/zipcode.t/g' debian/tmp/etc/anthy/anthy-conf
 	install -m 644 include/xstr.h \
 		$(CURDIR)/debian/tmp/usr/include/anthy/xstr.h
 	install -m 644 include/wtype.h \
@@ -91,8 +92,6 @@ install: build
 		$(CURDIR)/debian/tmp/usr/bin/mkworddic
 	install -m 755 depgraph/.libs/mkdepgraph \
 		$(CURDIR)/debian/tmp/usr/bin/mkdepgraph
-	install -m 755 mkmatrix/.libs/mkmatrix \
-		$(CURDIR)/debian/tmp/usr/bin/mkmatrix
 	
 	install -m 755 debian/update-anthy-dics \
 		$(CURDIR)/debian/tmp/usr/sbin/update-anthy-dics
@@ -120,10 +119,6 @@ install: build
 		install -m 644 conjugate.table $(CURDIR)/debian/tmp/$(DEPWORDDIR)
 	cd $(CURDIR)/depgraph; \
 		install -m 644 indepword.txt $(CURDIR)/debian/tmp/$(DEPWORDDIR)
-
-	cd $(CURDIR)/mkmatrix; \
-		install -m 644 dep.sorted $(CURDIR)/debian/tmp/$(MATRIXDIR)
-		
 
 	cd $(CURDIR)
 	install -m 644 mkworddic/udict \

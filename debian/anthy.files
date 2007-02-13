@@ -3,7 +3,7 @@ usr/bin/anthy-dic-tool
 usr/bin/mkfiledic
 usr/bin/mkworddic
 usr/bin/mkdepgraph
-usr/bin/mkmatrix
+usr/bin/anthy-morphological-analyzer
 usr/sbin/update-anthy-dics
 usr/share/anthy/*.txt
 usr/share/anthy/depgraph/*.depword
