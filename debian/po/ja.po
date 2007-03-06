@@ -10,9 +10,9 @@ msgstr ""
 "POT-Creation-Date: 2006-11-25 00:36+0900\n"
 "PO-Revision-Date: 2007-01-18 03:58+0900\n"
 "Last-Translator: Jonny <jonny@csc.jp>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language-Team: Japanese <debian-japanese@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
 #. Type: multiselect
@@ -28,8 +28,8 @@ msgid ""
 "The anthy package can use add-on dictionaries to the system dictionary. the "
 "following dictionaries are currently available:"
 msgstr ""
-"anthy パッケージはシステム辞書にアドオン辞書を使用することができます。次の"
-"辞書が現在利用可能です:"
+"anthy パッケージはシステム辞書にアドオン辞書を使用することができます。次の辞"
+"書が現在利用可能です:"
 
 #. Type: multiselect
 #. Description

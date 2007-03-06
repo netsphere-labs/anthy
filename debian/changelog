@@ -1,3 +1,15 @@
+anthy (8607-1.1) unstable; urgency=low
+
+  * Non-maintainer upload to fix pending l10n issues.
+  * Debconf translations:
+    - German. Closes: #408017
+    - Galician. Closes: #412646
+    - Portuguese. Closes: #413582
+    - Fuzzies fixed in Swedish and Czech
+    - All PO files converted to UTF-8 (Japanese was UTF-8 already)
+
+ -- Christian Perrier <bubulle@debian.org>  Tue,  6 Mar 2007 07:10:42 +0100
+
 anthy (8607-1) unstable; urgency=low
 
   * New upstream release
