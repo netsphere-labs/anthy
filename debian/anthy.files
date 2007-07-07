@@ -10,6 +10,7 @@ usr/share/anthy/depgraph/*.depword
 usr/share/anthy/depgraph/*.table
 usr/share/anthy/depgraph/*.txt
 usr/share/anthy/matrix/*
+usr/share/anthy/calctrans/*
 usr/share/anthy/typetab
 usr/share/anthy/dic/*.t
 usr/share/anthy/dic/*.ctd

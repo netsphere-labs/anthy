@@ -1,3 +1,9 @@
+anthy (9100-1) unstable; urgency=low
+
+  * New upstream release (closes: Bug#431640)
+
+ -- Masahito Omote <omote@debian.org>  Sun, 08 Jul 2007 03:58:03 +0900
+
 anthy (8607-1.1) unstable; urgency=low
 
   * Non-maintainer upload to fix pending l10n issues.

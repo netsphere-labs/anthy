@@ -7,6 +7,7 @@ EXTRADIC="$METADICDIR/*.t"
 
 DEPGRAPHDIR=/var/lib/anthy/depgraph
 WORDDICDIR=/var/lib/anthy/mkworddic
+CALCTRANSDIR=/var/lib/anthy/calctrans
 
 CONFIG='/etc/anthy/diclist'
 DICTCONFIG='/etc/anthy/dict.args'
@@ -82,6 +83,8 @@ ln -s /usr/share/anthy/depgraph/indepword.txt
 
 ln -s /usr/share/anthy/depgraph/conjugate.table $DEPGRAPHDIR
 /usr/bin/mkdepgraph 
+
+ln -s /usr/share/anthy/calctrans $CALCTRANSDIR
 
 cd $DICDIR
 /usr/bin/mkfiledic -p ./

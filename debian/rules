@@ -22,6 +22,7 @@ version=0
 METADICDIR=usr/share/anthy/dic
 DEPWORDDIR=usr/share/anthy/depgraph
 MATRIXDIR=usr/share/anthy/matrix
+CALCTRANSDIR=usr/share/anthy/calctrans
 
 DICDIR=var/lib/anthy
 ELISPDIR=usr/share/emacs/site-lisp/anthy
@@ -81,9 +82,9 @@ install: build
 
 #	-mv debian/tmp/usr/share/anthy/anthy-conf debian/tmp/etc/anthy
 	sed -i -e 's/zipcode.t/dic\/zipcode.t/g' debian/tmp/etc/anthy/anthy-conf
-	install -m 644 include/xstr.h \
+	install -m 644 anthy/xstr.h \
 		$(CURDIR)/debian/tmp/usr/include/anthy/xstr.h
-	install -m 644 include/wtype.h \
+	install -m 644 anthy/wtype.h \
 		$(CURDIR)/debian/tmp/usr/include/anthy/wtype.h
 
 	install -m 755 mkanthydic/mkfiledic \
@@ -96,13 +97,16 @@ install: build
 	install -m 755 debian/update-anthy-dics \
 		$(CURDIR)/debian/tmp/usr/sbin/update-anthy-dics
 
+	
+
 	rm -rf $(CURDIR)/debian/tmp/$(MATRIXDIR)
 	install -d $(CURDIR)/debian/tmp/$(METADICDIR)
 	install -d $(CURDIR)/debian/tmp/$(DEPWORDDIR)
 	install -d $(CURDIR)/debian/tmp/$(MATRIXDIR)
-	install -m 644 cannadic/gcanna.ctd \
+	install -d $(CURDIR)/debian/tmp/$(CALCTRANSDIR)
+	install -m 644 alt-cannadic/gcanna.ctd \
 			$(CURDIR)/debian/tmp/$(METADICDIR)/gcanna.ctd
-	install -m 644 cannadic/gcannaf.ctd \
+	install -m 644 alt-cannadic/gcannaf.ctd \
 			$(CURDIR)/debian/tmp/$(METADICDIR)/gcannaf.ctd
 
 	cd $(CURDIR)/mkworddic; \
@@ -123,6 +127,13 @@ install: build
 	cd $(CURDIR)
 	install -m 644 mkworddic/udict \
 			$(CURDIR)/debian/tmp/$(METADICDIR)/udict
+
+	cd $(CURDIR)
+	for i in anthy.cand_info anthy.trans_info \
+		anthy.corpus_array anthy.corpus_bucket anthy.weak_words; do \
+		install -m 644 $(CURDIR)/calctrans/$$i \
+			$(CURDIR)/debian/tmp/usr/share/anthy/calctrans/$$i; \
+	done
 
 binary-indep: build-indep install
 	dh_testdir -i
