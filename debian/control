@@ -1,7 +1,7 @@
 Source: anthy
 Section: utils
 Priority: optional
-Maintainer: Masahito Omote <omote@debian.org>
+Maintainer: Debian QA Group <packages@qa.debian.org>
 Build-Depends: debhelper (>> 5.0.0), autotools-dev, dpatch (>= 1.11), debconf (>= 0.5), po-debconf, automake1.9
 Standards-Version: 3.7.2.2
 
@@ -45,7 +45,7 @@ Description: Anthy runtime library
 Package: libanthy-dev
 Section: libdevel
 Architecture: any
-Depends: libanthy0 (= ${Source-Version})
+Depends: libanthy0 (= ${binary:Version})
 Description: Anthy static library, headers and documets for developers
  Anthy is a Japanese input method working on X11 and emacs. It converts
  Hiragana text to Kana Kanji mixed text. It is implemented as a library

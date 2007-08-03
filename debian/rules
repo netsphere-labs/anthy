@@ -61,7 +61,7 @@ clean: unpatch
 	rm -f build-arch-stamp build-indep-stamp configure-stamp
 	debconf-updatepo
 
-	-$(MAKE) distclean
+	[ ! -f Makefile ] || $(MAKE) distclean
 
 	-rm -f conftest* src-util/*.elc config.log
 	dh_clean
@@ -175,7 +175,6 @@ binary-arch: build-arch install
 #	dh_installemacsen
 	dh_installman -a
 	dh_installinfo -a
-	dh_undocumented -a anthy-agent.1 anthy-dic-tool.1
 	dh_installchangelogs -a ChangeLog
 	dh_link -a
 	dh_strip -a
