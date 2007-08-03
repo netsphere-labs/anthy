@@ -1,3 +1,12 @@
+anthy (9100-2) unstable; urgency=low
+
+  * QA upload.
+  * Fix update-anthy-dics. (closes: Bug#433022)
+  * debian/patches/04_improve_anthy_dic_learning
+    - A patch for improving dictionary learning.
+
+ -- Debian QA Group <packages@qa.debian.org>  Sat, 04 Aug 2007 00:00:02 +0900
+
 anthy (9100-1) unstable; urgency=low
 
   * New upstream release (closes: Bug#431640)

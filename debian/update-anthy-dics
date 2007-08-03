@@ -2,7 +2,7 @@
 
 DICDIR=/var/lib/anthy
 METADICDIR=/usr/share/anthy/dic
-CANNADIC='gcanna.ctd gcannaf.ctd'
+CANNADIC='gcanna.ctd gcannaf.ctd gtankan.ctd'
 EXTRADIC="$METADICDIR/*.t"
 
 DEPGRAPHDIR=/var/lib/anthy/depgraph
@@ -23,7 +23,6 @@ if [ $? != 0 ]; then
 fi
 
 echo "set_input_encoding eucjp" >> $TMPDICTCONFIG
-echo "set_exclude_wtypes #CN #CNS" >> $TMPDICTCONFIG
 for file in $CANNADIC; do
 	case $file in
 	*.ctd)
@@ -33,12 +32,12 @@ for file in $CANNADIC; do
 		;;
 	esac
 done
-echo "clear_exclude_wtypes" >> $TMPDICTCONFIG
 
-echo "read $METADICDIR/katakana.t" >> $TMPDICTCONFIG
 echo "read $METADICDIR/adjust.t" >> $TMPDICTCONFIG
 echo "read $METADICDIR/name.t" >> $TMPDICTCONFIG
 echo "read $METADICDIR/compound.t" >> $TMPDICTCONFIG
+echo "read $METADICDIR/extra.t" >> $TMPDICTCONFIG
+echo "read $METADICDIR/tankanji.t" >> $TMPDICTCONFIG
 
 addondics=$(sort -u $CONFIG| tr '\n' ' '| sed 's/\ $//')
 
@@ -48,7 +47,6 @@ for file in $addondics; do
 	fi
 done
 
-echo "read $METADICDIR/placename.t" >> $TMPDICTCONFIG
 echo "build_reverse_dict" >> $TMPDICTCONFIG
 echo "read_uc $METADICDIR/udict" >> $TMPDICTCONFIG
 echo "set_dict_encoding utf8" >> $TMPDICTCONFIG
@@ -59,6 +57,7 @@ echo -n 'Updating anthy.dic...'
 
 rm -rf $WORDDICDIR; mkdir $WORDDICDIR
 rm -rf $DEPGRAPHDIR; mkdir $DEPGRAPHDIR
+rm -f $CALCTRANSDIR
 
 cp /etc/anthy/anthy-conf /var/lib/anthy
 
@@ -79,12 +78,12 @@ cd $DEPGRAPHDIR
 for i in /usr/share/anthy/depgraph/*.depword; do
 	ln -s $i $DEPGRAPHDIR/`basename $i`
 done
-ln -s /usr/share/anthy/depgraph/indepword.txt 
+ln -sf /usr/share/anthy/depgraph/indepword.txt $DEPGRAPHDIR
 
-ln -s /usr/share/anthy/depgraph/conjugate.table $DEPGRAPHDIR
+ln -sf /usr/share/anthy/depgraph/conjugate.table $DEPGRAPHDIR
 /usr/bin/mkdepgraph 
 
-ln -s /usr/share/anthy/calctrans $CALCTRANSDIR
+ln -sf /usr/share/anthy/calctrans $CALCTRANSDIR
 
 cd $DICDIR
 /usr/bin/mkfiledic -p ./

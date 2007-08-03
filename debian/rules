@@ -108,6 +108,8 @@ install: build
 			$(CURDIR)/debian/tmp/$(METADICDIR)/gcanna.ctd
 	install -m 644 alt-cannadic/gcannaf.ctd \
 			$(CURDIR)/debian/tmp/$(METADICDIR)/gcannaf.ctd
+	install -m 644 alt-cannadic/gtankan.ctd \
+			$(CURDIR)/debian/tmp/$(METADICDIR)/gtankan.ctd
 
 	cd $(CURDIR)/mkworddic; \
 		for i in *.t; do \
