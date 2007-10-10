@@ -1,7 +1,7 @@
 Source: anthy
 Section: utils
 Priority: optional
-Maintainer: Debian QA Group <packages@qa.debian.org>
+Maintainer: NOKUBI Takatsugu <knok@daionet.gr.jp>
 Build-Depends: debhelper (>> 5.0.0), autotools-dev, dpatch (>= 1.11), debconf (>= 0.5), po-debconf, automake1.9
 Standards-Version: 3.7.2.2
 

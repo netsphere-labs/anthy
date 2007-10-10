@@ -1,3 +1,10 @@
+anthy (9100c-1) unstable; urgency=low
+
+  * New upstream release
+  * Changed the maintainer.
+
+ -- NOKUBI Takatsugu <knok@daionet.gr.jp>  Wed, 10 Oct 2007 17:18:38 +0900
+
 anthy (9100-3) unstable; urgency=low
 
   * QA upload.
