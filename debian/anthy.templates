@@ -1,11 +1,20 @@
+# These templates have been reviewed by the debian-l10n-english
+# team
+#
+# If modifications/additions/rewording are needed, please ask
+# debian-l10n-english@lists.debian.org for advice.
+#
+# Even minor modifications require translation updates and such
+# changes should be coordinated with translators and reviewers.
+
 Template: anthy/dictionaries
 Type: multiselect
 Choices: ${dictionaries}
 Default: base.t, extra.t
-_Description: Add-on dictionaries to use:
- The anthy package can use add-on dictionaries to the system
- dictionary. the following dictionaries are currently available:
+_Description: Extra dictionaries to use:
+ The anthy package can use add-on dictionaries in addition to the
+ system dictionary. The following are currently available:
  .
-  base.t: Anthy specific words which are compatible with cannadic.
-  extra.t: Anthy specific words which are not compatible with cannadic.
-  2ch.t: Dialects used in 2ch, the biggest Japanese web discussion group.
+  - base.t : Anthy-specific words which are compatible with cannadic;
+  - extra.t: Anthy-specific words which are not compatible with cannadic;
+  - 2ch.t  : Slang used in 2ch, the web's biggest Japanese discussion forum.

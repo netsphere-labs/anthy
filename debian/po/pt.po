@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: anthy\n"
-"Report-Msgid-Bugs-To: omote@debian.org\n"
-"POT-Creation-Date: 2006-11-25 00:36+0900\n"
+"Report-Msgid-Bugs-To: anthy@packages.debian.org\n"
+"POT-Creation-Date: 2008-02-12 15:54+0900\n"
 "PO-Revision-Date: 2007-03-05 22:26+0000\n"
 "Last-Translator: Carlos Lisboa <carloslisboa@gmail.com>\n"
 "Language-Team: Portuguese <traduz@debianpt.org>\n"
@@ -17,27 +17,38 @@ msgstr ""
 
 #. Type: multiselect
 #. Description
-#: ../anthy.templates:1001
-msgid "Add-on dictionaries to use:"
+#: ../anthy.templates:2001
+#, fuzzy
+#| msgid "Add-on dictionaries to use:"
+msgid "Extra dictionaries to use:"
 msgstr "Dicionários adicionais a usar:"
 
 #. Type: multiselect
 #. Description
-#: ../anthy.templates:1001
+#: ../anthy.templates:2001
+#, fuzzy
+#| msgid ""
+#| "The anthy package can use add-on dictionaries to the system dictionary. "
+#| "the following dictionaries are currently available:"
 msgid ""
-"The anthy package can use add-on dictionaries to the system dictionary. the "
-"following dictionaries are currently available:"
+"The anthy package can use add-on dictionaries in addition to the system "
+"dictionary. The following are currently available:"
 msgstr ""
 "O pacote anthy pode usar dicionários adicionais ao dicionário do sistema. Os "
 "seguintes dicionários estão disponíveis:"
 
 #. Type: multiselect
 #. Description
-#: ../anthy.templates:1001
+#: ../anthy.templates:2001
+#, fuzzy
+#| msgid ""
+#| " base.t: Anthy specific words which are compatible with cannadic.\n"
+#| " extra.t: Anthy specific words which are not compatible with cannadic.\n"
+#| " 2ch.t: Dialects used in 2ch, the biggest Japanese web discussion group."
 msgid ""
-" base.t: Anthy specific words which are compatible with cannadic.\n"
-" extra.t: Anthy specific words which are not compatible with cannadic.\n"
-" 2ch.t: Dialects used in 2ch, the biggest Japanese web discussion group."
+" - base.t : Anthy-specific words which are compatible with cannadic;\n"
+" - extra.t: Anthy-specific words which are not compatible with cannadic;\n"
+" - 2ch.t  : Slang used in 2ch, the web's biggest Japanese discussion forum."
 msgstr ""
 " base.t: Palavras específicas Anthy que são compatíveis com cannadic.\n"
 " extra.t: Palavras específicas Anthy que são não compatíveis com cannadic\n"

@@ -7,8 +7,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"Report-Msgid-Bugs-To: omote@debian.org\n"
-"POT-Creation-Date: 2006-11-25 00:36+0900\n"
+"Report-Msgid-Bugs-To: anthy@packages.debian.org\n"
+"POT-Creation-Date: 2008-02-12 15:54+0900\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,23 +18,23 @@ msgstr ""
 
 #. Type: multiselect
 #. Description
-#: ../anthy.templates:1001
-msgid "Add-on dictionaries to use:"
+#: ../anthy.templates:2001
+msgid "Extra dictionaries to use:"
 msgstr ""
 
 #. Type: multiselect
 #. Description
-#: ../anthy.templates:1001
+#: ../anthy.templates:2001
 msgid ""
-"The anthy package can use add-on dictionaries to the system dictionary. the "
-"following dictionaries are currently available:"
+"The anthy package can use add-on dictionaries in addition to the system "
+"dictionary. The following are currently available:"
 msgstr ""
 
 #. Type: multiselect
 #. Description
-#: ../anthy.templates:1001
+#: ../anthy.templates:2001
 msgid ""
-" base.t: Anthy specific words which are compatible with cannadic.\n"
-" extra.t: Anthy specific words which are not compatible with cannadic.\n"
-" 2ch.t: Dialects used in 2ch, the biggest Japanese web discussion group."
+" - base.t : Anthy-specific words which are compatible with cannadic;\n"
+" - extra.t: Anthy-specific words which are not compatible with cannadic;\n"
+" - 2ch.t  : Slang used in 2ch, the web's biggest Japanese discussion forum."
 msgstr ""
