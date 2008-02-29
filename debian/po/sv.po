@@ -34,9 +34,6 @@ msgstr "Vilka extra uppslagsverk vill du använda?"
 #. Description
 #: ../anthy.templates:2001
 #, fuzzy
-#| msgid ""
-#| "The anthy package can use add-on dictionaries to the system dictionary. "
-#| "the following dictionaries are currently available:"
 msgid ""
 "The anthy package can use add-on dictionaries in addition to the system "
 "dictionary. The following are currently available:"
@@ -48,10 +45,6 @@ msgstr ""
 #. Description
 #: ../anthy.templates:2001
 #, fuzzy
-#| msgid ""
-#| " base.t: Anthy specific words which are compatible with cannadic.\n"
-#| " extra.t: Anthy specific words which are not compatible with cannadic.\n"
-#| " 2ch.t: Dialects used in 2ch, the biggest Japanese web discussion group."
 msgid ""
 " - base.t : Anthy-specific words which are compatible with cannadic;\n"
 " - extra.t: Anthy-specific words which are not compatible with cannadic;\n"

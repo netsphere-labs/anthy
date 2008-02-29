@@ -5,10 +5,10 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: 7900-3\n"
+"Project-Id-Version: 9100e-1\n"
 "Report-Msgid-Bugs-To: anthy@packages.debian.org\n"
 "POT-Creation-Date: 2008-02-12 15:54+0900\n"
-"PO-Revision-Date: 2007-01-18 03:58+0900\n"
+"PO-Revision-Date: 2008-02-14 17:00+0900\n"
 "Last-Translator: Jonny <jonny@csc.jp>\n"
 "Language-Team: Japanese <debian-japanese@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
@@ -18,38 +18,27 @@ msgstr ""
 #. Type: multiselect
 #. Description
 #: ../anthy.templates:2001
-#, fuzzy
-#| msgid "Add-on dictionaries to use:"
 msgid "Extra dictionaries to use:"
-msgstr "使用するアドオン辞書:"
+msgstr "使用する特別な辞書:"
 
 #. Type: multiselect
 #. Description
 #: ../anthy.templates:2001
-#, fuzzy
-#| msgid ""
-#| "The anthy package can use add-on dictionaries to the system dictionary. "
-#| "the following dictionaries are currently available:"
 msgid ""
 "The anthy package can use add-on dictionaries in addition to the system "
 "dictionary. The following are currently available:"
 msgstr ""
-"anthy パッケージはシステム辞書にアドオン辞書を使用することができます。次の辞"
-"書が現在利用可能です:"
+"anthy パッケージはシステム辞書に加えてアドオン辞書を使用することができます。"
+"以下が現在利用可能です:"
 
 #. Type: multiselect
 #. Description
 #: ../anthy.templates:2001
-#, fuzzy
-#| msgid ""
-#| " base.t: Anthy specific words which are compatible with cannadic.\n"
-#| " extra.t: Anthy specific words which are not compatible with cannadic.\n"
-#| " 2ch.t: Dialects used in 2ch, the biggest Japanese web discussion group."
 msgid ""
 " - base.t : Anthy-specific words which are compatible with cannadic;\n"
 " - extra.t: Anthy-specific words which are not compatible with cannadic;\n"
 " - 2ch.t  : Slang used in 2ch, the web's biggest Japanese discussion forum."
 msgstr ""
-" base.t: cannadic と互換性のある Anthy 独特の単語。\n"
-" extra.t: cannadic と互換性のない Anthy 独特の単語。\n"
-" 2ch.t: 最も大きな日本のウェブディスカッショングループ、2ch で使われる方言。"
+" - base.t : cannadic と互換性のある Anthy 独特の単語。\n"
+" - extra.t: cannadic と互換性のない Anthy 独特の単語。\n"
+" - 2ch.t  : ウェブ最大の日本語ディスカッションフォーラム、2ch で使われる俗語。"

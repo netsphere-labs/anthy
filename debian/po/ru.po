@@ -1,4 +1,4 @@
-# translation of anthy_7900-3_ru.po to Russian
+# translation of ru.po to Russian
 #
 #    Translators, if you are not familiar with the PO format, gettext
 #    documentation is worth reading, especially sections dedicated to
@@ -10,13 +10,13 @@
 #         or http://www.debian.org/intl/l10n/po-debconf/README-trans#
 #    Developers do not need to manually edit POT or PO files.
 #
-# Yuri Kozlov <kozlov.y@gmail.com>, 2006.
+# Yuri Kozlov <kozlov.y@gmail.com>, 2006, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: 7900-3\n"
+"Project-Id-Version: anthy 9100d-2\n"
 "Report-Msgid-Bugs-To: anthy@packages.debian.org\n"
 "POT-Creation-Date: 2008-02-12 15:54+0900\n"
-"PO-Revision-Date: 2006-12-24 18:37+0300\n"
+"PO-Revision-Date: 2008-02-20 21:16+0300\n"
 "Last-Translator: Yuri Kozlov <kozlov.y@gmail.com>\n"
 "Language-Team: Russian <debian-l10n-russian@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
@@ -29,18 +29,12 @@ msgstr ""
 #. Type: multiselect
 #. Description
 #: ../anthy.templates:2001
-#, fuzzy
-#| msgid "Add-on dictionaries to use:"
 msgid "Extra dictionaries to use:"
 msgstr "Дополнительные словари:"
 
 #. Type: multiselect
 #. Description
 #: ../anthy.templates:2001
-#, fuzzy
-#| msgid ""
-#| "The anthy package can use add-on dictionaries to the system dictionary. "
-#| "the following dictionaries are currently available:"
 msgid ""
 "The anthy package can use add-on dictionaries in addition to the system "
 "dictionary. The following are currently available:"
@@ -51,16 +45,11 @@ msgstr ""
 #. Type: multiselect
 #. Description
 #: ../anthy.templates:2001
-#, fuzzy
-#| msgid ""
-#| " base.t: Anthy specific words which are compatible with cannadic.\n"
-#| " extra.t: Anthy specific words which are not compatible with cannadic.\n"
-#| " 2ch.t: Dialects used in 2ch, the biggest Japanese web discussion group."
 msgid ""
 " - base.t : Anthy-specific words which are compatible with cannadic;\n"
 " - extra.t: Anthy-specific words which are not compatible with cannadic;\n"
 " - 2ch.t  : Slang used in 2ch, the web's biggest Japanese discussion forum."
 msgstr ""
-" base.t: Anthy-специфичные слова, совместимые с cannadic.\n"
-" extra.t: Anthy-специфичные слова, несовместимые с cannadic.\n"
-" 2ch.t: Диалекты, используемые в 2ch, самом большом японском веб-форуме."
+" - base.t: Anthy-специфичные слова, совместимые с cannadic.\n"
+" - extra.t: Anthy-специфичные слова, несовместимые с cannadic.\n"
+" - 2ch.t: сленг, употребляемый в 2ch, самом большом японском веб-форуме."
