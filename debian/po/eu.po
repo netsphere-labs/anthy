@@ -1,26 +1,27 @@
-# SOME DESCRIPTIVE TITLE.
+# translation of xd-anthy-templates.po to Euskara
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+# xabier bilbao <xabidu@gmail.com>, 2008.
+# Piarres Beobide <pi@beobide.net>, 2008.
 msgid ""
 msgstr ""
-"Project-Id-Version: anthy\n"
+"Project-Id-Version: xd-anthy-templates\n"
 "Report-Msgid-Bugs-To: anthy@packages.debian.org\n"
 "POT-Creation-Date: 2008-02-12 15:54+0900\n"
-"PO-Revision-Date: 2008-02-18 19:08+0100\n"
-"Last-Translator: Bart Cornelis <cobaco@skolelinux.no>\n"
-"Language-Team: debian-l10n-dutch <debian-l10n-dutch@lists.debian.org>\n"
+"PO-Revision-Date: 2008-05-21 21:47+0200\n"
+"Last-Translator: Piarres Beobide <pi@beobide.net>\n"
+"Language-Team: Euskara <debian-l10n-basque@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=utf-8\n"
+"Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Poedit-Language: Dutch\n"
+"X-Generator: KBabel 1.11.4\n"
 
 #. Type: multiselect
 #. Description
 #: ../anthy.templates:2001
 msgid "Extra dictionaries to use:"
-msgstr "Aanvullende woordenboeken die u wilt gebruiken:"
+msgstr "Erabiliko diren hiztegi osagarriak:"
 
 #. Type: multiselect
 #. Description
@@ -29,9 +30,8 @@ msgid ""
 "The anthy package can use add-on dictionaries in addition to the system "
 "dictionary. The following are currently available:"
 msgstr ""
-"Naast het systeemwoordenboek kan het anthy-pakket ook aanvullende "
-"woordenboeken gebruiken. Momenteel zijn de volgende aanvullende "
-"woordenboeken beschikbaar:"
+"Anthy paketeak hiztegi gehigarriak erabil ditzake sistemako hiztegiaz gain. "
+"Ondokoak daude eskuragarri:"
 
 #. Type: multiselect
 #. Description
@@ -41,6 +41,8 @@ msgid ""
 " - extra.t: Anthy-specific words which are not compatible with cannadic;\n"
 " - 2ch.t  : Slang used in 2ch, the web's biggest Japanese discussion forum."
 msgstr ""
-" base.t: anthy-specifieke woorden die compatibel zijn met cannadic.\n"
-" extra.t: anthy-specifieke woorden die niet compatibel zijn met cannadic.\n"
-" 2ch.t: slang van 2ch (de grootste Japanese web-discussiegroep)."
+" - base.t : cannadic-ekin bateragarriak diren Anthy-ko hitz espezifikoak;\n"
+" - extra.t: cannadic-ekin bateragarriak ez diren Anthy-ko hitz "
+"espezifikoak;\n"
+" - 2ch.t  : sarean japonierazko eztabaida-foro handiena den 2ch gunean "
+"erabiltzen den hizkera."

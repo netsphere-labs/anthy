@@ -1,14 +1,14 @@
 # translation of po-debconf template to German
-# Copyright (C) 2006, Matthias Julius
 # This file is distributed under the same license as the anthy package.
+# Copyright:
 #
-# Matthias Julius <mdeb@julius-net.net>, 2006, 2007.
+# (C) Matthias Julius <mdeb@julius-net.net>, 2006 - 2008.
 msgid ""
 msgstr ""
 "Project-Id-Version: anthy 7900-3.1\n"
 "Report-Msgid-Bugs-To: anthy@packages.debian.org\n"
-"POT-Creation-Date: 2008-02-12 15:54+0900\n"
-"PO-Revision-Date: 2007-01-22 18:06-0500\n"
+"POT-Creation-Date: 2008-02-14 07:30+0100\n"
+"PO-Revision-Date: 2008-02-16 00:47-0500\n"
 "Last-Translator: Matthias Julius <mdeb@julius-net.net>\n"
 "Language-Team: German <debian-l10n-german@lists.debian.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,33 +19,30 @@ msgstr ""
 #. Type: multiselect
 #. Description
 #: ../anthy.templates:2001
-#, fuzzy
 msgid "Extra dictionaries to use:"
-msgstr "Zu verwendende Erweiterungswörterbücher:"
+msgstr "Zu verwendende zusätzliche Wörterbücher"
 
 #. Type: multiselect
 #. Description
 #: ../anthy.templates:2001
-#, fuzzy
 msgid ""
 "The anthy package can use add-on dictionaries in addition to the system "
 "dictionary. The following are currently available:"
 msgstr ""
-"Das anthy-Paket kann Erweiterungswörterbücher zusätzlich zum "
-"Systemwörterbuch verwenden. Die folgenden Wörterbücher sind gegenwärtig "
-"verfügbar:"
+"Neben dem Systemwörterbuch kann das Anthy-Paket Zusatzwörterbücher "
+"verwenden, von denen folgende verfügbar sind:"
 
 #. Type: multiselect
 #. Description
 #: ../anthy.templates:2001
-#, fuzzy
 msgid ""
 " - base.t : Anthy-specific words which are compatible with cannadic;\n"
 " - extra.t: Anthy-specific words which are not compatible with cannadic;\n"
 " - 2ch.t  : Slang used in 2ch, the web's biggest Japanese discussion forum."
 msgstr ""
-" base.t:  Anthy-spezifische Wörter, welche mit Cannadic kompatibel sind.\n"
-" extra.t: Anthy-spezifische Wörter, welche nicht mit Cannadic kompatibel\n"
-"          sind.\n"
-" 2ch.t:   Dialekte, die in 2ch, der größten japanischen Web-Diskussions-\n"
-"          Gruppe, verwendet werden."
+" - base.t:  Anthy-spezifische Wörter, welche mit Cannadic kompatibel\n"
+"            sind;\n"
+" - extra.t: Anthy-spezifische Wörter, welche nicht mit Cannadic\n"
+"            kompatibel sind;\n"
+"-  2ch.t:   Umgangssprache, die in 2ch, dem größten japanischen\n"
+"            Diskussions-Forum im Web, verwendet wird."

@@ -1,3 +1,15 @@
+anthy (9100e-3.1) unstable; urgency=low
+
+  * Non-maintainer upload to fix pending l10n issues.
+  * Debconf templates
+  * Galician. Closes: #465793
+  * Finnish. Closes: #466779
+  * Dutch. Closes: #467420
+  * German. Closes: #469584
+  * Basque. Closes: #482453
+
+ -- Christian Perrier <bubulle@debian.org>  Wed, 07 May 2008 18:31:25 +0200
+
 anthy (9100e-3) unstable; urgency=low
 
   * Added/updated some local language templates, closes: #467294, #468253, #468405.
