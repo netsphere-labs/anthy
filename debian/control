@@ -2,8 +2,11 @@ Source: anthy
 Section: utils
 Priority: optional
 Maintainer: NOKUBI Takatsugu <knok@daionet.gr.jp>
-Build-Depends: debhelper (>> 5.0.0), autotools-dev, dpatch (>= 1.11), debconf (>= 0.5), po-debconf, automake1.9
-Standards-Version: 3.7.2.2
+Uploaders: Hideki Yamane (Debian-JP) <henrich@debian.or.jp>
+DM-Upload-allowed: yes
+Build-Depends: debhelper (>= 7.0.50), autotools-dev, debconf (>= 0.5), po-debconf, 
+               automake
+Standards-Version: 3.8.4
 
 Package: anthy
 Architecture: any
@@ -19,7 +22,7 @@ Description: input method for Japanese - backend, dictionary and utility
 
 Package: anthy-el
 Architecture: all
-Depends: anthy, emacs21 | emacsen
+Depends: ${misc:Depends}, anthy, emacs23 | emacsen
 Description: input method for Japanese - elisp frontend
  Anthy is a Japanese input method working on X11 and Emacs. It converts
  hiragana text to mixed kana and kanji. It is implemented as a library
@@ -32,7 +35,7 @@ Description: input method for Japanese - elisp frontend
 Package: libanthy0
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: input method for Japanese - runtime library
  Anthy is a Japanese input method working on X11 and Emacs. It converts
  hiragana text to mixed kana and kanji. It is implemented as a library
@@ -45,7 +48,7 @@ Description: input method for Japanese - runtime library
 Package: libanthy-dev
 Section: libdevel
 Architecture: any
-Depends: libanthy0 (= ${binary:Version})
+Depends: libanthy0 (= ${binary:Version}), ${misc:Depends}
 Description: input method for Japanese - development files
  Anthy is a Japanese input method working on X11 and Emacs. It converts
  hiragana text to mixed kana and kanji. It is implemented as a library

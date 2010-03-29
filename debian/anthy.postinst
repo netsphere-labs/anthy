@@ -43,7 +43,9 @@ case "$1" in
 #		echo $DICS > /etc/anthy/diclist
 	fi
 
-	/usr/sbin/update-anthy-dics
+	if [ -x /usr/sbin/update-anthy-dics ]; then
+	    update-anthy-dics
+	fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

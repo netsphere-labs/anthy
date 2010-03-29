@@ -1,11 +1,5 @@
-#! /bin/sh /usr/share/dpatch/dpatch-run
-## 03_change_anthy_dic_path.dpatch by Masahito Omote <omote@debian.org>
-##
-## All lines beginning with `## DP:' are a description of the patch.
-## DP: No description.
-
-@DPATCH@
-diff -urNad anthy-9100~/anthy-conf.in anthy-9100/anthy-conf.in
+Index: anthy-9100/anthy-conf.in
+===================================================================
 --- anthy-9100~/anthy-conf.in	2007-05-12 10:14:14.000000000 +0900
 +++ anthy-9100/anthy-conf.in	2007-07-08 03:01:11.546305624 +0900
 @@ -2,7 +2,7 @@
