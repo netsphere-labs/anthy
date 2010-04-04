@@ -1,3 +1,18 @@
+anthy (9100h-2) unstable; urgency=low
+
+  * debian/control
+    - anthy-el: add "section: lisp" to fix "package says section is utils, 
+      override says lisp." 
+    - anthy: add "Depends: libanthy0 (= ${binary:Version})" to prevent problem
+      with version mismatching between anthy and libanthy0 (Closes: #423953)
+      Thanks to Jun Inoue <jun.lambda@gmail.com>
+  * debian/anthy.README.Debian
+    - replaced it with the one that Osamu suggested, Thanks.
+  * debian/anthy.docs
+    - add doc/GUIDE and doc/GUIDE.english (Closes: #576290)
+
+ -- Hideki Yamane (Debian-JP) <henrich@debian.or.jp>  Sun, 04 Apr 2010 17:57:41 +0900
+
 anthy (9100h-1) unstable; urgency=low
 
   * New upstream release (Closes: #554216)

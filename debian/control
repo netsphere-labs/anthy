@@ -11,7 +11,7 @@ Standards-Version: 3.8.4
 Package: anthy
 Architecture: any
 Replaces: anthy-cannadic, anthy-cannadic-2ch
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: libanthy0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Conflicts: anthy-cannadic, anthy-cannadic-2ch
 Description: input method for Japanese - backend, dictionary and utility
  Anthy is a Japanese input method working on X11 and Emacs. It converts
@@ -21,6 +21,7 @@ Description: input method for Japanese - backend, dictionary and utility
  spoofing and snooping). 
 
 Package: anthy-el
+Section: lisp
 Architecture: all
 Depends: ${misc:Depends}, anthy, emacs23 | emacsen
 Description: input method for Japanese - elisp frontend
