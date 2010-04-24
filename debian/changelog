@@ -1,3 +1,14 @@
+anthy (9100h-3) unstable; urgency=medium
+
+  * debian/dirs
+    - add "var/lib/anthy"
+  * debian/update-anthy-dics
+    - check whether directory exists or not, and "set -e"
+      Thanks to YOSHINO Yoshihito <yy.y.ja.jp@gmail.com> (Closes: #578724)
+  * set urgency=medium for above bug fix.
+
+ -- Hideki Yamane (Debian-JP) <henrich@debian.or.jp>  Sat, 24 Apr 2010 17:40:26 +0900
+
 anthy (9100h-2) unstable; urgency=low
 
   * debian/control

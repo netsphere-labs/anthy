@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 DICDIR=/var/lib/anthy
 METADICDIR=/usr/share/anthy/dic
 CANNADIC='gcanna.ctd gcannaf.ctd gtankan.ctd'
@@ -71,9 +73,15 @@ fi
 
 mv $TMPDICTCONFIG $DICTCONFIG
 
+if [ ! -d $WORDDICDIR ]; then
+    mkdir $WORDDICDIR
+fi
 cd $WORDDICDIR
 /usr/bin/mkworddic -f $DICTCONFIG > /dev/null 2>&1
 
+if [ ! -d $DEPGRAPHDIR ]; then
+    mkdir $DEPGRAPHDIR
+fi
 cd $DEPGRAPHDIR
 for i in /usr/share/anthy/depgraph/*.depword; do
 	ln -s $i $DEPGRAPHDIR/`basename $i`
