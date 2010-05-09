@@ -1,3 +1,15 @@
+anthy (9100h-5) experimental; urgency=low
+
+  * split from anthy to anthy-common package. It fix libanthy0 depends on some 
+    files in anthy. It also improves archive size because it contains 
+    architecture independent data (Closes: #512204, #233326)
+  * debian/control
+    - add "anthy-common" package
+    - anthy: add "Depends: anthy-common"
+    - anthy-common: set "Conflicts: anthy (<= 9100h-4)"
+
+ -- Hideki Yamane <henrich@debian.org>  Sun, 09 May 2010 17:43:43 +0900
+
 anthy (9100h-4) unstable; urgency=low
 
   * drop some dictonaries (base.t, tankanji.t, and name.t). Those are replaced 

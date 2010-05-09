@@ -9,7 +9,7 @@ Standards-Version: 3.8.4
 Package: anthy
 Architecture: any
 Replaces: anthy-cannadic, anthy-cannadic-2ch
-Depends: libanthy0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Depends: anthy-common, libanthy0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Conflicts: anthy-cannadic, anthy-cannadic-2ch
 Description: input method for Japanese - backend, dictionary and utility
  Anthy is a Japanese input method working on X11 and Emacs. It converts
@@ -17,6 +17,19 @@ Description: input method for Japanese - backend, dictionary and utility
  and stores private information securely in ~/.anthy/.
  Thus, Anthy is simple and secure (information is protected from
  spoofing and snooping). 
+
+Package: anthy-common
+Architecture: all
+Depends: ${misc:Depends}
+Conflicts: anthy (<= 9100h-4)
+Description: input method for Japanese - common files and dictionary
+ Anthy is a Japanese input method working on X11 and Emacs. It converts
+ hiragana text to mixed kana and kanji. It is implemented as a library
+ and stores private information securely in ~/.anthy/.
+ Thus, Anthy is simple and secure (information is protected from
+ spoofing and snooping). 
+ .
+ This package provides common files dictonary data for anthy.
 
 Package: anthy-el
 Section: lisp
@@ -34,7 +47,7 @@ Description: input method for Japanese - elisp frontend
 Package: libanthy0
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, anthy-common
 Description: input method for Japanese - runtime library
  Anthy is a Japanese input method working on X11 and Emacs. It converts
  hiragana text to mixed kana and kanji. It is implemented as a library
