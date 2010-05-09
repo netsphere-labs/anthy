@@ -1,3 +1,21 @@
+anthy (9100h-4) unstable; urgency=low
+
+  * drop some dictonaries (base.t, tankanji.t, and name.t). Those are replaced 
+    with gcanna.ctd, gtankan.ctd and g_fname.t. Thanks to Jonny <jonny@csc.jp> 
+    (Closes: #451283)
+  * debian/anthy.install
+    - update install target dictonaries 
+  * debian/patches
+    - add remove_name.t
+  * debian/update-anthy-dics
+    - modify with above changes.
+  * debian/control
+     - remove "DM-Upload-allowed: yes" since I became DD.
+     - update Uploaders address
+     - set "Build-Depends: debhelper (>= 7.0.50~)"
+
+ -- Hideki Yamane <henrich@debian.org>  Sun, 09 May 2010 14:39:21 +0900
+
 anthy (9100h-3) unstable; urgency=medium
 
   * debian/dirs

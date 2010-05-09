@@ -1,0 +1,10 @@
+Index: anthy-9100h/mkworddic/utf8.t
+===================================================================
+--- anthy-9100h.orig/mkworddic/utf8.t	2010-05-01 20:25:42.000000000 +0900
++++ anthy-9100h/mkworddic/utf8.t	2010-05-01 20:53:53.000000000 +0900
+@@ -2,4 +2,4 @@
+ # example of utf8 dictionary.
+ # please have a GETA ;-)
+ #
+-はーとまーく #T35 ❤
++はーとまーく #T35 ♡ ♥

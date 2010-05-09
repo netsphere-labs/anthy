@@ -6,9 +6,8 @@ mkanthydic/mkfiledic 		usr/bin/
 mkworddic/.libs/mkworddic	usr/bin/
 depgraph/.libs/mkdepgraph	usr/bin/
 debian/update-anthy-dics	usr/sbin/
-alt-cannadic/gcanna.ctd		usr/share/anthy/dic/
-alt-cannadic/gcannaf.ctd 	usr/share/anthy/dic/
-alt-cannadic/gtankan.ctd 	usr/share/anthy/dic/
+alt-cannadic/*.ctd		usr/share/anthy/dic/
+alt-cannadic/*.t		usr/share/anthy/dic/
 mkworddic/*.t			usr/share/anthy/dic/
 depgraph/*.depword		usr/share/anthy/depgraph/
 depgraph/conjugate.table	usr/share/anthy/depgraph/

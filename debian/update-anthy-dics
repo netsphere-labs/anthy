@@ -2,11 +2,12 @@
 
 set -e
 
+CANNADIC='gcanna.ctd gcannaf.ctd gtankan.ctd'
+EXTRADIC='adjust.t compound.t extra.t'
+EXTRADIC_UTF8='g_fname.t'
+
 DICDIR=/var/lib/anthy
 METADICDIR=/usr/share/anthy/dic
-CANNADIC='gcanna.ctd gcannaf.ctd gtankan.ctd'
-EXTRADIC="$METADICDIR/*.t"
-
 DEPGRAPHDIR=/var/lib/anthy/depgraph
 WORDDICDIR=/var/lib/anthy/mkworddic
 CALCTRANSDIR=/var/lib/anthy/calctrans
@@ -24,30 +25,31 @@ if [ $? != 0 ]; then
 	exit 1
 fi
 
+
 echo "set_input_encoding eucjp" >> $TMPDICTCONFIG
-for file in $CANNADIC; do
-	case $file in
-	*.ctd)
-		if test -f $file; then
-			echo "read $METADICDIR/$file" >> $TMPDICTCONFIG
-		fi
-		;;
-	esac
+for file in $CANNADIC $EXTRADIC
+do
+  if [ -f $file ]; then
+    echo "read $METADICDIR/$file" >> $TMPDICTCONFIG
+  fi
 done
 
-echo "read $METADICDIR/adjust.t" >> $TMPDICTCONFIG
-echo "read $METADICDIR/name.t" >> $TMPDICTCONFIG
-echo "read $METADICDIR/compound.t" >> $TMPDICTCONFIG
-echo "read $METADICDIR/extra.t" >> $TMPDICTCONFIG
-echo "read $METADICDIR/tankanji.t" >> $TMPDICTCONFIG
 
 addondics=$(sort -u $CONFIG| tr '\n' ' '| sed 's/\ $//')
-
 for file in $addondics; do
-	if test -f $file; then
+	if [ -f $file ]; then
 		echo "read $METADICDIR/$file" >> $TMPDICTCONFIG
 	fi
 done
+
+
+# start adding utf8 dict
+echo "set_input_encoding utf8" >> $TMPDICTCONFIG
+for utf_dict in $EXTRADIC_UTF8
+do
+  echo "read $METADICDIR/$utf_dict" >> $TMPDICTCONFIG
+done
+# end adding utf8 dict
 
 echo "build_reverse_dict" >> $TMPDICTCONFIG
 echo "read_uc $METADICDIR/udict" >> $TMPDICTCONFIG
@@ -63,25 +65,15 @@ rm -f $CALCTRANSDIR
 
 cp /etc/anthy/anthy-conf /var/lib/anthy
 
-if test -f $DICDIR/anthy.dic; then
+if [ -f $DICDIR/anthy.dic ]; then
 	rm -f $DICDIR/anthy.dic
-fi
-
-if test -f $WORDDICDIR/anthy.wdic; then
-	rm -f $WORDDICDIR/anthy.wdic
 fi
 
 mv $TMPDICTCONFIG $DICTCONFIG
 
-if [ ! -d $WORDDICDIR ]; then
-    mkdir $WORDDICDIR
-fi
 cd $WORDDICDIR
 /usr/bin/mkworddic -f $DICTCONFIG > /dev/null 2>&1
 
-if [ ! -d $DEPGRAPHDIR ]; then
-    mkdir $DEPGRAPHDIR
-fi
 cd $DEPGRAPHDIR
 for i in /usr/share/anthy/depgraph/*.depword; do
 	ln -s $i $DEPGRAPHDIR/`basename $i`
