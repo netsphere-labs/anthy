@@ -24,9 +24,11 @@ anthy_init();
 
 %rename(ConvStat) anthy_conv_stat;
 %rename(SegmentStat) anthy_segment_stat;
+%rename(PredictionStat) anthy_prediction_stat;
 
 OUTPUT_TYPEMAP(struct anthy_conv_stat, cConvStat.klass);
 OUTPUT_TYPEMAP(struct anthy_segment_stat, cSegmentStat.klass);
+OUTPUT_TYPEMAP(struct anthy_prediction_stat, cPredictionStat.klass);
 
 #undef OUTPUT_TYPEMAP
 
@@ -49,6 +51,11 @@ OUTPUT_TYPEMAP(struct anthy_segment_stat, cSegmentStat.klass);
 %ignore anthy_get_segment_stat;
 %ignore anthy_get_segment;
 %ignore anthy_commit_segment;
+
+%ignore anthy_set_prediction_string;
+%ignore anthy_get_prediction_stat;
+%ignore anthy_get_prediction;
+
 %ignore anthy_print_context;
 %ignore anthy_context_set_encoding;
 
@@ -60,6 +67,10 @@ OUTPUT_TYPEMAP(struct anthy_segment_stat, cSegmentStat.klass);
 /* #define anthy_context_get_segment anthy_get_segment */
 #define anthy_context_commit_segment anthy_commit_segment
 #define anthy_context_print anthy_print_context
+
+#define anthy_context_set_prediction_string anthy_set_prediction_string
+#define anthy_context_get_prediction_stat anthy_get_prediction_stat
+#define anthy_context_get_prediction anthy_get_prediction
 %}
 
 %rename(Context) anthy_context;

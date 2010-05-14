@@ -243,6 +243,31 @@ anthy_get_segment_stat(struct anthy_context *ac, int n,
   return -1;
 }
 
+static int
+get_special_candidate_index(int nth, struct seg_ent *seg)
+{
+  int i;
+  int mask = XCT_NONE;
+  if (nth >= 0) {
+    return nth;
+  }
+  if (nth == NTH_UNCONVERTED_CANDIDATE ||
+      nth == NTH_HALFKANA_CANDIDATE) {
+    return nth;
+  }
+  if (nth == NTH_KATAKANA_CANDIDATE) {
+    mask = XCT_KATA;
+  } else if (nth == NTH_HIRAGANA_CANDIDATE) {
+    mask = XCT_HIRA;
+  }
+  for (i = 0; i < seg->nr_cands; i++) {
+    if (anthy_get_xstr_type(&seg->cands[i]->str) & mask) {
+      return i;
+    }
+  }
+  return NTH_UNCONVERTED_CANDIDATE;
+}
+
 /** (API) 文節の取得 */
 int
 anthy_get_segment(struct anthy_context *ac, int nth_seg,
@@ -259,15 +284,22 @@ anthy_get_segment(struct anthy_context *ac, int nth_seg,
   seg = anthy_get_nth_segment(&ac->seg_list, nth_seg);
 
   /* 文節から候補を取り出す */
-  if ((nth_cand < 0 || nth_cand >= seg->nr_cands) &&
-      nth_cand != NTH_UNCONVERTED_CANDIDATE) {
-    return -1;
+  p = NULL;
+  if (nth_cand < 0) {
+    nth_cand = get_special_candidate_index(nth_cand, seg);
   }
-  if (nth_cand == NTH_UNCONVERTED_CANDIDATE) {
+  if (nth_cand == NTH_HALFKANA_CANDIDATE) {
+    xstr *xs = anthy_xstr_hira_to_half_kata(&seg->str);
+    p = anthy_xstr_to_cstr(xs, ac->encoding);
+    anthy_free_xstr(xs);
+  } else if (nth_cand == NTH_UNCONVERTED_CANDIDATE) {
     /* 変換前の文字列を取得する */
     p = anthy_xstr_to_cstr(&seg->str, ac->encoding);
-  } else {
+  } else if (nth_cand >= 0 && nth_cand < seg->nr_cands) {
     p = anthy_xstr_to_cstr(&seg->cands[nth_cand]->str, ac->encoding);
+  }
+  if (!p) {
+    return -1;
   }
 
   /* バッファに書き込む */
@@ -319,6 +351,9 @@ anthy_commit_segment(struct anthy_context *ac, int s, int c)
 
   anthy_dic_activate_session(ac->dic_session);
   seg = anthy_get_nth_segment(&ac->seg_list, s);
+  if (c < 0) {
+    c = get_special_candidate_index(c, seg);
+  }
   if (c == NTH_UNCONVERTED_CANDIDATE) {
     /*
      * 変換前の文字列がコミットされたので，それに対応する候補の番号を探す

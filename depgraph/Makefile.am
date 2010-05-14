@@ -16,5 +16,4 @@ mkdepgraph_LDADD =  ../src-main/libanthy.la ../src-worddic/libanthydic.la
 anthy.dep : mkdepgraph
 	./mkdepgraph
 
-# To install
-pkgdata_DATA = anthy.dep
+noinst_DATA = anthy.dep

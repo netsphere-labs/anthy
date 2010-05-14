@@ -9,6 +9,7 @@ void anthy_trie_close(struct text_trie *tt);
 void anthy_trie_update_mapping(struct text_trie *tt);
 /**/
 int anthy_trie_add(struct text_trie *tt, const char *key, const char *body);
+/* caller should free the result */
 char *anthy_trie_find(struct text_trie *a, char *key);
 void anthy_trie_delete(struct text_trie *tt, const char *key);
 /**/

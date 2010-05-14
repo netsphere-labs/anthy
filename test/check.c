@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <anthy.h>
+#include <xstr.h>
 
 static int
 init(void)
@@ -33,6 +34,37 @@ test0(void)
     return 1;
   }
   anthy_release_context(ac);
+  return 0;
+}
+
+static int
+test1(void)
+{
+  anthy_context_t ac;
+  char buf[100];
+  xstr *xs;
+  ac = anthy_create_context();
+  if (!ac) {
+    printf("failed to create context\n");
+    return 1;
+  }
+  anthy_set_string(ac, "あいうえお、かきくけこ。");
+  if (anthy_get_segment(ac, 0, NTH_UNCONVERTED_CANDIDATE, buf, 100) > 0) {
+    printf("(%s)\n", buf);
+  }
+  if (anthy_get_segment(ac, 0, NTH_KATAKANA_CANDIDATE, buf, 100) > 0) {
+    printf("(%s)\n", buf);
+  }
+  if (anthy_get_segment(ac, 0, NTH_HIRAGANA_CANDIDATE, buf, 100) > 0) {
+    printf("(%s)\n", buf);
+  }
+  if (anthy_get_segment(ac, 0, NTH_HALFKANA_CANDIDATE, buf, 100) > 0) {
+    printf("(%s)\n", buf);
+  }
+  anthy_release_context(ac);
+  xs = anthy_cstr_to_xstr("あいうえおがぎぐげご", 0);
+  xs = anthy_xstr_hira_to_half_kata(xs);
+  anthy_putxstrln(xs);
   return 0;
 }
 
@@ -71,6 +103,9 @@ main(int argc, char **argv)
   }
   if (test0()) {
     printf("fail (test0)\n");
+  }
+  if (test1()) {
+    printf("fail (test1)\n");
   }
   if (shake_test("あいうえおかきくけこ")) {
     printf("fail (shake_test)\n");

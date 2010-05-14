@@ -39,8 +39,8 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-bin_PROGRAMS = anthy-dic-tool$(EXEEXT) anthy-agent$(EXEEXT)
-noinst_PROGRAMS = anthy-morphological-analyzer$(EXEEXT)
+bin_PROGRAMS = anthy-dic-tool$(EXEEXT) anthy-agent$(EXEEXT) \
+	anthy-morphological-analyzer$(EXEEXT)
 subdir = src-util
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -65,7 +65,7 @@ libanthyinput_la_LIBADD =
 am_libanthyinput_la_OBJECTS = input.lo rkconv.lo rkhelper.lo
 libanthyinput_la_OBJECTS = $(am_libanthyinput_la_OBJECTS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
-PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
+PROGRAMS = $(bin_PROGRAMS)
 am_anthy_agent_OBJECTS = agent.$(OBJEXT) egg.$(OBJEXT)
 anthy_agent_OBJECTS = $(am_anthy_agent_OBJECTS)
 anthy_agent_DEPENDENCIES = libanthyinput.la ../src-main/libanthy.la \
@@ -215,7 +215,7 @@ ELISP_FILES = anthy.el anthy-dic.el anthy-conf.el leim-list.el \
  anthy-isearch.el anthy-azik.el anthy-kyuri.el
 
 EXTRA_DIST = $(ELISP_FILES) typetab dic-tool-usage.txt rcsize.rb
-ELCFILES = anthy.elc anthy-dic.elc
+ELCFILES = anthy.elc anthy-dic.elc anthy-azik.elc anthy-conf.elc anthy-isearch.elc anthy-kyuri.elc leim-list.elc
 @ELISP_TRUE@lisp_LISP = $(ELISP_FILES)
 INCLUDES = -I$(top_srcdir)/include
 anthy_dic_tool_SOURCES = dic-tool.c
@@ -315,13 +315,6 @@ uninstall-binPROGRAMS:
 
 clean-binPROGRAMS:
 	@list='$(bin_PROGRAMS)'; for p in $$list; do \
-	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
-	  echo " rm -f $$p $$f"; \
-	  rm -f $$p $$f ; \
-	done
-
-clean-noinstPROGRAMS:
-	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
 	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
 	  echo " rm -f $$p $$f"; \
 	  rm -f $$p $$f ; \
@@ -564,7 +557,7 @@ maintainer-clean-generic:
 clean: clean-am
 
 clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
-	clean-libtool clean-lisp clean-noinstPROGRAMS mostlyclean-am
+	clean-libtool clean-lisp mostlyclean-am
 
 distclean: distclean-am
 	-rm -rf ./$(DEPDIR)
@@ -616,18 +609,17 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am \
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
 	clean-generic clean-libLTLIBRARIES clean-libtool clean-lisp \
-	clean-noinstPROGRAMS ctags distclean distclean-compile \
-	distclean-generic distclean-libtool distclean-tags distdir dvi \
-	dvi-am html html-am info info-am install install-am \
-	install-binPROGRAMS install-data install-data-am install-exec \
-	install-exec-am install-info install-info-am \
-	install-libLTLIBRARIES install-lispLISP install-man \
-	install-pkgdataDATA install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-binPROGRAMS uninstall-info-am \
-	uninstall-libLTLIBRARIES uninstall-lispLISP \
+	ctags distclean distclean-compile distclean-generic \
+	distclean-libtool distclean-tags distdir dvi dvi-am html \
+	html-am info info-am install install-am install-binPROGRAMS \
+	install-data install-data-am install-exec install-exec-am \
+	install-info install-info-am install-libLTLIBRARIES \
+	install-lispLISP install-man install-pkgdataDATA install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-binPROGRAMS \
+	uninstall-info-am uninstall-libLTLIBRARIES uninstall-lispLISP \
 	uninstall-pkgdataDATA
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.

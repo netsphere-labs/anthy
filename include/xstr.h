@@ -62,6 +62,8 @@ long long anthy_xstrtoll(xstr *);
 xstr *anthy_xstr_wide_num_to_num(xstr *);
 /* ひらがなからカタカナへの変換 */
 xstr *anthy_xstr_hira_to_kata(xstr *);
+/**/
+xstr *anthy_xstr_hira_to_half_kata(xstr *);
 
 /*  xcharの型 */
 #define XCT_ALL 0xffffffff
@@ -77,8 +79,6 @@ xstr *anthy_xstr_hira_to_kata(xstr *);
 #define XCT_PART 128
 /* 助詞 */
 #define XCT_DEP 256
-/* 強い接続の付属語文字 */
-#define XCT_STRONG 512
 /* 記号 */
 #define XCT_SYMBOL 1024
 /* 漢字 */

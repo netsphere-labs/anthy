@@ -191,7 +191,7 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-EXTRA_DIST = test.txt balance.txt relation.txt regression.txt $(SWIG_FILES)
+EXTRA_DIST = test.txt test.exp $(SWIG_FILES)
 CLEANFILES = anthy_swig_wrap.c anthy_swig_wrap.o anthy.so
 SWIG_FILES = extconf.rb test.rb anthy_swig.i
 INCLUDES = -I$(top_srcdir)/include -DSRCDIR=\"$(srcdir)\" \

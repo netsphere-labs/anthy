@@ -102,10 +102,10 @@ alloc_metaword(struct splitter_context *sc)
 {
   struct meta_word *mw;
   mw = anthy_smalloc(sc->word_split_info->MwAllocator);
-  mw->weak_len = 0;
   mw->type = MW_SINGLE;
   mw->mw_count = 1;
   mw->score = 0;
+  mw->dep_score = RATIO_BASE;
   mw->wl = NULL;
   mw->mw1 = NULL;
   mw->mw2 = NULL;
@@ -251,8 +251,8 @@ make_simple_metaword(struct splitter_context *sc, struct word_list* wl)
   mw->wl = wl;
   mw->from = wl->from;
   mw->len = wl->len;
-  mw->weak_len = wl->weak_len;
   mw->score = wl->score;
+  mw->dep_score = wl->dep_score;
   mw->type = MW_SINGLE;
   mw->seg_class = wl->seg_class;
   mw->nr_parts = NR_PARTS;
@@ -309,14 +309,10 @@ anthy_do_cons_metaword(struct splitter_context *sc,
   n = alloc_metaword(sc);
   n->from = mw->from;
   n->len = mw->len + (mw2 ? mw2->len : 0);
-  if (weak) {
-    n->weak_len = mw->weak_len + (mw2 ? mw2->len : 0);
-  } else {
-    n->weak_len = mw->weak_len + (mw2 ? mw2->weak_len : 0);
-  }
 
   if (mw2) {
     n->score = sqrt(mw->score) * sqrt(mw2->score);
+    n->dep_score = mw2->dep_score;
   } else {
     n->score = mw->score;
   }
@@ -706,6 +702,10 @@ make_metaword_with_depchar(struct splitter_context *sc,
       !(type & XCT_PART)) {
     return;
   }
+  if (type & XCT_PUNCTUATION) {
+    /* 句読点ならば別の文節にする */
+    return ;
+  }
 
   /* 同じ種類の文字でなければくっつけるのをうちきり */
   for (j = 0; from + len + j < sc->char_count; j++) {
@@ -713,7 +713,8 @@ make_metaword_with_depchar(struct splitter_context *sc,
     if ((anthy_get_xchar_type(*sc->ce[p].c) != type)) {
       break;
     }
-    if (0 < p && p + 1 < sc->char_count && *sc->ce[p].c != *sc->ce[p + 1].c) {
+    if (!(p + 1 < sc->char_count) ||
+	*sc->ce[p].c != *sc->ce[p + 1].c) {
       destroy_seg_class = 1;
     }
   }
@@ -730,8 +731,8 @@ make_metaword_with_depchar(struct splitter_context *sc,
       n->type = MW_WRAP;
       n->mw1 = mw;
       n->score = mw->score;
+      n->dep_score = mw->dep_score;
       n->nr_parts = mw->nr_parts;
-      n->weak_len = mw->weak_len + j;
       if (destroy_seg_class) {
 	n->seg_class = SEG_DOKURITSUGO;
 	n->score /= 10;

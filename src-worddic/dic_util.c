@@ -3,7 +3,7 @@
  *
  * Funded by IPA未踏ソフトウェア創造事業 2001 10/24
  *
- * Copyright (C) 2001-2004 TABATA Yusuke
+ * Copyright (C) 2001-2006 TABATA Yusuke
  *
  */
 /*
@@ -29,6 +29,7 @@
 #include <conf.h>
 #include <dic.h>
 #include <texttrie.h>
+#include <record.h>
 #include <dicutil.h>
 
 #include "dic_main.h"
@@ -77,6 +78,7 @@ anthy_dic_util_quit(void)
   if (gIsInit) {
     anthy_quit_dic();
   }
+  gIsInit = 0;
 }
 
 /** 辞書ユーティリティAPIのエンコーディングを設定する */
@@ -101,43 +103,64 @@ anthy_dic_util_set_personality(const char *id)
   anthy_dic_set_personality(id);
 }
 
+static char *
+find_next_key(void)
+{
+  char *v;
+  v = anthy_trie_find_next_key(anthy_private_tt_dic,
+			       key_buf, MAX_KEY_LEN+32);
+
+  if (v && v[0] == ' ' && v[1] == ' ') {
+    return v;
+  }
+  /**/
+  sprintf(key_buf, "  ");
+  return NULL;
+}
+
 /** 個人辞書を全部消す */
 void
 anthy_priv_dic_delete(void)
 {
-  key_buf[0] = 0;
+  sprintf(key_buf, "  ");
   anthy_priv_dic_lock();
-  while (anthy_trie_find_next_key(anthy_private_tt_dic, key_buf, 128) &&
-	 key_buf[0]) {
+  /* key_bufが"  "であれば、find_next_key()は
+     最初の単語を返す */
+  while (find_next_key()) {
     anthy_trie_delete(anthy_private_tt_dic, key_buf);
-    key_buf[0] = 0;
+    sprintf(key_buf, "  ");
   }
   anthy_priv_dic_unlock();
+  /* 旧形式の辞書も削除する */
+  if (!anthy_select_section("PRIVATEDIC", 0)) {
+    anthy_release_section();
+    return ;
+  }
 }
 
 /** 最初の単語を選択する */
 int
 anthy_priv_dic_select_first_entry(void)
 {
-  char *v;
+  if (!anthy_private_tt_dic) {
+    return ANTHY_DIC_UTIL_INVALID;
+  }
   sprintf(key_buf, "  ");
-  v = anthy_trie_find_next_key(anthy_private_tt_dic, key_buf, 128);
-  if (v) {
+  /* "  "の次のエントリが最初のエントリ */
+  if (find_next_key()) {
     return 0;
   }
-  return -1;
+  return ANTHY_DIC_UTIL_ERROR;
 }
 
 /** 現在選択されている単語の次の単語を選択する */
 int
 anthy_priv_dic_select_next_entry(void)
 {
-  char *v;
-  v = anthy_trie_find_next_key(anthy_private_tt_dic, key_buf, 128);
-  if (v) {
+  if (find_next_key()) {
     return 0;
   }
-  return -1;
+  return ANTHY_DIC_UTIL_ERROR;
 }
 
 /** 未実装 */
@@ -153,11 +176,13 @@ char *
 anthy_priv_dic_get_index(char *buf, int len)
 {
   int i;
-  for (i = 0; key_buf[i+2] && key_buf[i+2] != ' '; i++) {
+  char *src_buf = &key_buf[2];
+  /* 最初の空白か\0までをコピーする */
+  for (i = 0; src_buf[i] && src_buf[i] != ' '; i++) {
     if (i >= len - 1) {
       return NULL;
     }
-    buf[i] = key_buf[i+2];
+    buf[i] = src_buf[i];
   }
   buf[i] = 0;
   return buf;
@@ -167,47 +192,25 @@ anthy_priv_dic_get_index(char *buf, int len)
 int
 anthy_priv_dic_get_freq(void)
 {
+  struct word_line res;
   char *v = anthy_trie_find(anthy_private_tt_dic, key_buf);
-  char *f, *e;
-  int freq = 0;
-  if (!v) {
-    return 0;
-  }
-  /* 「#品詞*頻度 単語」の形式をパースする */
-  f = strchr(v, '*');
-  if (!f) {
-    goto out;
-  }
-  f ++;
-  e = strchr(f, ' ');
-  if (!e) {
-    goto out;
-  }
-  *e = 0;
-  freq = atoi(f);
-
- out:
+  anthy_parse_word_line(v, &res);
   free(v);
-  return freq;
+  return res.freq;
 }
 
 /** 現在選択されている単語の品詞を取得する */
 char *
 anthy_priv_dic_get_wtype(char *buf, int len)
 {
+  struct word_line res;
   char *v = anthy_trie_find(anthy_private_tt_dic, key_buf);
-  char *s;
-  if (!v) {
-    return NULL;
-  }
-  s = strchr(v, '*');
-  if (!s) {
-    free(v);
-    return NULL;
-  }
-  *s = 0;
-  snprintf(buf, len, "%s", v);
+  anthy_parse_word_line(v, &res);
   free(v);
+  if (len - 1 < (int)strlen(res.wt)) {
+    return NULL;
+  }
+  sprintf(buf, "%s", res.wt);
   return buf;
 }
 
@@ -221,51 +224,60 @@ anthy_priv_dic_get_word(char *buf, int len)
     return NULL;
   }
   s = strchr(v, ' ');
+  s++;
   snprintf(buf, len, "%s", s);
   free(v);
   return buf;
 }
 
 static int
-dup_check(const char *v, const char *word, const char *wt)
+dup_word_check(const char *v, const char *word, const char *wt)
 {
-  int wt_len = strlen(wt);
-  const char *p;
-  if (strncmp(wt, v, wt_len) ||
-      v[wt_len] != '*') {
-    return 0;
-  }
-  p = v;
-  while (*p && *p != ' ') {
-    p++;
-  }
-  p++;
-  if (!strcmp(p, word)) {
+  struct word_line res;
+
+  anthy_parse_word_line(v, &res);
+
+  /* 読みと単語を比較する */
+  if (!strcmp(res.wt, wt) &&
+      !strcmp(res.word, word)) {
     return 1;
   }
   return 0;
 }
 
-/** 単語を登録する */
-int
-anthy_priv_dic_add_entry(const char *yomi, const char *word,
-			 const char *wt_name, int freq)
+static void
+do_add_entry(const char *yomi, const char *word,
+	     const char *wt_name, int freq)
 {
-  int yomi_len = strlen(yomi);
-  char *idx_buf;
-  int found = 0;
+  int i = 0, ok = 0;
+  char *cur;
   char word_buf[256];
+  char *idx_buf = malloc(strlen(yomi) + 12);
+  do {
+    sprintf(idx_buf, "  %s %d", yomi, i);
+    cur = anthy_trie_find(anthy_private_tt_dic, idx_buf);
+    if (cur) {
+      free(cur);
+    } else {
+      ok = 1;
+    }
+    i++;
+  } while (!ok);
+  sprintf(word_buf, "%s*%d %s", wt_name, freq, word);
+  anthy_trie_add(anthy_private_tt_dic, idx_buf, word_buf);
+  free(idx_buf);
+}
 
-  if (!anthy_private_tt_dic) {
-    return ANTHY_DIC_UTIL_ERROR;
-  }
+static int
+find_same_word(char *idx_buf, const char *yomi,
+	       const char *word, const char *wt_name, int yomi_len)
+{
+  int found = 0;
+  sprintf(idx_buf, "  %s ", yomi);
+  anthy_trie_find_next_key(anthy_private_tt_dic,
+			   idx_buf, yomi_len + 12);
 
-  if (yomi_len > MAX_KEY_LEN) {
-    return ANTHY_DIC_UTIL_ERROR;
-  }
-
-  idx_buf = malloc(yomi_len + 12);
-  sprintf(idx_buf, "  %s 0", yomi);
+  /* trieのインデックスを探す */
   do {
     char *v;
     if (strncmp(&idx_buf[2], yomi, yomi_len) ||
@@ -276,33 +288,60 @@ anthy_priv_dic_add_entry(const char *yomi, const char *word,
     /* texttrieにアクセスして、見出語以外も一致しているかをチェック */
     v = anthy_trie_find(anthy_private_tt_dic, idx_buf);
     if (v) {
-      found = dup_check(v, word, wt_name);
+      found = dup_word_check(v, word, wt_name);
       free(v);
       if (found) {
 	break;
       }
     }
-  } while (anthy_trie_find_next_key(anthy_private_tt_dic, idx_buf, yomi_len + 12));
+  } while (anthy_trie_find_next_key(anthy_private_tt_dic,
+				    idx_buf, yomi_len + 12));
 
-  /* 無かったので登録 */
-  if (!found) {
-    int i = 0, ok = 0;
-    char *cur;
-    do {
-      sprintf(idx_buf, "  %s %d", yomi, i);
-      cur = anthy_trie_find(anthy_private_tt_dic, idx_buf);
-      if (cur) {
-	free(cur);
-      } else {
-	ok = 1;
-      }
-      i++;
-    } while (!ok);
-    sprintf(word_buf, "%s*%d %s", wt_name, freq, word);
-    anthy_trie_add(anthy_private_tt_dic, idx_buf, word_buf);
+  return found;
+}
+
+/** 単語を登録する
+ * 頻度が0の場合は削除
+ */
+int
+anthy_priv_dic_add_entry(const char *yomi, const char *word,
+			 const char *wt_name, int freq)
+{
+  int yomi_len = strlen(yomi);
+  char *idx_buf;
+  int found = 0;
+  int rv = ANTHY_DIC_UTIL_OK;
+
+  if (!anthy_private_tt_dic) {
+    return ANTHY_DIC_UTIL_ERROR;
+  }
+
+  if (yomi_len > MAX_KEY_LEN) {
+    return ANTHY_DIC_UTIL_ERROR;
+  }
+
+  if (wt_name[0] != '#') {
+    return ANTHY_DIC_UTIL_ERROR;
+  }
+
+  /* 同じ見出しの語があるかチェックする */
+  idx_buf = malloc(yomi_len + 12);
+  found = find_same_word(idx_buf, yomi, word, wt_name, yomi_len);
+
+  if (freq > 0) {
+    /* 登録 */
+    if (found) {
+      /* 既存のものを削除 */
+      anthy_trie_delete(anthy_private_tt_dic, idx_buf);
+      rv = ANTHY_DIC_UTIL_DUPLICATE;
+    }
+    do_add_entry(yomi, word, wt_name, freq);
+  } else if (found) {
+    /* 頻度が正ではないので、削除 */
+    anthy_trie_delete(anthy_private_tt_dic, idx_buf);
   }
   free(idx_buf);
-  return ANTHY_DIC_UTIL_OK;
+  return rv;
 }
 
 const char *

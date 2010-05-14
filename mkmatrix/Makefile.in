@@ -65,15 +65,7 @@ LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
 SOURCES = $(mkmatrix_SOURCES)
 DIST_SOURCES = $(mkmatrix_SOURCES)
-am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
-am__vpath_adj = case $$p in \
-    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
-    *) f=$$p;; \
-  esac;
-am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
-am__installdirs = "$(DESTDIR)$(pkgdatadir)"
-pkgdataDATA_INSTALL = $(INSTALL_DATA)
-DATA = $(pkgdata_DATA)
+DATA = $(noinst_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -179,11 +171,11 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-EXTRA_DIST = input.txt parsed.txt
+EXTRA_DIST = dep.sorted
 INCLUDES = -I$(top_srcdir)/include
-mkmatrix_LDADD = ../src-worddic/libanthydic.la
+mkmatrix_LDADD = ../src-worddic/libanthydic.la -lm
 mkmatrix_SOURCES = mkmatrix.c
-pkgdata_DATA = matrix
+noinst_DATA = matrix
 CLEANFILES = matrix
 all: all-am
 
@@ -267,23 +259,6 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
-install-pkgdataDATA: $(pkgdata_DATA)
-	@$(NORMAL_INSTALL)
-	test -z "$(pkgdatadir)" || $(mkdir_p) "$(DESTDIR)$(pkgdatadir)"
-	@list='$(pkgdata_DATA)'; for p in $$list; do \
-	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
-	  f=$(am__strip_dir) \
-	  echo " $(pkgdataDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(pkgdatadir)/$$f'"; \
-	  $(pkgdataDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(pkgdatadir)/$$f"; \
-	done
-
-uninstall-pkgdataDATA:
-	@$(NORMAL_UNINSTALL)
-	@list='$(pkgdata_DATA)'; for p in $$list; do \
-	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(pkgdatadir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(pkgdatadir)/$$f"; \
-	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -364,9 +339,6 @@ check-am: all-am
 check: check-am
 all-am: Makefile $(PROGRAMS) $(DATA)
 installdirs:
-	for dir in "$(DESTDIR)$(pkgdatadir)"; do \
-	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
-	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -413,7 +385,7 @@ info: info-am
 
 info-am:
 
-install-data-am: install-pkgdataDATA
+install-data-am:
 
 install-exec-am:
 
@@ -441,7 +413,7 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am uninstall-pkgdataDATA
+uninstall-am: uninstall-info-am
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
 	clean-libtool clean-noinstPROGRAMS ctags distclean \
@@ -449,18 +421,15 @@ uninstall-am: uninstall-info-am uninstall-pkgdataDATA
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
 	install-exec-am install-info install-info-am install-man \
-	install-pkgdataDATA install-strip installcheck installcheck-am \
-	installdirs maintainer-clean maintainer-clean-generic \
-	mostlyclean mostlyclean-compile mostlyclean-generic \
-	mostlyclean-libtool pdf pdf-am ps ps-am tags uninstall \
-	uninstall-am uninstall-info-am uninstall-pkgdataDATA
+	install-strip installcheck installcheck-am installdirs \
+	maintainer-clean maintainer-clean-generic mostlyclean \
+	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
+	pdf pdf-am ps ps-am tags uninstall uninstall-am \
+	uninstall-info-am
 
 
-matrix	: mkmatrix $(top_srcdir)/mkmatrix/parsed.txt
-	./mkmatrix $(top_srcdir)/mkmatrix/parsed.txt -o matrix
-
-$(top_srcdir)/mkmatrix/parsed.txt	: $(top_srcdir)/mkmatrix/input.txt
-	../src-util/anthy-morphological-analyzer < $(top_srcdir)/mkmatrix/input.txt | tee $(top_srcdir)/mkmatrix/parsed.txt
+matrix	: mkmatrix $(top_srcdir)/mkmatrix/dep.sorted
+	./mkmatrix $(top_srcdir)/mkmatrix/dep.sorted -o matrix
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

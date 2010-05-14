@@ -64,7 +64,7 @@ anthy_print_word_list(struct splitter_context *sc,
 		  wl->part[PART_CORE].len +
 		  wl->part[PART_POSTFIX].len].c;
   anthy_putxstr(&xs);
-  printf(" %d %d %s\n", wl->score, wl->part[PART_DEPWORD].ratio, anthy_seg_class_name(wl->seg_class));
+  printf(" %d %s\n", wl->score, anthy_seg_class_name(wl->seg_class));
 }
 
 /** word_listを評価する */
@@ -76,32 +76,7 @@ eval_word_list(struct word_list *wl)
   /* 自立語のスコアと頻度による加点 */
   wl->score += part[PART_CORE].freq * anthy_score_per_freq;
   /* 付属語に対する加点 */
-  if (part[PART_DEPWORD].len) {
-    int score;
-    int len = part[PART_DEPWORD].len - wl->weak_len;
-    if (len > 5) {
-      len = 5;
-    }
-    if (len < 0) {
-      len = 0;
-    }
-    score = len * part[PART_DEPWORD].ratio * anthy_score_per_depword;
-    score /= RATIO_BASE;
-    wl->score += score;
-  }
-
-  /* 各パートによる調整 */
-  wl->score *= part[PART_CORE].ratio;
-  wl->score /= RATIO_BASE;
-  wl->score *= part[PART_POSTFIX].ratio;
-  wl->score /= RATIO_BASE;
-  wl->score *= part[PART_PREFIX].ratio;
-  wl->score /= RATIO_BASE;
-  wl->score *= part[PART_DEPWORD].ratio;
-  wl->score /= RATIO_BASE;
-
-  /* 長さによる加点 */
-  wl->score += (wl->len - wl->weak_len) * anthy_score_per_len;
+  wl->score += wl->dep_score;
 }
 
 /** word_listを比較する、枝刈りのためなので、
@@ -209,7 +184,6 @@ push_part_back(struct word_list *tmpl, int len,
   tmpl->part[PART_POSTFIX].len += len;
   tmpl->part[PART_POSTFIX].wt = wt;
   tmpl->part[PART_POSTFIX].seq = se;
-  tmpl->part[PART_POSTFIX].ratio = RATIO_BASE * 2 / 3;
   tmpl->last_part = PART_POSTFIX;
 }
 
@@ -264,14 +238,12 @@ make_suc_words(struct splitter_context *sc,
 	  anthy_get_seq_ent_wtype_freq(suc, anthy_wtype_name_postfix)) {
 	new_tmpl = *tmpl;
 	push_part_back(&new_tmpl, i, suc, anthy_wtype_name_postfix);
-	new_tmpl.weak_len += i;
 	make_following_word_list(sc, &new_tmpl);
       }
       if (core_is_sv_noun &&
 	  anthy_get_seq_ent_wtype_freq(suc, anthy_wtype_sv_postfix)) {
 	new_tmpl = *tmpl;
 	push_part_back(&new_tmpl, i, suc, anthy_wtype_sv_postfix);
-	new_tmpl.weak_len += i;
 	make_following_word_list(sc, &new_tmpl);
       }
     }
@@ -288,7 +260,6 @@ push_part_front(struct word_list *tmpl, int len,
   tmpl->part[PART_PREFIX].len += len;
   tmpl->part[PART_PREFIX].wt = wt;
   tmpl->part[PART_PREFIX].seq = se;
-  tmpl->part[PART_PREFIX].ratio = RATIO_BASE * 2 / 3;
 }
 
 /* 接頭辞をくっつけてから接尾辞をくっつける */
@@ -332,7 +303,6 @@ setup_word_list(struct word_list *wl, int from, int len, int is_compound)
   int i;
   wl->from = from;
   wl->len = len;
-  wl->weak_len = 0;
   wl->is_compound = is_compound;
   /* partの配列を初期化する */
   for (i = 0; i < NR_PARTS; i++) {
@@ -341,7 +311,6 @@ setup_word_list(struct word_list *wl, int from, int len, int is_compound)
     wl->part[i].wt = anthy_wt_none;
     wl->part[i].seq = 0;
     wl->part[i].freq = 1;/* 頻度の低い単語としておく */
-    wl->part[i].ratio = RATIO_BASE;
     wl->part[i].dc = DEP_RAW;
   }
   /* 自立語のパートを設定 */
@@ -349,6 +318,7 @@ setup_word_list(struct word_list *wl, int from, int len, int is_compound)
   wl->part[PART_CORE].len = len;
   /**/
   wl->score = 0;
+  wl->dep_score = RATIO_BASE;
   wl->node_id = -1;
   wl->last_part = PART_CORE;
   wl->head_pos = POS_NONE;
@@ -397,7 +367,6 @@ make_word_list(struct splitter_context *sc,
       }
       /* 遷移したルールの情報を転記する */
       tmpl.part[PART_CORE].wt = rule.wt;
-      tmpl.part[PART_CORE].ratio = rule.ratio;
       tmpl.part[PART_CORE].freq = freq;
       tmpl.node_id = rule.node_id;
       tmpl.head_pos = anthy_wtype_get_pos(tmpl.part[PART_CORE].wt);
@@ -428,6 +397,7 @@ make_dummy_head(struct splitter_context *sc)
   tmpl.part[PART_CORE].wt = anthy_wtype_noun;
 
   tmpl.score = 0;
+  tmpl.dep_score = RATIO_BASE;
   tmpl.head_pos = anthy_wtype_get_pos(tmpl.part[PART_CORE].wt);
   make_suc_words(sc, &tmpl);
 }

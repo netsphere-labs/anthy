@@ -189,14 +189,14 @@ copy_to_buf(char *buf, const char *src, int char_count)
   int i;
   pos = 0;
   for (i = 0; i < char_count; i++){
-    if (src[pos] == '\\') {
-      if (src[pos + 1] == ' ') {
-	pos ++;
-      } else if (src[pos + 1] == '\\') {
-	pos ++;
+    if (src[i] == '\\') {
+      if (src[i + 1] == ' ') {
+	i ++;
+      } else if (src[i + 1] == '\\') {
+	i ++;
       }
     }
-    buf[i] = src[pos];
+    buf[pos] = src[i];
     pos ++;
   }
   buf[pos] = 0;

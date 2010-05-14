@@ -45,7 +45,6 @@ xc_isprint(xchar xc)
   return xc > 0;
 }
 
-
 #ifdef USE_UCS4
 static char *
 do_iconv(const char *str, iconv_t ic)
@@ -580,6 +579,38 @@ anthy_xstr_hira_to_kata(xstr *src_xs)
   }
   dst_xs->len = j;
   return dst_xs;
+}
+
+xstr *
+anthy_xstr_hira_to_half_kata(xstr *src_xs)
+{
+  int len = src_xs->len;
+  int i, j;
+  xstr *xs;
+  for (i = 0; i < src_xs->len; i++) {
+    struct half_kana_table *tab = anthy_find_half_kana(src_xs->str[i]);
+    if (tab && tab->mod) {
+      len ++;
+    }
+  }
+  xs = malloc(sizeof(xstr));
+  xs->len = len;
+  xs->str = malloc(sizeof(xchar) * len);
+  j = 0;
+  for (i = 0; i < src_xs->len; i++) {
+    struct half_kana_table *tab = anthy_find_half_kana(src_xs->str[i]);
+    if (tab) {
+      xs->str[j] = tab->dst;
+      if (tab->mod) {
+	j++;
+	xs->str[j] = tab->mod;
+      }
+    } else {
+      xs->str[j] = src_xs->str[i];
+    }
+    j++;
+  }
+  return xs;
 }
 
 int anthy_xstr_hash(xstr *xs)

@@ -1,15 +1,12 @@
-EXTRA_DIST = input.txt parsed.txt
+EXTRA_DIST = dep.sorted
 
 noinst_PROGRAMS = mkmatrix
 INCLUDES = -I$(top_srcdir)/include
-mkmatrix_LDADD = ../src-worddic/libanthydic.la
+mkmatrix_LDADD = ../src-worddic/libanthydic.la -lm
 mkmatrix_SOURCES = mkmatrix.c
 
-pkgdata_DATA = matrix
+noinst_DATA = matrix
 CLEANFILES = matrix
 
-matrix	: mkmatrix $(top_srcdir)/mkmatrix/parsed.txt
-	./mkmatrix $(top_srcdir)/mkmatrix/parsed.txt -o matrix
-
-$(top_srcdir)/mkmatrix/parsed.txt	: $(top_srcdir)/mkmatrix/input.txt
-	../src-util/anthy-morphological-analyzer < $(top_srcdir)/mkmatrix/input.txt | tee $(top_srcdir)/mkmatrix/parsed.txt
+matrix	: mkmatrix $(top_srcdir)/mkmatrix/dep.sorted
+	./mkmatrix $(top_srcdir)/mkmatrix/dep.sorted -o matrix

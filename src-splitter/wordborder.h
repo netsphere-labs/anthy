@@ -105,8 +105,6 @@ struct part_info {
   seq_ent_t seq;
   /* 頻度 */
   int freq;
-  /* スコアの比率 */
-  int ratio;
   /* 付属語クラス */
   enum dep_class dc;
 };
@@ -118,10 +116,10 @@ struct part_info {
 struct word_list {
   /**/
   int from, len; /* 文節全体 */
-  int weak_len;  /* 弱い遷移の長さ */
   int is_compound; /* 複合語かどうか */
 
   int score;/* スコア */
+  int dep_score;
   enum seg_class seg_class;
   enum constraint_stat can_use; /* セグメント境界に跨がっていない */
 

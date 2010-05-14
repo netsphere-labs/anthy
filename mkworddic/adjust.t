@@ -95,4 +95,4 @@
 \modify_freq もの #N2T35 物 kill
 \modify_freq ちゅう #T35 中 down
 \modify_freq この #JNM この kill
-
+\modify_freq りき #N2T35 力 kill

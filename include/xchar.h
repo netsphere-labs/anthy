@@ -104,12 +104,6 @@
 #define HK_PE 0xa4da
 #define HK_PO 0xa4dd
 
-#define HK_XA 0xa4a1
-#define HK_XI 0xa4a3
-#define HK_XU 0xa4a5
-#define HK_XE 0xa4a7
-#define HK_XO 0xa4a9
-
 #define HK_XYA 0xa4e3
 #define HK_XYU 0xa4e5
 #define HK_XYO 0xa4e7
@@ -252,12 +246,6 @@
 #define HK_PE 0x307a
 #define HK_PO 0x307d
 
-#define HK_XA 0x3041
-#define HK_XI 0x3043
-#define HK_XU 0x3045
-#define HK_XE 0x3047
-#define HK_XO 0x3049
-
 #define HK_XYA 0x3083
 #define HK_XYU 0x3085
 #define HK_XYO 0x3087
@@ -307,5 +295,12 @@
 /**/
 int anthy_xchar_to_num(xchar );
 xchar anthy_xchar_wide_num_to_num(xchar);
+/**/
+struct half_kana_table {
+  int src;
+  int dst;
+  int mod;
+};
+struct half_kana_table *anthy_find_half_kana(xchar xc);
 
 #endif

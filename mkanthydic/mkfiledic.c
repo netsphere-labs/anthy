@@ -148,6 +148,7 @@ write_contents(FILE* fp, const char *prefix,
       free(fn);
       break;
     }
+    printf("  copying %s (%s)\n", fn, entries[i].key);
     free(fn);
     copy_file(in_fp, fp);
     fclose(in_fp);

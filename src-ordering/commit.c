@@ -26,7 +26,7 @@ learn_swapped_candidates(struct segment_list *sl)
   for (i = 0; i < sl->nr_segments; i++) {
     seg = anthy_get_nth_segment(sl, i);
     if (seg->committed != 0) {
-      /* 最初の候補(0番目)でない候補(seg->commited番目)がコミットされた */
+      /* 最初の候補(0番目)でない候補(seg->committed番目)がコミットされた */
       anthy_swap_cand_ent(seg->cands[0],
 			  seg->cands[seg->committed]);
     }
@@ -34,7 +34,7 @@ learn_swapped_candidates(struct segment_list *sl)
   anthy_cand_swap_ageup();
 }
 
-/* 長さが変わった文節に対して */
+/* 長さが変わった文節の変更後に対して */
 static void
 learn_resized_segment(struct splitter_context *sc,
 		      struct segment_list *sl)
@@ -54,6 +54,37 @@ learn_resized_segment(struct splitter_context *sc,
   }
 
   anthy_commit_border(sc, sl->nr_segments, mw, len_array);
+}
+
+/* 長さが変わった文節の変更前に対して */
+static void
+clear_resized_segment(struct splitter_context *sc,
+		      struct segment_list *sl)
+{
+  int *mark, i, from;
+  struct seg_ent *seg;
+  mark = alloca(sizeof(int)*sc->char_count);
+  for (i = 0; i < sc->char_count; i++) {
+    mark[i] = 0;
+  }
+  /* 実際に確定された文節の長さをマークする */
+  from = 0;
+  for (i = 0; i < sl->nr_segments; i++) {
+    seg = anthy_get_nth_segment(sl, i);
+    mark[from] = seg->len;
+    from = from + seg->len;
+  }
+  for (i = 0; i < sc->char_count; i++) {
+    int len = sc->ce[i].initial_seg_len;
+    /* 最初の長さと確定された長さが異なれば、
+       使われなかった未知語の可能性がある */
+    if (len && len != mark[i]) {
+      xstr xs;
+      xs.str = sc->ce[i].c;
+      xs.len = len;
+      anthy_forget_unused_unknown_word(&xs);
+    }
+  }
 }
 
 /* recordにお茶入れ学習の結果を書き込む */
@@ -189,6 +220,19 @@ learn_prediction(struct segment_list *sl)
   }
 }
 
+static void
+learn_unknown(struct segment_list *sl)
+{
+  int i;
+  for (i = 0; i < sl->nr_segments; i++) {
+    struct seg_ent *seg = anthy_get_nth_segment(sl, i);
+    struct cand_ent *ce = seg->cands[seg->committed];
+    if (ce->nr_words == 0) {
+      anthy_add_unknown_word(&seg->str, &ce->str);
+    }
+  }
+}
+
 void
 anthy_proc_commit(struct segment_list *sl,
 		  struct splitter_context *sc)
@@ -196,7 +240,9 @@ anthy_proc_commit(struct segment_list *sl,
   /* 各種の学習を行う */
   learn_swapped_candidates(sl);
   learn_resized_segment(sc, sl);
+  clear_resized_segment(sc, sl);
   learn_ochaire(sc, sl);
   learn_prediction(sl);
+  learn_unknown(sl);
   anthy_learn_cand_history(sl);
 }

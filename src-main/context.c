@@ -481,11 +481,11 @@ anthy_print_candidate(struct cand_ent *ce)
 {
   int mod = (ce->score % 1000);
   int seg_score = 0;
-  int weak_len = 0;
+  int dep_score = 0;
 
   if (ce->mw) {
     seg_score = ce->mw->score;
-    weak_len = ce->mw->weak_len;
+    dep_score = ce->mw->dep_score;
   }
   anthy_putxstr(&ce->str);
   printf(":(");
@@ -634,8 +634,9 @@ anthy_print_candidate(struct cand_ent *ce)
   } else {
     putchar('-');
   }
-  printf(",%d", weak_len);
+  printf(",%d", dep_score);
   printf(")");
+
   if (ce->score >= 1000) {
     printf("%d,", ce->score/1000);
     if (mod < 100) {

@@ -79,6 +79,9 @@ void anthy_dic_set_personality(const char *);
  */
 int anthy_dic_check_word_relation(int from, int to);
 
-
+/** Ã§√Œ∏Ï§Œ≥ÿΩ¨
+ */
+void anthy_add_unknown_word(xstr *yomi, xstr *word);
+void anthy_forget_unused_unknown_word(xstr *xs);
 
 #endif
