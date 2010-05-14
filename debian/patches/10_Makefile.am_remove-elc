@@ -10,3 +10,30 @@ Index: anthy-9100h/src-util/Makefile.am
  if ELISP
  lisp_LISP = $(ELISP_FILES)
  endif
+===================================================================
+--- anthy-9100h.orig/src-util/Makefile.in	2009-02-07 21:21:39.000000000 +0900
++++ anthy-9100h/src-util/Makefile.in	2010-05-14 18:41:18.000000000 +0900
+@@ -109,6 +109,7 @@
+ am__ELFILES = anthy-azik.el anthy-conf.el anthy-dic.el \
+ 	anthy-isearch.el anthy-kyuri.el anthy.el leim-list.el
+ am__ELCFILES = $(am__ELFILES:.el=.elc)
++ELCFILES = $(LISP:.el=.elc)
+ elisp_comp = $(top_srcdir)/elisp-comp
+ pkgdataDATA_INSTALL = $(INSTALL_DATA)
+ DATA = $(pkgdata_DATA)
+@@ -167,6 +168,7 @@
+ PACKAGE_NAME = @PACKAGE_NAME@
+ PACKAGE_STRING = @PACKAGE_STRING@
+ PACKAGE_TARNAME = @PACKAGE_TARNAME@
++PACKAGE_URL = @PACKAGE_URL@
+ PACKAGE_VERSION = @PACKAGE_VERSION@
+ PATH_SEPARATOR = @PATH_SEPARATOR@
+ RANLIB = @RANLIB@
+@@ -230,7 +232,6 @@
+  anthy-isearch.el anthy-azik.el anthy-kyuri.el
+ 
+ EXTRA_DIST = $(ELISP_FILES) typetab dic-tool-usage.txt anthy.i
+-ELCFILES = anthy.elc anthy-dic.elc anthy-azik.elc anthy-conf.elc anthy-isearch.elc anthy-kyuri.elc leim-list.elc
+ @ELISP_TRUE@lisp_LISP = $(ELISP_FILES)
+ noinst_LTLIBRARIES = libconvdb.la
+ libconvdb_la_SOURCES = convdb.c
