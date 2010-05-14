@@ -2244,7 +2244,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=anthy
- VERSION=9100d
+ VERSION=9100e
 
 
 cat >>confdefs.h <<_ACEOF

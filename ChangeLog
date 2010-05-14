@@ -1,3 +1,16 @@
+2008-01-29  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* configure.ac:
+	bump to 9100e.
+
+2008-01-28  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* depgraph/conjugate.table:
+	applied patch. thanks to Utumi-san.
+
+2008-01-28  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/udict:
+	* mkworddic/compound.t:
+	applied patch. thanks to Iida-san.
+
 2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
 	* configure.ac:
 	bump to 9100d.
