@@ -37,7 +37,7 @@ struct char_node {
 };
 
 /*
- * コンテキスト中の自立語などの情報、最初に変換ボタンを押したときに
+ * コンテキスト中の自立語などの情報、最初に変換キーを押したときに
  * 構築される
  */
 struct word_split_info_cache {
@@ -50,7 +50,7 @@ struct word_split_info_cache {
   int *rev_seq_len;/* そこで終わる最長の単語の長さ */
   /* 文節境界contextからのコピー */
   int *seg_border;
-  /* hmmで一番成績の良かったクラス */
+  /* 検索で一番成績の良かったクラス */
   enum seg_class* best_seg_class;
   /*  */
   struct meta_word **best_mw;
@@ -81,7 +81,6 @@ enum mw_status {
 extern struct metaword_type_tab_ {
   enum metaword_type type;
   const char *name;
-  int score;
   enum mw_status status;
   enum mw_check check;
 } anthy_metaword_type_tab[];
@@ -119,12 +118,13 @@ struct word_list {
   int is_compound; /* 複合語かどうか */
 
   int score;/* スコア */
-  int dep_score;
+  int dep_word_hash;
+  int mw_features;
   enum seg_class seg_class;
   enum constraint_stat can_use; /* セグメント境界に跨がっていない */
 
   /* 漢字を得るためではなくて、雑多な処理に使いたい情報 */
-  int head_pos; /* hmm用の品詞 */
+  int head_pos; /* lattice検索用の品詞 */
   int tail_ct; /* meta_wordの結合用の活用形 */
 
   /**/
@@ -145,10 +145,13 @@ struct word_list {
 #define SPLITTER_DEBUG_WL 1
 /* metawordの表示 */
 #define SPLITTER_DEBUG_MW 2
-/* hmm nodeの表示 */
-#define SPLITTER_DEBUG_HM 4
+/* latticeの nodeの表示 */
+#define SPLITTER_DEBUG_LN 4
 /* 自立語のマッチした品詞 */
 #define SPLITTER_DEBUG_ID 8
+/**/
+#define SPLITTER_DEBUG_CAND 16
+
 int anthy_splitter_debug_flags(void);
 
 
@@ -175,16 +178,7 @@ void anthy_make_word_list_all(struct splitter_context *);
 void anthy_commit_meta_word(struct splitter_context *, struct meta_word *mw);
 void anthy_make_metaword_all(struct splitter_context *);
 void anthy_print_metaword(struct splitter_context *, struct meta_word *);
-struct meta_word *
-anthy_do_list_metaword(struct splitter_context *sc,
-		       enum metaword_type type,
-		       struct meta_word *mw, struct meta_word *mw2,
-		       int weak);
-struct meta_word *
-anthy_do_cons_metaword(struct splitter_context *sc,
-		       enum metaword_type type,
-		       struct meta_word *mw, struct meta_word *mw2,
-		       int weak);
+
 void anthy_mark_border_by_metaword(struct splitter_context* sc,
 				   struct meta_word* mw);
 
@@ -192,8 +186,8 @@ void anthy_mark_border_by_metaword(struct splitter_context* sc,
 /* defined in evalborder.c */
 void anthy_eval_border(struct splitter_context *, int, int, int);
 
-/* defined at hmm.c */
-void anthy_hmm(struct splitter_context *sc, int from, int to);
+/* defined at lattice.c */
+void anthy_mark_borders(struct splitter_context *sc, int from, int to);
 
 /* defined at seg_class.c */
 void anthy_set_seg_class(struct word_list* wl);

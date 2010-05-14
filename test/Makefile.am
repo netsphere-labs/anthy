@@ -1,7 +1,6 @@
-EXTRA_DIST = test.txt test.exp $(SWIG_FILES)
-CLEANFILES = anthy_swig_wrap.c anthy_swig_wrap.o anthy.so
+SUBDIRS =
 
-SWIG_FILES = extconf.rb test.rb anthy_swig.i
+EXTRA_DIST = test.txt test.exp
 
 INCLUDES = -I$(top_srcdir)/include -DSRCDIR=\"$(srcdir)\" \
 	  -DTEST_HOME=\""`pwd`"\"
@@ -13,7 +12,7 @@ prediction_SOURCES = prediction.c
 test_matrix_SOURCES= test-matrix.c
 test_tt_SOURCES= test-tt.c
 
-anthy_LDADD = ../src-main/libanthy.la ../src-worddic/libanthydic.la
+anthy_LDADD = ../src-util/libconvdb.la ../src-main/libanthy.la ../src-worddic/libanthydic.la
 checklib_LDADD = ../src-main/libanthy.la ../src-worddic/libanthydic.la
 prediction_LDADD = ../src-main/libanthy.la ../src-worddic/libanthydic.la
 test_matrix_LDADD = ../src-main/libanthy.la ../src-worddic/libanthydic.la

@@ -71,6 +71,7 @@
 #define CC_A 18
 #define CC_A_U 19
 #define CC_AJV 20
+#define CC_SRV 21
 
 /* …˚… ªÏ Class Of Speech */
 #define COS_NONE 0

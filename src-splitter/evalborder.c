@@ -1,8 +1,7 @@
 /*
  * 文節の境界を検出する。
- * 文中のmetawordの連結を評価して、スコアが高くなるようにmetawordを選んでいく。
  *
- * metawordの選択にはHMMを使う
+ * metawordの選択にはビタビアルゴリズムを使う
  *
  * anthy_eval_border() で指定された領域を文節に分割する
  *
@@ -18,8 +17,8 @@
 
 static int
 border_check(struct meta_word* mw,
-		 int from,
-		 int border)
+	     int from,
+	     int border)
 {
   if (mw->from < border) {
     /* 先頭の文節の中から始まるmwは文節区切りにぴったりあっていないとダメ */
@@ -67,7 +66,7 @@ metaword_constraint_check(struct splitter_context *sc,
       struct meta_word* mw1 = mw->mw1;
       struct meta_word* mw2 = mw->mw2;
       if (mw1)
-	metaword_constraint_check(sc, mw1, from, mw1->from + mw1->len);
+	metaword_constraint_check(sc, mw1, from, border);
       if (mw2)
 	metaword_constraint_check(sc, mw2, mw2->from, border);
       
@@ -176,7 +175,7 @@ anthy_eval_border(struct splitter_context *sc, int from, int from2, int to)
   metaword_constraint_check_all(sc, from, to, from2);
 
   /* fromとfrom2の間をカバーするmeta_wordがあるかどうかを探す。
-   * あれば、fromからHMMの解析を行い、なければfrom2から解析をする。
+   * あれば、fromから解析を行い、なければfrom2から解析をする。
    */
   nr = 0;
   for (mw = sc->word_split_info->cnode[from].mw; mw; mw = mw->next) {
@@ -189,6 +188,6 @@ anthy_eval_border(struct splitter_context *sc, int from, int from2, int to)
     from = from2;
   }
 
-  /* HMMで文節の切りかたを評価する */
-  anthy_hmm(sc, from, to);
+  /* 文節の境界を設定する */
+  anthy_mark_borders(sc, from, to);
 }

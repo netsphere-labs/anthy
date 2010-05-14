@@ -7,7 +7,7 @@
  * personalityの管理もする。
  *
  * Funded by IPA未踏ソフトウェア創造事業 2001 10/29
- * Copyright (C) 2000-2003 TABATA Yusuke
+ * Copyright (C) 2000-2007 TABATA Yusuke
  *
  * $Id: context.c,v 1.26 2002/11/17 14:45:47 yusuke Exp $
  */
@@ -30,6 +30,7 @@
 #include <stdio.h>
 #include <string.h>
 
+#include <anthy.h>
 #include <alloc.h>
 #include <record.h>
 #include <ordering.h>
@@ -242,6 +243,7 @@ anthy_do_create_context(int encoding)
   ac->prediction.nr_prediction = 0;
   ac->prediction.predictions = NULL;
   ac->encoding = encoding;
+  ac->reconversion_mode = ANTHY_RECONVERT_AUTO;
 
   return ac;
 }
@@ -260,14 +262,39 @@ anthy_quit_contexts(void)
   anthy_free_allocator(context_ator);
 }
 
+static void
+release_prediction(struct prediction_cache *pc)
+{
+  int i;
+  if (pc->str.str) {
+    free(pc->str.str);
+    pc->str.str = NULL;
+  }
+  if (pc->predictions) {
+    for (i = 0; i < pc->nr_prediction; ++i) {
+      anthy_free_xstr(pc->predictions[i].src_str);
+      anthy_free_xstr(pc->predictions[i].str);
+    }
+    free(pc->predictions);
+    pc->predictions = NULL;
+  }
+}
+
+void
+anthy_release_segment_list(struct anthy_context *ac)
+{
+  int i, sc;
+  sc = ac->seg_list.nr_segments;
+  for (i = 0; i < sc; i++) {
+    pop_back_seg_ent(ac);
+  }
+  ac->seg_list.nr_segments = 0;
+}
+
 /* resetではcontextのために確保されたリソースを全て解放する */
 void
 anthy_do_reset_context(struct anthy_context *ac)
 {
-  int i, sc;
-  struct prediction_cache* prediction = &ac->prediction;
-
-
   /* まず辞書セッションを解放 */
   if (ac->dic_session) {
     anthy_dic_release_session(ac->dic_session);
@@ -283,25 +310,10 @@ anthy_do_reset_context(struct anthy_context *ac)
   anthy_release_ordering_context(&ac->seg_list,
 				 &ac->ordering_info);
 
-  sc = ac->seg_list.nr_segments;
-  for (i = 0; i < sc; i++) {
-    pop_back_seg_ent(ac);
-  }
-  ac->seg_list.nr_segments = 0;
+  anthy_release_segment_list(ac);
 
   /* 予測された文字列の解放 */
-  if (prediction->str.str) {
-    free(prediction->str.str);
-    prediction->str.str = NULL;
-  }
-  if (prediction->predictions) {
-    for (i = 0; i < prediction->nr_prediction; ++i) {
-      anthy_free_xstr(prediction->predictions[i].str);
-    }
-    free(prediction->predictions);
-    prediction->predictions = NULL;
-  }
-
+  release_prediction(&ac->prediction);
 }
 
 void
@@ -329,7 +341,9 @@ make_candidates(struct anthy_context *ac, int from, int from2, int is_reverse)
 			      &ac->ordering_info);
   /* 候補を列挙 */
   for (i = 0; i < ac->seg_list.nr_segments; i++) {
-    anthy_do_make_candidates(anthy_get_nth_segment(&ac->seg_list, i), is_reverse);
+    anthy_do_make_candidates(&ac->split_info,
+			     anthy_get_nth_segment(&ac->seg_list, i),
+			     is_reverse);
   }
   /* 候補をソート */
   anthy_sort_candidate(&ac->seg_list, 0);
@@ -339,16 +353,6 @@ int
 anthy_do_context_set_str(struct anthy_context *ac, xstr *s, int is_reverse)
 {
   int i;
-  /*初期化*/
-  anthy_do_reset_context(ac);
-
-  /* 辞書セッションの開始 */
-  if (!ac->dic_session) {
-    ac->dic_session = anthy_dic_create_session();
-    if (!ac->dic_session) {
-      return -1;
-    }
-  }
 
   /* 文字列をコピー(一文字分余計にして0をセット) */
   ac->str.str = (xchar *)malloc(sizeof(xchar)*(s->len+1));
@@ -433,7 +437,6 @@ anthy_do_set_prediction_str(struct anthy_context *ac, xstr* xs)
 {
   struct prediction_cache* prediction = &ac->prediction;
   int nr_prediction;
-  int i;
 
   /* まず辞書セッションを解放 */
   if (ac->dic_session) {
@@ -441,17 +444,8 @@ anthy_do_set_prediction_str(struct anthy_context *ac, xstr* xs)
     ac->dic_session = NULL;
   }
   /* 予測された文字列の解放 */
-  if (prediction->str.str) {
-    free(prediction->str.str);
-    prediction->str.str = NULL;
-  }
-  if (prediction->predictions) {
-    for (i = 0; i < prediction->nr_prediction; ++i) {
-      anthy_free_xstr(prediction->predictions[i].str);
-    }
-    free(prediction->predictions);
-    prediction->predictions = NULL;
-  }
+  release_prediction(&ac->prediction);
+
   /* 辞書セッションの開始 */
   if (!ac->dic_session) {
     ac->dic_session = anthy_dic_create_session();
@@ -481,11 +475,9 @@ anthy_print_candidate(struct cand_ent *ce)
 {
   int mod = (ce->score % 1000);
   int seg_score = 0;
-  int dep_score = 0;
 
   if (ce->mw) {
     seg_score = ce->mw->score;
-    dep_score = ce->mw->dep_score;
   }
   anthy_putxstr(&ce->str);
   printf(":(");
@@ -509,132 +501,11 @@ anthy_print_candidate(struct cand_ent *ce)
 
     
   if (ce->mw) {
-    switch (ce->mw->seg_class) {
-    case SEG_HEAD:
-      printf("H");
-      break;
-    case SEG_TAIL:
-      printf("T");
-      break;
-    case SEG_BUNSETSU:
-      printf("B");
-      break;
-    case SEG_SHUGO:
-      printf("S");
-      break;
-    case SEG_JYUTSUGO:
-      printf("J");
-      break;
-    case SEG_SHUSHOKUGO:
-      printf("M");
-      break;
-    case SEG_SETSUZOKUGO:
-      printf("C");
-      break;
-    case SEG_DOKURITSUGO:
-      printf("I");
-      break;
-    case SEG_FUZOKUGO:
-      printf("F");
-      break;
-    case SEG_HIRAKIKAKKO:
-      printf("(");
-      break;
-    case SEG_TOJIKAKKO:
-      printf(")");
-      break;
-    case SEG_MEISHI_KAKUJOSHI:
-      printf("Nk");
-      break;
-    case SEG_MEISHI_SHUTAN:
-      printf("Ne");
-      break;
-    case SEG_DOUSHI:
-      printf("V");
-      break;
-    case SEG_DOUSHI_FUZOKUGO:
-      printf("Vf");
-      break;
-    case SEG_DOUSHI_SHUTAN:
-      printf("Ve");
-      break;
-    case SEG_KEIYOUSHI:
-      printf("A");
-      break;
-    case SEG_KEIYOUSHI_FUZOKUGO:
-      printf("Af");
-      break;
-    case SEG_KEIYOUSHI_SHUTAN:
-      printf("Ae");
-      break;
-    case SEG_KEIYOUDOUSHI:
-      printf("AJV");
-      break;
-    case SEG_KEIYOUDOUSHI_FUZOKUGO:
-      printf("AJVf");
-      break;
-    case SEG_KEIYOUDOUSHI_SHUTAN:
-      printf("AJVe");
-      break;
-    case SEG_RENYOU_SHUSHOKU:
-      printf("YM");
-      break;
-    case SEG_RENTAI_SHUSHOKU:
-      printf("TM");
-      break;
-    case SEG_MEISHI:
-      printf("N");
-      break;
-    case SEG_MEISHI_FUZOKUGO:
-      printf("Nf");
-      break;
-    case SEG_MEISHI_RENYOU:
-      printf("Ny");
-      break;
-    case SEG_DOUSHI_RENYOU:
-      printf("Vy");
-      break;
-    case SEG_KEIYOUSHI_RENYOU:
-      printf("Ay");
-      break;
-    case SEG_KEIYOUDOUSHI_RENYOU:
-      printf("AJVy");
-      break;
-    case SEG_FUKUSHI:
-      printf("AV");
-      break;
-    case SEG_DOUSHI_RENTAI:
-      printf("Vt");
-      break;
-    case SEG_KEIYOUSHI_RENTAI:
-      printf("At");
-      break;
-    case SEG_KEIYOUDOUSHI_RENTAI:
-      printf("AJVt");
-      break;
-    case SEG_RENTAISHI:
-      printf("ME");
-      break;
-    case SEG_KAKUJOSHI:
-      printf("Fk");
-      break;
-    case SEG_RENYOU:
-      printf("Fy");
-      break;
-    case SEG_RENTAI:
-      printf("Ft");
-      break;
-    case SEG_SHUTAN:
-      printf("Fe");
-      break;
-    default:
-      printf("?");
-      break;
-    }
+    printf("%s,%d", anthy_seg_class_sym(ce->mw->seg_class),
+	   ce->mw->struct_score);
   } else {
     putchar('-');
   }
-  printf(",%d", dep_score);
   printf(")");
 
   if (ce->score >= 1000) {

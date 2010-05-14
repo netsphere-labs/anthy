@@ -17,7 +17,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#include <anthy.h>
 #include <dicutil.h>
+/**/
+#include <xstr.h>
 #include <config.h>
 
 #define UNSPEC 0
@@ -35,10 +38,12 @@
  " --dump: Dump dictionary\n"\
  " --load: Load dictionary\n"\
  " --append: Append dictionary\n"\
+ " --utf8: Use utf8 encoding\n"\
  " --personality=NAME: use NAME as a name of personality\n"
 
 
 static int command = UNSPEC;
+static int encoding = ANTHY_EUC_JP_ENCODING;
 static FILE *fp_in;
 static char *fn;
 static const char *personality = "";
@@ -81,12 +86,10 @@ open_typetab(void)
   return fp;
 }
 
-static void
-print_usage_text(void)
+static FILE *
+open_usage_file(void)
 {
   FILE *fp;
-  char buf[256];
-  int c;
   /* カレントディレクトリにある場合は、それを使用する */
   fp = fopen(USAGE_TEXT, "r");
   if (!fp) {
@@ -97,14 +100,32 @@ print_usage_text(void)
     strcat(fn, "/" USAGE_TEXT);
     fp = fopen(fn, "r");
   }
+  return fp;
+}
+
+static void
+print_usage_text(void)
+{
+  char buf[256];
+  FILE *fp = open_usage_file();
   if (!fp) {
     printf("# Anthy-dic-tool\n#\n");
     return ;
   }
   fprintf(stdout, "#" PACKAGE " " VERSION "\n");
+  if (encoding == ANTHY_UTF8_ENCODING) {
+  } else {
+  }
   /* そのままファイルの内容を出力 */
-  while ((c = fread(buf, 1, 256, fp)) > 0) {
-    fwrite(buf, 1, c, stdout);
+  while (fgets(buf, 256, fp)) {
+    if (encoding == ANTHY_UTF8_ENCODING) {
+      char *s;
+      s = anthy_conv_euc_to_utf8(buf);
+      printf("%s", s);
+      free(s);
+    } else {
+      printf("%s", buf);
+    }
   }
   fclose(fp);
 }
@@ -125,7 +146,7 @@ read_line(char *buf, int len, FILE *fp)
 }
 
 static int
-read_typetab_var(struct var *head, FILE *fp)
+read_typetab_var(struct var *head, FILE *fp, int table)
 {
   char buf[256];
   char var[256], eq[256], val[256];
@@ -138,8 +159,15 @@ read_typetab_var(struct var *head, FILE *fp)
   }
 
   v = malloc(sizeof(struct var));
-  v->var_name = strdup(var);
-  v->val = strdup(val);
+  if (encoding == ANTHY_UTF8_ENCODING && table) {
+    /* UTF-8 */
+    v->var_name = anthy_conv_euc_to_utf8(var);
+    v->val = anthy_conv_euc_to_utf8(val);
+  } else {
+    /* do not change */
+    v->var_name = strdup(var);
+    v->val = strdup(val);
+  }
 
   /* リストにつなぐ */
   v->next = head->next;
@@ -166,7 +194,7 @@ read_typetab_entry(FILE *fp)
   t->type_name = strdup(type_name);
   t->var_list.next = 0;
   /* パラメータを読む */
-  while(!read_typetab_var(&t->var_list, fp));
+  while(!read_typetab_var(&t->var_list, fp, 1));
   /* リストにつなぐ */
   t->next = trans_tab_list.next;
   trans_tab_list.next = t;
@@ -281,7 +309,7 @@ find_wt(void)
   struct var v;
   struct trans_tab *t;
   v.next = 0;
-  while(!read_typetab_var(&v, fp_in));
+  while(!read_typetab_var(&v, fp_in, 0));
   for (t = trans_tab_list.next; t; t = t->next) {
     if (var_list_subset_p(&t->var_list, &v) &&
 	var_list_subset_p(&v, &t->var_list)) {
@@ -347,6 +375,10 @@ parse_args(int argc, char **argv)
 	command = APPEND_DIC;
       } else if (!strncmp(opt, "personality=", 12)) {
 	personality = &opt[12];
+      } else if (!strcmp(opt, "utf8")) {
+	encoding = ANTHY_UTF8_ENCODING;
+      } else if (!strcmp(opt, "eucjp")) {
+	encoding = ANTHY_EUC_JP_ENCODING;
       } else if (!strcmp(opt, "load")) {
 	command = LOAD_DIC;
       }
@@ -354,6 +386,14 @@ parse_args(int argc, char **argv)
       fn = argv[i];
     }
   }
+}
+
+static void
+init_lib(void)
+{
+  anthy_dic_util_init();
+  anthy_dic_util_set_encoding(encoding);
+  read_typetab();
 }
 
 int
@@ -364,20 +404,17 @@ main(int argc,char **argv)
 
   switch (command) {
   case DUMP_DIC:
-    anthy_dic_util_init();
-    read_typetab();
+    init_lib();
     dump_dic();
     break;
   case LOAD_DIC:
-    anthy_dic_util_init();
-    read_typetab();
+    init_lib();
     anthy_priv_dic_delete();
     open_input_file();
     load_dic();
     break;
   case APPEND_DIC:
-    anthy_dic_util_init();
-    read_typetab();
+    init_lib();
     open_input_file();
     load_dic();
     break;

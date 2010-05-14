@@ -18,22 +18,14 @@
 /** ある単語 */
 struct dic_ent {
   wtype_t type; /** 品詞 */
-  const char *wt_name;
   int freq; /** 頻度 */
+  int feature;
+  const char *wt_name;
+  int is_compound;
   xstr str; /** 変換結果の文字列 */
   /** 同一品詞の場合の辞書中の順番(anthy_get_seq_ent_wtype_freqから
       anthy_wtype_includeが呼ばれる回数を減らすのに用いる */
   int order;
-};
-
-/** 複合語のエントリ */
-struct compound_ent {
-  /* 品詞 */
-  wtype_t type;
-  /* 文字列(compound_entと同時に確保され、同時に解放される) */
-  xstr *str;
-  /* 頻度 */
-  int freq;
 };
 
 /**ある文字列と同音異義語の配列
@@ -41,7 +33,6 @@ struct compound_ent {
  */
 struct seq_ent {
   xstr str;/* 読み */
-  int mask;/* どのdic_sessionによって使用されているかのマスク */
 
   int seq_type; /** ST_(type) */
   int flags; /** ?F_* */
@@ -51,7 +42,6 @@ struct seq_ent {
   struct dic_ent **dic_ents;
   /** compound_entの配列 */
   int nr_compound_ents;
-  struct compound_ent **compound_ents;
 
   /* 属するメモリ辞書 */
   struct mem_dic *md;

@@ -1,9 +1,26 @@
 /*
+ * Copyright (C) 2000-2007 TABATA Yusuke
+ * Copyright (C) 2004-2006 YOSHIDA Yuichi
+ */
+/*
  * 付属語グラフをバイナリ化する
  * init_word_seq_tab()
  *   付属語テーブル中のノードへのポインタの初期化
- * release_depword_tab()
- *   付属語テーブルの解放
+ */
+/*
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 
 #include <stdio.h>
@@ -24,27 +41,15 @@
 #define SRCDIR "."
 #endif
 
-/* メモリ節約のために文字列を共有するpool */
-static struct {
-  int nr_xs;
-  xstr **xs;
-} xstr_pool ;
+static int verbose;
 
 static struct dep_node* gNodes;
 static char** gNodeNames;
 static int nrNodes;
 
-static allocator wordseq_rule_ator;
-
-
 /* 単語接続ルール */
 static struct wordseq_rule *gRules;
-int nrRules;
-
-
-#define  NORMAL_CONNECTION 1
-#define  WEAKER_CONNECTION 2
-#define  WEAK_CONNECTION 8
+static int nrRules;
 
 static int 
 get_node_id_by_name(const char *name)
@@ -103,44 +108,6 @@ find_branch(struct dep_node *node, xstr **strs, int nr_strs)
   return db;
 }
 
-/* 文字列poolから文字列を検索する */
-static xstr *
-get_xstr_from_pool(char *str)
-{
-  int i;
-  xstr *xs;
-#ifdef USE_UCS4
-  xs = anthy_cstr_to_xstr(str, ANTHY_EUC_JP_ENCODING);
-#else
-  xs = anthy_cstr_to_xstr(str, ANTHY_COMPILED_ENCODING);
-#endif
-  /* poolに既にあるか探す */
-  for (i = 0; i < xstr_pool.nr_xs; i++) {
-    if (!anthy_xstrcmp(xs, xstr_pool.xs[i])) {
-      anthy_free_xstr(xs);
-      return xstr_pool.xs[i];
-    }
-  }
-  /* 無いので、作る */
-  xstr_pool.xs = realloc(xstr_pool.xs,
-			 sizeof(xstr *) * (xstr_pool.nr_xs+1));
-  xstr_pool.xs[xstr_pool.nr_xs] = xs;
-  xstr_pool.nr_xs ++;
-  return xs;
-}
-
-static void
-release_xstr_pool(void)
-{
-  int i;
-  for (i = 0; i < xstr_pool.nr_xs; i++) {
-    free(xstr_pool.xs[i]->str);
-    free(xstr_pool.xs[i]);
-  }
-  free(xstr_pool.xs);
-  xstr_pool.nr_xs = 0;
-}
-
 /*
  * 遷移をparseする
  *  doc/SPLITTER参照
@@ -148,7 +115,6 @@ release_xstr_pool(void)
 static void
 parse_transition(char *token, struct dep_transition *tr)
 {
-  int conn = NORMAL_CONNECTION;
   int ct = CT_NONE;
   int pos = POS_NONE;
   enum dep_class dc = DEP_NONE;
@@ -159,11 +125,7 @@ parse_transition(char *token, struct dep_transition *tr)
   while (*token != '@') {
     switch(*token){
     case ':':
-      conn = WEAKER_CONNECTION;
-      tr->weak = 1;
-      break;
     case '.':
-      conn = WEAK_CONNECTION;
       tr->weak = 1;
       break;
     case 'C':
@@ -210,8 +172,6 @@ parse_transition(char *token, struct dep_transition *tr)
   }
   /* @から後はノードの名前 */
   tr->next_node = get_node_id_by_name(token);
-  /* 接続の強さ */
-  tr->trans_ratio = RATIO_BASE / conn;
   /**/
   tr->pos = pos;
   tr->ct = ct;
@@ -242,7 +202,7 @@ parse_dep(char **tokens, int nr)
     char *s;
     s = strdup(&tokens[row][1]);
     s[strlen(s)-1] =0;
-    strs[nr_strs] = get_xstr_from_pool(s);
+    strs[nr_strs] = anthy_cstr_to_xstr(s, ANTHY_EUC_JP_ENCODING);
     nr_strs ++;
     free(s);
   }
@@ -253,7 +213,7 @@ parse_dep(char **tokens, int nr)
     anthy_log(0, "node %s has a branch without any transition condition.\n",
 	      tokens[0]);
     s = strdup("");
-    strs[0] = get_xstr_from_pool(s);
+    strs[0] = anthy_cstr_to_xstr(s, ANTHY_EUC_JP_ENCODING);
     nr_strs = 1;
     free(s);
   }
@@ -261,10 +221,12 @@ parse_dep(char **tokens, int nr)
   /* ブランチに遷移先のノードを追加する */
   db = find_branch(dn, strs, nr_strs);
   for ( ; row < nr; row++){
+    struct dep_transition *tr;
     db->transition = realloc(db->transition,
 			     sizeof(struct dep_transition)*
 			     (db->nr_transitions+1));
-    parse_transition(tokens[row], &db->transition[db->nr_transitions]);
+    tr = &db->transition[db->nr_transitions];
+    parse_transition(tokens[row], tr);
     db->nr_transitions ++;
   }
 }
@@ -289,12 +251,10 @@ init_depword_tab(void)
   char **tokens;
   int nr;
 
-  xstr_pool.nr_xs = 0;
-  xstr_pool.xs = NULL;
-
   /* id 0 を空ノードに割当てる */
   get_node_id_by_name("@");
 
+  /**/
   fn = anthy_conf_get_str("DEPWORD");
   if (!fn) {
     anthy_log(0, "Dependent word dictionary is unspecified.\n");
@@ -318,7 +278,6 @@ init_depword_tab(void)
 static void
 parse_indep(char **tokens, int nr)
 {
-  int tmp;
   if (nr < 2) {
     printf("Syntex error in indepword defs"
 	   " :%d.\n", anthy_get_line_number());
@@ -329,29 +288,23 @@ parse_indep(char **tokens, int nr)
   /* 行の先頭には品詞の名前が入っている */
   gRules[nrRules].wt = anthy_init_wtype_by_name(tokens[0]);
 
-  /* 比率 */
-  tmp = atoi(tokens[1]);
-  if (tmp == 0) {
-    tmp = 1;
-  }
-  gRules[nrRules].ratio = RATIO_BASE - tmp*(RATIO_BASE/64);
-
   /* その次にはノード名が入っている */
-  gRules[nrRules].node_id = get_node_id_by_name(tokens[2]);
+  gRules[nrRules].node_id = get_node_id_by_name(tokens[1]);
 
-  ++nrRules;
+  if (verbose) {
+    printf("%d (%s)\n", nrRules, tokens[0]);
+  }
+
+  nrRules ++;
 }
 
-/** 付属語グラフを読み込む */
+/** 自立語からの遷移表 */
 static int 
-init_word_seq_tab(void)
+init_indep_word_seq_tab(void)
 {
   const char *fn;
   char **tokens;
   int nr;
-
-  wordseq_rule_ator = anthy_create_allocator(sizeof(struct wordseq_rule),
-					     NULL);
 
   fn = anthy_conf_get_str("INDEPWORD");
   if (!fn){
@@ -386,7 +339,6 @@ static void
 write_transition(FILE* fp, struct dep_transition* transition)
 {
   write_nl(fp, transition->next_node); 
-  write_nl(fp, transition->trans_ratio); 
   write_nl(fp, transition->pos); 
   write_nl(fp, transition->ct); 
   write_nl(fp, transition->dc); 
@@ -447,10 +399,10 @@ write_file(const char* file_name)
   FILE* fp = fopen(file_name, "w");
   int* node_offset = malloc(sizeof(int) * nrNodes); /* gNodesのファイル上の位置 */
 
+  /* 各ルール */
   write_nl(fp, nrRules);
   for (i = 0; i < nrRules; ++i) {
     write_wtype(fp, gRules[i].wt);
-    write_nl(fp, gRules[i].ratio);
     write_nl(fp, gRules[i].node_id);
   }
 
@@ -464,25 +416,6 @@ write_file(const char* file_name)
   fclose(fp);
 }
 
-static void
-release_depword_tab(void)
-{
-  int i, j;
-  for (i = 0; i < nrNodes; i++) {
-    for (j = 0; j < gNodes[i].nr_branch; j++) {
-      free(gNodes[i].branch[j].str);
-      free(gNodes[i].branch[j].transition);
-    }
-    free(gNodes[i].branch);
-  }
-  free(gNodes);
-  gNodes = 0;
-  nrNodes = 0;
-
-  release_xstr_pool();
-}
-
-
 int
 main(int argc, char* argv[])
 {
@@ -492,12 +425,12 @@ main(int argc, char* argv[])
 
   anthy_init_wtypes();
   anthy_do_conf_init();
+  /* 付属語グラフ */
   init_depword_tab();
-  init_word_seq_tab();
+  /* 自立語からの遷移表 */
+  init_indep_word_seq_tab();
 
   write_file("anthy.dep");
-
-  release_depword_tab();
 
   return 0;
 }

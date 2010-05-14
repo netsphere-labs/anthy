@@ -38,6 +38,7 @@
 #include <ctype.h>
 
 #include "config.h"
+#include <anthy.h>
 #include <alloc.h>
 #include <dic.h>
 #include <word_dic.h>
@@ -52,29 +53,25 @@ static allocator word_dic_ator;
 
 /* 1バイト目を見て、文字が何バイトあるかを返す */
 static int
-mb_fragment_len(char *str)
+mb_fragment_len(const char *str)
 {
-#ifdef USE_UCS4
-  unsigned char *tmp = (unsigned char *)str;
-  if (*tmp < 0x80) {
+  unsigned char c = *((const unsigned char *)str);
+  if (c < 0x80) {
     return 1;
-  } else if (*tmp < 0xe0) {
+  }
+  if (c < 0xe0) {
     return 2;
-  } else if (*tmp < 0xf0) {
+  }
+  if (c < 0xf0) {
     return 3;
-  } else if (*tmp < 0xf8) {
+  }
+  if (c < 0xf8) {
     return 4;
-  } else if (*tmp < 0xfc) {
+  }
+  if (c < 0xfc) {
     return 5;
-  } else {
-    return 6;
   }
-#else
-  if ((*str) & 0x80) {
-    return 2;
-  }
-#endif
-  return 1;
+  return 6;
 }
 
 static int
@@ -92,16 +89,11 @@ is_printable(char *str)
 
 /* 辞書のエンコーディングからxcharを作る */
 static xchar
-form_mb_char(char *str)
+form_mb_char(const char *str)
 {
-#ifdef USE_UCS4
-  xchar res;
-  anthy_utf8_to_ucs4_xchar(str, &res);
-  return res;
-#else
-  unsigned char *tmp = (unsigned char *)str;
-  return tmp[0] * 256 + tmp[1];
-#endif
+  xchar xc;
+  anthy_utf8_to_ucs4_xchar(str, &xc);
+  return xc;
 }
 
 static int
@@ -121,7 +113,7 @@ check_hash_ent(struct word_dic *wdic, xstr *xs)
 }
 
 static int
-wtype_str_len(char *str)
+wtype_str_len(const char *str)
 {
   int i;
   for (i = 0; str[i] && str[i]!= ' '; i++);
@@ -132,13 +124,18 @@ wtype_str_len(char *str)
 struct wt_stat {
   wtype_t wt;
   const char *wt_name;
+  int feature;
   int freq;
   int order_bonus;/* 辞書中の順序による頻度のボーナス */
   int offset;/* 文字列中のオフセット */
-  char *line;
+  const char *line;
+  int encoding;
 };
 /*
  * #XX*123 というCannadicの形式をパーズする
+ *  #XX
+ *  #XX*123
+ *  #XX,x*123
  */
 static const char *
 parse_wtype_str(struct wt_stat *ws)
@@ -146,6 +143,7 @@ parse_wtype_str(struct wt_stat *ws)
   int len;
   char *buf;
   char *freq_part;
+  char *feature_part;
   const char *wt_name;
   /* バッファへコピーする */
   len = wtype_str_len(&ws->line[ws->offset]);
@@ -153,7 +151,15 @@ parse_wtype_str(struct wt_stat *ws)
   strncpy(buf, &ws->line[ws->offset], len);
   buf[len] = 0;
 
-  /* parseする */
+  /**/
+  feature_part = strchr(buf, ',');
+  if (feature_part) {
+    ws->feature = 1;
+  } else {
+    ws->feature = 0;
+  }
+
+  /* 頻度をparseする */
   freq_part = strchr(buf, '*');
   if (freq_part) {
     *freq_part = 0;
@@ -214,7 +220,7 @@ add_dic_ent(struct seq_ent *seq, struct wt_stat *ws,
   xstr *xs;
   int freq;
   wtype_t w = ws->wt;
-  char *s = &ws->line[ws->offset];
+  const char *s = &ws->line[ws->offset];
 
   /* 単語の文字数を計算 */
   for (i = 0, char_count = 0;
@@ -240,7 +246,7 @@ add_dic_ent(struct seq_ent *seq, struct wt_stat *ws,
   buf = alloca(char_count+1);
   copy_to_buf(buf, s, char_count);
 
-  xs = anthy_cstr_to_xstr(buf, 0);
+  xs = anthy_cstr_to_xstr(buf, ws->encoding);
 
   /* freqが正なのは順変換用 */
   if (is_reverse && ws->freq > 0) {
@@ -249,7 +255,8 @@ add_dic_ent(struct seq_ent *seq, struct wt_stat *ws,
     */
     if (anthy_get_xstr_type(yomi) & XCT_HIRA) {
       freq = normalize_freq(ws);
-      anthy_mem_dic_push_back_dic_ent(seq, yomi, w, ws->wt_name, freq);
+      anthy_mem_dic_push_back_dic_ent(seq, 0, yomi, w,
+				      ws->wt_name, freq, 0);
     }      
     anthy_free_xstr(xs);
     return char_count;
@@ -257,11 +264,11 @@ add_dic_ent(struct seq_ent *seq, struct wt_stat *ws,
 
   freq = normalize_freq(ws);
 
-  anthy_mem_dic_push_back_dic_ent(seq, xs, w, ws->wt_name, freq);
+  anthy_mem_dic_push_back_dic_ent(seq, 0, xs, w, ws->wt_name, freq, 0);
   if (anthy_wtype_get_meisi(w)) {
     /* 連用形が名詞化するやつは名詞化したものも追加 */
     w = anthy_get_wtype_with_ct(w, CT_MEISIKA);
-    anthy_mem_dic_push_back_dic_ent(seq, xs, w, ws->wt_name, freq);
+    anthy_mem_dic_push_back_dic_ent(seq, 0, xs, w, ws->wt_name, freq, 0);
   }
   anthy_free_xstr(xs);
   return char_count;
@@ -303,26 +310,39 @@ add_compound_ent(struct seq_ent *seq, struct wt_stat *ws,
 
   strncpy(buf, &ws->line[ws->offset + 1], len - 1);
   buf[len - 1] = 0;
-  xs = anthy_cstr_to_xstr(buf, 0);
+  xs = anthy_cstr_to_xstr(buf, ws->encoding);
 
   freq = normalize_freq(ws);
-  anthy_mem_dic_push_back_compound_ent(seq, xs, ws->wt, freq);
+  anthy_mem_dic_push_back_dic_ent(seq, 1, xs, ws->wt,
+				  ws->wt_name, freq, 0);
+  anthy_free_xstr(xs);
 
   return len;
 }
 
+static void
+init_wt_stat(struct wt_stat *ws, char *line)
+{
+  ws->wt_name = NULL;
+  ws->freq = 0;
+  ws->feature = 0;
+  ws->order_bonus = 0;
+  ws->offset = 0;
+  ws->line = line;
+  ws->encoding = ANTHY_EUC_JP_ENCODING;
+  if (*(ws->line) == 'u') {
+    ws->encoding = ANTHY_UTF8_ENCODING;
+    ws->line ++;
+  }
+}
+
 /** 辞書のエントリの情報を元にseq_entをうめる */
-void
-anthy_fill_dic_ent(char *dic ,int idx, struct seq_ent *seq, 
-		   xstr* yomi, int is_reverse)
+static void
+fill_dic_ent(char *line, struct seq_ent *seq, 
+	     xstr* yomi, int is_reverse)
 {
   struct wt_stat ws;
-
-  ws.wt_name = NULL;
-  ws.freq = 0;
-  ws.order_bonus = 0;
-  ws.offset = 0;
-  ws.line = &dic[idx];
+  init_wt_stat(&ws, line);
 
   while (ws.line[ws.offset]) {
     if (ws.line[ws.offset] == '#') {
@@ -494,7 +514,7 @@ search_yomi_index(struct word_dic *wdic, xstr *xs)
 {
   int p, o;
   int page_number;
-  char *key = anthy_xstr_to_cstr(xs, 0);
+  char *key = anthy_xstr_to_cstr(xs, ANTHY_UTF8_ENCODING);
 
   p = get_page_index(wdic, key);
   free(key);
@@ -537,11 +557,10 @@ anthy_word_dic_fill_seq_ent_by_xstr(struct word_dic *wdic, xstr *xs,
     /* 該当する読みが辞書中にあれば、それを引数にseq_entを埋める */
     int entry_index = anthy_dic_ntohl(wdic->entry_index[yomi_index]);
     se->seq_type |= ST_WORD;
-    anthy_fill_dic_ent(wdic->entry,
-		       entry_index,
-		       se,
-		       xs,
-		       is_reverse);
+    fill_dic_ent(&wdic->entry[entry_index],
+		 se,
+		 xs,
+		 is_reverse);
 
   }
 }
@@ -564,7 +583,7 @@ anthy_create_word_dic(void)
   /* 辞書ファイルをマップする */
   wdic->dic_file = anthy_file_dic_get_section("word_dic");
 
-  /* 単語辞書のhashを構成する */
+  /* 各セクションのポインタを取得する */
   if (get_word_dic_sections(wdic) == -1) {
     anthy_sfree(word_dic_ator, wdic);
     return 0;

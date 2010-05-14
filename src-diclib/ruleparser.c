@@ -2,7 +2,7 @@
  * 設定ファイルなどのための
  * 汎用のファイル読み込みモジュール
  *
- * Copyright (C) 2000-2004 TABATA Yusuke
+ * Copyright (C) 2000-2006 TABATA Yusuke
  *
  */
 #include <ctype.h>
@@ -24,7 +24,7 @@
 #define PS_EOF 2
 #define PS_RET 3
 
-#define NL "NL"
+const char *NL = "NL";
 
 static struct parser_stat {
   FILE *fp_stack[MAX_INCLUDE_DEPTH];
@@ -101,8 +101,12 @@ mygetc (int *cc)
 static void
 pushchar(struct line_stat *ls, int cc)
 {
-  ls->buf[ls->buf_index] = cc;
-  ls->buf_index ++;
+  if (ls->buf_index == MAX_TOKEN_LEN - 1) {
+    ls->buf[MAX_TOKEN_LEN - 1] = 0;
+  } else {
+    ls->buf[ls->buf_index] = cc;
+    ls->buf_index ++;
+  }
 }
 
 static const char *

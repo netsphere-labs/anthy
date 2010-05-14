@@ -18,11 +18,11 @@ extern "C" {
 
 
 /* Data types */
-struct anthy_conv_stat{
+struct anthy_conv_stat {
   int nr_segment;
 };
 
-struct anthy_segment_stat{
+struct anthy_segment_stat {
   int nr_candidate;
   int seg_len;
 };
@@ -44,7 +44,10 @@ typedef struct anthy_context *anthy_context_t;
 #define ANTHY_COMPILED_ENCODING 0
 #define ANTHY_EUC_JP_ENCODING 1
 #define ANTHY_UTF8_ENCODING 2
-
+/**/
+#define ANTHY_RECONVERT_AUTO 0
+#define ANTHY_RECONVERT_DISABLE 1
+#define ANTHY_RECONVERT_ALWAYS 2
 
 /* Configuration */
 extern int anthy_init(void);
@@ -78,6 +81,8 @@ extern int anthy_set_prediction_string(anthy_context_t, const char*);
 extern int anthy_get_prediction_stat(anthy_context_t, struct anthy_prediction_stat *);
 /* context, nth prediction, buffer, buffer len*/
 extern int anthy_get_prediction(anthy_context_t, int, char*, int);
+#define HAS_ANTHY_COMMIT_PREDICTION
+extern int anthy_commit_prediction(anthy_context_t, int);
 
 /* Etc */
 extern void anthy_print_context(anthy_context_t);
@@ -89,6 +94,8 @@ extern void anthy_set_logger(anthy_logger , int level);
 /* experimental and unstable */
 #define HAS_ANTHY_CONTEXT_SET_ENCODING
 extern int anthy_context_set_encoding(anthy_context_t ac, int encoding);
+#define HAS_ANTHY_SET_RECONVERSION_MODE
+extern int anthy_set_reconversion_mode(anthy_context_t ac, int mode);
 
 #ifdef __cplusplus
 }

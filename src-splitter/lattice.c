@@ -1,12 +1,14 @@
 /*
- * HMMとビタビアルゴリズム(viterbi algoritgm)によって
+ * 確率を評価しビタビアルゴリズム(viterbi algorithm)によって
  * 文節の区切りを決定してマークする。
  *
- * 外部から呼び出される関数
- *  anthy_hmm()
  *
+ * 外部から呼び出される関数
+ *  anthy_mark_borders()
+ *
+ * Copyright (C) 2006-2007 TABATA Yusuke
  * Copyright (C) 2004-2006 YOSHIDA Yuichi
- * Copyright (C) 2006 TABATA Yusuke
+ * Copyright (C) 2006 HANAOKA Toshiyuki
  * 
  */
 /*
@@ -27,7 +29,7 @@
 /*
  * コンテキスト中に存在するmeta_wordをつないでグラフを構成します。
  * (このグラフのことをラティス(lattice/束)もしくはトレリス(trellis)と呼びます)
- * meta_wordどうしの接続がグラフのノードとなり、構造体hmm_nodeの
+ * meta_wordどうしの接続がグラフのノードとなり、構造体lattice_nodeの
  * リンクとして構成されます。
  *
  * ここでの処理は次の二つの要素で構成されます
@@ -44,63 +46,58 @@
 #include <xstr.h>
 #include <segclass.h>
 #include <splitter.h>
-#include <parameter.h>
+#include "feature_set.h"
 #include "wordborder.h"
 
-float anthy_normal_length = 20.0; /* 文節の期待される長さ */
+static float anthy_normal_length = 20.0; /* 文節の期待される長さ */
 
 #define NODE_MAX_SIZE 50
 
-struct feature_list {
-  /* いまのところ、素性は一個 */
-  int index;
-};
-
 /* グラフのノード(遷移状態) */
-struct hmm_node {
+struct lattice_node {
   int border; /* 文字列中のどこから始まる状態か */
-  int nth; /* 現在いくつめの文節か */
   enum seg_class seg_class; /* この状態の品詞 */
 
 
   double real_probability;  /* ここに至るまでの確率(文節数補正無し) */
-  double probability;  /* ここに至るまでの確率(文節数補正有り) */
+  double adjusted_probability;  /* ここに至るまでの確率(文節数補正有り) */
   int score_sum; /* 使用しているmetawordのスコアの合計*/
 
 
-  struct hmm_node* before_node; /* 一つ前の遷移状態 */
+  struct lattice_node* before_node; /* 一つ前の遷移状態 */
   struct meta_word* mw; /* この遷移状態に対応するmeta_word */
 
-  struct hmm_node* next; /* リスト構造のためのポインタ */
+  struct lattice_node* next; /* リスト構造のためのポインタ */
 };
 
 struct node_list_head {
-  struct hmm_node *head;
+  struct lattice_node *head;
   int nr_nodes;
 };
 
-struct hmm_info {
+struct lattice_info {
   /* 遷移状態のリストの配列 */
-  struct node_list_head *hmm_node_list;
+  struct node_list_head *lattice_node_list;
   struct splitter_context *sc;
-  /* HMMノードのアロケータ */
+  /* ノードのアロケータ */
   allocator node_allocator;
 };
 
-/* 素性の重みの行列 */
-static double g_transition[SEG_SIZE*SEG_SIZE] = {
+/* 経験的確率の分布
+ */
+#define TRANSITION_INFO
 #include "transition.h"
-};
 
-
+/*
+ */
 static void
-print_hmm_node(struct hmm_info *info, struct hmm_node *node)
+print_lattice_node(struct lattice_info *info, struct lattice_node *node)
 {
   if (!node) {
-    printf("**hmm_node (null)*\n");
+    printf("**lattice_node (null)*\n");
     return ;
   }
-  printf("**hmm_node score_sum=%d, nth=%d*\n", node->score_sum, node->nth);
+  printf("**lattice_node score_sum=%d*\n", node->score_sum);
   printf("probability=%.128f\n", node->real_probability);
   if (node->mw) {
     anthy_print_metaword(info->sc, node->mw);
@@ -124,121 +121,135 @@ get_poisson(double lambda, int r)
 
 /* 文節の形式からスコアを調整する */
 static double
-get_form_bias(struct hmm_node *node)
+get_form_bias(struct meta_word *mw)
 {
-  struct meta_word *mw = node->mw;
   double bias;
-  int wrap = 0;
+  int len;
   /* wrapされている場合は内部のを使う */
   while (mw->type == MW_WRAP) {
     mw = mw->mw1;
-    wrap = 1;
   }
   /* 文節長による調整 */
-  bias = get_poisson(anthy_normal_length, mw->len);
-  /* 付属語の頻度による調整 */
-  bias *= (mw->dep_score + 1000);
-  bias /= 2000;
+  len = mw->len;
+  bias = get_poisson(anthy_normal_length, len);
   return bias;
 }
 
 static void
-fill_bigram_feature(struct feature_list *features, int from, int to)
+build_feature_list(struct lattice_node *node,
+		   struct feature_list *features)
 {
-  features->index = from * SEG_SIZE + to;
-}
-
-static void
-build_feature_list(struct hmm_node *node, struct feature_list *features)
-{
-  fill_bigram_feature(features, node->before_node->seg_class,
-		      node->seg_class);
+  int pc, cc;
+  if (node) {
+    cc = node->seg_class;
+  } else {
+    cc = SEG_TAIL;
+  }
+  anthy_feature_list_set_cur_class(features, cc);
+  if (node && node->before_node) {
+    pc = node->before_node->seg_class;
+  } else {
+    pc = SEG_HEAD;
+  }
+  anthy_feature_list_set_class_trans(features, pc, cc);
+  
+  if (node && node->mw) {
+    struct meta_word *mw = node->mw;
+    anthy_feature_list_set_dep_class(features, mw->dep_class);
+    anthy_feature_list_set_dep_word(features,
+				    mw->dep_word_hash);
+    anthy_feature_list_set_mw_features(features, mw->mw_features);
+  }
+  anthy_feature_list_sort(features);
 }
 
 static double
-calc_probability(struct feature_list *features)
+calc_probability(int cc, struct feature_list *fl)
 {
-  return g_transition[features->index];
+  struct feature_freq *res;
+  double prob;
+
+  /* 確率を計算する */
+  res = anthy_find_feature_freq(fl, feature_array, total_line_count);
+  if (res) {
+    double pos = res->f[9];
+    double neg = res->f[8];
+    prob = 1 - (neg) / (double) (pos + neg);
+    if (prob < 0) {
+      prob = 1.0f / (double)(total_line_weight * 10);
+    }
+  } else {
+    prob = 1.0f / (double)(total_line_weight * 10);
+  }
+
+  if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_LN) {
+    anthy_feature_list_print(fl);
+    printf(" cc=%d(%s), P=%f\n", cc, anthy_seg_class_name(cc), prob);
+  }
+  return prob;
 }
 
 static double
-get_transition_probability(struct hmm_node *node)
+get_transition_probability(struct lattice_node *node)
 {
   struct feature_list features;
   double probability;
-  if (anthy_seg_class_is_depword(node->seg_class)) {
-    /* 付属語のみの場合 */
-    return probability = 1.0 / SEG_SIZE;
-  } else if (node->seg_class == SEG_FUKUSHI || 
-	     node->seg_class == SEG_RENTAISHI) {
-    /* 副詞、連体詞 */
-    probability = 2.0 / SEG_SIZE;
-  } else if (node->before_node->seg_class == SEG_HEAD &&
-	     (node->seg_class == SEG_SETSUZOKUGO)) {
-    /* 文頭 -> 接続語 */
-    probability = 1.0 / SEG_SIZE;
-  } else if (node->mw && node->mw->type == MW_NOUN_NOUN_PREFIX) {
-    /* 名詞接頭辞と名詞を付けたmeta_word */
-    build_feature_list(node, &features);
-    probability = calc_probability(&features);
-    /**/
-    fill_bigram_feature(&features, SEG_MEISHI, SEG_MEISHI);
-    probability *= calc_probability(&features);
-  } else {
-    /* その他の場合 */
-    build_feature_list(node, &features);
-    probability = calc_probability(&features);
-  }
+
+  /**/
+  anthy_feature_list_init(&features);
+  build_feature_list(node, &features);
+  probability = calc_probability(node->seg_class, &features);
+  anthy_feature_list_free(&features);
+
   /* 文節の形に対する評価 */
-  probability *= get_form_bias(node);
+  probability *= get_form_bias(node->mw);
   return probability;
 }
 
-static struct hmm_info*
-alloc_hmm_info(struct splitter_context *sc, int size)
+static struct lattice_info*
+alloc_lattice_info(struct splitter_context *sc, int size)
 {
   int i;
-  struct hmm_info* info = (struct hmm_info*)malloc(sizeof(struct hmm_info));
+  struct lattice_info* info = (struct lattice_info*)malloc(sizeof(struct lattice_info));
   info->sc = sc;
-  info->hmm_node_list = (struct node_list_head*)
+  info->lattice_node_list = (struct node_list_head*)
     malloc((size + 1) * sizeof(struct node_list_head));
   for (i = 0; i < size + 1; i++) {
-    info->hmm_node_list[i].head = NULL;
-    info->hmm_node_list[i].nr_nodes = 0;
+    info->lattice_node_list[i].head = NULL;
+    info->lattice_node_list[i].nr_nodes = 0;
   }
-  info->node_allocator = anthy_create_allocator(sizeof(struct hmm_node), NULL);
+  info->node_allocator = anthy_create_allocator(sizeof(struct lattice_node),
+						NULL);
   return info;
 }
 
 static void
-calc_node_parameters(struct hmm_node *node)
+calc_node_parameters(struct lattice_node *node)
 {
-  
   /* 対応するmetawordが無い場合は文頭と判断する */
   node->seg_class = node->mw ? node->mw->seg_class : SEG_HEAD; 
 
   if (node->before_node) {
     /* 左に隣接するノードがある場合 */
-    node->nth = node->before_node->nth + 1;
     node->score_sum = node->before_node->score_sum +
       (node->mw ? node->mw->score : 0);
     node->real_probability = node->before_node->real_probability *
       get_transition_probability(node);
-    node->probability = node->real_probability * node->score_sum;
+    node->adjusted_probability = node->real_probability * node->score_sum;
   } else {
     /* 左に隣接するノードが無い場合 */
-    node->nth = 0;
     node->score_sum = 0;
     node->real_probability = 1.0;
-    node->probability = node->real_probability;
+    node->adjusted_probability = node->real_probability;
   }
 }
 
-static struct hmm_node*
-alloc_hmm_node(struct hmm_info *info, struct hmm_node* before_node,
-	       struct meta_word* mw, int border)
+static struct lattice_node*
+alloc_lattice_node(struct lattice_info *info,
+		   struct lattice_node* before_node,
+		   struct meta_word* mw, int border)
 {
-  struct hmm_node* node;
+  struct lattice_node* node;
   node = anthy_smalloc(info->node_allocator);
   node->before_node = before_node;
   node->border = border;
@@ -251,21 +262,21 @@ alloc_hmm_node(struct hmm_info *info, struct hmm_node* before_node,
 }
 
 static void 
-release_hmm_node(struct hmm_info *info, struct hmm_node* node)
+release_lattice_node(struct lattice_info *info, struct lattice_node* node)
 {
   anthy_sfree(info->node_allocator, node);
 }
 
 static void
-release_hmm_info(struct hmm_info* info)
+release_lattice_info(struct lattice_info* info)
 {
   anthy_free_allocator(info->node_allocator);
-  free(info->hmm_node_list);
+  free(info->lattice_node_list);
   free(info);
 }
 
 static int
-cmp_node_by_type(struct hmm_node *lhs, struct hmm_node *rhs,
+cmp_node_by_type(struct lattice_node *lhs, struct lattice_node *rhs,
 		 enum metaword_type type)
 {
   if (lhs->mw->type == type && rhs->mw->type != type) {
@@ -278,7 +289,7 @@ cmp_node_by_type(struct hmm_node *lhs, struct hmm_node *rhs,
 }
 
 static int
-cmp_node_by_type_to_type(struct hmm_node *lhs, struct hmm_node *rhs,
+cmp_node_by_type_to_type(struct lattice_node *lhs, struct lattice_node *rhs,
 			 enum metaword_type type1, enum metaword_type type2)
 {
   if (lhs->mw->type == type1 && rhs->mw->type == type2) {
@@ -299,10 +310,10 @@ cmp_node_by_type_to_type(struct hmm_node *lhs, struct hmm_node *rhs,
  * -1: rhsの方が確率が高い
  */
 static int
-cmp_node(struct hmm_node *lhs, struct hmm_node *rhs)
+cmp_node(struct lattice_node *lhs, struct lattice_node *rhs)
 {
-  struct hmm_node *lhs_before = lhs;
-  struct hmm_node *rhs_before = rhs;
+  struct lattice_node *lhs_before = lhs;
+  struct lattice_node *rhs_before = rhs;
   int ret;
 
   if (lhs && !rhs) return 1;
@@ -332,9 +343,9 @@ cmp_node(struct hmm_node *lhs, struct hmm_node *rhs)
   }
 
   /* 最後に遷移確率を見る */
-  if (lhs->probability > rhs->probability) {
+  if (lhs->adjusted_probability > rhs->adjusted_probability) {
     return 1;
-  } else if (lhs->probability < rhs->probability) {
+  } else if (lhs->adjusted_probability < rhs->adjusted_probability) {
     return -1;
   } else {
     return 0;
@@ -345,20 +356,21 @@ cmp_node(struct hmm_node *lhs, struct hmm_node *rhs)
  * 構成中のラティスにノードを追加する
  */
 static void
-push_node(struct hmm_info* info, struct hmm_node* new_node, int position)
+push_node(struct lattice_info* info, struct lattice_node* new_node,
+	  int position)
 {
-  struct hmm_node* node;
-  struct hmm_node* previous_node = NULL;
+  struct lattice_node* node;
+  struct lattice_node* previous_node = NULL;
 
-  if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_HM) {
-    print_hmm_node(info, new_node);
+  if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_LN) {
+    print_lattice_node(info, new_node);
   }
 
   /* 先頭のnodeが無ければ無条件に追加 */
-  node = info->hmm_node_list[position].head;
+  node = info->lattice_node_list[position].head;
   if (!node) {
-    info->hmm_node_list[position].head = new_node;
-    info->hmm_node_list[position].nr_nodes ++;
+    info->lattice_node_list[position].head = new_node;
+    info->lattice_node_list[position].nr_nodes ++;
     return;
   }
 
@@ -374,14 +386,14 @@ push_node(struct hmm_info* info, struct hmm_node* new_node, int position)
 	if (previous_node) {
 	  previous_node->next = new_node;
 	} else {
-	  info->hmm_node_list[position].head = new_node;
+	  info->lattice_node_list[position].head = new_node;
 	}
 	new_node->next = node->next;
-	release_hmm_node(info, node);
+	release_lattice_node(info, node);
 	break;
       case -1:
 	/* そうでないなら削除 */
-	release_hmm_node(info, new_node);
+	release_lattice_node(info, new_node);
 	break;
       }
       return;
@@ -391,17 +403,17 @@ push_node(struct hmm_info* info, struct hmm_node* new_node, int position)
   }
   /* 最後のノードの後ろに追加 */
   node->next = new_node;
-  info->hmm_node_list[position].nr_nodes ++;
+  info->lattice_node_list[position].nr_nodes ++;
 }
 
 /* 一番確率の低いノードを消去する*/
 static void
-remove_min_node(struct hmm_info *info, struct node_list_head *node_list)
+remove_min_node(struct lattice_info *info, struct node_list_head *node_list)
 {
-  struct hmm_node* node = node_list->head;
-  struct hmm_node* previous_node = NULL;
-  struct hmm_node* min_node = node;
-  struct hmm_node* previous_min_node = NULL;
+  struct lattice_node* node = node_list->head;
+  struct lattice_node* previous_node = NULL;
+  struct lattice_node* min_node = node;
+  struct lattice_node* previous_min_node = NULL;
 
   /* 一番確率の低いノードを探す */
   while (node) {
@@ -419,23 +431,23 @@ remove_min_node(struct hmm_info *info, struct node_list_head *node_list)
   } else {
     node_list->head = min_node->next;
   }
-  release_hmm_node(info, min_node);
+  release_lattice_node(info, min_node);
   node_list->nr_nodes --;
 }
 
 /* いわゆるビタビアルゴリズムを使用して経路を選ぶ */
 static void
-choose_path(struct hmm_info* info, int to)
+choose_path(struct lattice_info* info, int to)
 {
   /* 最後まで到達した遷移のなかで一番確率の大きいものを選ぶ */
-  struct hmm_node* node;
-  struct hmm_node* best_node = NULL;
+  struct lattice_node* node;
+  struct lattice_node* best_node = NULL;
   int last = to; 
-  while (!info->hmm_node_list[last].head) {
+  while (!info->lattice_node_list[last].head) {
     /* 最後の文字まで遷移していなかったら後戻り */
     --last;
   }
-  for (node = info->hmm_node_list[last].head; node; node = node->next) {
+  for (node = info->lattice_node_list[last].head; node; node = node->next) {
     if (cmp_node(node, best_node) > 0) {
       best_node = node;
     }
@@ -446,71 +458,80 @@ choose_path(struct hmm_info* info, int to)
 
   /* 遷移を逆にたどりつつ文節の切れ目を記録 */
   node = best_node;
+  if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_LN) {
+    printf("choose_path()\n");
+  }
   while (node->before_node) {
     info->sc->word_split_info->best_seg_class[node->border] =
       node->seg_class;
     anthy_mark_border_by_metaword(info->sc, node->mw);
+    /**/
+    if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_LN) {
+      print_lattice_node(info, node);
+    }
+    /**/
     node = node->before_node;
   }
 }
 
 static void
-build_hmm_graph(struct hmm_info* info, int from, int to)
+build_graph(struct lattice_info* info, int from, int to)
 {
   int i;
-  struct hmm_node* node;
-  struct hmm_node* left_node;
+  struct lattice_node* node;
+  struct lattice_node* left_node;
 
   /* 始点となるノードを追加 */
-  node = alloc_hmm_node(info, NULL, NULL, from);
+  node = alloc_lattice_node(info, NULL, NULL, from);
   push_node(info, node, from);
 
-  /* info->hmm_list[index]にはindexまでの遷移が入っているのであって、
+  /* info->lattice_node_list[index]にはindexまでの遷移が入っているのであって、
    * indexからの遷移が入っているのではない 
    */
 
   /* 全ての遷移を左から試す */
   for (i = from; i < to; ++i) {
-    for (left_node = info->hmm_node_list[i].head; left_node;
+    for (left_node = info->lattice_node_list[i].head; left_node;
 	 left_node = left_node->next) {
       struct meta_word *mw;
-      /* i文字目に到達するhmm_nodeのループ */
+      /* i文字目に到達するlattice_nodeのループ */
 
       for (mw = info->sc->word_split_info->cnode[i].mw; mw; mw = mw->next) {
 	int position;
-	struct hmm_node* new_node;
+	struct lattice_node* new_node;
 	/* i文字目からのmeta_wordのループ */
 
 	if (mw->can_use != ok) {
 	  continue; /* 決められた文節の区切りをまたぐmetawordは使わない */
 	}
 	position = i + mw->len;
-	new_node = alloc_hmm_node(info, left_node, mw, i);
+	new_node = alloc_lattice_node(info, left_node, mw, i);
 	push_node(info, new_node, position);
 
 	/* 解の候補が多すぎたら、確率の低い方から削る */
-	if (info->hmm_node_list[position].nr_nodes >= NODE_MAX_SIZE) {
-	  remove_min_node(info, &info->hmm_node_list[position]);
+	if (info->lattice_node_list[position].nr_nodes >= NODE_MAX_SIZE) {
+	  remove_min_node(info, &info->lattice_node_list[position]);
 	}
       }
     }
   }
 
   /* 文末補正 */
-  for (node = info->hmm_node_list[to].head; node; node = node->next) {
+  for (node = info->lattice_node_list[to].head; node; node = node->next) {
     struct feature_list features;
-    fill_bigram_feature(&features, node->seg_class, SEG_TAIL);
-    node->probability = node->probability *
-      calc_probability(&features);
+    anthy_feature_list_init(&features);
+    build_feature_list(NULL, &features);
+    node->adjusted_probability = node->adjusted_probability *
+      calc_probability(SEG_TAIL, &features);
+    anthy_feature_list_free(&features);
   }
 }
 
 void
-anthy_hmm(struct splitter_context *sc, int from, int to)
+anthy_mark_borders(struct splitter_context *sc, int from, int to)
 {
-  struct hmm_info* info = alloc_hmm_info(sc, to);
-  build_hmm_graph(info, from, to);
+  struct lattice_info* info = alloc_lattice_info(sc, to);
+  build_graph(info, from, to);
   choose_path(info, to);
-  release_hmm_info(info);
+  release_lattice_info(info);
 }
-

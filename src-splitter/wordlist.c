@@ -7,9 +7,9 @@
  *  anthy_commit_word_listでsplitter_contextに追加される
  *
  * Funded by IPA未踏ソフトウェア創造事業 2002 2/27
- * Copyright (C) 2000-2004 TABATA Yusuke
- * Copyright (C) 2004 YOSHIDA Yuichi
- * Copyright (C) 2000-2003 TABATA Yusuke, UGAWA Tomoharu
+ * Copyright (C) 2000-2006 TABATA Yusuke
+ * Copyright (C) 2004-2006 YOSHIDA Yuichi
+ * Copyright (C) 2000-2003 UGAWA Tomoharu
  *
  * $Id: wordlist.c,v 1.50 2002/11/17 14:45:47 yusuke Exp $
  *
@@ -28,10 +28,6 @@
 #include <dic.h>
 #include <splitter.h>
 #include "wordborder.h"
-
-int anthy_score_per_freq = 55;
-int anthy_score_per_depword = 950;
-int anthy_score_per_len = 2;
 
 /* デバッグ用 */
 void
@@ -67,6 +63,13 @@ anthy_print_word_list(struct splitter_context *sc,
   printf(" %d %s\n", wl->score, anthy_seg_class_name(wl->seg_class));
 }
 
+int
+anthy_dep_word_hash(xstr *xs)
+{
+  /* hash collisionが出たら適宜増やす */
+  return anthy_xstr_hash(xs) & 511;
+}
+
 /** word_listを評価する */
 static void
 eval_word_list(struct word_list *wl)
@@ -74,9 +77,7 @@ eval_word_list(struct word_list *wl)
   struct part_info *part = wl->part;
 
   /* 自立語のスコアと頻度による加点 */
-  wl->score += part[PART_CORE].freq * anthy_score_per_freq;
-  /* 付属語に対する加点 */
-  wl->score += wl->dep_score;
+  wl->score += part[PART_CORE].freq * 10 + 1000;
 }
 
 /** word_listを比較する、枝刈りのためなので、
@@ -88,6 +89,8 @@ word_list_same(struct word_list *wl1, struct word_list *wl2)
       wl1->score != wl2->score ||
       wl1->from != wl2->from ||
       wl1->len != wl2->len ||
+      wl1->tail_ct != wl2->tail_ct ||
+      wl1->part[PART_CORE].len != wl2->part[PART_CORE].len ||
       !anthy_wtype_equal(wl1->part[PART_CORE].wt, wl2->part[PART_CORE].wt) ||
       wl1->head_pos != wl2->head_pos) {
     return 0;
@@ -95,9 +98,34 @@ word_list_same(struct word_list *wl1, struct word_list *wl2)
   if (wl1->part[PART_DEPWORD].dc != wl2->part[PART_DEPWORD].dc) {
     return 0;
   }
+  /* 同じと判断 */
   return 1;
- }
+}
 
+static void
+set_features(struct word_list *wl)
+{
+  if (anthy_wtype_get_pos(wl->part[PART_CORE].wt) == POS_NOUN &&
+      anthy_wtype_get_sv(wl->part[PART_CORE].wt)) {
+    wl->mw_features |= MW_FEATURE_SV;
+  }
+  if (wl->part[PART_POSTFIX].len || wl->part[PART_PREFIX].len) {
+    wl->mw_features |= MW_FEATURE_SUFFIX;
+  }
+  if (anthy_wtype_get_pos(wl->part[PART_CORE].wt) == POS_NUMBER) {
+    wl->mw_features |= MW_FEATURE_NUM;
+  }
+  if (wl->part[PART_CORE].len == 1) {
+    wl->mw_features |= MW_FEATURE_CORE1;
+  }
+  if (wl->part[PART_CORE].len == 0) {
+    wl->mw_features |= MW_FEATURE_DEP_ONLY;
+  }
+  if (anthy_get_seq_ent_wtype_feature(wl->part[PART_CORE].seq,
+				      wl->part[PART_CORE].wt)) {
+    wl->mw_features |= MW_FEATURE_HIGH_FREQ;
+  }
+}
 
 /** 作ったword_listのスコアを計算してからコミットする */
 void 
@@ -105,6 +133,7 @@ anthy_commit_word_list(struct splitter_context *sc,
 		       struct word_list *wl)
 {
   struct word_list *tmp;
+  xstr xs;
 
   /* 付属語だけのword_listで、長さ0のもやってくるので */
   if (wl->len == 0) return;
@@ -113,8 +142,14 @@ anthy_commit_word_list(struct splitter_context *sc,
 
   /* 点数計算 */
   eval_word_list(wl);
-  /* hmmで使用するクラスの設定 */
+  /**/
+  set_features(wl);
+  /* 文節境界の検索で使用するクラスの設定 */
   anthy_set_seg_class(wl);
+  /**/
+  xs.len = wl->part[PART_DEPWORD].len;
+  xs.str = sc->ce[wl->part[PART_POSTFIX].from + wl->part[PART_POSTFIX].len].c;
+  wl->dep_word_hash = anthy_dep_word_hash(&xs);
 
   /* 同じ内容のword_listがないかを調べる */
   for (tmp = sc->word_split_info->cnode[wl->from].wl; tmp; tmp = tmp->next) {
@@ -135,9 +170,7 @@ anthy_commit_word_list(struct splitter_context *sc,
 struct word_list *
 anthy_alloc_word_list(struct splitter_context *sc)
 {
-  struct word_list* wl;
-  wl = anthy_smalloc(sc->word_split_info->WlAllocator);
-  return wl;
+  return anthy_smalloc(sc->word_split_info->WlAllocator);
 }
 
 /* 後続の活用語尾、助詞、助動詞を付ける */
@@ -269,9 +302,10 @@ make_pre_words(struct splitter_context *sc,
 {
   int i;
   wtype_t core_wt = tmpl->part[PART_CORE].wt;
+  int core_is_num = 0;
   /* 自立語は数詞か？ */
   if (!anthy_wtype_include(anthy_wtype_num_noun, core_wt)) {
-    return ;
+    core_is_num = 1;
   }
   /* 接頭辞を列挙する */
   for (i = 1; 
@@ -285,13 +319,18 @@ make_pre_words(struct splitter_context *sc,
     pre = anthy_get_seq_ent_from_xstr(&xs, sc->is_reverse);
     if (anthy_get_seq_ent_pos(pre, POS_PRE)) {
       struct word_list new_tmpl;
-      if (anthy_get_seq_ent_wtype_freq(pre, anthy_wtype_num_prefix)) {
+      if (core_is_num &&
+	  anthy_get_seq_ent_wtype_freq(pre, anthy_wtype_num_prefix)) {
 	new_tmpl = *tmpl;
 	push_part_front(&new_tmpl, i, pre, anthy_wtype_num_prefix);
 	make_following_word_list(sc, &new_tmpl);
 	/* 数の場合は接尾辞もくっつける */
 	make_suc_words(sc, &new_tmpl);
-      }
+      }/* else if (anthy_get_seq_ent_wtype_freq(pre, anthy_wtype_prefix)) {
+	new_tmpl = *tmpl;
+	push_part_front(&new_tmpl, i, pre, anthy_wtype_prefix);
+	make_following_word_list(sc, &new_tmpl);
+	}*/
     }
   }
 }
@@ -311,14 +350,14 @@ setup_word_list(struct word_list *wl, int from, int len, int is_compound)
     wl->part[i].wt = anthy_wt_none;
     wl->part[i].seq = 0;
     wl->part[i].freq = 1;/* 頻度の低い単語としておく */
-    wl->part[i].dc = DEP_RAW;
+    wl->part[i].dc = DEP_NONE;
   }
   /* 自立語のパートを設定 */
   wl->part[PART_CORE].from = from;
   wl->part[PART_CORE].len = len;
   /**/
   wl->score = 0;
-  wl->dep_score = RATIO_BASE;
+  wl->mw_features = MW_FEATURE_NONE;
   wl->node_id = -1;
   wl->last_part = PART_CORE;
   wl->head_pos = POS_NONE;
@@ -362,8 +401,8 @@ make_word_list(struct splitter_context *sc,
 	xs.str = sc->ce[tmpl.part[PART_CORE].from].c;
 	xs.len = tmpl.part[PART_CORE].len;
 	anthy_putxstr(&xs);
-	printf(" freq=%d node_id=%d\n",
-	       freq, rule.node_id);
+	printf(" freq=%d rule_id=%d node_id=%d\n",
+	       freq, i, rule.node_id);
       }
       /* 遷移したルールの情報を転記する */
       tmpl.part[PART_CORE].wt = rule.wt;
@@ -397,12 +436,11 @@ make_dummy_head(struct splitter_context *sc)
   tmpl.part[PART_CORE].wt = anthy_wtype_noun;
 
   tmpl.score = 0;
-  tmpl.dep_score = RATIO_BASE;
   tmpl.head_pos = anthy_wtype_get_pos(tmpl.part[PART_CORE].wt);
   make_suc_words(sc, &tmpl);
 }
 
-/* コンテキストの文字列中の全てのword_listを列挙する */
+/* コンテキストに設定された文字列の部分文字列から全てのword_listを列挙する */
 void 
 anthy_make_word_list_all(struct splitter_context *sc)
 {
@@ -421,6 +459,10 @@ anthy_make_word_list_all(struct splitter_context *sc)
   info = sc->word_split_info;
   head = NULL;
   de_ator = anthy_create_allocator(sizeof(struct depword_ent), 0);
+
+  xs.str = sc->ce[0].c;
+  xs.len = sc->char_count;
+  anthy_gang_load_dic(&xs);
 
   /* 全ての自立語を列挙 */
   /* 開始地点のループ */
@@ -466,7 +508,7 @@ anthy_make_word_list_all(struct splitter_context *sc)
 	head = de;
       }
       /* 発見した複合語をリストに追加 */
-      if (anthy_get_nr_compound_ents(se) > 0) {
+      if (anthy_has_compound_ents(se)) {
 	de = (struct depword_ent *)anthy_smalloc(de_ator);
 	de->from = i;
 	de->len = j;

@@ -175,43 +175,56 @@ learn_ochaire(struct splitter_context *sc,
   anthy_truncate_section(MAX_OCHAIRE_ENTRY_COUNT);
 }
 
+static int
+learn_prediction_str(xstr *idx, xstr *xs)
+{
+  int nr_predictions;
+  int i;
+  time_t t = time(NULL);
+  if (anthy_select_row(idx, 1)) {
+    return 0;
+  }
+  nr_predictions = anthy_get_nr_values();
+
+  /* 既に履歴にある場合はタイムスタンプだけ更新 */
+  for (i = 0; i < nr_predictions; i += 2) {
+    xstr *log = anthy_get_nth_xstr(i + 1);
+    if (!log) {
+      continue;
+    }
+    if (anthy_xstrcmp(log, xs) == 0) {
+      anthy_set_nth_value(i, t);
+      break;
+    }
+  }
+
+  /* ない場合は末尾に追加 */
+  if (i == nr_predictions) {
+    anthy_set_nth_value(nr_predictions, t);
+    anthy_set_nth_xstr(nr_predictions + 1, xs);      
+    anthy_mark_row_used();
+    return 1;
+  }
+  anthy_mark_row_used();
+  return 0;
+}
+
 static void
 learn_prediction(struct segment_list *sl)
 {
-  int i, j;
+  int i;
   int added = 0;
   if (anthy_select_section("PREDICTION", 1)) {
     return ;
   }
   for (i = 0; i < sl->nr_segments; i++) {
     struct seg_ent *seg = anthy_get_nth_segment(sl, i);
-    int nr_predictions;
-    time_t t = time(NULL);
     xstr *xs = &seg->cands[seg->committed]->str;
 
     if (seg->committed < 0) {
       continue;
     }
-    if (anthy_select_row(&seg->str, 1)) {
-      continue;
-    }
-    nr_predictions = anthy_get_nr_values();
-
-    /* 既に履歴にある場合はタイムスタンプだけ更新 */
-    for (j = 0; j < nr_predictions; j += 2) {
-      xstr *log = anthy_get_nth_xstr(j + 1);
-      if (!log) {
-	continue;
-      }
-      if (anthy_xstrcmp(log, xs) == 0) {
-	anthy_set_nth_value(j, t);
-	break;
-      }
-    }
-    /* ない場合は末尾に追加 */
-    if (j == nr_predictions) {
-      anthy_set_nth_value(nr_predictions, t);
-      anthy_set_nth_xstr(nr_predictions + 1, xs);      
+    if (learn_prediction_str(&seg->str, xs)) {
       added = 1;
     }
   }
@@ -231,6 +244,15 @@ learn_unknown(struct segment_list *sl)
       anthy_add_unknown_word(&seg->str, &ce->str);
     }
   }
+}
+
+void
+anthy_do_commit_prediction(xstr *src, xstr *xs)
+{
+  if (anthy_select_section("PREDICTION", 1)) {
+    return ;
+  }
+  learn_prediction_str(src, xs);
 }
 
 void

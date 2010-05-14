@@ -142,7 +142,6 @@ eval_candidate_by_metaword(struct seg_ent *seg,
   /* まず、単語の頻度によるscoreを加算 */
   for (i = 0; i < ce->nr_words; i++) {
     struct cand_elm *elm = &ce->elm[i];
-    int one_score;
     int pos, div = 1;
     int freq;
 
@@ -155,35 +154,21 @@ eval_candidate_by_metaword(struct seg_ent *seg,
     if (pos == POS_PRE || pos == POS_SUC) {
       div = 4;
     }
-    /*
-      頻度とelm->ratioは殆んど比例関係なので両方使用するのは不適当？
-     */
+
     freq = anthy_get_nth_dic_ent_freq(elm->se, elm->nth);
-    one_score = freq * elm->ratio / RATIO_BASE;
-    one_score /= div;
-    score += INT_MAX / 256 / (one_score ? one_score : 1);
+    score += freq / div;
   }
-  score = INT_MAX / 256 / (score * ce->nr_words);
+  /*score = INT_MAX / 256 / (score * ce->nr_words);*/
 
   if (ce->mw) {
-    /* もしその文節で一番評価が高かった品詞と候補の品詞が一致していたら加点 */
-    if (ce->mw->seg_class == seg->best_seg_class) {
-      if (anthy_seg_class_is_depword(seg->best_seg_class)) {
-	score = DEPWORD_BASE;
-      } else {
-	score *= 5;
-      }
-    }
+    score *= ce->mw->struct_score;
+    score /= RATIO_BASE;
   }
   /* 自立語部の割合いに対する調整 */
   assigned_len = seg->len - unassigned_len;
   score = score * (assigned_len + 1) * (assigned_len + 1)
       /((seg->len + 1)*(seg->len + 1));
   ce->score = score;
-
-  /**/
-  ce->score *= ce->mw->dep_score;
-  ce->score /= RATIO_BASE;
 }
 
 /* 候補を評価する */
@@ -206,11 +191,12 @@ eval_candidate(struct seg_ent *seg, struct cand_ent *ce, int uncertain)
     ce->score = COMPOUND_PART_BASE;
   } else if (ce->flag & CEF_BEST) {
     ce->score = OCHAIRE_BASE;
-  } else if (ce->flag & (CEF_HIRAGANA | CEF_KATAKANA | CEF_GUESS)) {
+  } else if (ce->flag & (CEF_HIRAGANA | CEF_KATAKANA |
+			 CEF_GUESS)) {
     if (uncertain) {
       /*
-       * この文節は外来語などで、生成した候補よりもひらがなカタカナの
-       * 候補を出した方がよい
+       * この文節は外来語などのようなので、生成した候補よりも
+       * ひらがなカタカナの候補を出した方がよい
        */
       ce->score = NOCONV_WITH_BIAS;
       if (CEF_KATAKANA & ce->flag) {

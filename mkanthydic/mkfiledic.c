@@ -188,7 +188,6 @@ main(int argc, char* argv[])
   struct header_entry entries[] = {
     {"word_dic", "/mkworddic/anthy.wdic"},
     {"dep_dic", "/depgraph/anthy.dep"},
-    {"matrix", "/mkmatrix/matrix"},
   };
 
   for (i = 1; i < argc; i++) {

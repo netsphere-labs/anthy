@@ -144,8 +144,12 @@
 {"#kxure",POS_V,COS_NONE,SCOS_NONE,CC_KV,CT_KATEI,WF_INDEP /* "カ変動詞(くれ)"*/},
 {"#kxuru",POS_V,COS_NONE,SCOS_NONE,CC_KV,CT_SYUSI,WF_INDEP /* "カ変動詞(くる)"*/},
 {"#kxya",POS_V,COS_NONE,SCOS_NONE,CC_KV,CT_NONE,WF_INDEP  /* "カ変動詞(くりゃ)"*/},
-{"#sxi",POS_V,COS_NONE,SCOS_NONE,CC_SV,CT_MIZEN,WF_NONE},
-{"#sxiro",POS_V,COS_NONE,SCOS_NONE,CC_SV,CT_MEIREI,WF_NONE},
+  /* サ変「する」 */
+{"#sxi",POS_V,COS_NONE,SCOS_NONE,CC_SRV,CT_MIZEN,WF_INDEP   /* "する未然形(し)"*/},
+{"#sxe",POS_V,COS_NONE,SCOS_NONE,CC_SRV,CT_MIZEN,WF_INDEP   /* "する未然形(せ)"*/},
+{"#sxi2",POS_V,COS_NONE,SCOS_NONE,CC_SRV,CT_RENYOU,WF_INDEP   /* "する連用形(し)"*/},
+{"#sxiro",POS_V,COS_NONE,SCOS_NONE,CC_SRV,CT_MEIREI,WF_INDEP   /*"する命令形(しろ)"*/},
+{"#sxeyo",POS_V,COS_NONE,SCOS_NONE,CC_SRV,CT_MEIREI,WF_INDEP   /*"する命令形(せよ)"*/},
   /* 独自拡張 */
 {"#NONE",POS_INVAL,COS_NONE,SCOS_NONE,CC_NONE,CT_NONE,WF_NONE},
 {"#N04",POS_NUMBER,COS_NN,SCOS_N1,CC_NONE,CT_NONE,WF_NONE},/*いち、に、さん…*/

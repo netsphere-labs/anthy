@@ -2,6 +2,8 @@
 #ifndef _ordering_h_included_
 #define _ordering_h_included_
 
+#include <xstr.h>
+
 struct segment_list;
 struct splitter_context;
 
@@ -20,5 +22,7 @@ void anthy_init_ordering_context(struct segment_list *,
 void anthy_release_ordering_context(struct segment_list *,
 				    struct ordering_context_wrapper *);
 void anthy_sort_metaword(struct segment_list *seg);
+
+void anthy_do_commit_prediction(xstr *src, xstr *xs);
 
 #endif

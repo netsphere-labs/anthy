@@ -59,15 +59,20 @@ enum metaword_type {
   /* 数字 */
   MW_NUMBER,
   /**/
-  MW_NOUN_NOUN_PREFIX,
+  MW_NOUN_NOUN_SUFFIX,
   MW_OCHAIRE,
-  /* 主語述語の関係 */
-  MW_SENTENCE,
-  /* 修飾、披修飾の関係 */
-  MW_MODIFIED,
   /**/
   MW_END
 };
+
+#define MW_FEATURE_NONE 0
+#define MW_FEATURE_SV 1
+#define MW_FEATURE_WEAK 2
+#define MW_FEATURE_SUFFIX 4
+#define MW_FEATURE_NUM 16
+#define MW_FEATURE_CORE1 32
+#define MW_FEATURE_DEP_ONLY 64
+#define MW_FEATURE_HIGH_FREQ 128
 
 /*
  * meta_word: 境界の検索の対象となるもの
@@ -76,10 +81,16 @@ enum metaword_type {
  */
 struct meta_word {
   int from, len;
+  /* 文節境界の検出に使用するスコア */
   int score;
-  int dep_score;
+  /* 候補の生成の時に使用するスコア */
+  int struct_score;
+  /* 形式の情報 */
+  int dep_word_hash;
+  int mw_features;
+  enum dep_class dep_class;
+  /**/
   enum seg_class seg_class;
-  int mw_count;/* metawordの数 */
   enum constraint_stat can_use; /* セグメント境界に跨がっていない */
   enum metaword_type type;
   struct word_list *wl;
@@ -90,10 +101,6 @@ struct meta_word {
 
   /* listのリンク */
   struct meta_word *next;
-  struct meta_word *composed;
-
-  /* 以下は構造をコミットしたときに使うメンバ */
-  struct meta_word *parent;
 };
 
 int anthy_init_splitter(void);
@@ -112,8 +119,9 @@ void anthy_release_split_context(struct splitter_context *c);
 /* 作り出した文節の情報を取得する */
 int anthy_get_nr_metaword(struct splitter_context *, int from, int len);
 struct meta_word *anthy_get_nth_metaword(struct splitter_context *,
-				 int from, int len, int nth);
-
+					 int from, int len, int nth);
+/**/
+int anthy_dep_word_hash(xstr *xs);
 
 
 #endif

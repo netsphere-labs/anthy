@@ -9,7 +9,7 @@
 #include "diclib_inner.h"
 
 /**
-   リンク辞書
+   複数セクションがリンクされた辞書
  */
 struct file_dic
 {

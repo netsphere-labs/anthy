@@ -72,6 +72,12 @@ anthy_mmap(const char *fn, int wr)
   r = fstat(fd, &st);
   if (r == -1) {
     anthy_log(0, "Failed to stat() (%s).\n", fn);
+    close(fd);
+    return NULL;
+  }
+  if (st.st_size == 0) {
+    anthy_log(0, "Failed to mmap 0size file (%s).\n", fn);
+    close(fd);
     return NULL;
   }
 

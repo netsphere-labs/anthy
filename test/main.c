@@ -25,10 +25,8 @@
 #include <time.h>
 
 #include <anthy.h>
+#include <convdb.h>
 #include <config.h>
-#ifdef USE_UCS4
-#include <langinfo.h>
-#endif
 
 /* Makefile の $(srcdir) (静的データファイルの基準ディレクトリ) */
 #ifndef SRCDIR
@@ -47,40 +45,6 @@ const char *testdata = SRCDIR "/" TESTDATA;
 #define EXPDATA "test.exp"
 const char *expdata = SRCDIR "/" EXPDATA;
 
-/* 不明, OK, 誤変換, don't careの4つのカテゴリーに分類する */
-#define CHK_UNKNOWN 0
-#define CHK_OK 1
-#define CHK_MISS 2
-#define CHK_DONTCARE 3
-
-/* 変換前と変換後の文字列、結果に対する判定を格納する */
-struct conv_res {
-  char *src_str;
-  char *res_str;
-  int check;
-  int used;
-  /**/
-  struct conv_res *next;
-};
-
-/* 変換結果のカウント */
-struct res_stat {
-  int unknown;
-  int ok;
-  int miss;
-  int dontcare;
-};
-
-/* 変換結果のデータベース */
-struct res_db {
-  /**/
-  struct conv_res res_list;
-  struct conv_res *tail;
-  /**/
-  int total;
-  struct res_stat res, split;
-};
-
 struct input {
   char *str;
   int serial;
@@ -96,110 +60,8 @@ struct condition {
   int ask;
   int quiet;
   int miss_only;
+  int use_utf8;
 };
-
-static struct conv_res *
-find_conv_res(struct res_db *db, const char *src, const char *res)
-{
-  struct conv_res *cr;
-  for (cr = db->res_list.next; cr; cr = cr->next) {
-    if (!strcmp(cr->res_str, res) &&
-	!strcmp(cr->src_str, src)) {
-      return cr;
-    }
-  }
-  cr = (struct conv_res *)malloc(sizeof(struct conv_res));
-  cr->src_str = strdup(src);
-  cr->res_str = strdup(res);
-  cr->check = CHK_UNKNOWN;
-  cr->used = 0;
-  /**/
-  db->tail->next = cr;
-  cr->next = NULL;
-  db->tail = cr;
-  return cr;
-}
-
-static void
-chomp_line(char *buf)
-{
-  int len = strlen(buf);
-  if (buf[len-1] == '\n') {
-    buf[len-1] = 0;
-  }
-}
-
-static struct res_db *
-read_db(const char *fn)
-{
-  struct res_db *db;
-  FILE *fp;
-  char line[1024];
-
-  db = malloc(sizeof(struct res_db));
-  db->res_list.next = NULL;
-  db->tail = &db->res_list;
-  db->total = 0;
-  db->res.unknown = 0;
-  db->res.ok = 0;
-  db->res.miss = 0;
-  db->res.dontcare = 0;
-  db->split.unknown = 0;
-  db->split.ok = 0;
-  db->split.miss = 0;
-  db->split.dontcare = 0;
-
-  if (!fn) {
-    return db;
-  }
-  fp = fopen(fn, "r");
-  if (!fp) {
-    return db;
-  }
-  while (fgets(line, 1024, fp)) {
-    char src[1024], res[1024], check[1024];
-    struct conv_res *cr;
-    chomp_line(line);
-    if (sscanf(line, "%s %s %s", src, res, check) != 3) {
-      continue;
-    }
-    cr = find_conv_res(db, src, res);
-    if (check[0] == 'O') {
-      cr->check = CHK_OK;
-    } else if (check[0] == 'X') {
-      cr->check = CHK_MISS;
-    } else if (check[0] == '*') {
-      cr->check = CHK_DONTCARE;
-    } else {
-      cr->check = CHK_UNKNOWN;
-    }
-  }
-  return db;
-}
-
-static void
-get_res(anthy_context_t ac, char *res_buf, int conv)
-{
-  struct anthy_conv_stat acs;
-  int i;
-
-  anthy_get_stat(ac, &acs);
-  res_buf[0] = 0;
-  if (!conv) {
-    strcat(res_buf, "|");
-  }
-  for (i = 0; i < acs.nr_segment; i++) {
-    char buf[1024];
-    if (conv) {
-      anthy_get_segment(ac, i, 0, buf, 1024);
-      strcat(res_buf, buf);
-    } else {
-      anthy_get_segment(ac, i, NTH_UNCONVERTED_CANDIDATE, buf, 1024);
-      strcat(res_buf, buf);
-      strcat(res_buf, "|");
-    }
-  }
-}
 
 static int
 read_file(FILE *fp, struct input *in)
@@ -238,25 +100,33 @@ check_cond(struct condition *cond, struct input *in)
   return 0;
 }
 
+static void
+log_print(int lv, const char *msg)
+{
+  printf("log:%d:%s\n", lv, msg);
+}
+
 static anthy_context_t
-init_lib(void)
+init_lib(int use_utf8)
 {
   anthy_context_t ac;
   /* 既にインストールされているファイルの影響を受けないようにする */
   anthy_conf_override("CONFFILE", "../anthy-conf");
   anthy_conf_override("HOME", TEST_HOME);
   anthy_conf_override("DIC_FILE", "../mkanthydic/anthy.dic");
+  anthy_set_logger(log_print, 0);
   if (anthy_init()) {
     printf("failed to init anthy\n");
     exit(0);
   }
   anthy_set_personality("");
-#ifdef USE_UCS4
-  /* 表示するためのエンコーディングを設定する */
-  anthy_context_set_encoding(NULL, ANTHY_UTF8_ENCODING);
-#endif
+
   ac = anthy_create_context();
-  anthy_context_set_encoding(ac, ANTHY_EUC_JP_ENCODING);
+  if (use_utf8) {
+    anthy_context_set_encoding(ac, ANTHY_UTF8_ENCODING);
+  } else {
+    anthy_context_set_encoding(ac, ANTHY_EUC_JP_ENCODING);
+  }
   return ac;
 }
 
@@ -296,6 +166,8 @@ parse_args(struct condition *cond, int argc, char **argv)
 	cond->ask = 1;
       } else if (!strcmp(arg, "print-miss-only")) {
 	cond->miss_only = 1;
+      } else if (!strcmp(arg, "utf8")) {
+	cond->use_utf8 = 1;
       }
 
       if (i + 1 < argc) {
@@ -372,19 +244,16 @@ static void
 set_string(struct condition *cond, struct res_db *db,
 	   struct input *in, anthy_context_t ac)
 {
-  char res_buf[1024];
   struct conv_res *cr1, *cr2;
   int pr;
 
   anthy_set_string(ac, in->str);
 
   /* result */
-  get_res(ac, res_buf, 1);
-  cr1 = find_conv_res(db, in->str, res_buf);
+  cr1 = find_conv_res(db, ac, in->str, 1);
   sum_up(db, cr1);
   /* split */
-  get_res(ac, res_buf, 0);
-  cr2 = find_conv_res(db, in->str, res_buf);
+  cr2 = find_conv_res(db, ac, in->str, 0);
   sum_up(db, cr2);
 
   /**/
@@ -490,6 +359,7 @@ init_condition(struct condition *cond)
   cond->quiet = 0;
   cond->ask = 0;
   cond->miss_only = 0;
+  cond->use_utf8 = 0;
 }
 
 int
@@ -506,7 +376,8 @@ main(int argc,char **argv)
   init_condition(&cond);
 
   parse_args(&cond, argc, argv);
-  db = read_db(expdata);
+  db = create_db();
+  read_db(db, expdata);
 
   printf("./test_anthy --help to print usage.\n");
 
@@ -518,7 +389,7 @@ main(int argc,char **argv)
     return 0;
   }
   
-  ac = init_lib();
+  ac = init_lib(cond.use_utf8);
 
   /* ファイルを読んでいくループ */
   while (!read_file(fp, &cur_input)) {

@@ -12,6 +12,7 @@
  *GLOSSARY		用語の意味の説明など
  *ILIB			Anthy(入力)ライブラリの仕様書
  *LIB			Anthy(変換エンジン)ライブラリの仕様書
+ *DICLIB                Anthy(個人辞書)ライブラリの仕様書
  *MISC			雑多なドキュメント
  *POS			品詞分類について(Part Of Speech)
  *SPLITTER		文節境界の検出モジュールの概要

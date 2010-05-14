@@ -70,7 +70,6 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-CANNADIC_SRCDIR = @CANNADIC_SRCDIR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -115,10 +114,25 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
+RUBY = @RUBY@
+RUBY_CFLAGS = @RUBY_CFLAGS@
+RUBY_DLEXT = @RUBY_DLEXT@
+RUBY_LDFLAGS = @RUBY_LDFLAGS@
+RUBY_LIBS = @RUBY_LIBS@
+RUBY_SITE_ARCH_DIR = @RUBY_SITE_ARCH_DIR@
+RUBY_SITE_LIB_DIR = @RUBY_SITE_LIB_DIR@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+SWIG = @SWIG@
+SWIG_CPPFLAGS = @SWIG_CPPFLAGS@
+SWIG_INTERFACE = @SWIG_INTERFACE@
+SWIG_OPTIONS = @SWIG_OPTIONS@
 VERSION = @VERSION@
+WITH_RUBY_FALSE = @WITH_RUBY_FALSE@
+WITH_RUBY_TRUE = @WITH_RUBY_TRUE@
+WITH_SWIG_FALSE = @WITH_SWIG_FALSE@
+WITH_SWIG_TRUE = @WITH_SWIG_TRUE@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
@@ -169,11 +183,12 @@ noinst_HEADERS = xstr.h xchar.h dic.h wtype.h\
  ruleparser.h splitter.h \
  segment.h ordering.h \
  filemap.h \
- logger.h segclass.h parameter.h \
+ logger.h segclass.h \
  depgraph.h \
- texttrie.h matrix.h \
+ texttrie.h textdict.h matrix.h \
  prediction.h word_dic.h \
- diclib.h
+ diclib.h feature_set.h \
+ convdb.h
 
 all: all-am
 

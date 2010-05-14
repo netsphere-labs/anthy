@@ -9,7 +9,6 @@
  *
  * デフォルトの設定では
  *  cstrはCの普通のEUC文字列
- *  UCS化の作業が進行中
  *
  * Copyright (C) 2000-2003 TABATA Yusuke
  *
@@ -21,18 +20,10 @@
 #include "config.h"
 /* for ANTHY_*_ENCODING */
 #include <anthy.h>
-#ifdef USE_UCS4
-#include <iconv.h>
-#endif
 
 #include <xstr.h>
 #include "diclib_inner.h"
 #include "xchar.h"
-
-#ifdef USE_UCS4
-static iconv_t euc_to_utf8;
-static iconv_t utf8_to_euc;
-#endif
 
 /* 画面に出力するときのエンコーディング */
 static int print_encoding;
@@ -44,21 +35,6 @@ xc_isprint(xchar xc)
 {
   return xc > 0;
 }
-
-#ifdef USE_UCS4
-static char *
-do_iconv(const char *str, iconv_t ic)
-{
-  int len = strlen(str);
-  unsigned int buflen = len * 6+3;
-  char *realbuf = alloca(buflen);
-  char *outbuf = realbuf;
-  const char *inbuf = str;
-  memset(realbuf, 0, buflen);
-  iconv(ic, &inbuf, &len, &outbuf, &buflen);
-  return strdup(realbuf);
-}
-#endif
 
 /** Cの文字列に対応するxstrの長さを計算する
  */
@@ -77,7 +53,6 @@ xlengthofcstr(const char *c)
   return ll;
 }
 
-#ifdef USE_UCS4
 const char *
 anthy_utf8_to_ucs4_xchar(const char *s, xchar *res)
 {
@@ -177,15 +152,22 @@ ucs4_xstr_to_utf8(xstr *xs)
   }
   return strdup(buf);
 }
-#endif /*USE_UCS4*/
 
-static xstr *
-euc_cstr_to_euc_xstr(const char *c)
+/** Cの文字列をxstrに変更する
+ */
+xstr *
+anthy_cstr_to_xstr(const char *c, int encoding)
 {
   xstr *x;
   int i, j, l;
+  if (encoding == ANTHY_UTF8_ENCODING) {
+    return utf8_to_ucs4_xstr(c);
+  }
   l = xlengthofcstr(c);
   x = (xstr *)malloc(sizeof(struct xstr_));
+  if (!x) {
+    return NULL;
+  }
   x->len = l;
   x->str = malloc(sizeof(xchar)*l);
   for (i = 0, j = 0; i < l; i++) {
@@ -195,32 +177,12 @@ euc_cstr_to_euc_xstr(const char *c)
     } else {
       unsigned char *p = (unsigned char *)&c[j];
       x->str[i] = (p[1] | (p[0]<<8)) | 0x8080;
+      x->str[i] = anthy_euc_to_ucs(x->str[i]);
       j++;
       j++;
     }
   }
   return x;
-}
-/** Cの文字列をxstrに変更する
- */
-xstr *
-anthy_cstr_to_xstr(const char *c, int encoding)
-{
-#ifdef USE_UCS4
-  if (encoding == ANTHY_EUC_JP_ENCODING) {
-    char *u;
-    xstr *r;
-    u = do_iconv(c, euc_to_utf8);
-    r = utf8_to_ucs4_xstr(u);
-    free(u);
-    return r;
-  } else {
-    return utf8_to_ucs4_xstr(c);
-  }
-#endif
-  /* EUC-JPの場合 */
-  (void)encoding;
-  return euc_cstr_to_euc_xstr(c);
 }
 
 char *
@@ -228,20 +190,15 @@ anthy_xstr_to_cstr(xstr *s, int encoding)
 {
   int i, j, l;
   char *p;
-#ifdef USE_UCS4
-  if (encoding != ANTHY_EUC_JP_ENCODING) {
+
+  if (encoding == ANTHY_UTF8_ENCODING) {
     return ucs4_xstr_to_utf8(s);
-  } else {
-    char *tmp = ucs4_xstr_to_utf8(s);
-    p = do_iconv(tmp, utf8_to_euc);
-    free(tmp);
-    return p;
   }
-#endif
-  (void)encoding;
+
   l = s->len;
   for (i = 0; i < s->len; i++) {
-    if (s->str[i] > 255) {
+    int ec = anthy_ucs_to_euc(s->str[i]);
+    if (ec > 255) {
       l++;
     }
   }
@@ -249,39 +206,19 @@ anthy_xstr_to_cstr(xstr *s, int encoding)
   p[l] = 0;
   j = 0;
   for (i =  0; i < s->len; i++) {
-    if (s->str[i] < 256) {
-      p[j] = s->str[i];
+    int ec = anthy_ucs_to_euc(s->str[i]);
+    if (ec < 256) {
+      p[j] = ec;
       j++;
     }else{
-      p[j] = s->str[i] >> 8;
+      p[j] = ec >> 8;
       j++;
-      p[j] = s->str[i] & 255;
+      p[j] = ec & 255;
       j++;
     }
   }
   return p;
 }
-
-xstr *
-anthy_file_dic_str_to_xstr(const char *str)
-{
-#ifdef USE_UCS4
-  /* UTF8からUCS4へ */
-  return utf8_to_ucs4_xstr(str);
-#else
-  return anthy_cstr_to_xstr(str, 0);
-#endif
-}
-
-char *anthy_xstr_to_file_dic_str(xstr *xs)
-{
-#ifdef USE_UCS4
-  return ucs4_xstr_to_utf8(xs);
-#else
-  return anthy_xstr_to_cstr(xs, 0);
-#endif
-}
-
 
 xstr *
 anthy_xstr_dup(xstr *s)
@@ -340,19 +277,10 @@ anthy_sputxchar(char *buf, xchar x, int encoding)
     sprintf(buf, "??");
     return 2;
   }
-#ifdef USE_UCS4
-  if (encoding == ANTHY_EUC_JP_ENCODING) {
-    char tmp[10], *p;
-    put_xchar_to_utf8_str(x, tmp);
-    p = do_iconv(tmp, utf8_to_euc);
-    strcpy(buf, p);
-    free(p);
-    return strlen(buf);
-  } else {
+  if (encoding == ANTHY_UTF8_ENCODING) {
     return put_xchar_to_utf8_str(x, buf);
   }
-#else
-  (void)encoding;
+  x = anthy_ucs_to_euc(x);
   if (x < 256) {
     buf[0] = x;
     buf[1] = 0;
@@ -362,16 +290,15 @@ anthy_sputxchar(char *buf, xchar x, int encoding)
   buf[1] = 0x80 | (x & 255);
   buf[0] = 0x80 | ((x>>8) & 255);
   return 2;
-#endif
 }
 
 int
-anthy_sputxstr(char *buf, xstr *x)
+anthy_sputxstr(char *buf, xstr *x, int encoding)
 {
   char b[MAX_BYTES_PER_XCHAR];
   int i, l = 0;
   for (i = 0; i < x->len; i++) {
-    anthy_sputxchar(b, x->str[i], 0);
+    anthy_sputxchar(b, x->str[i], encoding);
     sprintf(&buf[l], "%s", b);
     l += strlen(b);
   }
@@ -566,15 +493,17 @@ anthy_xstr_hira_to_kata(xstr *src_xs)
     /* 「う゛」のチェック */
     if (i < dst_xs->len - 1 && dst_xs->str[i] == HK_U
 	&& dst_xs->str[i+1] == HK_DDOT) {
-      dst_xs->str[j] = 0xa5f4;/* ヴ */
+      dst_xs->str[j] = KK_VU;/* ヴ */
       i++;
       continue ;
     }
     /**/
     dst_xs->str[j] = dst_xs->str[i];
-    if ((dst_xs->str[j] & 0xff00) == 0xa400) {
+    if ((anthy_ucs_to_euc(dst_xs->str[j]) & 0xff00) == 0xa400) {
       /* ひらがなだったら256足す */
+      dst_xs->str[j] = anthy_ucs_to_euc(dst_xs->str[j]);
       dst_xs->str[j] += 256;
+      dst_xs->str[j] = anthy_euc_to_ucs(dst_xs->str[j]);
     }
   }
   dst_xs->len = j;
@@ -588,7 +517,7 @@ anthy_xstr_hira_to_half_kata(xstr *src_xs)
   int i, j;
   xstr *xs;
   for (i = 0; i < src_xs->len; i++) {
-    struct half_kana_table *tab = anthy_find_half_kana(src_xs->str[i]);
+    const struct half_kana_table *tab = anthy_find_half_kana(src_xs->str[i]);
     if (tab && tab->mod) {
       len ++;
     }
@@ -598,12 +527,12 @@ anthy_xstr_hira_to_half_kata(xstr *src_xs)
   xs->str = malloc(sizeof(xchar) * len);
   j = 0;
   for (i = 0; i < src_xs->len; i++) {
-    struct half_kana_table *tab = anthy_find_half_kana(src_xs->str[i]);
+    const struct half_kana_table *tab = anthy_find_half_kana(src_xs->str[i]);
     if (tab) {
-      xs->str[j] = tab->dst;
+      xs->str[j] = anthy_euc_to_ucs(tab->dst);
       if (tab->mod) {
 	j++;
-	xs->str[j] = tab->mod;
+	xs->str[j] = anthy_euc_to_ucs(tab->mod);
       }
     } else {
       xs->str[j] = src_xs->str[i];
@@ -613,7 +542,25 @@ anthy_xstr_hira_to_half_kata(xstr *src_xs)
   return xs;
 }
 
-int anthy_xstr_hash(xstr *xs)
+xstr *
+anthy_conv_half_wide(xstr *xs)
+{
+  int i;
+  xstr *res;
+  for (i = 0; i < xs->len; i++) {
+    if (!anthy_lookup_half_wide(xs->str[i])) {
+      return NULL;
+    }
+  }
+  res = anthy_xstr_dup(xs);
+  for (i = 0; i < xs->len; i++) {
+    res->str[i] = anthy_lookup_half_wide(xs->str[i]);
+  }
+  return res;
+}
+
+int
+anthy_xstr_hash(xstr *xs)
 {
   int h,i;
   h = 0;
@@ -628,6 +575,31 @@ int anthy_xstr_hash(xstr *xs)
   return h;
 }
 
+static char *
+conv_cstr(const char *s, int from, int to)
+{
+  char *res;
+  xstr *xs = anthy_cstr_to_xstr(s, from);
+  if (!xs) {
+    return NULL;
+  }
+  res = anthy_xstr_to_cstr(xs, to);
+  anthy_free_xstr(xs);
+  return res;
+}
+
+char *
+anthy_conv_euc_to_utf8(const char *s)
+{
+  return conv_cstr(s, ANTHY_EUC_JP_ENCODING, ANTHY_UTF8_ENCODING);
+}
+
+char *
+anthy_conv_utf8_to_euc(const char *s)
+{
+  return conv_cstr(s, ANTHY_UTF8_ENCODING, ANTHY_EUC_JP_ENCODING);
+}
+
 void
 anthy_xstr_set_print_encoding(int encoding)
 {
@@ -637,24 +609,9 @@ anthy_xstr_set_print_encoding(int encoding)
 int
 anthy_init_xstr(void)
 {
-#ifdef USE_UCS4
-  euc_to_utf8 = iconv_open("UTF-8", "EUC-JP");
-  if (euc_to_utf8 == (iconv_t)-1) {
-    return -1;
-  }
-  utf8_to_euc = iconv_open("EUC-JP", "UTF-8");
-  if (utf8_to_euc == (iconv_t)-1) {
-    iconv_close(euc_to_utf8);
-    return -1;
-  }
-#endif
   return 0;
 }
 
 void anthy_quit_xstr(void)
 {
-#ifdef USE_UCS4
-  iconv_close(euc_to_utf8);
-  iconv_close(utf8_to_euc);
-#endif
 }

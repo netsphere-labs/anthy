@@ -108,17 +108,6 @@ static void
 test2(const char *fn)
 {
   struct text_trie *tt;
-  tt = anthy_trie_open(fn, 0);
-  anthy_trie_add(tt, "ab", "xy");
-  anthy_trie_add(tt, "abc", "xyz");
-  anthy_trie_delete(tt, "ab");
-  anthy_trie_close(tt);
-}
-
-static void
-test3(const char *fn)
-{
-  struct text_trie *tt;
   char buf[10];
   tt = anthy_trie_open(fn, 0);
   anthy_trie_add(tt, "cb", "xy");
@@ -142,9 +131,68 @@ test3(const char *fn)
 }
 
 static void
-test4(const char *fn)
+random_str(char *buf, int len)
 {
-  anthy_trie_open(fn, 1);
+  int i;
+  buf[len] = 0;
+  for (i = 0; i < len - 1; i++) {
+    buf[i] = (rand() % 10) + '0';
+  }
+}
+
+static void
+random_add(struct text_trie *tt, int n, int len)
+{
+  int i;
+  char buf[100];
+  for (i = 0; i < n; i++) {
+    char *v;
+    random_str(buf, len);
+    anthy_trie_add(tt, buf, buf);
+    v = anthy_trie_find(tt, buf);
+    printf("%s=%s\n", buf, v);
+  }
+}
+
+static void
+del_prefix(struct text_trie *tt, char *prefix)
+{
+  char buf[100];
+  strcpy(buf, prefix);
+  while (1) {
+    char *v;
+    v = anthy_trie_find_next_key(tt,
+				 buf, 100);
+    if (!v) {
+      return ;
+    }
+    printf(" next=(%s)\n", v);
+    if (strncmp(prefix, buf, strlen(prefix))) {
+      return ;
+    }
+    anthy_trie_delete(tt, buf);
+  }
+}
+
+static void
+random_del_prefix(struct text_trie *tt)
+{
+  int i;
+  for (i = 0; i < 100; i++) {
+    char buf[100];
+    random_str(buf, 2);
+    printf("deleting (%s)\n", buf);
+    del_prefix(tt, buf);
+  }
+}
+
+static void
+test3(const char *fn)
+{
+  struct text_trie *tt;
+  tt = anthy_trie_open(fn, 1);
+  random_add(tt, 100, 10);
+  random_del_prefix(tt);
 }
 
 int
@@ -171,9 +219,6 @@ main(int argc, char **argv)
       exit(0);
     } else if (!strcmp(arg, "--test3")) {
       test3(next_arg);
-      exit(0);
-    } else if (!strcmp(arg, "--test4")) {
-      test4(next_arg);
       exit(0);
     }
   }

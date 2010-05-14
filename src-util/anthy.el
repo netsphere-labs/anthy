@@ -1,6 +1,6 @@
 ;;; anthy.el -- Anthy
 
-;; Copyright (C) 2001 - 2004 KMC(Kyoto University Micro Computer Club)
+;; Copyright (C) 2001 - 2007 KMC(Kyoto University Micro Computer Club)
 
 ;; Author: Yusuke Tabata<yusuke@kmc.gr.jp>
 ;;         Tomoharu Ugawa
@@ -56,6 +56,8 @@
  "変換時の文節の区切りに使われる文字列")
 
 (defvar anthy-accept-timeout 50)
+(if (string-match "^22\." emacs-version)
+    (setq anthy-accept-timeout 1))
 
 (defconst anthy-working-buffer " *anthy*")
 (defvar anthy-agent-process nil

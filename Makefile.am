@@ -3,7 +3,8 @@ EXTRA_DIST = README.en DIARY anthy-conf.in anthy-test-conf.in anthy.spec.in anth
 
 SRCDIR = src-diclib src-worddic src-splitter src-ordering src-main src-util
 
-SUBDIRS = $(SRCDIR) include depgraph mkworddic mkmatrix mkanthydic doc test cannadic calctrans
+SUBDIRS = $(SRCDIR) include depgraph mkworddic mkanthydic doc test cannadic calctrans
+
 sysconf_DATA = anthy-conf
 
 pkgconfigdir = $(libdir)/pkgconfig

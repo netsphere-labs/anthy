@@ -3,13 +3,19 @@
 #define _segclass_h_included_
 
 enum dep_class {
+  /* ÉÕÂ°¸ì¤Ê¤· */
   DEP_NONE,
+  /* ÉÕÂ°¸ì°ìÈÌ */
   DEP_FUZOKUGO,
-  DEP_NO,
+  /* ³Ê½õ»ì */
   DEP_KAKUJOSHI,
+  /* Ï¢ÍÑ */
   DEP_RENYOU,
+  /* Ï¢ÂÎ */
   DEP_RENTAI,
+  /* ½ªÃ¼ */
   DEP_END,
+  /* Ì¾»ìÃ±ÆÈ */
   DEP_RAW
 };
 
@@ -18,46 +24,25 @@ enum seg_class {
   SEG_HEAD,
   SEG_TAIL,
   SEG_BUNSETSU,
-  SEG_SHUGO,
-  SEG_JYUTSUGO,
-  SEG_SHUSHOKUGO,
   SEG_SETSUZOKUGO,
-  SEG_DOKURITSUGO,
-  SEG_FUZOKUGO,
-  SEG_HIRAKIKAKKO,
-  SEG_TOJIKAKKO,
   SEG_MEISHI_KAKUJOSHI,
   SEG_MEISHI_SHUTAN,
-  SEG_DOUSHI,
   SEG_DOUSHI_FUZOKUGO,
   SEG_DOUSHI_SHUTAN,
   SEG_KEIYOUSHI,
-  SEG_KEIYOUSHI_FUZOKUGO,
-  SEG_KEIYOUSHI_SHUTAN,
   SEG_KEIYOUDOUSHI,
-  SEG_KEIYOUDOUSHI_FUZOKUGO,
-  SEG_KEIYOUDOUSHI_SHUTAN,
   SEG_RENYOU_SHUSHOKU,
   SEG_RENTAI_SHUSHOKU,
   SEG_MEISHI,
   SEG_MEISHI_FUZOKUGO,
   SEG_MEISHI_RENYOU,
   SEG_DOUSHI_RENYOU,
-  SEG_KEIYOUSHI_RENYOU,
-  SEG_KEIYOUDOUSHI_RENYOU,
-  SEG_FUKUSHI,
   SEG_DOUSHI_RENTAI,
-  SEG_KEIYOUSHI_RENTAI,
-  SEG_KEIYOUDOUSHI_RENTAI,
-  SEG_RENTAISHI,
-  SEG_KAKUJOSHI,
-  SEG_RENYOU,
-  SEG_RENTAI,
-  SEG_SHUTAN,
   SEG_SIZE
 };
 
-int anthy_seg_class_is_depword(enum seg_class sc);
 const char* anthy_seg_class_name(enum seg_class sc);
+const char* anthy_seg_class_sym(enum seg_class sc);
+enum seg_class anthy_seg_class_by_name(const char *name);
 
 #endif

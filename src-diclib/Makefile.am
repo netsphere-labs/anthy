@@ -7,8 +7,7 @@ libdiclib_la_SOURCES = \
 	alloc.c conf.c \
 	logger.c \
 	ruleparser.c \
-	diclib_inner.h
+	diclib_inner.h e2u.h u2e.h
 
 
-libdiclib_la_LDFLAGS = -version-info 1:0:1
 noinst_LTLIBRARIES = libdiclib.la

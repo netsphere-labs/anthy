@@ -27,7 +27,7 @@
  * Funded by IPA未踏ソフトウェア創造事業 2002 1/18
  * Funded by IPA未踏ソフトウェア創造事業 2005
  * Copyright (C) 2005 YOSHIDA Yuichi
- * Copyright (C) 2000-2005 TABATA Yusuke
+ * Copyright (C) 2000-2006 TABATA Yusuke
  * Copyright (C) 2000-2003 UGAWA Tomoharu
  * Copyright (C) 2001-2002 TAKAI Kosuke
  */
@@ -44,6 +44,7 @@
 #include <stdlib.h>
 
 #include "config.h"
+#include <anthy.h>
 #include <dic.h>
 #include <alloc.h>
 #include <conf.h>
@@ -56,11 +57,7 @@
 #include "dic_personality.h"
 
 /* 個人辞書をセーブするファイル名のsuffix */
-#ifdef USE_UCS4
 #define ENCODING_SUFFIX ".utf8"
-#else
-#define ENCODING_SUFFIX ""
-#endif
 
 
 enum val_type {
@@ -143,9 +140,9 @@ struct record_stat {
   struct trie_root xstrs; /* xstr を intern するための trie */
   struct trie_node *cur_row;
   int row_dirty; /* cur_row が保存の必要があるか */
+  int encoding;
   /**/
   int is_anon;
-  int initial_read; /* 最初の読み込みを完了したか */
   const char *id;         /* パーソナリティのid */
   char *base_fn; /* 基本ファイル 絶対パス */
   char *journal_fn; /* 差分ファイル 絶対パス */
@@ -280,13 +277,13 @@ static void trie_mark_used(struct trie_root *root, struct trie_node *n,
 
 #define PUTNODE(x) ((x) == &root->root ? printf("root\n") : anthy_putxstrln(&(x)->row.key))
 static int
-debug_trie_dump(FILE* fp, struct trie_node* n)
+debug_trie_dump(FILE* fp, struct trie_node* n, int encoding)
 {
   int cnt = 0;
   char buf[1024];
 
   if (n->l->bit > n->bit) {
-    cnt = debug_trie_dump(fp, n->l);
+    cnt = debug_trie_dump(fp, n->l, encoding);
   } else {
     if (n->l->row.key.len == -1) {
       if (fp) {
@@ -294,7 +291,7 @@ debug_trie_dump(FILE* fp, struct trie_node* n)
       }
     } else {
       if (fp) {
-	anthy_sputxstr(buf, &n->l->row.key);
+	anthy_sputxstr(buf, &n->l->row.key, encoding);
 	fprintf(fp, "%s\n", buf);
       }
       cnt = 1;
@@ -302,7 +299,7 @@ debug_trie_dump(FILE* fp, struct trie_node* n)
   }
 
   if (n->r->bit > n->bit) {
-    return cnt + debug_trie_dump(fp, n->r);
+    return cnt + debug_trie_dump(fp, n->r, encoding);
   } else {
     if (n->r->row.key.len == -1) {
       if(fp) {
@@ -310,7 +307,7 @@ debug_trie_dump(FILE* fp, struct trie_node* n)
       }
     } else {
       if(fp) {
-	anthy_sputxstr(buf, &n->r->row.key);
+	anthy_sputxstr(buf, &n->r->row.key, encoding);
 	fprintf(fp, "%s\n", buf);
       }
       return cnt + 1;
@@ -1044,7 +1041,7 @@ out:
 /* journalからADDの行を読む */
 static void
 read_add_row(FILE *fp, struct record_stat* rst,
-		struct record_section* rsc)
+	     struct record_section* rsc)
 {
   int n;
   xstr* xs;
@@ -1057,7 +1054,9 @@ read_add_row(FILE *fp, struct record_stat* rst,
     return ;
   }
 
-  xs = anthy_cstr_to_xstr(token + 1, 0); /* xstr 型を表す S を読み捨てる */
+  xs = anthy_cstr_to_xstr(/* xstr 型を表す S を読み捨てる */
+			  token + 1,
+			  rst->encoding);
   node = do_select_row(rsc, xs, 1, LRU_USED);
   anthy_free_xstr(xs);
   free(token);
@@ -1079,7 +1078,7 @@ read_add_row(FILE *fp, struct record_stat* rst,
       case 'S':
 	{
 	  xstr* xs;
-	  xs = anthy_cstr_to_xstr(token + 1, 0);
+	  xs = anthy_cstr_to_xstr(token + 1, rst->encoding);
 	  do_set_nth_xstr(node, n, xs, &rst->xstrs);
 	  anthy_free_xstr(xs);
 	}
@@ -1098,7 +1097,8 @@ read_add_row(FILE *fp, struct record_stat* rst,
 
 /* journalからDELの行を読む */
 static void
-read_del_row(FILE *fp, struct record_section* rsc)
+read_del_row(FILE *fp, struct record_stat* rst,
+	     struct record_section* rsc)
 {
   struct trie_node* node;
   char* token;
@@ -1110,7 +1110,9 @@ read_del_row(FILE *fp, struct record_section* rsc)
     return ;
   }
 
-  xs = anthy_cstr_to_xstr(token + 1, 0); /* xstr 型を表す S を読み飛ばす */
+  xs = anthy_cstr_to_xstr(/* xstr 型を表す S を読み飛ばす */
+			  token + 1,
+			  rst->encoding);
   if ((node = do_select_row(rsc, xs, 0, 0)) != NULL) {
     do_remove_row(rsc, node);
   }
@@ -1140,7 +1142,7 @@ read_1_row(struct record_stat* rst, FILE* fp, char *op)
   if (strcmp(op, "ADD") == 0) {
     read_add_row(fp, rst, rsc);
   } else if (strcmp(op, "DEL") == 0) {
-    read_del_row(fp, rsc);
+    read_del_row(fp, rst, rsc);
   }
 }
 
@@ -1206,12 +1208,12 @@ write_quote_string(FILE* fp, const char* str)
 }
 
 static void
-write_quote_xstr(FILE* fp, xstr* xs)
+write_quote_xstr(FILE* fp, xstr* xs, int encoding)
 {
   char* buf;
 
   buf = (char*) alloca(xs->len * 6 + 2); /* EUC またはUTF8を仮定 */
-  anthy_sputxstr(buf, xs);
+  anthy_sputxstr(buf, xs, encoding);
   write_quote_string(fp, buf);
 }
 
@@ -1224,7 +1226,7 @@ write_number(FILE* fp, int x)
 /* journalに1行追記する */
 static void
 commit_add_row(struct record_stat* rst,
-		  const char* sname, struct trie_node* node)
+	       const char* sname, struct trie_node* node)
 {
   FILE* fp;
   int i;
@@ -1237,7 +1239,7 @@ commit_add_row(struct record_stat* rst,
   write_string(fp, "ADD \"");
   write_quote_string(fp, sname);
   write_string(fp, "\" S\"");
-  write_quote_xstr(fp, &node->row.key);
+  write_quote_xstr(fp, &node->row.key, rst->encoding);
   write_string(fp, "\"");
 
   for (i = 0; i < node->row.nr_vals; i++) {
@@ -1251,12 +1253,12 @@ commit_add_row(struct record_stat* rst,
       break;
     case RT_XSTR:
       write_string(fp, " S\"");
-      write_quote_xstr(fp, &node->row.vals[i].u.str);
+      write_quote_xstr(fp, &node->row.vals[i].u.str, rst->encoding);
       write_string(fp, "\"");
       break;
     case RT_XSTRP:
       write_string(fp, " S\"");
-      write_quote_xstr(fp, node->row.vals[i].u.strp);
+      write_quote_xstr(fp, node->row.vals[i].u.strp, rst->encoding);
       write_string(fp, "\"");
       break;
     }
@@ -1307,7 +1309,7 @@ read_session(struct record_stat *rst)
       dirty = LRU_SUSED;
     }
     /* 次にindex */
-    xs = anthy_cstr_to_xstr(&tokens[0][1], 0);
+    xs = anthy_cstr_to_xstr(&tokens[0][1], rst->encoding);
     node = do_select_row(rst->cur_section, xs, 1, dirty);
     anthy_free_xstr(xs);
     if (!node) {
@@ -1320,7 +1322,7 @@ read_session(struct record_stat *rst)
 	char *str;
 	str = strdup(&tokens[i][1]);
 	str[strlen(str) - 1] = 0;
-	xs = anthy_cstr_to_xstr(str, 0);
+	xs = anthy_cstr_to_xstr(str, rst->encoding);
 	free(str);
 	do_set_nth_xstr(rst->cur_row, i-1, xs, &rst->xstrs);
 	anthy_free_xstr(xs);
@@ -1394,7 +1396,8 @@ update_file(const char *fn)
 
 /* カラムを保存する */
 static void
-save_a_row(FILE *fp, struct record_row *c, int dirty)
+save_a_row(FILE *fp, struct record_stat* rst,
+	   struct record_row *c, int dirty)
 {
   int i;
   char *buf = alloca(c->key.len * 6 + 2);
@@ -1404,7 +1407,7 @@ save_a_row(FILE *fp, struct record_row *c, int dirty)
   } else {
     fputc('+', fp);
   }
-  anthy_sputxstr(buf, &c->key);
+  anthy_sputxstr(buf, &c->key, rst->encoding);
   /* index を出力 */
   fprintf(fp, "%s ", buf);
   /**/
@@ -1417,13 +1420,13 @@ save_a_row(FILE *fp, struct record_row *c, int dirty)
     case RT_XSTR:
       /* should not happen */
       fprintf(fp, "\"");
-      write_quote_xstr(fp, &val->u.str);
+      write_quote_xstr(fp, &val->u.str, rst->encoding);
       fprintf(fp, "\" ");
       abort();
       break;
     case RT_XSTRP:
       fprintf(fp, "\"");
-      write_quote_xstr(fp, val->u.strp);
+      write_quote_xstr(fp, val->u.strp, rst->encoding);
       fprintf(fp, "\" ");
       break;
     case RT_VAL:
@@ -1464,7 +1467,7 @@ update_base_record(struct record_stat* rst)
     /* 各カラムを保存する */
     for (col = trie_first(&sec->cols); col; 
 	 col = trie_next(&sec->cols, col)) {
-      save_a_row(fp, &col->row, col->dirty);
+      save_a_row(fp, rst, &col->row, col->dirty);
     }
   }
   fclose(fp);
@@ -1482,7 +1485,7 @@ update_base_record(struct record_stat* rst)
 
 static void
 commit_del_row(struct record_stat* rst,
-		  const char* sname, struct trie_node* node)
+	       const char* sname, struct trie_node* node)
 {
   FILE* fp;
 
@@ -1493,7 +1496,7 @@ commit_del_row(struct record_stat* rst,
   write_string(fp, "DEL \"");
   write_quote_string(fp, sname);
   write_string(fp, "\" S\"");
-  write_quote_xstr(fp, &node->row.key);
+  write_quote_xstr(fp, &node->row.key, rst->encoding);
   write_string(fp, "\"");
   write_string(fp, "\n");
   fclose(fp);
@@ -1563,6 +1566,7 @@ read_prediction_node(struct trie_node *n, struct prediction_t* predictions, int 
     if (t && xs) {
       if (predictions) {
 	predictions[index].timestamp = t;
+	predictions[index].src_str = anthy_xstr_dup(&n->row.key);
 	predictions[index].str = anthy_xstr_dup(xs);
       }
       ++index;
@@ -1572,6 +1576,10 @@ read_prediction_node(struct trie_node *n, struct prediction_t* predictions, int 
 }
 
 
+/*
+ * trie中をたどり、prefixがマッチしたらread_prediction_nodeを
+ * 呼んでpredictionsの配列に結果を追加する。
+ */
 static int
 traverse_record_for_prediction(xstr* key, struct trie_node *n,
 			       struct prediction_t* predictions, int index)
@@ -1640,6 +1648,7 @@ anthy_traverse_record_for_prediction(xstr* key, struct prediction_t* predictions
     return 0;
   }
 
+  /* 指定された文字列をprefixに持つnodeを探す */
   mark = trie_find_for_prediction(&anthy_current_record->cur_section->cols, key);
   if (!mark) {
     return 0;
@@ -1930,6 +1939,26 @@ anthy_release_row(void)
 }
 
 static void
+check_record_encoding(struct record_stat *rst)
+{
+  FILE *fp;
+  if (anthy_open_file(rst->base_fn) == 0) {
+    /* EUCの履歴ファイルがあった */
+    anthy_close_file();
+    return ;
+  }
+  fp = fopen(rst->journal_fn, "r");
+  if (fp) {
+    /* EUCの差分ファイルがあった */
+    fclose(fp);
+    return ;
+  }
+  rst->encoding = ANTHY_UTF8_ENCODING;
+  strcat(rst->base_fn, ENCODING_SUFFIX);
+  strcat(rst->journal_fn, ENCODING_SUFFIX);
+}
+
+static void
 record_dtor(void *p)
 {
   int dummy;
@@ -1975,13 +2004,13 @@ setup_filenames(const char *id, struct record_stat *rst)
   /* 基本ファイル */
   rst->base_fn = (char*) malloc(base_len +
 				strlen("/.anthy/last-record1_"));
-  sprintf(rst->base_fn, "%s/.anthy/last-record1_%s%s",
-	  home, id, ENCODING_SUFFIX);
+  sprintf(rst->base_fn, "%s/.anthy/last-record1_%s",
+	  home, id);
   /* 差分ファイル */
   rst->journal_fn = (char*) malloc(base_len +
 				   strlen("/.anthy/last-record2_"));
-  sprintf(rst->journal_fn, "%s/.anthy/last-record2_%s%s",
-	  home, id, ENCODING_SUFFIX);
+  sprintf(rst->journal_fn, "%s/.anthy/last-record2_%s",
+	  home, id);
 }
 
 struct record_stat *
@@ -2000,7 +2029,7 @@ anthy_create_record(const char *id)
   rst->cur_section = 0;
   rst->cur_row = 0;
   rst->row_dirty = 0;
-  rst->initial_read = 0;
+  rst->encoding = 0;
 
   /* ファイル名の文字列を作る */
   setup_filenames(id, rst);
@@ -2016,10 +2045,10 @@ anthy_create_record(const char *id)
 
   /* ファイルから読み込む */
   lock_record(rst);
+  check_record_encoding(rst);
   read_base_record(rst);
   read_journal_record(rst);
   unlock_record(rst);
-  rst->initial_read = 1;
 
   return rst;
 }

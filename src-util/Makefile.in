@@ -39,6 +39,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
+@WITH_RUBY_TRUE@am__append_1 = ruby
 bin_PROGRAMS = anthy-dic-tool$(EXEEXT) anthy-agent$(EXEEXT) \
 	anthy-morphological-analyzer$(EXEEXT)
 subdir = src-util
@@ -60,10 +61,14 @@ am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 am__installdirs = "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" \
 	"$(DESTDIR)$(lispdir)" "$(DESTDIR)$(pkgdatadir)"
 libLTLIBRARIES_INSTALL = $(INSTALL)
-LTLIBRARIES = $(lib_LTLIBRARIES)
-libanthyinput_la_LIBADD =
+LTLIBRARIES = $(lib_LTLIBRARIES) $(noinst_LTLIBRARIES)
+libanthyinput_la_DEPENDENCIES = ../src-main/libanthy.la \
+	../src-worddic/libanthydic.la
 am_libanthyinput_la_OBJECTS = input.lo rkconv.lo rkhelper.lo
 libanthyinput_la_OBJECTS = $(am_libanthyinput_la_OBJECTS)
+libconvdb_la_LIBADD =
+am_libconvdb_la_OBJECTS = convdb.lo
+libconvdb_la_OBJECTS = $(am_libconvdb_la_OBJECTS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS)
 am_anthy_agent_OBJECTS = agent.$(OBJEXT) egg.$(OBJEXT)
@@ -76,8 +81,8 @@ anthy_dic_tool_DEPENDENCIES = ../src-worddic/libanthydic.la
 am_anthy_morphological_analyzer_OBJECTS = morph-main.$(OBJEXT)
 anthy_morphological_analyzer_OBJECTS =  \
 	$(am_anthy_morphological_analyzer_OBJECTS)
-anthy_morphological_analyzer_DEPENDENCIES = ../src-main/libanthy.la \
-	../src-worddic/libanthydic.la
+anthy_morphological_analyzer_DEPENDENCIES = libconvdb.la \
+	../src-main/libanthy.la ../src-worddic/libanthydic.la
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -89,12 +94,18 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(libanthyinput_la_SOURCES) $(anthy_agent_SOURCES) \
-	$(anthy_dic_tool_SOURCES) \
+SOURCES = $(libanthyinput_la_SOURCES) $(libconvdb_la_SOURCES) \
+	$(anthy_agent_SOURCES) $(anthy_dic_tool_SOURCES) \
 	$(anthy_morphological_analyzer_SOURCES)
-DIST_SOURCES = $(libanthyinput_la_SOURCES) $(anthy_agent_SOURCES) \
-	$(anthy_dic_tool_SOURCES) \
+DIST_SOURCES = $(libanthyinput_la_SOURCES) $(libconvdb_la_SOURCES) \
+	$(anthy_agent_SOURCES) $(anthy_dic_tool_SOURCES) \
 	$(anthy_morphological_analyzer_SOURCES)
+RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
+	html-recursive info-recursive install-data-recursive \
+	install-exec-recursive install-info-recursive \
+	install-recursive installcheck-recursive installdirs-recursive \
+	pdf-recursive ps-recursive uninstall-info-recursive \
+	uninstall-recursive
 lispLISP_INSTALL = $(INSTALL_DATA)
 LISP = $(lisp_LISP)
 am__ELFILES = anthy-azik.el anthy-conf.el anthy-dic.el \
@@ -105,6 +116,7 @@ pkgdataDATA_INSTALL = $(INSTALL_DATA)
 DATA = $(pkgdata_DATA)
 ETAGS = etags
 CTAGS = ctags
+DIST_SUBDIRS = ruby
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
 ACLOCAL = @ACLOCAL@
 AMDEP_FALSE = @AMDEP_FALSE@
@@ -115,7 +127,6 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-CANNADIC_SRCDIR = @CANNADIC_SRCDIR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -160,10 +171,25 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
+RUBY = @RUBY@
+RUBY_CFLAGS = @RUBY_CFLAGS@
+RUBY_DLEXT = @RUBY_DLEXT@
+RUBY_LDFLAGS = @RUBY_LDFLAGS@
+RUBY_LIBS = @RUBY_LIBS@
+RUBY_SITE_ARCH_DIR = @RUBY_SITE_ARCH_DIR@
+RUBY_SITE_LIB_DIR = @RUBY_SITE_LIB_DIR@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+SWIG = @SWIG@
+SWIG_CPPFLAGS = @SWIG_CPPFLAGS@
+SWIG_INTERFACE = @SWIG_INTERFACE@
+SWIG_OPTIONS = @SWIG_OPTIONS@
 VERSION = @VERSION@
+WITH_RUBY_FALSE = @WITH_RUBY_FALSE@
+WITH_RUBY_TRUE = @WITH_RUBY_TRUE@
+WITH_SWIG_FALSE = @WITH_SWIG_FALSE@
+WITH_SWIG_TRUE = @WITH_SWIG_TRUE@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
@@ -208,28 +234,32 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
+SUBDIRS = $(am__append_1)
 
 # Files
 # Dictionary utilities
 ELISP_FILES = anthy.el anthy-dic.el anthy-conf.el leim-list.el \
  anthy-isearch.el anthy-azik.el anthy-kyuri.el
 
-EXTRA_DIST = $(ELISP_FILES) typetab dic-tool-usage.txt rcsize.rb
+EXTRA_DIST = $(ELISP_FILES) typetab dic-tool-usage.txt rcsize.rb anthy.i
 ELCFILES = anthy.elc anthy-dic.elc anthy-azik.elc anthy-conf.elc anthy-isearch.elc anthy-kyuri.elc leim-list.elc
 @ELISP_TRUE@lisp_LISP = $(ELISP_FILES)
+noinst_LTLIBRARIES = libconvdb.la
+libconvdb_la_SOURCES = convdb.c
 INCLUDES = -I$(top_srcdir)/include
 anthy_dic_tool_SOURCES = dic-tool.c
 anthy_dic_tool_LDADD = ../src-worddic/libanthydic.la
 anthy_agent_SOURCES = agent.c egg.c
 anthy_agent_LDADD = libanthyinput.la ../src-main/libanthy.la ../src-worddic/libanthydic.la
 anthy_morphological_analyzer_SOURCES = morph-main.c
-anthy_morphological_analyzer_LDADD = ../src-main/libanthy.la ../src-worddic/libanthydic.la
+anthy_morphological_analyzer_LDADD = libconvdb.la ../src-main/libanthy.la ../src-worddic/libanthydic.la
 lib_LTLIBRARIES = libanthyinput.la
 libanthyinput_la_SOURCES = input.c rkconv.c rkhelper.c\
  rkconv.h rkmap.h rkhelper.h
 
+libanthyinput_la_LIBADD = ../src-main/libanthy.la ../src-worddic/libanthydic.la
 pkgdata_DATA = typetab dic-tool-usage.txt
-all: all-am
+all: all-recursive
 
 .SUFFIXES:
 .SUFFIXES: .c .lo .o .obj
@@ -289,8 +319,19 @@ clean-libLTLIBRARIES:
 	  echo "rm -f \"$${dir}/so_locations\""; \
 	  rm -f "$${dir}/so_locations"; \
 	done
+
+clean-noinstLTLIBRARIES:
+	-test -z "$(noinst_LTLIBRARIES)" || rm -f $(noinst_LTLIBRARIES)
+	@list='$(noinst_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" != "$$p" || dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
+	done
 libanthyinput.la: $(libanthyinput_la_OBJECTS) $(libanthyinput_la_DEPENDENCIES) 
 	$(LINK) -rpath $(libdir) $(libanthyinput_la_LDFLAGS) $(libanthyinput_la_OBJECTS) $(libanthyinput_la_LIBADD) $(LIBS)
+libconvdb.la: $(libconvdb_la_OBJECTS) $(libconvdb_la_DEPENDENCIES) 
+	$(LINK)  $(libconvdb_la_LDFLAGS) $(libconvdb_la_OBJECTS) $(libconvdb_la_LIBADD) $(LIBS)
 install-binPROGRAMS: $(bin_PROGRAMS)
 	@$(NORMAL_INSTALL)
 	test -z "$(bindir)" || $(mkdir_p) "$(DESTDIR)$(bindir)"
@@ -336,6 +377,7 @@ distclean-compile:
 	-rm -f *.tab.c
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/agent.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/convdb.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/dic-tool.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/egg.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/input.Plo@am__quote@
@@ -445,6 +487,77 @@ uninstall-pkgdataDATA:
 	  rm -f "$(DESTDIR)$(pkgdatadir)/$$f"; \
 	done
 
+# This directory's subdirectories are mostly independent; you can cd
+# into them and run `make' without going through this Makefile.
+# To change the values of `make' variables: instead of editing Makefiles,
+# (1) if the variable is set in `config.status', edit `config.status'
+#     (which will cause the Makefiles to be regenerated when you run `make');
+# (2) otherwise, pass the desired values on the `make' command line.
+$(RECURSIVE_TARGETS):
+	@failcom='exit 1'; \
+	for f in x $$MAKEFLAGS; do \
+	  case $$f in \
+	    *=* | --[!k]*);; \
+	    *k*) failcom='fail=yes';; \
+	  esac; \
+	done; \
+	dot_seen=no; \
+	target=`echo $@ | sed s/-recursive//`; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    dot_seen=yes; \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	  || eval $$failcom; \
+	done; \
+	if test "$$dot_seen" = "no"; then \
+	  $(MAKE) $(AM_MAKEFLAGS) "$$target-am" || exit 1; \
+	fi; test -z "$$fail"
+
+mostlyclean-recursive clean-recursive distclean-recursive \
+maintainer-clean-recursive:
+	@failcom='exit 1'; \
+	for f in x $$MAKEFLAGS; do \
+	  case $$f in \
+	    *=* | --[!k]*);; \
+	    *k*) failcom='fail=yes';; \
+	  esac; \
+	done; \
+	dot_seen=no; \
+	case "$@" in \
+	  distclean-* | maintainer-clean-*) list='$(DIST_SUBDIRS)' ;; \
+	  *) list='$(SUBDIRS)' ;; \
+	esac; \
+	rev=''; for subdir in $$list; do \
+	  if test "$$subdir" = "."; then :; else \
+	    rev="$$subdir $$rev"; \
+	  fi; \
+	done; \
+	rev="$$rev ."; \
+	target=`echo $@ | sed s/-recursive//`; \
+	for subdir in $$rev; do \
+	  echo "Making $$target in $$subdir"; \
+	  if test "$$subdir" = "."; then \
+	    local_target="$$target-am"; \
+	  else \
+	    local_target="$$target"; \
+	  fi; \
+	  (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) $$local_target) \
+	  || eval $$failcom; \
+	done && test -z "$$fail"
+tags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) tags); \
+	done
+ctags-recursive:
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  test "$$subdir" = . || (cd $$subdir && $(MAKE) $(AM_MAKEFLAGS) ctags); \
+	done
+
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
@@ -455,10 +568,23 @@ ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	mkid -fID $$unique
 tags: TAGS
 
-TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+TAGS: tags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
+	if ($(ETAGS) --etags-include --version) >/dev/null 2>&1; then \
+	  include_option=--etags-include; \
+	  empty_fix=.; \
+	else \
+	  include_option=--include; \
+	  empty_fix=; \
+	fi; \
+	list='$(SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test ! -f $$subdir/TAGS || \
+	      tags="$$tags $$include_option=$$here/$$subdir/TAGS"; \
+	  fi; \
+	done; \
 	list='$(SOURCES) $(HEADERS)  $(LISP) $(TAGS_FILES)'; \
 	unique=`for i in $$list; do \
 	    if test -f "$$i"; then echo $$i; else echo $(srcdir)/$$i; fi; \
@@ -471,7 +597,7 @@ TAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 	    $$tags $$unique; \
 	fi
 ctags: CTAGS
-CTAGS:  $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
+CTAGS: ctags-recursive $(HEADERS) $(SOURCES)  $(TAGS_DEPENDENCIES) \
 		$(TAGS_FILES) $(LISP)
 	tags=; \
 	here=`pwd`; \
@@ -520,25 +646,41 @@ distdir: $(DISTFILES)
 	    || exit 1; \
 	  fi; \
 	done
+	list='$(DIST_SUBDIRS)'; for subdir in $$list; do \
+	  if test "$$subdir" = .; then :; else \
+	    test -d "$(distdir)/$$subdir" \
+	    || $(mkdir_p) "$(distdir)/$$subdir" \
+	    || exit 1; \
+	    distdir=`$(am__cd) $(distdir) && pwd`; \
+	    top_distdir=`$(am__cd) $(top_distdir) && pwd`; \
+	    (cd $$subdir && \
+	      $(MAKE) $(AM_MAKEFLAGS) \
+	        top_distdir="$$top_distdir" \
+	        distdir="$$distdir/$$subdir" \
+	        distdir) \
+	      || exit 1; \
+	  fi; \
+	done
 check-am: all-am
-check: check-am
+check: check-recursive
 all-am: Makefile $(LTLIBRARIES) $(PROGRAMS) $(LISP) $(ELCFILES) \
 		$(DATA)
 install-binPROGRAMS: install-libLTLIBRARIES
 
-installdirs:
+installdirs: installdirs-recursive
+installdirs-am:
 	for dir in "$(DESTDIR)$(libdir)" "$(DESTDIR)$(bindir)" "$(DESTDIR)$(lispdir)" "$(DESTDIR)$(pkgdatadir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
-install: install-am
-install-exec: install-exec-am
-install-data: install-data-am
-uninstall: uninstall-am
+install: install-recursive
+install-exec: install-exec-recursive
+install-data: install-data-recursive
+uninstall: uninstall-recursive
 
 install-am: all-am
 	@$(MAKE) $(AM_MAKEFLAGS) install-exec-am install-data-am
 
-installcheck: installcheck-am
+installcheck: installcheck-recursive
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM="$(INSTALL_STRIP_PROGRAM)" \
 	  install_sh_PROGRAM="$(INSTALL_STRIP_PROGRAM)" INSTALL_STRIP_FLAG=-s \
@@ -554,24 +696,25 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
-clean: clean-am
+clean: clean-recursive
 
 clean-am: clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
-	clean-libtool clean-lisp mostlyclean-am
+	clean-libtool clean-lisp clean-noinstLTLIBRARIES \
+	mostlyclean-am
 
-distclean: distclean-am
+distclean: distclean-recursive
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 distclean-am: clean-am distclean-compile distclean-generic \
 	distclean-libtool distclean-tags
 
-dvi: dvi-am
+dvi: dvi-recursive
 
 dvi-am:
 
-html: html-am
+html: html-recursive
 
-info: info-am
+info: info-recursive
 
 info-am:
 
@@ -579,27 +722,27 @@ install-data-am: install-lispLISP install-pkgdataDATA
 
 install-exec-am: install-binPROGRAMS install-libLTLIBRARIES
 
-install-info: install-info-am
+install-info: install-info-recursive
 
 install-man:
 
 installcheck-am:
 
-maintainer-clean: maintainer-clean-am
+maintainer-clean: maintainer-clean-recursive
 	-rm -rf ./$(DEPDIR)
 	-rm -f Makefile
 maintainer-clean-am: distclean-am maintainer-clean-generic
 
-mostlyclean: mostlyclean-am
+mostlyclean: mostlyclean-recursive
 
 mostlyclean-am: mostlyclean-compile mostlyclean-generic \
 	mostlyclean-libtool
 
-pdf: pdf-am
+pdf: pdf-recursive
 
 pdf-am:
 
-ps: ps-am
+ps: ps-recursive
 
 ps-am:
 
@@ -607,19 +750,25 @@ uninstall-am: uninstall-binPROGRAMS uninstall-info-am \
 	uninstall-libLTLIBRARIES uninstall-lispLISP \
 	uninstall-pkgdataDATA
 
-.PHONY: CTAGS GTAGS all all-am check check-am clean clean-binPROGRAMS \
-	clean-generic clean-libLTLIBRARIES clean-libtool clean-lisp \
-	ctags distclean distclean-compile distclean-generic \
-	distclean-libtool distclean-tags distdir dvi dvi-am html \
+uninstall-info: uninstall-info-recursive
+
+.PHONY: $(RECURSIVE_TARGETS) CTAGS GTAGS all all-am check check-am \
+	clean clean-binPROGRAMS clean-generic clean-libLTLIBRARIES \
+	clean-libtool clean-lisp clean-noinstLTLIBRARIES \
+	clean-recursive ctags ctags-recursive distclean \
+	distclean-compile distclean-generic distclean-libtool \
+	distclean-recursive distclean-tags distdir dvi dvi-am html \
 	html-am info info-am install install-am install-binPROGRAMS \
 	install-data install-data-am install-exec install-exec-am \
 	install-info install-info-am install-libLTLIBRARIES \
 	install-lispLISP install-man install-pkgdataDATA install-strip \
-	installcheck installcheck-am installdirs maintainer-clean \
-	maintainer-clean-generic mostlyclean mostlyclean-compile \
-	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
-	tags uninstall uninstall-am uninstall-binPROGRAMS \
-	uninstall-info-am uninstall-libLTLIBRARIES uninstall-lispLISP \
+	installcheck installcheck-am installdirs installdirs-am \
+	maintainer-clean maintainer-clean-generic \
+	maintainer-clean-recursive mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool mostlyclean-recursive \
+	pdf pdf-am ps ps-am tags tags-recursive uninstall uninstall-am \
+	uninstall-binPROGRAMS uninstall-info-am \
+	uninstall-libLTLIBRARIES uninstall-lispLISP \
 	uninstall-pkgdataDATA
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
