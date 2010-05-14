@@ -1,0 +1,151 @@
+** GLOSSARY **
+ator allocatorの略
+     allocatorは一般にはメモリの管理を行う機構のことを指し、
+     メモリの確保だけではなく解放も管理する。
+
+candidate 候補
+
+candsort 候補の評価並び換えを行うモジュール
+
+candswap 候補の優先順位の交換を行うモジュール
+
+cc(conjugate class) どの活用か (何行何段とか)
+
+commit(コミット) 入力の確定
+
+conjugate:
+	活用(infectionの方が適切かも)
+
+context:
+	入力コンテキスト 変換する文字列一つに対応する
+
+cos(class of speech):
+	副品詞
+
+ct(conjugate type):
+	活用形 (未然、連用、、)
+
+declinable:
+	用言 <-> 体言 indeclinable
+
+depword:
+	付属語
+
+dic_session_t:
+	辞書のセッション
+
+dtor:
+	destructorの略
+
+ent:
+	entry
+
+externt:
+	文字列中の範囲
+
+file_dic:
+	ファイル辞書
+
+metaword:
+	文節を複数まとめたもの
+
+nr:
+	NumbeR。nr_?? でなにかの数を意味する
+
+ochaire(お茶入れ):
+	文節の組をそのまま学習するための機構
+
+personality:
+	ユーザを識別するための文字列
+
+pos(part of speech):
+	品詞
+
+quit:
+	モジュール自体の終了(関数の命名に使ってる) -> release
+
+ratio:
+	RATIO_BASEを分母とする比率
+
+release :
+	モジュールのデータ(構造)の解放(関数の命名に使ってる) -> quit
+
+scos(sub cos):
+	副副品詞
+
+seg:
+	-> segment
+
+seq_ent_t:
+	ある文字列の意味(当然複数ある)
+
+segcompose:
+	品詞を割当てられた文節に対して候補を割当てる
+
+segdef:
+	正規表現もどきによって定義されたルールを内部表現に置き換える
+
+segment:
+	文節(国文法の文節では無い)
+
+segstruct:
+	文節を構成する単語に対しルール基づいてに品詞を割当てる
+
+splitter:
+	ひらがな列を文節に分割する
+
+word_list:
+	文節を構成する単位、自立語を一つ含む
+
+wordseq:
+	自立語に対して付属語を付けてゆく
+
+wordsplit:
+	文節の境界を検出する
+
+wtype:
+	単語の型情報 -> doc/POSを見よう
+
+xchar:
+	文字(EUC-JPのコード)
+
+xstr:
+	文字列(長さとxcharへのポインタを持つ)
+
+
+** xchar **
+Wnnではw_char、Cannaはwchar_tを内部の文字コードとして使用している。
+昔のwide charは16ビット文字コードに対して地域化を行うための枠組に
+使用するものであって、かつlibcのサポートもほとんど無くて、問題は
+ほとんど無かったのだが。最近ではwchar_tはlibcの国際化機能のために
+使用するという規格/合意/実装が行われているので、CannaやWnnのような構成は
+コードを読む者を混乱させたり、libcと衝突したりしてしまう可能性がある。
+そのため、anthyではxcharという独自の文字型を作って文字を扱うように
+している。
+xcharは現時点では32bitでEUCもしくはASCIIのコードが入っている。
+
+
+** context **
+Anthyは同時に複数の入力を行うことをサポートするために、
+複数の各入力をコンテキストというオブジェクトに対応させて、
+ユーザによる操作をそれぞれのコンテキストへの操作という
+形で行うようにしています。
+
+** seq_ent **
+文字列のハンドルです。
+personalityごとに辞書は用意されるので、異なるpersonalityにおいては
+同じ文字列でも異なる値を取ります。
+
+** xstr **
+typedef struct xstr_{
+  xchar *str;
+  int len;
+}xstr;
+普通の文字列のように\0終端にすると部分を取り出すなどの操作が
+複雑になるので、開始点へのポインタと文字数を持つ構造体によって
+文字列を表現している。
+
+** personality **
+学習の内容などを識別するための名前
+各コンテキストは一つのpersonalityを参照する。
+特に指定しなければdefault personality ""(空文字)が使用される。

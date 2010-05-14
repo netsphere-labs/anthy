@@ -1,0 +1,86 @@
+This software is released under GPL.
+
+このソフトウェアパッケージはGNU GPLに従って改変、再配布などを
+行うことができます。
+
+下記はそのファイルのライセンスそのものではなく、そのファイルが
+どのライセンスのパッケージ中に含むことができるかを表しています。
+このリストは現時点では未完成です。
+
+./*				GPL/LGPL/*
+./cannadic/*                 	GPL
+./doc/*				GPL/*
+./depgraph/*			GPL/*
+./test/test_main.c         	GPL/LGPL
+./src-ordering/infosort.c  	GPL/LGPL
+./src-ordering/sorter.h    	GPL/LGPL
+./src-ordering/candsort.c  	GPL/LGPL
+./src-ordering/candswap.c  	GPL/LGPL
+./src-ordering/commit.c    	GPL/LGPL
+./src-ordering/relation.c  	GPL/LGPL
+./mkanthydic/mkdic.c       	GPL/LGPL
+./mkanthydic/mkanthydic    	GPL/LGPL
+./mkanthydic/mkdic.h       	GPL/LGPL
+./mkanthydic/mkudic.c      	GPL/LGPL
+./src-diclib/wtype.c       	GPL/LGPL
+./src-diclib/ruleparser.c	GPL/LGPL
+./src-diclib/dic_personality.h	GPL/LGPL
+./src-diclib/file_dic.c		GPL/LGPL
+./src-diclib/file_dic.h		GPL/LGPL
+./src-diclib/dic_session.c	GPL/LGPL
+./src-diclib/ddic.c		GPL/LGPL
+./src-diclib/conf.c		GPL/LGPL
+./src-diclib/dic_ent.h		GPL/LGPL
+./src-diclib/ext_ent.c		GPL/LGPL
+./src-diclib/use_dic.c		GPL/LGPL
+./src-diclib/ptab.h		GPL/LGPL
+./src-diclib/alloc.c		GPL/LGPL
+./src-diclib/dic_main.c		GPL/LGPL
+./src-diclib/dic_main.h		GPL/LGPL
+./src-diclib/wtab.h		GPL/LGPL
+./src-diclib/ddic_tree.h	GPL/LGPL
+./src-diclib/xstr.c		GPL/LGPL
+./src-diclib/logger.c		GPL/LGPL
+./src-diclib/dic_util.c		GPL/LGPL
+./src-diclib/xchar.c		GPL/LGPL
+./src-diclib/xchar.h		GPL/LGPL
+./src-diclib/record.c		GPL/LGPL
+./src-main/compose.c		GPL/LGPL
+./src-main/context.c		GPL/LGPL
+./src-main/main.c		GPL/LGPL
+./src-main/main.h		GPL/LGPL
+./src-util/egg.c		GPL/LGPL
+./src-util/rkmap.h		GPL/LGPL
+./src-util/rkhelper.c		GPL/LGPL
+./src-util/rkhelper.h		GPL/LGPL
+./src-util/dic-tool.c		GPL/LGPL
+./src-util/agent.c		GPL/LGPL
+./src-util/rkconv.c		GPL/LGPL
+./src-util/rkconv.h		GPL/LGPL
+./src-util/input.c		GPL/LGPL
+./src-util/anthy-conf.el	GPL/LGPL
+./src-util/anthy-dic.el		GPL/LGPL
+./src-util/anthy-isearch.el	GPL/LGPL
+./src-util/anthy.el		GPL/LGPL
+./src-util/leim-list.el		GPL/LGPL
+./src-splitter/wordseq.c	GPL/LGPL
+./src-splitter/metaword.c	GPL/LGPL
+./src-splitter/splitter.c	GPL/LGPL
+./src-splitter/evalborder.c	GPL/LGPL
+./src-splitter/wordlist.c	GPL/LGPL
+./src-splitter/wordborder.h	GPL/LGPL
+./include/wtype.h		GPL/LGPL
+./include/ruleparser.h		GPL/LGPL
+./include/dic.h			GPL/LGPL
+./include/ordering.h		GPL/LGPL
+./include/segclass.h		GPL/LGPL
+./include/conf.h		GPL/LGPL
+./include/segment.h		GPL/LGPL
+./include/splitter.h		GPL/LGPL
+./include/alloc.h		GPL/LGPL
+./include/xstr.h		GPL/LGPL
+./include/anthy.h		GPL/LGPL
+./include/logger.h		GPL/LGPL
+./include/dicutil.h		GPL/LGPL
+./include/input.h		GPL/LGPL
+./include/record.h		GPL/LGPL

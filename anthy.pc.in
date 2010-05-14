@@ -1,0 +1,8 @@
+#To Be Done
+# See http://www.freedesktop.org/Software/pkgconfig
+
+Name: anthy
+Description: Japanese conversion engine
+Version: @VERSION@
+Cflags:
+Libs: -lanthy -lanthydic

@@ -1,0 +1,42 @@
+#!/bin/sh
+
+# Generate ruby module
+#
+# [usage]
+#  *compile module
+#   test.sh -compile
+#  *invoke script
+#   test.sh
+#
+
+srcdir=@SRCDIR@
+
+if test x$srcdir == x. ;then
+  testdir=.
+  confdir=..
+else
+  testdir=${srcdir}/test/
+  confdir=${testdir}
+fi
+
+case x$1 in
+xcomp | xcompile | x-comp | x-compile | x--compile)
+  swig -ruby -I${testdir} anthy_swig.i
+
+  # do not over write Makefile
+  if test ! -d work; then
+    mkdir work
+  fi
+  (cd work; ruby ${confdir}/extconf.rb)
+  make -f work/Makefile
+  exit;;
+  *)
+esac
+
+LD_LIBRARY_PATH=../src-diclib/.libs:../src-main/.libs
+export LD_LIBRARY_PATH
+
+SRCDIR=$srcdir
+export SRCDIR
+
+ruby ${testdir}/test.rb

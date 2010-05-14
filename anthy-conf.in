@@ -1,0 +1,6 @@
+# not /usr but should be ${prefix}/share.
+ANTHYDIR @prefix@/share/anthy/
+DIC_FILE @prefix@/share/anthy/anthy.dic
+INDEPWORD indepword.txt
+DEPWORD master.depword
+#ZIPDICT_EUC /var/lib/canna/dic/canna/zipcode.ctd
