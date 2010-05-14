@@ -7,7 +7,7 @@
 Anthy、Canna 用の自家製変換辞書です。
 cannadic-0.95c をベースに、大幅に手を加えてあります。
 
-   総エントリ数: 230,454 エントリ (2007/06/21 現在)
+   総エントリ数: 236,883 エントリ (2007/10/23 現在)
    ( cannadic-0.95c は 149,384 )
 
 ※変換精度の確認は Anthy で行い、Canna では行っていません。
@@ -19,14 +19,13 @@ cannadic がベースなので、GPL を継承します。
 
 
 [ ファイル ]
-ファイルはすべて EUC-JP になっています。
+ファイルは g_fname.t を除いてすべて EUC-JP です。
   gcanna.ctd          自立語辞書
   gcannaf.ctd         付属語辞書
-  gtankan.ctd         単漢字辞書
-  gtankan-okuri.ctd   単漢字辞書(訓読み送り仮名ありのものの
-                              送り仮名部分を取り除いたもの)
-  How-to-use.txt  使い方の説明
-  Changes.txt     変更履歴
+  gtankan.ctd         単漢字辞書(送り仮名ありの読みのものは除く)
+  g_fname.t           人名フルネーム辞書(Anthy用)(UTF-8)
+  g_fname.ctd         人名フルネーム辞書(Canna用)
+  Changes.txt         変更履歴
 
   以下のものは cannadic-0.95c そのままのものです。
   COPYING          ライセンス
@@ -35,7 +34,8 @@ cannadic がベースなので、GPL を継承します。
 
 
 [ 使い方 ]
-How-to-use.txt にあります。
+Wiki を参照してください。
+http://sourceforge.jp/projects/alt-cannadic/wiki/
 
 
 [ cannadic からの主な変更点 ]
@@ -125,14 +125,26 @@ How-to-use.txt にあります。
 次の方々からも誤登録の指摘、異表記/新語追加の点で多くの
 ご助力をいただきました。ありがとうございます。
   denson さん
-  Ikumi さん
-  登録希望さん
+  井汲景太 さん
+  登録希望 さん
   ishii さん
+  nosuke さん
+  n/a さん
+  2ch の匿名の方々
+
 
 [ 連絡先 ]
 何かありましたら下記まで。
   vagus.xyz あっと gmail.com
 
-誤りの指摘、新語追加希望等は掲示板へお願いします。
+誤りの指摘、新語追加希望等は掲示板もしくは wiki へお願いします。
 http://bbs11.fc2.com/php/e.php/alt-cannadic/
+http://sourceforge.jp/projects/alt-cannadic/wiki/
+
+
+
+
+
+
+
 
