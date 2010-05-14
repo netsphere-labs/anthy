@@ -42,4 +42,4 @@ $(dict_source_files): $(srcdir)/corpus_info $(srcdir)/weak_words calctrans
 	./calctrans -c $(srcdir)/corpus_info $(srcdir)/weak_words
 
 noinst_DATA = $(dict_source_files)
-CLEANFILES = $(dict_source_files) parsed_data parsed_data2
+CLEANFILES = $(dict_source_files) parsed_data parsed_data2 anthy.feature_info

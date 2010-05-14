@@ -1,3 +1,39 @@
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* configure.ac:
+	bump to 9100d.
+	
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* calctrans/corpus.3.txt
+	fixed typos. thank to Utumi-san.
+	[Anthy-dev 3585]
+
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* calctrans/Makefile.am:
+	add anthy.feature_info to CLEANFILES.
+	Thanks to NOKUBI-san. [Anthy-dev 3586]
+
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* depgraph/conjugate.depword, conjugate.table:
+	applied patch. Thanks to Oizumi-san.
+
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/dict.args.in:
+	modified. Thanks to Oizumi-san.
+
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* alt-cannadic/*:
+	replaced new one. Thanks to Oizumi-san.
+
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* calctrans/corpus.3.txt:
+	added more 5500 corpus.
+	Thanks to Iida-san, SASAKI-san, Shibata-san,
+	kurokuro-san, yama-san.
+
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* calctrans/corpus.1.txt:
+	replaced new one. Thanks to Tabata-san.
+
 2007-09-18  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
 	* configure.ac:
 	bump to 9100c.

@@ -192,7 +192,7 @@ proccorpus_SOURCES = proccorpus.c
 proccorpus_LDADD = ../src-util/libconvdb.la ../src-main/libanthy.la ../src-worddic/libanthydic.la
 dict_source_files = anthy.cand_info anthy.trans_info anthy.corpus_array anthy.corpus_bucket anthy.weak_words
 noinst_DATA = $(dict_source_files)
-CLEANFILES = $(dict_source_files) parsed_data parsed_data2
+CLEANFILES = $(dict_source_files) parsed_data parsed_data2 anthy.feature_info
 all: all-am
 
 .SUFFIXES:
