@@ -3,7 +3,7 @@
 # export DH_VERBOSE=1
 
 %:
-	dh $@ --qith quilt
+	dh $@ --with quilt
 
 override_dh_auto_configure:
 	dh_auto_configure -- --sysconfdir=/etc/anthy
