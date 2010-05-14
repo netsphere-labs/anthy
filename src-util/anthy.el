@@ -68,7 +68,7 @@
   "anthy-agentのPATH名")
 
 ;; face
-(defvar anthy-hilight-face nil)
+(defvar anthy-highlight-face nil)
 (defvar anthy-underline-face nil)
 (copy-face 'highlight 'anthy-highlight-face)
 (set-face-underline-p 'anthy-highlight-face t)
@@ -812,7 +812,8 @@
       (progn
 	(anthy-check-agent)
 	(anthy-mode-on))
-    (anthy-mode-off)))
+    (anthy-mode-off))
+  (run-hooks 'anthy-mode-hook))
 
 (defun anthy-mode (&optional arg)
   "Start Anthy conversion system."
@@ -916,6 +917,14 @@
   (anthy-send-recv-command " MAP_CLEAR 1\n")
   (anthy-send-recv-command " SET_PREEDIT_MODE 0\n")
   (anthy-hiragana-map))
+
+(defun anthy-insert-and-convert (ch)
+  (interactive "P")
+  (if (< 0 (length anthy-preedit))
+      (progn
+        (anthy-insert ch)
+        (anthy-handle-normal-key "(space)"))
+    (anthy-insert ch)))
 
 ;;;
 ;;; anthy.el ends here

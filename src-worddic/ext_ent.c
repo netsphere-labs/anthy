@@ -121,7 +121,7 @@ search_zipcode_dict(struct zipcode_line *zl, xstr* xs)
       parse_zipcode_line(zl, &buf[len + 1]);
     }
   }
-  free(temp);
+  anthy_free_xstr(temp);    /* メモリリークの修正 */
   free(index);
   fclose(fp);
 }
@@ -378,6 +378,8 @@ int
 anthy_get_nth_dic_ent_str_of_ext_ent(seq_ent_t se, xstr *xs,
 				     int nth, xstr *dest)
 {
+  dest->str = NULL;     /* 不正なメモリアクセスやメモリの多重解放をするバグの修正 */
+  dest->len = 0;
   if (nth == 0) {
     /* 無変換文字列 */
     dest->len = xs->len;
@@ -393,6 +395,7 @@ anthy_get_nth_dic_ent_str_of_ext_ent(seq_ent_t se, xstr *xs,
   }
   if (anthy_get_xstr_type(xs) & (XCT_NUM|XCT_WIDENUM)) {
     long long num = anthy_xstrtoll(xs);
+    const int base_ents = get_nr_num_ents(num); /* ３桁郵便番号への対応 */
     /* 漢数字、アラビア数字、全角半角切替え */
     switch(nth) {
     case 1:
@@ -419,9 +422,9 @@ anthy_get_nth_dic_ent_str_of_ext_ent(seq_ent_t se, xstr *xs,
       /* break無し */
     default:
       /* 郵便番号 */
-      if (nth >= 5) {
+      if (base_ents <= nth) {   /* ３桁郵便番号への対応 */
 	if (xs->len == 3 || xs->len == 7) {
-	  if (!gen_zipcode(xs, dest, nth-5)) {
+	  if (!gen_zipcode(xs, dest, nth - base_ents)) {    /* ３桁郵便番号への対応 */
 	    return 0;
 	  }
 	}

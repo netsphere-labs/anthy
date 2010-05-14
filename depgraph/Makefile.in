@@ -440,7 +440,7 @@ uninstall-am: uninstall-info-am
 	uninstall-info-am
 
 
-anthy.dep : mkdepgraph
+anthy.dep : mkdepgraph $(DEPWORDS)
 	./mkdepgraph
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

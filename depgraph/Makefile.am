@@ -13,7 +13,7 @@ noinst_PROGRAMS = mkdepgraph
 mkdepgraph_SOURCES = mkdepgraph.c
 mkdepgraph_LDADD =  ../src-main/libanthy.la ../src-worddic/libanthydic.la
 
-anthy.dep : mkdepgraph
+anthy.dep : mkdepgraph $(DEPWORDS)
 	./mkdepgraph
 
 noinst_DATA = anthy.dep

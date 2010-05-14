@@ -162,20 +162,20 @@ find_next_key(const char *prefix)
     return v;
   }
   /**/
-  sprintf(word_iterator.key_buf, prefix);
+  sprintf(word_iterator.key_buf, "%s", prefix);
   return NULL;
 }
 
 static void
 delete_prefix(const char *prefix)
 {
-  sprintf(word_iterator.key_buf, prefix);
+  sprintf(word_iterator.key_buf, "%s", prefix);
   anthy_priv_dic_lock();
   /* word_iterator.key_bufがprefixの文字列であれば、find_next_key()は
      最初の単語を返す */
   while (find_next_key(prefix)) {
     anthy_trie_delete(anthy_private_tt_dic, word_iterator.key_buf);
-    sprintf(word_iterator.key_buf, prefix);
+    sprintf(word_iterator.key_buf, "%s", prefix);
   }
   anthy_priv_dic_unlock();
 }
@@ -234,7 +234,7 @@ anthy_priv_dic_select_first_entry(void)
     return select_first_entry_in_textdict();
   }
   if (anthy_private_tt_dic) {
-    sprintf(word_iterator.key_buf, encoding_prefix(dic_util_encoding));
+    sprintf(word_iterator.key_buf, "%s", encoding_prefix(dic_util_encoding));
     /* prefixの次のエントリが最初のエントリ */
     if (find_next_key(encoding_prefix(dic_util_encoding))) {
       word_iterator.in_tt = 1;

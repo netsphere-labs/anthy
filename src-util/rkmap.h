@@ -229,6 +229,7 @@ static const struct rk_rule rk_rule_hiragana[] =
 	{"tu", "つ", NULL},
 	{"te", "て", NULL},
 	{"to", "と", NULL},
+	{"t.", "t", NULL},  /* 最新版の alt-cannadic の単漢字辞書への対応 */
 
 	{"tya", "ちゃ", NULL},
 	{"tyi", "ちぃ", NULL},
@@ -398,6 +399,12 @@ static const struct rk_rule rk_rule_hiragana[] =
 	{"ve", "う゛ぇ", NULL},
 	{"vo", "う゛ぉ", NULL},
 
+	{"VA", "ヴァ", NULL},   /* Debian系由来？の「ヴ」パッチの動作試験用 */
+	{"VI", "ヴィ", NULL},
+	{"VU", "ヴ", NULL},
+	{"VE", "ヴェ", NULL},
+	{"VO", "ヴォ", NULL},
+
 	{NULL, NULL, NULL}
 };
 
@@ -498,6 +505,7 @@ static const struct rk_rule rk_rule_katakana[] =
 	{"tu", "ツ", NULL},
 	{"te", "テ", NULL},
 	{"to", "ト", NULL},
+	{"t.", "t", NULL},  /* 最新版の alt-cannadic の単漢字辞書への対応 */
 
 	{"tya", "チャ", NULL},
 	{"tyi", "チィ", NULL},
@@ -766,6 +774,7 @@ static const struct rk_rule rk_rule_hankaku_kana[] =
 	{"tu", "ﾂ", NULL},
 	{"te", "ﾃ", NULL},
 	{"to", "ﾄ", NULL},
+	{"t.", "t", NULL},  /* 最新版の alt-cannadic の単漢字辞書への対応 */
 
 	{"tya", "ﾁｬ", NULL},
 	{"tyi", "ﾁｨ", NULL},

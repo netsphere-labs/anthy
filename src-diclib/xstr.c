@@ -445,6 +445,14 @@ anthy_xstrcat(xstr *s, xstr *a)
     s->len = 0;
   }
   l = s->len + a->len;
+
+  if (l < 1) {              /* 辞書もしくは学習データが壊れていた時の対策 */
+    free(s->str);
+    s->str = NULL;
+    s->len = 0;
+    return s;
+  }
+
   s->str = realloc(s->str, sizeof(xchar)*l);
   for (i = 0; i < a->len; i ++) {
     s->str[s->len+i] = a->str[i];

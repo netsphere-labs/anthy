@@ -736,9 +736,14 @@ do_select_longest_row(struct record_section *rsc, xstr *name)
   xstr xs;
   int i;
 
+  if ((NULL == name) || (NULL == name->str) || (name->len < 1) || (0 == name->str[0])) {
+    /* 辞書もしくは学習データが壊れていた時の対策 */
+    return NULL;
+  }
+
   mark = trie_find_longest(&rsc->cols, name);
   xs.str = name->str;
-  for (i = mark->row.key.len; i > 1; i--) {
+  for (i = (mark->row.key.len <= name->len) ? mark->row.key.len : name->len; i > 1; i--) {  /* 不正なメモリアクセスの修正 */
     /* ルートノードは i == 1 でマッチするので除外
      * trie_key_nth_bit 参照
      */
@@ -879,6 +884,10 @@ intern_xstr (struct trie_root* xstrs, xstr* xs)
   struct trie_node* node;
   int dummy;
 
+  if ((NULL == xs) || (NULL == xs->str) || (xs->len < 1) || (0 == xs->str[0])) {
+    /* 辞書もしくは学習データが壊れていた時の対策 */
+    return NULL;
+  }
   node = trie_find(xstrs, xs);
   if (!node) 
     node = trie_insert(xstrs, xs, 0, &dummy, &dummy);
@@ -1211,6 +1220,11 @@ static void
 write_quote_xstr(FILE* fp, xstr* xs, int encoding)
 {
   char* buf;
+
+  if ((NULL == xs) || (NULL == xs->str) || (xs->len < 1) || (0 == xs->str[0])) {
+    /* 辞書もしくは学習データが壊れていた時の対策 */
+    return;
+  }
 
   buf = (char*) alloca(xs->len * 6 + 2); /* EUC またはUTF8を仮定 */
   anthy_sputxstr(buf, xs, encoding);

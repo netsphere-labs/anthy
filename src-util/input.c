@@ -566,12 +566,14 @@ cmd_resize(struct anthy_input_context* ictx, int d)
   }
   ictx->last_gotten_cand = NTH_UNCONVERTED_CANDIDATE;
 
-  for (as = as->next; as; ) {
-    struct a_segment* next;
-    next = as->next;
+  as = as->next;            /* 不正なメモリアクセスの修正 */
+  if (as) {
     as->prev->next = NULL;
-    free(as);
-    as = next;
+    for (; as; ) {
+      struct a_segment* const next = as->next;
+      free(as);
+      as = next;
+    }
   }
 }
 
@@ -788,6 +790,8 @@ anthy_input_create_context(struct anthy_input_config* cfg)
   ictx->actx = NULL;
   ictx->segment = NULL;
   ictx->cur_segment = NULL;
+  ictx->enum_reverse = 0;       /* 初期化忘れの修正 */
+  ictx->last_gotten_cand = 0;   /* 初期化忘れの修正 */
   ictx->commit = NULL;
   ictx->n_commit = 0;
   ictx->s_commit = 0;

@@ -134,8 +134,10 @@ anthy_sort_metaword(struct segment_list *seg_list)
   /**/
   for (i = 0; i < seg_list->nr_segments; i++) {
     struct seg_ent *seg = anthy_get_nth_segment(seg_list, i);
+    if (seg->mw_array) {    /* 不正なメモリアクセスを行うバグの修正 */
     qsort(seg->mw_array, seg->nr_metaword, sizeof(struct meta_word *),
 	  metaword_compare_func);
+    }
   }
 }
 

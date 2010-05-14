@@ -73,7 +73,11 @@ static void
 reorder_candidate(int from_word_id, struct seg_ent *seg)
 {
   int i, pos;
-  struct cand_ent *ce = seg->cands[0];
+  struct cand_ent *ce;
+  if (NULL == seg->cands) { /* 辞書もしくは学習データが壊れていた時の対策 */
+    return;
+  }
+  ce = seg->cands[0];
   if (ce->core_elm_index == -1) {
     return ;
   }
@@ -100,6 +104,9 @@ static int
 get_indep_word_id(struct seg_ent *seg, int nth)
 {
   struct cand_ent *ce;
+  if (NULL == seg->cands) { /* 辞書もしくは学習データが壊れていた時の対策 */
+    return -1;
+  }
   if (seg->cands[nth]->core_elm_index == -1) {
     /* 一番目の候補がseq_entから作られた候補ではない */
     return -1;
@@ -381,6 +388,9 @@ reorder_by_corpus(struct segment_list *sl, int nth)
     return ;
   }
   cur_seg = anthy_get_nth_segment(sl, nth);
+  if (NULL == cur_seg->cands) { /* 辞書もしくは学習データが壊れていた時の対策 */
+    return;
+  }
   /* 各候補について */
   for (i = 0; i < cur_seg->nr_cands; i++) {
     check_candidate_context(cur_seg, i, &user);

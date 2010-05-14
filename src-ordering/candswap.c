@@ -191,6 +191,9 @@ proc_swap_candidate_indep(struct seg_ent *se)
 void
 anthy_proc_swap_candidate(struct seg_ent *seg)
 {
+  if (NULL == seg->cands) { /* 辞書もしくは学習データが壊れていた時の対策 */
+    return;
+  }
 
   if (seg->cands[0]->score >= OCHAIRE_SCORE) {
     /* cands[0] は特別な点数を持っている */

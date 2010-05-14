@@ -17,6 +17,7 @@
 
 #include <anthy/record.h>
 #include <anthy/splitter.h>
+#include <anthy/xchar.h>
 #include <anthy/xstr.h>
 #include <anthy/segment.h>
 #include <anthy/segclass.h>
@@ -158,6 +159,17 @@ get_surrounding_text(struct splitter_context* sc,
     xs_post->len = post_len;
 }
 
+static int
+count_vu(xstr *xs) {
+  int i, r = 0;
+  for (i = 0; i < xs->len; i++) {
+    if (xs->str[i] == KK_VU) {
+      r++;
+    }
+  }
+  return r;
+}
+
 /*
  * 複合語であるwlからn番めの部分を取り出してmwにする
  */
@@ -177,8 +189,12 @@ make_compound_nth_metaword(struct splitter_context* sc,
   get_surrounding_text(sc, wl, &xs_pre, &xs_post);
 
   for (i = 0; i <= nth; ++i) {
+    xstr part;
     from += len;
     len = anthy_compound_get_nth_segment_len(ce, i);
+    part.str = sc->ce[from].c;
+    part.len = len;
+    len -= count_vu(&part);
     if (i == 0) {
       len += xs_pre.len;
     }
@@ -742,7 +758,11 @@ make_metaword_with_depchar(struct splitter_context *sc,
   int len = mw ? mw->len : 0;
 
   /* metawordの直後の文字の種類を調べる */
-  int type = anthy_get_xchar_type(*sc->ce[from + len].c);
+  int type;
+  if (sc->char_count <= from + len) {
+    return ;
+  }
+  type = anthy_get_xchar_type(*sc->ce[from + len].c);
   if (!(type & XCT_SYMBOL) &&
       !(type & XCT_PART)) {
     return;

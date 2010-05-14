@@ -104,6 +104,9 @@ static void
 trim_kana_candidate(struct seg_ent *se)
 {
   int i;
+  if (NULL == se->cands) {  /* 辞書もしくは学習データが壊れていた時の対策 */
+    return;
+  }
   if (se->cands[0]->flag & CEF_KATAKANA) {
     return ;
   }

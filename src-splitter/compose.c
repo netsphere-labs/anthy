@@ -138,7 +138,9 @@ enum_candidates(struct seg_ent *seg,
     tail.len = seg->len - from;
     tail.str = &seg->str.str[from];
     anthy_xstrcat(&ce->str, &tail);
-    push_back_candidate(seg, dup_candidate(ce));
+    if (ce->str.str && (0 < ce->str.len)) { /* 辞書もしくは学習データが壊れていた時の対策 */
+      push_back_candidate(seg, dup_candidate(ce));
+    }
     return 1;
   }
 

@@ -261,7 +261,7 @@ dump_dic(void)
   print_usage_text();
   if (anthy_priv_dic_select_first_entry() == -1) {
     printf("# Failed to read private dictionary\n"
-	   "# There are no words or error occured?\n"
+	   "# There are no words or error occurred?\n"
 	   "#\n");
     return ;
   }
