@@ -229,7 +229,7 @@ void
 anthy_copy_words_from_private_dic(struct seq_ent *seq,
 				  xstr *xs, int is_reverse)
 {
-  if (is_reverse || !anthy_private_tt_dic) {
+  if (is_reverse) {
     return ;
   }
   /* 個人辞書から取ってくる */

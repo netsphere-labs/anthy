@@ -12,7 +12,7 @@ read @top_srcdir@/alt-cannadic/gcanna.ctd
 read @top_srcdir@/alt-cannadic/gcannaf.ctd
 #read @top_srcdir@/alt-cannadic/gtankan.ctd
 #
-read @top_srcdir@/mkworddic/tankanji.t
+read @top_srcdir@/alt-cannadic/gtankan.ctd
 read @top_srcdir@/mkworddic/adjust.t
 read @top_srcdir@/mkworddic/name.t
 read @top_srcdir@/mkworddic/compound.t
