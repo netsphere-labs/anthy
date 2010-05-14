@@ -1,4 +1,6 @@
 This software is released under GPL.
+Source code in this package is also is released under LGPL,
+so you can use shared libraries under the terms of LGPL.
 
 このソフトウェアパッケージはGNU GPLに従って改変、再配布などを
 行うことができます。

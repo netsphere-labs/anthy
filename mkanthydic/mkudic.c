@@ -13,16 +13,21 @@
 
 #define LINE_LEN 256
 
-
+/* 用例 */
 struct use_case {
   int id[2];
   struct use_case *next;
 };
 
+/* 用例辞書 */
 struct uc_dict {
+  /* 用例リスト */
   struct use_case uc_head;
   int nr_ucs;
-  struct yomi_entry *entry_list;
+  /* ソートするための配列 */
+  struct use_case **uc_array;
+  /* 単語の辞書 */
+  struct yomi_entry_list *entry_list;
 };
 
 /*
@@ -32,22 +37,20 @@ static int
 find_word_id(struct uc_dict *dict, char *yomi, char *word, char *wt)
 {
   struct yomi_entry *ye;
+  int i;
   xstr *xs = anthy_cstr_to_xstr(yomi, 0);
-  for (ye = dict->entry_list; ye; ye = ye->next) {
-    if (!anthy_xstrcmp(ye->index_xstr, xs)) {
-      int i;
-      for (i = 0; i < ye->nr_entries; i++) {
-	struct word_entry *we = &ye->entries[i];
-	if (!strcmp(word, we->word) &&
-	    !strcmp(wt, we->wt)) {
-	  anthy_free_xstr(xs);
-	  return we->offset;
-	}
-      }
+  ye = find_yomi_entry(dict->entry_list, xs, 0);
+  anthy_free_xstr(xs);
+  if (!ye) {
+    return -1;
+  }
+  for (i = 0; i < ye->nr_entries; i++) {
+    struct word_entry *we = &ye->entries[i];
+    if (!strcmp(word, we->word) &&
+	!strcmp(wt, we->wt)) {
+      return we->offset;
     }
   }
-  anthy_free_xstr(xs);
-  printf("Invalid word in ucdict %s %s %s.\n", yomi, word, wt);
   return -1;
 }
 
@@ -55,19 +58,25 @@ find_word_id(struct uc_dict *dict, char *yomi, char *word, char *wt)
  * 見つからなければ -1
  */
 static int
-get_id_from_word_line(struct uc_dict *dict, char *buf)
+get_id_from_word_line(struct uc_dict *dict, char *buf, int ln)
 {
   char yomi[LINE_LEN];
   char okuri[LINE_LEN];
   char wt[LINE_LEN];
   char kanji[LINE_LEN];
-  int res;
+  int res, id;
 
   res = sscanf(buf, "%s %s %s %s", yomi, okuri, wt, kanji);
   if (res != 4) {
+    fprintf(stderr, "Invalid line(%d):%s\n", ln, buf);
     return -1;
   }
-  return find_word_id(dict, yomi, kanji, wt);
+  id = find_word_id(dict, yomi, kanji, wt);
+  if (id == -1) {
+    fprintf(stderr, "Invalid word in ucdict (%d):%s %s %s.\n",
+	    ln ,yomi, kanji, wt);
+  }
+  return id;
 }
 
 static void
@@ -86,24 +95,31 @@ commit_uc(struct uc_dict *dict, int x, int y)
   dict->nr_ucs ++;
 }
 
-/* 用例ファイルを読み込む */
+/* 用例データベースを作る */
 struct uc_dict *
-read_uc_file(const char *fn, struct yomi_entry *ye)
+create_uc_dict(struct yomi_entry_list *yl)
+{
+  struct uc_dict *dict = malloc(sizeof(struct uc_dict));
+
+  dict->entry_list = yl;
+  dict->uc_head.next = NULL;
+  dict->nr_ucs = 0;
+
+  return dict;
+}
+
+/* 用例ファイルを読み込む */
+void
+read_uc_file(struct uc_dict *dict, const char *fn)
 {
   char buf[LINE_LEN];
   FILE *uc_file;
   int off, base = 0, cur;
-  struct uc_dict *dict;
-
-  dict = malloc(sizeof(struct uc_dict));
-  dict->entry_list = ye;
-  dict->uc_head.next = NULL;
-  dict->nr_ucs = 0;
-
+  int line_number = 0;
 
   uc_file = fopen(fn, "r");
   if (!uc_file) {
-    return dict;
+    return ;
   }
 
   /* off=0      : 最初の単語
@@ -112,6 +128,8 @@ read_uc_file(const char *fn, struct yomi_entry *ye)
   off = 0;
   while (fgets(buf, LINE_LEN, uc_file)) {
     /**/
+    line_number ++;
+    /**/
     if (buf[0] == '#') {
       continue;
     }
@@ -119,7 +137,7 @@ read_uc_file(const char *fn, struct yomi_entry *ye)
       off = 0;
       continue;
     }
-    cur = get_id_from_word_line(dict, buf);
+    cur = get_id_from_word_line(dict, buf, line_number);
     if (off == 0) {
       base = cur;
     } else {
@@ -127,25 +145,66 @@ read_uc_file(const char *fn, struct yomi_entry *ye)
     }
     off ++;
   }
-  return dict;
 }
 
-void
-make_ucdic(FILE *uc_out, struct uc_dict *dict)
+static int
+compare_uc(const void *p1, const void *p2)
 {
+  const struct use_case *const *u1 = p1;
+  const struct use_case *const *u2 = p2;
+  int d;
+  d = (*u1)->id[0] - (*u2)->id[0];
+  if (d) {
+    return d;
+  }
+  return (*u1)->id[1] - (*u2)->id[1];
+}
+
+static void
+sort_udict(struct uc_dict *dict)
+{
+  int i;
+  struct use_case *uc;
+  /* 配列に追加 */
+  dict->uc_array = malloc(sizeof(struct use_case *) *
+			  dict->nr_ucs);
+  for (i = 0, uc = dict->uc_head.next; uc; uc = uc->next) {
+    dict->uc_array[i] = uc;
+    i++;
+  }
+  /**/
+  qsort((void *)dict->uc_array, dict->nr_ucs,
+	sizeof(struct use_case *), compare_uc);
+}
+
+/* 用例辞書をファイルに書き出す */
+void
+make_ucdict(FILE *uc_out, struct uc_dict *dict)
+{
+  int i;
   struct use_case *uc;
   /**/
   write_nl(uc_out, 0x75646963);/*MAGIC udic*/
   write_nl(uc_out, 0);/*Version*/
   write_nl(uc_out, 16);/*Header Size*/
+  if (!dict) {
+    write_nl(uc_out, 0);
+    printf("udic: no use examples.\n");
+    return ;
+  }
+  /* sortする */
+  sort_udict(dict);
+  /**/
   write_nl(uc_out, dict->nr_ucs);
-  for (uc = dict->uc_head.next; uc; uc = uc->next) {
+  for (i = 0; i < dict->nr_ucs; i++) {
+    uc = dict->uc_array[i];
     write_nl(uc_out, uc->id[0]);
     write_nl(uc_out, uc->id[1]);
   }
   printf("udic: %d use examples.\n", dict->nr_ucs);
 }
 
+/* 用例辞書の内容をhashに書き込む */
 void
 fill_uc_to_hash(struct versatile_hash *vh, struct uc_dict *dict)
 {

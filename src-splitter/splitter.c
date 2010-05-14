@@ -78,6 +78,16 @@ release_info_cache(struct splitter_context *sc)
 }
 
 static void
+metaword_dtor(void *p)
+{
+  struct meta_word *mw = (struct meta_word*)p;
+  if (mw->cand_hint.str) {
+    free(mw->cand_hint.str);
+  }
+}
+
+
+static void
 alloc_char_ent(xstr *xs, struct splitter_context *sc)
 {
   int i;
@@ -90,6 +100,7 @@ alloc_char_ent(xstr *xs, struct splitter_context *sc)
     sc->ce[i].seg_border = 0;
     sc->ce[i].initial_seg_len = 0;
     sc->ce[i].best_seg_class = SEG_HEAD;
+    sc->ce[i].best_mw = NULL;
   }
  
   /* 左右両端は文節の境界である */
@@ -108,7 +119,7 @@ alloc_info_cache(struct splitter_context *sc)
   /* キャッシュのデータを確保 */
   sc->word_split_info = malloc(sizeof(struct word_split_info_cache));
   info = sc->word_split_info;
-  info->MwAllocator = anthy_create_allocator(sizeof(struct meta_word), 0);
+  info->MwAllocator = anthy_create_allocator(sizeof(struct meta_word), metaword_dtor);
   info->WlAllocator = anthy_create_allocator(sizeof(struct word_list), 0);
   info->cnode =
     malloc(sizeof(struct char_node) * (sc->char_count + 1));
@@ -143,9 +154,11 @@ anthy_mark_border(struct splitter_context *sc,
   info = sc->word_split_info;
   info->seg_border = alloca(sizeof(int)*(sc->char_count + 1));
   info->best_seg_class = alloca(sizeof(enum seg_class)*(sc->char_count + 1));
+  info->best_mw = alloca(sizeof(struct meta_word*)*(sc->char_count + 1));
   for (i = 0; i < sc->char_count + 1; ++i) {
     info->seg_border[i] = sc->ce[i].seg_border;
     info->best_seg_class[i] = sc->ce[i].best_seg_class;
+    info->best_mw[i] = sc->ce[i].best_mw;
   }
 
   /* 境界を決定する */
@@ -154,6 +167,7 @@ anthy_mark_border(struct splitter_context *sc,
   for (i = from; i < to; ++i) {
     sc->ce[i].seg_border = info->seg_border[i];
     sc->ce[i].best_seg_class = info->best_seg_class[i];
+    sc->ce[i].best_mw = info->best_mw[i];
   }
 }
 

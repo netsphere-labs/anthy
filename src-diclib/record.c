@@ -86,7 +86,6 @@ struct trie_node {
   struct trie_node *r;
   int bit;
   struct record_column column;
-  struct trie_node *prev, *next; /* 両端ループ */
   struct trie_node *lru_prev, *lru_next; /* 両端ループ */
   int dirty; /* LRU のための used, sused ビット */
 };
@@ -330,8 +329,6 @@ init_trie_root(struct trie_root *root)
   n->l = n;
   n->r = n;
   n->bit = 0;
-  n->prev = n;
-  n->next = n;
   n->lru_next = n;
   n->lru_prev = n;
   n->dirty = 0;
@@ -515,17 +512,6 @@ trie_insert(struct trie_root *root, xstr *key,
   } else {
     p->r = n;
   }
-  if (trie_key_cmp(&q->column.key, key) > 0) {
-    n->prev = q;
-    n->next = q->next;
-    q->next = n;
-    n->next->prev = n;
-  } else {
-    n->next = q;
-    n->prev = q->prev;
-    q->prev = n;
-    n->prev->next = n;
-  }
 
   /* LRU の処理 */
   if (dirty == LRU_USED) {
@@ -603,8 +589,6 @@ trie_remove(struct trie_root *root, xstr *key,
   } else {
     *pp = (p->r == q) ? p->l : p->r;
   }
-  p->prev->next = p->next; 
-  p->next->prev = p->prev;
   p->lru_prev->lru_next = p->lru_next;
   p->lru_next->lru_prev = p->lru_prev;
   if (p->dirty == LRU_USED) {
@@ -620,8 +604,8 @@ trie_remove(struct trie_root *root, xstr *key,
 static struct trie_node *
 trie_first (struct trie_root *root)
 {
-  return root->root.next == &root->root ?
-    NULL : root->root.next;
+  return root->root.lru_next == &root->root ?
+    NULL : root->root.lru_next;
 }
 
 /* 次のノードがなければ 0 を返す */
@@ -629,7 +613,7 @@ static struct trie_node *
 trie_next (struct trie_root *root,
 	   struct trie_node *cur)
 {
-  return cur->next == &root->root ? 0 : cur->next;
+  return cur->lru_next == &root->root ? 0 : cur->lru_next;
 }
 
 /*
@@ -641,7 +625,7 @@ trie_remove_all (struct trie_root *root,
 		 int *nr_used, int *nr_sused)
 {
   struct trie_node* p;
-  for (p = root->root.next; p != &root->root; p = p->next) {
+  for (p = root->root.lru_next; p != &root->root; p = p->lru_next) {
     trie_column_free(&p->column);
   }
   anthy_free_allocator(root->node_ator);
@@ -651,7 +635,7 @@ trie_remove_all (struct trie_root *root,
 }
 
 /*
- * LRU リストの先頭から count 番目までを残して残りを開放する
+ * LRU リストの先頭から count 番目までを残して残りを解放する
  */
 static void
 trie_remove_old (struct trie_root *root, int count, 

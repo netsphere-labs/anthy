@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 
 #include <dicutil.h>
 #include <config.h>
@@ -286,11 +287,24 @@ static int
 find_head(char *yomi, char *freq, char *w)
 {
   char buf[256];
+  char *p;
+  int i;
   do {
     if (!read_line(buf, 256, fp_in)) {
       return -1;
     }
   } while (sscanf(buf, "%s %s %s",yomi, freq, w) != 3);
+  /* 単語はspaceを含みうるので、切り直し */
+  p = buf;
+  for (i = 0; i < 2; i++) {
+    while (!isspace(p[0]) ||
+	   isspace(p[1])) {
+      p++;
+    }
+    p++;
+  }
+  /* pは3つめのトークンの先頭*/
+  strncpy(w, p, 256);
   return 0;
 }
 

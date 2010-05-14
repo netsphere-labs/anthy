@@ -1816,7 +1816,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=anthy
- VERSION=6024
+ VERSION=6300d
 
 
 cat >>confdefs.h <<_ACEOF
@@ -19285,7 +19285,7 @@ CANNADIC_SRCDIR=$with_cannadic
 SRCDIR=$srcdir
 
 
-                                                                                                                                                                ac_config_files="$ac_config_files Makefile src-diclib/Makefile src-splitter/Makefile src-ordering/Makefile src-main/Makefile src-util/Makefile include/Makefile depgraph/Makefile mkanthydic/Makefile cannadic/Makefile test/Makefile test/test.sh doc/Makefile anthy-conf anthy.spec anthy.pc"
+                                                                                                                                                                          ac_config_files="$ac_config_files Makefile src-diclib/Makefile src-splitter/Makefile src-ordering/Makefile src-main/Makefile src-util/Makefile include/Makefile depgraph/Makefile mkanthydic/Makefile cannadic/Makefile test/Makefile test/test.sh doc/Makefile anthy-conf anthy-test-conf anthy.spec anthy.pc"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -19863,6 +19863,7 @@ do
   "test/test.sh" ) CONFIG_FILES="$CONFIG_FILES test/test.sh" ;;
   "doc/Makefile" ) CONFIG_FILES="$CONFIG_FILES doc/Makefile" ;;
   "anthy-conf" ) CONFIG_FILES="$CONFIG_FILES anthy-conf" ;;
+  "anthy-test-conf" ) CONFIG_FILES="$CONFIG_FILES anthy-test-conf" ;;
   "anthy.spec" ) CONFIG_FILES="$CONFIG_FILES anthy.spec" ;;
   "anthy.pc" ) CONFIG_FILES="$CONFIG_FILES anthy.pc" ;;
   "depfiles" ) CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;

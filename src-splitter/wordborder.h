@@ -15,21 +15,19 @@ struct splitter_context;
 enum mw_check {
   /* なにもせず */
   MW_CHECK_NONE,
-  /* mw->wlの範囲に境界が無い */
-  MW_CHECK_WL_STR,
   /* mw->wlが無いか、wlが使える場合 */
-  MW_CHECK_WL_SINGLE,
-  /**/
-  MW_CHECK_WL_WRAP,
+  MW_CHECK_SINGLE,
   MW_CHECK_BORDER,
+  MW_CHECK_WRAP,
   MW_CHECK_PAIR,
   MW_CHECK_OCHAIRE,
+  MW_CHECK_NUMBER,
   MW_CHECK_COMPOUND
 };
 
 /*
  * 文字列中のある場所を表し，
- * そこから始まるextent, meta_word, word_listのセットを持つ
+ * そこから始まるmeta_word, word_listのセットを持つ
  */
 struct char_node {
   int max_len;
@@ -53,6 +51,8 @@ struct word_split_info_cache {
   int *seg_border;
   /* hmmで一番成績の良かったクラス */
   enum seg_class* best_seg_class;
+  /*  */
+  struct meta_word **best_mw;
   /* アロケータ */
   allocator MwAllocator, WlAllocator;
 };
@@ -180,9 +180,17 @@ void anthy_commit_meta_word(struct splitter_context *, struct meta_word *mw);
 void anthy_make_metaword_all(struct splitter_context *);
 void anthy_print_metaword(struct splitter_context *, struct meta_word *);
 struct meta_word *
-anthy_do_combine_metaword(struct splitter_context *sc,
-			  enum metaword_type type,
-			  struct meta_word *mw, struct meta_word *mw2);
+anthy_do_list_metaword(struct splitter_context *sc,
+		       enum metaword_type type,
+		       struct meta_word *mw, struct meta_word *mw2,
+		       int weak);
+struct meta_word *
+anthy_do_cons_metaword(struct splitter_context *sc,
+		       enum metaword_type type,
+		       struct meta_word *mw, struct meta_word *mw2,
+		       int weak);
+void anthy_mark_border_by_metaword(struct splitter_context* sc,
+				   struct meta_word* mw);
 
 
 /* defined in evalborder.c */

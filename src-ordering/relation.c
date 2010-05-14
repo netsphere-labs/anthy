@@ -32,12 +32,17 @@ reorder_candidate(int from_word_id, struct seg_ent *seg)
     word_id = ce->elm[ce->core_elm_index].id;
     if (anthy_dic_check_word_relation(from_word_id, word_id) &&
 	anthy_wtype_get_pos(ce->elm[ce->core_elm_index].wt) == pos) {
+      /* 用例にマッチしたので、候補のスコアを更新 */
       ce->flag |= CEF_USEDICT;
       ce->score *= 10;
     }
   }
 }
 
+/*
+ * 用例を用いて候補を並び替える
+ *  @nth番目以降の文節を対象とする
+ */
 void
 anthy_reorder_candidates_by_relation(struct segment_list *sl, int nth)
 {
@@ -49,11 +54,13 @@ anthy_reorder_candidates_by_relation(struct segment_list *sl, int nth)
     int word_id;
     cur_seg = anthy_get_nth_segment(sl, i);
     if (cur_seg->cands[0]->core_elm_index == -1) {
+      /* 一番目の候補がseq_entから作られた候補ではない */
       continue;
     }
     ce = cur_seg->cands[0];
     word_id = ce->elm[ce->core_elm_index].id;
     if (word_id == -1) {
+      /**/
       continue;
     }
     /* 近所の文節を順に見ていく */

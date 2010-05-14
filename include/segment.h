@@ -46,6 +46,7 @@ struct cand_ent {
 #define CEF_USEDICT        0x00000020
 #define CEF_COMPOUND       0x00000040
 #define CEF_COMPOUND_PART  0x00000080
+#define CEF_BEST           0x00000100
 
 /** Context内に存在する文節の列
  * release_seg_entで解放する
@@ -70,6 +71,8 @@ struct seg_ent {
 
   /* hmmで一番成績の良かったクラス */
   enum seg_class best_seg_class;
+  
+  struct meta_word *best_mw;
 
   struct seg_ent *prev, *next;
 };

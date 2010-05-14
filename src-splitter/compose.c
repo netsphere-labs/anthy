@@ -13,7 +13,7 @@
  * Copyright (C) 2000-2004 TABATA Yusuke
  * Copyright (C) 2002 UGAWA Tomoharu
  *
- * $Id: compose.c,v 1.12 2004/12/20 16:28:44 yusuke Exp $
+ * $Id: compose.c,v 1.17 2005/02/20 12:12:21 oxy Exp $
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -327,8 +327,8 @@ push_back_noconv_candidate(struct seg_ent *seg)
 static void
 make_cand_elem_from_word_list(struct seg_ent *se,
 			      struct cand_ent *ce,
-			      int index,
-			      struct word_list *wl)
+			      struct word_list *wl,
+			      int index)
 {
   int i; 
   int from = wl->from - se->from;
@@ -341,51 +341,19 @@ make_cand_elem_from_word_list(struct seg_ent *se,
       continue;
     }
     if (i == PART_CORE) {
-      ce->core_elm_index = i;
+      ce->core_elm_index = i + index;
     }
     core_xs.str = &se->str.str[from];
     core_xs.len = part->len;
-    ce->elm[index+i].se = anthy_get_seq_ent_from_xstr(&core_xs);
-    ce->elm[index+i].str.str = core_xs.str;
-    ce->elm[index+i].str.len = core_xs.len;
-    ce->elm[index+i].wt = part->wt;
-    ce->elm[index+i].ratio = part->ratio;
+    ce->elm[i + index].se = anthy_get_seq_ent_from_xstr(&core_xs);
+    ce->elm[i + index].str.str = core_xs.str;
+    ce->elm[i + index].str.len = core_xs.len;
+    ce->elm[i + index].wt = part->wt;
+    ce->elm[i + index].ratio = part->ratio;
     from += part->len;
   }
 }
 
-
-/** 結合されたmetawordからmeta_wordを取り出す */
-static void
-make_candidate_from_combined_metaword(struct seg_ent *se,
-				      struct meta_word *mw,
-				      struct meta_word *top_mw)
-{
-  /*
-   * 各単語の品詞が決定された状態でコミットされる。
-   */
-  struct cand_ent *ce;
-  int score;
-
-  /* 複数(1も含む)の単語で構成される文節に単語を割当てていく */
-  ce = alloc_cand_ent();
-  ce->nr_words = mw->nr_parts;
-  ce->str.str = NULL;
-  ce->str.len = 0;
-  ce->elm = calloc(sizeof(struct cand_elm),ce->nr_words);
-  ce->mw = top_mw;
-
-  /* 接頭辞, 自立語部, 接尾辞, 付属語 */
-  make_cand_elem_from_word_list(se, ce, 0, mw->mw1->wl);
-  make_cand_elem_from_word_list(se, ce, NR_PARTS, mw->mw2->wl);
-  score = mw->mw1->score + mw->mw2->score;
-  score *= mw->mw2->wl->part[PART_DEPWORD].ratio;
-  score /= RATIO_BASE;
-  ce->score = score;
-  ce->flag = CEF_NONE;
-  enum_candidates(se, ce, 0, 0);
-  anthy_release_cand_ent(ce);
-}
 
 /** まずwordlistを持つmetawordからmeta_wordを取り出す */
 static void
@@ -409,7 +377,7 @@ make_candidate_from_simple_metaword(struct seg_ent *se,
   ce->mw = top_mw;
 
   /* 接頭辞, 自立語部, 接尾辞, 付属語 */
-  make_cand_elem_from_word_list(se, ce, 0, wl);
+  make_cand_elem_from_word_list(se, ce, wl, 0);
   /* 構造を評価する */
   score = mw->score;
   /* 付属語のパターンに対するスコア */
@@ -420,7 +388,41 @@ make_candidate_from_simple_metaword(struct seg_ent *se,
   score /= RATIO_BASE;
 
   ce->score = score;
-  ce->flag = CEF_NONE;
+  ce->flag = se->best_mw == mw ? CEF_BEST : CEF_NONE;
+  enum_candidates(se, ce, 0, 0);
+  anthy_release_cand_ent(ce);
+}
+
+/** combinedなmetawordは二つの語を合体して一つの語として出す */
+static void
+make_candidate_from_combined_metaword(struct seg_ent *se,
+				    struct meta_word *mw,
+				    struct meta_word *top_mw)
+{
+  /*
+   * 各単語の品詞が決定された状態でコミットされる。
+   */
+  struct cand_ent *ce;
+  int score;
+
+  /* 複数(1も含む)の単語で構成される文節に単語を割当てていく */
+  ce = alloc_cand_ent();
+  ce->nr_words = mw->nr_parts;
+  ce->str.str = NULL;
+  ce->str.len = 0;
+  ce->elm = calloc(sizeof(struct cand_elm),ce->nr_words);
+  ce->mw = top_mw;
+
+  /* 接頭辞, 自立語部, 接尾辞, 付属語 */
+  make_cand_elem_from_word_list(se, ce, mw->mw1->wl, 0);
+  if (mw->mw2) {
+    make_cand_elem_from_word_list(se, ce, mw->mw2->mw1->wl, NR_PARTS);
+  }
+  /* 構造を評価する */
+  score = mw->score;
+
+  ce->score = score;
+  ce->flag = se->best_mw == mw ? CEF_BEST : CEF_NONE;
   enum_candidates(se, ce, 0, 0);
   anthy_release_cand_ent(ce);
 }
@@ -433,30 +435,24 @@ proc_splitter_info(struct seg_ent *se,
 		   struct meta_word *mw,
 		   struct meta_word *top_mw)
 {
+  enum mw_status si;
+
   /* まずwordlistを持つmetawordの場合 */
+  if (!mw) return;
+
   if (mw->wl && mw->wl->len) {
     make_candidate_from_simple_metaword(se, mw, top_mw);
+    return;
   }
-  switch (anthy_metaword_type_tab[mw->type].si) {
+  
+  si = anthy_metaword_type_tab[mw->type].si;
+  switch (si) {
   case MW_STATUS_WRAPPED:
     /* wrapされたものの情報を取り出す */
     proc_splitter_info(se, mw->mw1, top_mw);
     break;
   case MW_STATUS_COMBINED:
-    /* 2文節結合 */
     make_candidate_from_combined_metaword(se, mw, top_mw);
-    break;
-  case MW_STATUS_COMPOUND_PART:
-    /* 連文節の個々の文節を結合して一つの文節としてみたもの */
-    {
-      struct cand_ent *ce;
-      ce = alloc_cand_ent();
-      ce->str.str = anthy_xstr_dup_str(&mw->cand_hint);
-      ce->str.len = mw->cand_hint.len;
-      ce->mw = top_mw;
-      ce->flag = CEF_COMPOUND_PART;
-      push_back_candidate(se, ce);
-    }
     break;
   case MW_STATUS_COMPOUND:
     /* 連文節の葉 */
@@ -470,6 +466,9 @@ proc_splitter_info(struct seg_ent *se,
       push_back_candidate(se, ce);
     }
     break;
+  case MW_STATUS_COMPOUND_PART:
+    /* 連文節の個々の文節を結合して一つの文節としてみたもの */
+    /* BREAK THROUGH */
   case MW_STATUS_OCHAIRE:
     {
     /* metawordを持たない */
@@ -479,8 +478,9 @@ proc_splitter_info(struct seg_ent *se,
 	ce = alloc_cand_ent();
 	ce->str.str = anthy_xstr_dup_str(&mw->cand_hint);
 	ce->str.len = mw->cand_hint.len;
-	ce->flag = CEF_OCHAIRE;
 	ce->mw = top_mw;
+	ce->flag = (si == MW_STATUS_OCHAIRE) ? CEF_OCHAIRE : CEF_COMPOUND_PART;
+
 	if (mw->len < se->len) {
 	  /* metawordでカバーされてない領域の文字列を付ける */
 	  xstr xs;
@@ -515,6 +515,8 @@ anthy_do_make_candidates(struct seg_ent *se)
     }
     limit = best / 3;
   }
+
+  proc_splitter_info(se, se->best_mw, se->best_mw);
   /* limitよりも高いscoreを持つmetawordから候補を生成する */
   for (i = 0; i < se->nr_metaword; i++) {
     if (se->mw_array[i]->score > limit) {

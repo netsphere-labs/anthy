@@ -367,6 +367,9 @@ anthy_get_seq_ent_ct(seq_ent_t se, int pos, int ct)
   return v;
 }
 
+/*
+ * wtの品詞を持つ単語の中で最大の頻度を持つものを返す
+ */
 int
 anthy_get_seq_ent_wtype_freq(seq_ent_t se, wtype_t wt)
 {
@@ -375,14 +378,39 @@ anthy_get_seq_ent_wtype_freq(seq_ent_t se, wtype_t wt)
   if (!s) {
     return 0;
   }
+  /**/
   if (s->nr_dic_ents == 0) {
     return anthy_get_ext_seq_ent_wtype(se, wt);
   }
   f = 0;
+  /* 単語 */
   for (i = 0; i < s->nr_dic_ents; i++) {
     if (anthy_wtypecmp(wt, s->dic_ents[i]->type)) {
       if (f < s->dic_ents[i]->freq) {
 	f = s->dic_ents[i]->freq;
+      }
+    }
+  }
+  return f;
+}
+
+/*
+ * wtの品詞を持つ複合語の中で最大の頻度を持つものを返す
+ */
+int
+anthy_get_seq_ent_wtype_compound_freq(seq_ent_t se, wtype_t wt)
+{
+  int i,f;
+  struct seq_ent *s = se;
+  if (!s) {
+    return 0;
+  }
+  /**/
+  f = 0;
+  for (i = 0; i < s->nr_compound_ents; i++) {
+    if (anthy_wtypecmp(wt, s->compound_ents[i]->type)) {
+      if (f < s->compound_ents[i]->freq) {
+	f = s->compound_ents[i]->freq;
       }
     }
   }
@@ -434,21 +462,35 @@ struct elm_compound {
   xstr str;
 };
 
+/* 要素に対応する読みの長さを返す */
+static int
+get_element_len(xchar xc)
+{
+  if (xc > '0' && xc <= '9') {
+    return xc - '0';
+  }
+  if (xc >= 'a' && xc <= 'z') {
+    return xc - 'a' + 10;
+  }
+  return 0;
+}
+
 static struct elm_compound *
 get_nth_elm_compound(compound_ent_t ce, struct elm_compound *elm, int nth)
 {
   int off = 0;
   int i, j;
   for (i = 0; i <= nth; i++) {
+    /* nth番目の要素の先頭へ移動する */
     while (!(ce->str->str[off] == '_' &&
-	     ce->str->str[off+1] >= '0' &&
-	     ce->str->str[off+1] <= '9')) {
+	     get_element_len(ce->str->str[off+1]) > 0)) {
       off ++;
       if (off + 1 >= ce->str->len) {
 	return NULL;
       }
     }
-    elm->len = ce->str->str[off+1] - '0';
+    /* 構造体へ情報を取り込む */
+    elm->len = get_element_len(ce->str->str[off+1]);
     elm->str.str = &ce->str->str[off+2];
     elm->str.len = ce->str->len - off - 2;
     for (j = 0; j < elm->str.len; j++) {
@@ -495,6 +537,19 @@ anthy_compound_get_nth_segment_xstr(compound_ent_t ce, int nth, xstr *xs)
     }
   }
   return -1;
+}
+
+int
+anthy_compound_get_wtype(compound_ent_t ce, wtype_t *w)
+{
+  *w = ce->type;
+  return 0;
+}
+
+int
+anthy_compound_get_freq(compound_ent_t ce)
+{
+  return ce->freq;
 }
 
 /** 辞書サブシステムを初期化

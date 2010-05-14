@@ -15,9 +15,14 @@ struct dic_ent {
   struct dic_ent *next;
 };
 
+/** 複合語のエントリ */
 struct compound_ent {
+  /* 品詞 */
   wtype_t type;
+  /* 文字列(compound_entと同時に確保され、同時に解放される) */
   xstr *str;
+  /* 頻度 */
+  int freq;
 };
 
 /**ある文字列と同音異義語の配列
@@ -45,6 +50,7 @@ struct seq_ent {
 
 /* ext_ent.c */
 void anthy_init_ext_ent(void);
+/**/
 int anthy_get_nr_dic_ents_of_ext_ent(struct seq_ent *se,xstr *xs);
 int anthy_get_nth_dic_ent_str_of_ext_ent(seq_ent_t ,xstr *,int ,xstr *);
 int anthy_get_nth_dic_ent_wtype_of_ext_ent(xstr *,int ,wtype_t *);

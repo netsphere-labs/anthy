@@ -237,12 +237,14 @@ anthy_mem_dic_push_back_dic_ent(struct seq_ent *se, xstr *xs, wtype_t wt,
 
 /** seq_entにcompound_entを追加する */
 void
-anthy_mem_dic_push_back_compound_ent(struct seq_ent *se, xstr *xs, wtype_t wt)
+anthy_mem_dic_push_back_compound_ent(struct seq_ent *se, xstr *xs,
+				     wtype_t wt, int freq)
 {
   struct compound_ent *ce;
   ce = anthy_smalloc(se->md->compound_ent_allocator);
   ce->type = wt;
   ce->str = xs;
+  ce->freq = freq;
 
   se->nr_compound_ents ++;
   se->compound_ents = realloc(se->compound_ents,

@@ -12,8 +12,11 @@
 /*32 bitのマスクを使う。*/
 #define MAX_SESSION 32
 struct dic_session {
+  /* 0〜(MAX_SESSION-1)までの番号 */
   int id;
+  /* マスク(1<<id) */
   int mask;
+  /* 使用中かどうかのフラグ */
   int is_free;
   struct mem_dic *dic;
 };
@@ -36,7 +39,8 @@ struct seq_ent *anthy_mem_dic_alloc_seq_ent_by_xstr(struct mem_dic * d,xstr *);
 struct seq_ent *anthy_mem_dic_find_seq_ent_by_xstr(struct mem_dic * d,xstr *);
 void anthy_mem_dic_push_back_dic_ent(struct seq_ent *,xstr *,wtype_t ,
 				     const char *wt_name, int freq, int id);
-void anthy_mem_dic_push_back_compound_ent(struct seq_ent *,xstr *,wtype_t );
+void anthy_mem_dic_push_back_compound_ent(struct seq_ent *, xstr *,
+					  wtype_t , int freq);
 struct dic_ent *anthy_mem_dic_word_id_to_dic_ent(struct mem_dic *, int );
 void anthy_mem_dic_release_seq_ent(struct mem_dic * d,xstr *);
 void anthy_shrink_mem_dic(struct mem_dic * d);

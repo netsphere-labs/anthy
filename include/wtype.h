@@ -144,6 +144,8 @@
 #define SCOS_N1 90
 #define SCOS_N10 91
 #define SCOS_N100 92
+#define SCOS_N1000 93
+#define SCOS_N10000 94
 
 /* FLAGS */
 #define WF_NONE 0

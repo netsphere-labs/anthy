@@ -2,7 +2,7 @@
 
 # Files
 noinst_SCRIPTS =
-EXTRA_DICS = base.t extra.t
+EXTRA_DICS = base.t extra.t compound.t adjust.t
 CANNADIC_DIST = gcanna.ctd gcannaf.ctd
 INCLUDES = -I$(top_srcdir)/include
 # HOKUTODIC_DIST = hokuto.t
