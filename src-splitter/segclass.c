@@ -3,6 +3,16 @@
 #include <segclass.h>
 #include "wordborder.h"
 
+static const char* seg_class_names[] = {
+  "Ê¸Æ¬", "Ê¸Ëö", "Ê¸Àá", "¼ç¸ì", "½Ò¸ì", "½¤¾þ¸ì", "ÀÜÂ³¸ì", "ÆÈÎ©¸ì",
+  "ÉÕÂ°¸ì", "³«¤­³ç¸Ì", "ÊÄ¤¸³ç¸Ì", "Ì¾»ì+³Ê½õ»ì", "Ì¾»ì+½ªÃ¼", "Æ°»ì", 
+  "Æ°»ì+ÉÕÂ°¸ì", "Æ°»ì+½ªÃ¼", "·ÁÍÆ»ì", "·ÁÍÆ»ì+ÉÕÂ°¸ì", "·ÁÍÆ»ì+½ªÃ¼",
+  "·ÁÍÆÆ°»ì", "·ÁÍÆÆ°»ì+ÉÕÂ°¸ì", "·ÁÍÆÆ°»ì+½ªÃ¼", "Ï¢ÍÑ½¤¾þ", "Ï¢ÂÎ½¤¾þ",
+  "Ì¾»ì", "Ì¾»ì+ÉÕÂ°¸ì", "Ì¾»ì+Ï¢ÍÑ", "Æ°»ì+Ï¢ÍÑ", "·ÁÍÆ»ì+Ï¢ÍÑ",
+  "·ÁÍÆÆ°»ì+Ï¢ÍÑ", "Éû»ì", "Æ°»ì+Ï¢ÂÎ", "·ÁÍÆ»ì+Ï¢ÂÎ", "·ÁÍÆÆ°»ì+Ï¢ÂÎ", 
+  "Ï¢ÂÎ»ì", "³Ê½õ»ì", "Ï¢ÍÑ", "Ï¢ÂÎ", "½ªÃ¼"
+};
+
 void
 anthy_set_seg_class(struct word_list* wl)
 {
@@ -61,6 +71,8 @@ anthy_set_seg_class(struct word_list* wl)
 	seg_class = SEG_DOUSHI_FUZOKUGO;
       }
       break;
+    case POS_D2KY:
+      /* BREAK THROUGH */
     case POS_A:
       if (dc == DEP_RAW) {
 	seg_class = SEG_KEIYOUSHI;
@@ -124,4 +136,9 @@ int anthy_seg_class_is_depword(enum seg_class sc)
   } else {
     return 0;
   }
+}
+
+const char* anthy_seg_class_name(enum seg_class sc)
+{
+  return seg_class_names[sc];
 }

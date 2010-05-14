@@ -146,7 +146,6 @@ rk_slr_closure_create(struct rk_rule_set* rs,
   int i;
 
   cl = (struct rk_slr_closure*) malloc(sizeof(struct rk_slr_closure));
-
   if (cl == NULL) {
     return NULL;
   }

@@ -140,7 +140,6 @@ eval_candidate_by_metaword(struct seg_ent *seg,
     if (pos == POS_PRE || pos == POS_SUC) {
       div = 8;
     }
-
     /*
       頻度とelm->ratioは殆んど比例関係なので両方使用するのは不適当？
      */
@@ -163,7 +162,6 @@ eval_candidate_by_metaword(struct seg_ent *seg,
   assigned_len = seg->len - unassigned_len;
   score = score * (assigned_len + 1) * (assigned_len + 1)
       /((seg->len + 1)*(seg->len + 1));
-  /**/
   ce->score = score;
 }
 

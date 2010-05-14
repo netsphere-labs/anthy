@@ -191,6 +191,10 @@ cmp_node(struct hmm_node *lhs, struct hmm_node *rhs)
       /* 学習から作られたノードかどうかを見る */
       ret = cmp_node_by_type(lhs_before, rhs_before, MW_OCHAIRE);
       if (ret != 0) return ret;
+      /* ラップされたものは確率が低い */
+      ret = cmp_node_by_type(lhs, rhs, MW_WRAP);
+      if (ret != 0) return -ret;
+
       /* COMPOUND_PARTよりはCOMPOUND_HEADを優先 */
       ret = cmp_node_by_type_to_type(lhs_before, rhs_before, MW_COMPOUND_HEAD, MW_COMPOUND_PART);
       if (ret != 0) return ret;

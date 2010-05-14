@@ -463,7 +463,7 @@ ac_includes_default="\
 # include <unistd.h>
 #endif"
 
-ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CPP build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL EMACS EMACSLOADPATH lispdir ELISP_TRUE ELISP_FALSE CANNADIC_SRCDIR SRCDIR LIBOBJS LTLIBOBJS'
+ac_subst_vars='SHELL PATH_SEPARATOR PACKAGE_NAME PACKAGE_TARNAME PACKAGE_VERSION PACKAGE_STRING PACKAGE_BUGREPORT exec_prefix prefix program_transform_name bindir sbindir libexecdir datadir sysconfdir sharedstatedir localstatedir libdir includedir oldincludedir infodir mandir build_alias host_alias target_alias DEFS ECHO_C ECHO_N ECHO_T LIBS INSTALL_PROGRAM INSTALL_SCRIPT INSTALL_DATA CYGPATH_W PACKAGE VERSION ACLOCAL AUTOCONF AUTOMAKE AUTOHEADER MAKEINFO install_sh STRIP ac_ct_STRIP INSTALL_STRIP_PROGRAM mkdir_p AWK SET_MAKE am__leading_dot AMTAR am__tar am__untar CC CFLAGS LDFLAGS CPPFLAGS ac_ct_CC EXEEXT OBJEXT DEPDIR am__include am__quote AMDEP_TRUE AMDEP_FALSE AMDEPBACKSLASH CCDEPMODE am__fastdepCC_TRUE am__fastdepCC_FALSE CPP build build_cpu build_vendor build_os host host_cpu host_vendor host_os EGREP LN_S ECHO AR ac_ct_AR RANLIB ac_ct_RANLIB CXX CXXFLAGS ac_ct_CXX CXXDEPMODE am__fastdepCXX_TRUE am__fastdepCXX_FALSE CXXCPP F77 FFLAGS ac_ct_F77 LIBTOOL EMACS EMACSLOADPATH lispdir ELISP_TRUE ELISP_FALSE CANNADIC_SRCDIR LIBOBJS LTLIBOBJS'
 ac_subst_files=''
 
 # Initialize some variables set by options.
@@ -1816,7 +1816,7 @@ fi
 
 # Define the identity of the package.
  PACKAGE=anthy
- VERSION=6700
+ VERSION=6724
 
 
 cat >>confdefs.h <<_ACEOF
@@ -19282,10 +19282,8 @@ if test "$result/$with_cannadic" = "not found/."; then
 echo "$as_me: WARNING: cannadic not found; Anthy dictionary will not be built" >&2;}
 fi
 CANNADIC_SRCDIR=$with_cannadic
-SRCDIR=$srcdir
 
-
-                                                                                                                                                                          ac_config_files="$ac_config_files Makefile src-diclib/Makefile src-splitter/Makefile src-ordering/Makefile src-main/Makefile src-util/Makefile include/Makefile depgraph/Makefile mkanthydic/Makefile cannadic/Makefile test/Makefile test/test.sh doc/Makefile anthy-conf anthy-test-conf anthy.spec anthy.pc"
+                                                                                                                                                                                    ac_config_files="$ac_config_files Makefile src-diclib/Makefile src-splitter/Makefile src-ordering/Makefile src-main/Makefile src-util/Makefile include/Makefile depgraph/Makefile mkanthydic/Makefile mkanthydic/dict.args cannadic/Makefile test/Makefile test/test.sh doc/Makefile anthy-conf anthy-test-conf anthy.spec anthy.pc"
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
 # tests run on this system so they can be shared between configure
@@ -19858,6 +19856,7 @@ do
   "include/Makefile" ) CONFIG_FILES="$CONFIG_FILES include/Makefile" ;;
   "depgraph/Makefile" ) CONFIG_FILES="$CONFIG_FILES depgraph/Makefile" ;;
   "mkanthydic/Makefile" ) CONFIG_FILES="$CONFIG_FILES mkanthydic/Makefile" ;;
+  "mkanthydic/dict.args" ) CONFIG_FILES="$CONFIG_FILES mkanthydic/dict.args" ;;
   "cannadic/Makefile" ) CONFIG_FILES="$CONFIG_FILES cannadic/Makefile" ;;
   "test/Makefile" ) CONFIG_FILES="$CONFIG_FILES test/Makefile" ;;
   "test/test.sh" ) CONFIG_FILES="$CONFIG_FILES test/test.sh" ;;
@@ -20024,7 +20023,6 @@ s,@lispdir@,$lispdir,;t t
 s,@ELISP_TRUE@,$ELISP_TRUE,;t t
 s,@ELISP_FALSE@,$ELISP_FALSE,;t t
 s,@CANNADIC_SRCDIR@,$CANNADIC_SRCDIR,;t t
-s,@SRCDIR@,$SRCDIR,;t t
 s,@LIBOBJS@,$LIBOBJS,;t t
 s,@LTLIBOBJS@,$LTLIBOBJS,;t t
 CEOF

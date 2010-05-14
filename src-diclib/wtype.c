@@ -126,9 +126,27 @@ anthy_print_wtype(wtype_t w)
 	 w.cc, w.ct, w.wf);
 }
 
+
+/* 二つの品詞が完全に一致しているかどうか */
+int
+anthy_wtype_equal(wtype_t lhs, wtype_t rhs)
+{
+  if (lhs.pos == rhs.pos &&
+      lhs.cos == rhs.cos &&
+      lhs.scos == rhs.scos &&
+      lhs.cc == rhs.cc &&
+      lhs.ct == rhs.ct &&
+      lhs.wf == rhs.wf) {
+    return 1;
+  } else {
+    return 0;
+  }
+}
+
+
 /* n は hs の一部かどうか？ */
 int
-anthy_wtypecmp(wtype_t hs, wtype_t n)
+anthy_wtype_include(wtype_t hs, wtype_t n)
 {
   /*printf("POS %d,%d\n", hs.type[WT_POS], n.type[WT_POS]);*/
   if (hs.pos != POS_NONE &&

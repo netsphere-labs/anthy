@@ -79,4 +79,7 @@ void make_ucdict(FILE *out,  struct uc_dict *uc);
 
 void fill_uc_to_hash(struct versatile_hash *vh, struct uc_dict *dict);
 
+/**/
+void output_word_dict(struct yomi_entry_list *yl);
+
 #endif

@@ -90,6 +90,7 @@ init_lib(void)
   anthy_conf_override("CONFFILE", "../anthy-conf");
   anthy_conf_override("HOME", TEST_HOME);
   anthy_conf_override("DEPWORD", "master.depword");
+  anthy_conf_override("DEPGRAPH", "../depgraph/anthy.dep");
   anthy_conf_override("DIC_FILE", "../mkanthydic/anthy.dic");
   anthy_conf_override("ANTHYDIR", SRCDIR "/../depgraph");
   if (anthy_init()) {

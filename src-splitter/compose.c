@@ -14,7 +14,7 @@
  * Copyright (C) 2004-2005 YOSHIDA Yuichi
  * Copyright (C) 2002 UGAWA Tomoharu
  *
- * $Id: compose.c,v 1.21 2005/05/15 04:15:59 yusuke Exp $
+ * $Id: compose.c,v 1.24 2005/07/22 14:09:04 oxy Exp $
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -247,7 +247,7 @@ enum_candidates(struct seg_ent *seg,
     wtype_t wt;
     anthy_get_nth_dic_ent_wtype(ce->elm[n].se, &ce->str, i, &wt);
     anthy_wtype_set_ct(&ce->elm[n].wt, CT_NONE);
-    if (anthy_wtypecmp(ce->elm[n].wt, wt)) {
+    if (anthy_wtype_include(ce->elm[n].wt, wt)) {
       xstr word, yomi;
       yomi.len = ce->elm[n].str.len;
       yomi.str = &seg->str.str[from];
@@ -334,6 +334,7 @@ make_cand_elem_from_word_list(struct seg_ent *se,
 {
   int i; 
   int from = wl->from - se->from;
+
   for (i = 0; i < NR_PARTS; ++i) {
     struct part_info *part = &wl->part[i];
     xstr core_xs;
@@ -380,7 +381,13 @@ make_candidate_from_simple_metaword(struct seg_ent *se,
   /* 接頭辞, 自立語部, 接尾辞, 付属語 */
   make_cand_elem_from_word_list(se, ce, wl, 0);
 
-  ce->flag = (se->best_mw == mw) ? CEF_BEST : CEF_NONE;
+  /* WRAPされていたらGUESSと同じ扱いにして点数を下げる */
+  if (anthy_metaword_type_tab[top_mw->type].status != MW_STATUS_WRAPPED) {
+    ce->flag = (se->best_mw == mw) ? CEF_BEST : CEF_NONE;
+  } else {
+    ce->flag = CEF_GUESS;
+  }
+
   enum_candidates(se, ce, 0, 0);
   anthy_release_cand_ent(ce);
 }
@@ -395,11 +402,11 @@ make_candidate_from_combined_metaword(struct seg_ent *se,
    * 各単語の品詞が決定された状態でコミットされる。
    */
   struct cand_ent *ce;
-  int score;
 
   /* 複数(1も含む)の単語で構成される文節に単語を割当てていく */
   ce = alloc_cand_ent();
   ce->nr_words = mw->nr_parts;
+  ce->score = 0;
   ce->str.str = NULL;
   ce->str.len = 0;
   ce->elm = calloc(sizeof(struct cand_elm),ce->nr_words);
@@ -410,11 +417,14 @@ make_candidate_from_combined_metaword(struct seg_ent *se,
   if (mw->mw2) {
     make_cand_elem_from_word_list(se, ce, mw->mw2->mw1->wl, NR_PARTS);
   }
-  /* 構造を評価する */
-  score = mw->score;
 
-  ce->score = score;
-  ce->flag = (se->best_mw == mw) ? CEF_BEST : CEF_NONE;
+  /* WRAPされていたらGUESSと同じ扱いにして点数を下げる */
+  if (anthy_metaword_type_tab[top_mw->type].status != MW_STATUS_WRAPPED) {
+    ce->flag = (se->best_mw == mw) ? CEF_BEST : CEF_NONE;
+  } else {
+    ce->flag = CEF_GUESS;
+  }
+
   enum_candidates(se, ce, 0, 0);
   anthy_release_cand_ent(ce);
 }

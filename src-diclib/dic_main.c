@@ -394,7 +394,7 @@ anthy_get_seq_ent_wtype_freq(seq_ent_t se, wtype_t wt)
   f = 0;
   /* Ã±¸ì */
   for (i = 0; i < s->nr_dic_ents; i++) {
-    if (anthy_wtypecmp(wt, s->dic_ents[i]->type)) {
+    if (anthy_wtype_include(wt, s->dic_ents[i]->type)) {
       if (f < s->dic_ents[i]->freq) {
 	f = s->dic_ents[i]->freq;
       }
@@ -417,7 +417,7 @@ anthy_get_seq_ent_wtype_compound_freq(seq_ent_t se, wtype_t wt)
   /**/
   f = 0;
   for (i = 0; i < s->nr_compound_ents; i++) {
-    if (anthy_wtypecmp(wt, s->compound_ents[i]->type)) {
+    if (anthy_wtype_include(wt, s->compound_ents[i]->type)) {
       if (f < s->compound_ents[i]->freq) {
 	f = s->compound_ents[i]->freq;
       }

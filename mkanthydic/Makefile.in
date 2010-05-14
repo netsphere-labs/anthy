@@ -42,7 +42,8 @@ build_triplet = @build@
 host_triplet = @host@
 noinst_PROGRAMS = mkanthydic$(EXEEXT)
 subdir = mkanthydic
-DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
+DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
+	$(srcdir)/dict.args.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
 	$(top_srcdir)/configure.ac
@@ -50,9 +51,10 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
-CONFIG_CLEAN_FILES =
+CONFIG_CLEAN_FILES = dict.args
 PROGRAMS = $(noinst_PROGRAMS)
-am_mkanthydic_OBJECTS = mkdic.$(OBJEXT) mkudic.$(OBJEXT)
+am_mkanthydic_OBJECTS = mkdic.$(OBJEXT) writewords.$(OBJEXT) \
+	mkudic.$(OBJEXT)
 mkanthydic_OBJECTS = $(am_mkanthydic_OBJECTS)
 mkanthydic_DEPENDENCIES = ../src-diclib/libanthydic.la
 SCRIPTS = $(noinst_SCRIPTS)
@@ -137,7 +139,6 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
-SRCDIR = @SRCDIR@
 STRIP = @STRIP@
 VERSION = @VERSION@
 ac_ct_AR = @ac_ct_AR@
@@ -197,9 +198,9 @@ HOKUTODIC_DIST =
 CLEANFILES = anthy.dic
 EXTRA_DIST = \
  $(EXTRA_DICS) $(HOKUTODIC_DIST) \
- udict
+ udict dict.args.in
 
-mkanthydic_SOURCES = mkdic.c mkudic.c mkdic.h
+mkanthydic_SOURCES = mkdic.c writewords.c mkudic.c mkdic.h
 mkanthydic_LDADD = ../src-diclib/libanthydic.la
 
 # To install
@@ -237,6 +238,8 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
+dict.args: $(top_builddir)/config.status $(srcdir)/dict.args.in
+	cd $(top_builddir) && $(SHELL) ./config.status $(subdir)/$@
 
 clean-noinstPROGRAMS:
 	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
@@ -256,6 +259,7 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mkdic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mkudic.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/writewords.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -477,25 +481,7 @@ uninstall-am: uninstall-info-am uninstall-pkgdataDATA
 
 
 anthy.dic : mkanthydic
-	@tfiles=; \
-	files='$(CANNADIC_DIST)'; for file in $$files; do \
-	  case $$file in *.ctd) \
-	    if test -f $$file; then tfiles="$$tfiles $$file"; \
-	    elif test -f $(CANNADIC_SRCDIR)/$$file; then \
-	      tfiles="$$tfiles $(CANNADIC_SRCDIR)/$$file"; fi ;; \
-	  esac; done; \
-	files='$(EXTRA_DICS)'; for file in $$files; do \
-	  case $$file in *.t) \
-	    if test -f $$file; then tfiles="$$tfiles $$file"; \
-	    elif test -f $(srcdir)/$$file; then \
-	      tfiles="$$tfiles $(srcdir)/$$file"; fi ;; \
-	  esac; done; \
-	if test -z "$$tfiles"; then \
-	  rm -f anthy.dic; \
-	  echo WARNING: No dictionaries found >&2; \
-	else \
-	  ./mkanthydic -o anthy.dic $$tfiles -uc $(srcdir)/udict; \
-	fi
+	  ./mkanthydic -f ./dict.args
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:
