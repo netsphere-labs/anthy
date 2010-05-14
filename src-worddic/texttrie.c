@@ -1,4 +1,7 @@
 /*
+ * DEPRECATED, it is too hard to debug.
+ * you may use textdict instead
+ *
  * Trie in Text
  *
  * *issues
@@ -55,9 +58,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
-#include "texttrie.h"
+#include <anthy/texttrie.h>
+#include <anthy/filemap.h>
 #include "dic_main.h"
-#include "filemap.h"
 
 /* configs */
 #define OBJ_LEN 20

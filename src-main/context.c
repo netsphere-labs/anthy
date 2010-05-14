@@ -26,18 +26,23 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-#include <anthy.h>
-#include <alloc.h>
-#include <record.h>
-#include <ordering.h>
-#include <splitter.h>
-#include <xstr.h>
+#include <anthy/anthy.h>
+#include <anthy/alloc.h>
+#include <anthy/record.h>
+#include <anthy/ordering.h>
+#include <anthy/splitter.h>
+#include <anthy/xstr.h>
 #include "main.h"
 
+/**/
 static allocator context_ator;
 
 /** 現在のpersonality 
@@ -46,6 +51,9 @@ static allocator context_ator;
  * anonymousの場合: ""
  */
 static char *current_personality;
+
+/**/
+#define HISTORY_FILE_LIMIT 100000
 
 static void
 context_dtor(void *p)
@@ -307,9 +315,6 @@ anthy_do_reset_context(struct anthy_context *ac)
   free(ac->str.str);
   ac->str.str = NULL;
   anthy_release_split_context(&ac->split_info);
-  anthy_release_ordering_context(&ac->seg_list,
-				 &ac->ordering_info);
-
   anthy_release_segment_list(ac);
 
   /* 予測された文字列の解放 */
@@ -334,11 +339,6 @@ make_candidates(struct anthy_context *ac, int from, int from2, int is_reverse)
   create_segment_list(ac, from, len);
   anthy_sort_metaword(&ac->seg_list);
 
-  /* 候補の並びかえの準備をする */
-  anthy_release_ordering_context(&ac->seg_list,
-				 &ac->ordering_info);
-  anthy_init_ordering_context(&ac->seg_list,
-			      &ac->ordering_info);
   /* 候補を列挙 */
   for (i = 0; i < ac->seg_list.nr_segments; i++) {
     anthy_do_make_candidates(&ac->split_info,
@@ -469,6 +469,89 @@ anthy_do_set_prediction_str(struct anthy_context *ac, xstr* xs)
   return 0;
 }
 
+static const char *
+get_change_state(struct anthy_context *ac)
+{
+  int resize = 0, cand_change = 0;
+  int i;
+  for (i = 0; i < ac->seg_list.nr_segments; i++) {
+    struct seg_ent *s = anthy_get_nth_segment(&ac->seg_list, i);
+    if (ac->split_info.ce[s->from].initial_seg_len != s->len) {
+      resize = 1;
+    }
+    if (s->committed > 0) {
+      cand_change = 1;
+    }
+  }
+  /**/
+  if (resize && cand_change) {
+    return "SC";
+  }
+  if (resize) {
+    return "S";
+  }
+  if (cand_change) {
+    return "C";
+  }
+  return "-";
+}
+
+static void
+write_history(FILE *fp, struct anthy_context *ac)
+{
+  int i;
+  /* 読み */
+  fprintf(fp, "|");
+  for (i = 0; i < ac->seg_list.nr_segments; i++) {
+    struct seg_ent *s = anthy_get_nth_segment(&ac->seg_list, i);
+    char *c = anthy_xstr_to_cstr(&s->str, ANTHY_EUC_JP_ENCODING);
+    fprintf(fp, "%s|", c);
+    free(c);
+  }
+  fprintf(fp, " |");
+  /* 結果 */
+  for (i = 0; i < ac->seg_list.nr_segments; i++) {
+    struct seg_ent *s = anthy_get_nth_segment(&ac->seg_list, i);
+    char *c;
+    /**/
+    if (s->committed < 0) {
+      fprintf(fp, "?|");
+      continue ;
+    }
+    c = anthy_xstr_to_cstr(&s->cands[s->committed]->str,
+			   ANTHY_EUC_JP_ENCODING);
+    fprintf(fp, "%s|", c);
+    free(c);
+  }
+}
+
+void
+anthy_save_history(const char *fn, struct anthy_context *ac)
+{
+  FILE *fp;
+  struct stat st;
+  if (!fn) {
+    return ;
+  }
+  fp = fopen(fn, "a");
+  if (!fp) {
+    return ;
+  }
+  if (stat(fn, &st) ||
+      st.st_size > HISTORY_FILE_LIMIT) {
+    fclose(fp);
+    return ;
+  }
+  /**/
+  fprintf(fp, "anthy-%s ", anthy_get_version_string());
+  fprintf(fp, "%s ", get_change_state(ac));
+  write_history(fp, ac);
+  fprintf(fp, "\n");
+  fclose(fp);
+  /**/
+  chmod(fn, S_IREAD | S_IWRITE);
+}
+
 /** 候補を表示する */
 void
 anthy_print_candidate(struct cand_ent *ce)
@@ -496,6 +579,9 @@ anthy_print_candidate(struct cand_ent *ce)
   }
   if (ce->flag & CEF_USEDICT) {
     putchar('U');
+  }
+  if (ce->flag & CEF_CONTEXT) {
+    putchar('C');
   }
   printf(",%d,", seg_score);
 

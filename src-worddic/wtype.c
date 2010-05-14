@@ -2,12 +2,27 @@
  * 品詞型を管理する
  * 中身はwtype_tの内部のレイアウトに強く依存する。
  *
- * Copyright (C) 2000-2004 TABATA Yusuke
+ * Copyright (C) 2000-2007 TABATA Yusuke
+ */
+/*
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 #include <stdio.h>
 #include <string.h>
 
-#include <wtype.h>
+#include <anthy/wtype.h>
 #include "dic_main.h"
 
 wtype_t anthy_wt_none, anthy_wt_all;

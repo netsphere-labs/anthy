@@ -5,10 +5,11 @@
  */
 #include <string.h>
 #include "config.h"
-#include <xstr.h>
+
+#include <anthy/xstr.h>
+#include <anthy/xchar.h>
 
 #include "diclib_inner.h"
-#include "xchar.h"
 
 #define PAGE_SIZE 128
 #define NR_PAGES 512
@@ -285,7 +286,13 @@ is_kata(xchar xc)
 static int
 is_symbol(xchar xc)
 {
+  if (xc == UCS_GETA) {
+    return 1;
+  }
   xc = anthy_ucs_to_euc(xc);
+  if (xc == EUC_GETA) {
+    return 0;
+  }
   if ((xc & 0xff00) == 0xa100) {
     return 1;
   }
@@ -355,7 +362,6 @@ anthy_get_xchar_type(const xchar xc)
   if (is_kata(xc)) {
     t |= XCT_KATA;
   }
-#ifndef USE_UCS4
   if (is_symbol(xc)) {
     if (!(t & XCT_OPEN) && !(t & XCT_CLOSE)) {
       t |= XCT_SYMBOL;
@@ -364,7 +370,6 @@ anthy_get_xchar_type(const xchar xc)
   if (is_kanji(xc)) {
     t |= XCT_KANJI;
   }
-#endif
   return t;
 }
 

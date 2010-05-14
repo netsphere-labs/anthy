@@ -25,17 +25,17 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <anthy.h>
-#include <dic.h>
-#include <conf.h>
-#include <record.h>
-#include <alloc.h>
-#include <logger.h>
-#include <xchar.h>
-#include <feature_set.h>
-#include <textdict.h>
+#include <anthy/anthy.h>
+#include <anthy/dic.h>
+#include <anthy/conf.h>
+#include <anthy/record.h>
+#include <anthy/alloc.h>
+#include <anthy/logger.h>
+#include <anthy/xchar.h>
+#include <anthy/feature_set.h>
+#include <anthy/textdict.h>
 
-#include <diclib.h>
+#include <anthy/diclib.h>
 
 #include "dic_ent.h"
 #include "dic_personality.h"
@@ -53,71 +53,12 @@ struct mem_dic *anthy_current_personal_dic_cache;/* キャッシュ */
 /**/
 struct record_stat *anthy_current_record;
 
-extern struct textdict *anthy_private_text_dic;
-
-
-/** 同じ読みに対する、単語からフラグを計算する */
-static void
-calc_seq_flags(struct seq_ent *se)
+struct seq_ent *
+anthy_validate_seq_ent(struct seq_ent *seq, xstr *xs, int is_reverse)
 {
-  int i;
-
-  /* 全ての辞書エントリに対して */
-  for (i = 0; i < se->nr_dic_ents; i++) {
-    int p;
-    p = anthy_wtype_get_pos(se->dic_ents[i]->type);
-    if (p != POS_NOUN) {
-      continue;
-    }
-    if (anthy_wtype_get_cos(se->dic_ents[i]->type) == COS_JN) {
-      int s;
-      s = anthy_wtype_get_scos(se->dic_ents[i]->type);
-      if (s == SCOS_FSTNAME) {
-	se->flags |= NF_FSTNAME;
-      } else if (s == SCOS_FAMNAME) {
-	se->flags |= NF_FAMNAME;
-      } else {
-	se->flags |= NF_UNSPECNAME;
-      }
-    }
+  if (!seq) {
+    return NULL;
   }
-}
-
-static struct seq_ent *
-cache_get_seq_ent_to_mem_dic(struct mem_dic *dd, xstr *xs, int is_reverse)
-{
-  struct seq_ent *seq;
-  /* キャッシュ中に無いので確保 */
-  seq = anthy_mem_dic_alloc_seq_ent_by_xstr(dd, xs, is_reverse);
-
-  /* word_dicからの取得 */
-  anthy_word_dic_fill_seq_ent_by_xstr(master_dic_file, xs, seq, is_reverse);
-
-  /*すべてのdic_entに対してflagを計算する*/
-  calc_seq_flags(seq);
-
-  return seq;
-}
-
-static struct seq_ent *
-cache_get_seq_ent(xstr *xs, int is_reverse)
-{
-  struct seq_ent *seq;
-
-  /* キャッシュ中に既にあればそれを返す */
-  seq = anthy_mem_dic_find_seq_ent_by_xstr(anthy_current_personal_dic_cache,
-					   xs, is_reverse);
-  if (seq) {
-    return seq;
-  }
-
-  /* キャッシュには無いので共通辞書からの取得 */
-  seq = cache_get_seq_ent_to_mem_dic(anthy_current_personal_dic_cache,
-				     xs, is_reverse);
-
-  /* 個人辞書からの取得 */
-  anthy_copy_words_from_private_dic(seq, xs, is_reverse);
-
   if (seq->nr_dic_ents == 0 && seq->nr_compound_ents == 0) {
     /* 無効なエントリを作成したのでcacheから削除 */
     anthy_mem_dic_release_seq_ent(anthy_current_personal_dic_cache,
@@ -128,7 +69,25 @@ cache_get_seq_ent(xstr *xs, int is_reverse)
   return seq;
 }
 
-int anthy_dic_check_word_relation(int from, int to)
+struct seq_ent *
+anthy_cache_get_seq_ent(xstr *xs, int is_reverse)
+{
+  struct seq_ent *seq;
+
+  /* キャッシュ中に既にあればそれを返す */
+  seq = anthy_mem_dic_find_seq_ent_by_xstr(anthy_current_personal_dic_cache,
+					   xs, is_reverse);
+  if (seq) {
+    return seq;
+  }
+
+  /* キャッシュ中に無いので確保 */
+  return anthy_mem_dic_alloc_seq_ent_by_xstr(anthy_current_personal_dic_cache,
+					     xs, is_reverse);
+}
+
+int
+anthy_dic_check_word_relation(int from, int to)
 {
   return anthy_word_dic_check_word_relation(master_dic_file, from, to);
 }
@@ -136,14 +95,49 @@ int anthy_dic_check_word_relation(int from, int to)
 static seq_ent_t
 do_get_seq_ent_from_xstr(xstr *xs, int is_reverse)
 {
-  struct seq_ent *se;
+  struct seq_ent *seq;
   /* キャッシュから取り出す */
-  se = cache_get_seq_ent(xs, is_reverse);
-  if (!se) {
+  seq = anthy_cache_get_seq_ent(xs, is_reverse);
+  seq = anthy_validate_seq_ent(seq, xs, is_reverse);
+  if (!seq) {
     /* 数字などの辞書に無い文字列を検索する */
     return anthy_get_ext_seq_ent_from_xstr(xs, is_reverse);
   }
-  return se;
+  return seq;
+}
+
+static xstr *
+convert_vu(xstr *xs)
+{
+  int i, v = 0;
+  int j;
+
+    /* 「ヴ」の出現を数える */
+  for (i = 0; i < xs->len; i++) {
+    if (xs->str[i] == KK_VU) {
+      v++;
+    }
+  }
+  if (v > 0) {
+    xstr *nx = malloc(sizeof(xstr));
+    nx->len = xs->len + v;
+    nx->str = malloc(sizeof(xchar)*nx->len);
+    j = 0;
+    /* 「ヴ」を「う゛」に変換しつつコピーする */
+    for (i = 0; i < xs->len; i++) {
+      if (xs->str[i] == KK_VU) {
+	nx->str[j] = HK_U;
+	j++;
+	nx->str[j] = HK_DDOT;
+	j++;
+      } else {
+	nx->str[j] = xs->str[i];
+	j++;
+      }
+    }
+    return nx;
+  }
+  return NULL;
 }
 
 seq_ent_t
@@ -155,52 +149,20 @@ anthy_get_seq_ent_from_xstr(xstr *xs, int is_reverse)
     return NULL;
   }
   if (!is_reverse) {
+    xstr *nx = convert_vu(xs);
     /* 「ヴ」の混ざった順変換の場合、「う゛」に直して検索する
      *   上位のレイヤーではユーザの与えた文字列をそのまま保持することが
      *   期待されるので、変換はここで行なう。
      */
-    int i, v = 0;
-    int j;
-
-    /* 「ヴ」の出現を数える */
-    for (i = 0; i < xs->len; i++) {
-      if (xs->str[i] == KK_VU) {
-	v++;
-      }
-    }
-    if (v > 0) {
-      xstr nx;
-      nx.len = xs->len + v;
-      nx.str = malloc(sizeof(xchar)*nx.len);
-      j = 0;
-      /* 「ヴ」を「う゛」に変換しつつコピーする */
-      for (i = 0; i < xs->len; i++) {
-	if (xs->str[i] == KK_VU) {
-	  nx.str[j] = HK_U;
-	  j++;
-	  nx.str[j] = HK_DDOT;
-	  j++;
-	} else {
-	  nx.str[j] = xs->str[i];
-	  j++;
-	}
-      }
-      se = do_get_seq_ent_from_xstr(&nx, 0);
-      free(nx.str);
+    if (nx) {
+      se = do_get_seq_ent_from_xstr(nx, 0);
+      anthy_free_xstr(nx);
       return se;
     }
   }
   /* 「ヴ」が出現しない、もしくは逆変換の場合 */
   return do_get_seq_ent_from_xstr(xs, is_reverse);
 }
-
-
-
-struct gang_elm {
-  char *key;
-  xstr xs;
-  struct gang_elm *next;
-};
 
 static void
 gang_elm_dtor(void *p)
@@ -214,7 +176,7 @@ find_gang_elm(allocator ator, struct gang_elm *head, xstr *xs)
 {
   char *str = anthy_xstr_to_cstr(xs, ANTHY_UTF8_ENCODING);
   struct gang_elm *ge;
-  for (ge = head->next; ge; ge = ge->next) {
+  for (ge = head->tmp.next; ge; ge = ge->tmp.next) {
     if (!strcmp(ge->key, str)) {
       free(str);
       return 0;
@@ -223,8 +185,8 @@ find_gang_elm(allocator ator, struct gang_elm *head, xstr *xs)
   ge = anthy_smalloc(ator);
   ge->xs = *xs;
   ge->key = str;
-  ge->next = head->next;
-  head->next = ge;
+  ge->tmp.next = head->tmp.next;
+  head->tmp.next = ge;
   return 1;
 }
 
@@ -244,22 +206,51 @@ struct gang_scan_context {
   int nth;
 };
 
+static int
+is_ext_ent(struct seq_ent *seq)
+{
+  if (!seq->md) {
+    return 1;
+  }
+  return 0;
+}
+
 static void
-load_word(xstr *xs, const char *n)
+scan_misc_dic(struct gang_elm **array, int nr, int is_reverse)
+{
+  int i;
+  for (i = 0; i < nr; i++) {
+    xstr *xs = &array[i]->xs;
+    struct seq_ent *seq;
+    seq = anthy_cache_get_seq_ent(xs, is_reverse);
+    /* 個人辞書からの取得(texttrie(旧形式)と未知語辞書) */
+    if (seq) {
+      anthy_copy_words_from_private_dic(seq, xs, is_reverse);
+      anthy_validate_seq_ent(seq, xs, is_reverse);
+    }
+  }
+}
+
+static void
+load_word(xstr *xs, const char *n, int is_reverse)
 {
   struct seq_ent *seq = anthy_get_seq_ent_from_xstr(xs, 0);
   xstr *word_xs;
   wtype_t wt;  
   struct word_line wl;
-  if (!seq) {
-    seq = cache_get_seq_ent_to_mem_dic(anthy_current_personal_dic_cache,
-				      xs, 0);
+  if (!seq || is_ext_ent(seq)) {
+    seq = anthy_mem_dic_alloc_seq_ent_by_xstr(anthy_current_personal_dic_cache,
+					      xs, is_reverse);
   }
-  anthy_parse_word_line(n, &wl);
+  if (anthy_parse_word_line(n, &wl)) {
+    return ;
+  }
   word_xs = anthy_cstr_to_xstr(wl.word, ANTHY_UTF8_ENCODING);
-  anthy_type_to_wtype(wl.wt, &wt);
-  anthy_mem_dic_push_back_dic_ent(seq, 0, word_xs, wt,
-				  NULL, wl.freq, 0);
+  if (anthy_type_to_wtype(wl.wt, &wt)) {
+    anthy_mem_dic_push_back_dic_ent(seq, 0, word_xs, wt,
+				    NULL, wl.freq, 0);
+  }
+
   anthy_free_xstr(word_xs);
 }
 
@@ -278,7 +269,7 @@ gang_scan(void *p, int offset, const char *key, const char *n)
     r = strcmp(elm->key, key);
     if (r == 0) {
       /* find it */
-      load_word(&elm->xs, n);
+      load_word(&elm->xs, n, 0);
       /* go next in dictionary */
       return 0;
     } else if (r > 0) {
@@ -292,8 +283,30 @@ gang_scan(void *p, int offset, const char *key, const char *n)
   return 0;
 }
 
-void
-anthy_gang_load_dic(xstr *sentence)
+static void
+scan_dict(struct textdict *td, int nr, struct gang_elm **array)
+{
+  struct gang_scan_context gsc;
+  gsc.nr = nr;
+  gsc.array = array;
+  gsc.nth = 0;
+  anthy_textdict_scan(td, 0, &gsc, gang_scan);
+}
+
+struct scan_arg {
+  struct gang_elm **array;
+  int nr;
+};
+
+static void
+request_scan(struct textdict *td, void *arg)
+{
+  struct scan_arg *sarg = (struct scan_arg *)arg;
+  scan_dict(td, sarg->nr, sarg->array);
+}
+
+static void
+do_gang_load_dic(xstr *sentence, int is_reverse)
 {
   allocator ator = anthy_create_allocator(sizeof(struct gang_elm),
 					  gang_elm_dtor);
@@ -302,8 +315,8 @@ anthy_gang_load_dic(xstr *sentence)
   int i, nr;
   struct gang_elm head;
   struct gang_elm **array, *cur;
-  struct gang_scan_context gsc;
-  head.next = NULL;
+  struct scan_arg sarg;
+  head.tmp.next = NULL;
   nr = 0;
   for (from = 0; from < sentence->len ; from ++) {
     for (len = 1; len < 32 && from + len <= sentence->len; len ++) {
@@ -313,20 +326,35 @@ anthy_gang_load_dic(xstr *sentence)
     }
   }
   array = malloc(sizeof(struct gang_elm *) * nr);
-  cur = head.next;
+  cur = head.tmp.next;
   for (i = 0; i < nr; i++) {
     array[i] = cur;
-    cur = cur->next;
+    cur = cur->tmp.next;
   }
   qsort(array, nr, sizeof(struct gang_elm *), gang_elm_compare_func);
   /**/
-  gsc.nr = nr;
-  gsc.array = array;
-  gsc.nth = 0;
-  anthy_textdict_scan(anthy_private_text_dic, 0, &gsc, gang_scan);
+  anthy_gang_fill_seq_ent(master_dic_file, array, nr, is_reverse);
+  /**/
+  scan_misc_dic(array, nr, is_reverse);
+  /* 個人辞書から読む */
+  sarg.nr = nr;
+  sarg.array = array;
+  anthy_ask_scan(request_scan, (void *)&sarg);
   /**/
   free(array);
   anthy_free_allocator(ator);
+}
+
+void
+anthy_gang_load_dic(xstr *sentence, int is_reverse)
+{
+  xstr *nx;
+  if (!is_reverse && (nx = convert_vu(sentence))) {
+    do_gang_load_dic(nx, is_reverse);
+    anthy_free_xstr(nx);
+  } else {
+    do_gang_load_dic(sentence, is_reverse);
+  }
 }
 
 /*
@@ -334,16 +362,6 @@ anthy_gang_load_dic(xstr *sentence)
  ************************
  * seq_entの各種情報の取得
  */
-int
-anthy_get_seq_flag(seq_ent_t seq)
-{
-  if (!seq) {
-    return 0;
-  }
-
-  return seq->flags;
-}
-
 int
 anthy_get_nr_dic_ents(seq_ent_t se, xstr *xs)
 {
@@ -358,14 +376,15 @@ anthy_get_nr_dic_ents(seq_ent_t se, xstr *xs)
 }
 
 int
-anthy_get_nth_dic_ent_str(seq_ent_t se, xstr *o,
+anthy_get_nth_dic_ent_str(seq_ent_t se, xstr *orig,
 			  int n, xstr *x)
 {
   if (!se) {
     return -1;
   }
   if (n >= se->nr_dic_ents) {
-    return anthy_get_nth_dic_ent_str_of_ext_ent(se, o, n - se->nr_dic_ents, x);
+    return anthy_get_nth_dic_ent_str_of_ext_ent(se, orig,
+						n - se->nr_dic_ents, x);
   }
   x->len = se->dic_ents[n]->str.len;
   x->str = anthy_xstr_dup_str(&se->dic_ents[n]->str);
@@ -495,26 +514,6 @@ anthy_get_seq_ent_wtype_freq(seq_ent_t seq, wtype_t wt)
   return f;
 }
 
-int
-anthy_get_seq_ent_wtype_feature(seq_ent_t seq, wtype_t wt)
-{
-  int i, f;
-
-  if (!seq) {
-    return 0;
-  }
-
-  f = 0;
-  /* 単語 */
-  for (i = 0; i < seq->nr_dic_ents; i++) {
-    if (seq->dic_ents[i]->order == 0 &&
-	anthy_wtype_include(wt, seq->dic_ents[i]->type)) {
-      f |= seq->dic_ents[i]->feature;
-    }
-  }
-  return f;
-}
-
 /*
  * wtの品詞を持つ複合語の中で最大の頻度を持つものを返す
  */
@@ -567,6 +566,19 @@ anthy_has_compound_ents(seq_ent_t se)
     return 0;
   }
   return se->nr_compound_ents;
+}
+
+/* compundでない候補を持っているか */
+int
+anthy_has_non_compound_ents(seq_ent_t se)
+{
+  if (!se) {
+    return 0;
+  }
+  if (se->nr_dic_ents == 0) {
+    return 1;
+  }
+  return se->nr_dic_ents - se->nr_compound_ents;
 }
 
 compound_ent_t

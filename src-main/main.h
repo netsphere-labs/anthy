@@ -1,12 +1,12 @@
 #ifndef _main_h_included_
 #define _main_h_included_
 
-#include <xstr.h>
-#include <dic.h>
-#include <splitter.h>
-#include <segment.h>
-#include <ordering.h>
-#include <prediction.h>
+#include <anthy/xstr.h>
+#include <anthy/dic.h>
+#include <anthy/splitter.h>
+#include <anthy/segment.h>
+#include <anthy/ordering.h>
+#include <anthy/prediction.h>
 
 /* 
    予測変換の候補のキャッシュ
@@ -58,6 +58,7 @@ void anthy_do_resize_segment(struct anthy_context *c,int nth,int resize);
 
 int anthy_do_set_prediction_str(struct anthy_context *c, xstr *x);
 void anthy_release_segment_list(struct anthy_context *ac);
+void anthy_save_history(const char *fn, struct anthy_context *ac);
 
 /* for debug */
 void anthy_do_print_context(struct anthy_context *c, int encoding);

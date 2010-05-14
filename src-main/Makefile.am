@@ -1,6 +1,6 @@
 ## $Id: Makefile.am,v 1.9 2002/03/04 09:43:31 yusuke Exp $
 
-INCLUDES = -I$(top_srcdir)/include
+INCLUDES = -I$(top_srcdir)/
 
 lib_LTLIBRARIES = libanthy.la
 

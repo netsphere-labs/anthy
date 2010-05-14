@@ -21,8 +21,8 @@
 #include <ctype.h>
 #include <assert.h>
 
-#include <anthy.h>
-#include <input.h>
+#include <anthy/anthy.h>
+#include <anthy/input.h>
 
 #include "rkconv.h"
 
@@ -147,6 +147,7 @@ static int daemon_sock = -1;
 static int anonymous;
 static int egg;
 static char *personality;
+int use_utf8;
 
 static char *
 encode_command_arg(char *a)
@@ -1090,6 +1091,8 @@ parse_args(int argc, char **argv)
       egg = 1;
     } else if (!strncmp("--personality=", str, 14)) {
       personality = &str[14];
+    } else if (!strcmp("--utf8", str)) {
+      use_utf8 = 1;
     } else if (i < argc - 1) {
       char *arg = argv[i+1];
       if (!strcmp("--dir", str)) {

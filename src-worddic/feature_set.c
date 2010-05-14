@@ -2,20 +2,39 @@
  *
  * 素性の番号と意味を隠蔽して管理する
  *
+ * Copyright (C) 2006-2007 TABATA Yusuke
+ *
+ */
+/*
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 #include <stdio.h>
 #include <stdlib.h>
-#include "segclass.h"
-#include "feature_set.h"
+#include <string.h>
+#include <arpa/inet.h>
+#include <anthy/segclass.h>
+#include <anthy/feature_set.h>
 /* for MW_FEATURE* constants */
-#include "splitter.h"
+#include <anthy/splitter.h>
 
 /* 素性の番号 
  *
  * 0-19 クラス素性
  * 30-319(30+SEG_SIZE^2) クラス遷移属性
  * 540-579 その他
- * 580- (512個) 付属語の種類
+ * 580- (1024個) 付属語の種類
  */
 
 #define CUR_CLASS_BASE 0
@@ -24,10 +43,11 @@
 #define FEATURE_SV 542
 #define FEATURE_WEAK 543
 #define FEATURE_SUFFIX 544
-#define FEATURE_PREV_WEAK 545
 #define FEATURE_NUM 546
 #define FEATURE_CORE1 547
 #define FEATURE_HIGH_FREQ 548
+#define FEATURE_WEAK_SEQ 549
+#define COS_BASE 573
 #define DEP_FEATURE_BASE 580
 
 void
@@ -103,15 +123,22 @@ anthy_feature_list_set_dep_class(struct feature_list *fl, int c)
 }
 
 void
-anthy_feature_list_set_prev_weak(struct feature_list *fl)
+anthy_feature_list_set_noun_cos(struct feature_list *fl, wtype_t wt)
 {
-  anthy_feature_list_add(fl, FEATURE_PREV_WEAK);
+  int c;
+  if (anthy_wtype_get_pos(wt) != POS_NOUN) {
+    return ;
+  }
+  c = anthy_wtype_get_cos(wt);
+  if (c == COS_SUFFIX) {
+    anthy_feature_list_add(fl, COS_BASE + c);
+  }
 }
 
 void
 anthy_feature_list_set_mw_features(struct feature_list *fl, int mask)
 {
-  if (mask & MW_FEATURE_WEAK) {
+  if (mask & MW_FEATURE_WEAK_CONN) {
     anthy_feature_list_add(fl, FEATURE_WEAK);
   }
   if (mask & MW_FEATURE_SUFFIX) {
@@ -128,6 +155,9 @@ anthy_feature_list_set_mw_features(struct feature_list *fl, int mask)
   }
   if (mask & MW_FEATURE_HIGH_FREQ) {
     anthy_feature_list_add(fl, FEATURE_HIGH_FREQ);
+  }
+  if (mask & MW_FEATURE_WEAK_SEQ) {
+    anthy_feature_list_add(fl, FEATURE_WEAK_SEQ);
   }
 }
 
@@ -152,34 +182,64 @@ compare_line(const void *kp, const void *cp)
   const struct feature_freq *c = cp;
   int i;
   for (i = 0; i < NR_EM_FEATURES; i++) {
-    if (f[i] != c->f[i]) {
-      return f[i] - c->f[i];
+    if (f[i] != (int)ntohl(c->f[i])) {
+      return f[i] - ntohl(c->f[i]);
     }
   }
   return 0;
 }
 
 struct feature_freq *
-anthy_find_feature_freq(const struct feature_list *fl,
-			const struct feature_freq *array,
-			int nr_lines)
+anthy_find_array_freq(const void *image, int *f, int nr,
+		      struct feature_freq *arg)
+{
+  struct feature_freq *res;
+  int nr_lines, i;
+  const int *array = (int *)image;
+  int n[NR_EM_FEATURES];
+  if (!image) {
+    return NULL;
+  }
+  /* コピーする */
+  for (i = 0; i < NR_EM_FEATURES; i++) {
+    if (i < nr) {
+      n[i] = f[i];
+    } else {
+      n[i] = 0;
+    }
+  }
+  /**/
+  nr_lines = ntohl(array[1]);
+  res = bsearch(n, &array[16], nr_lines,
+		sizeof(struct feature_freq),
+		compare_line);
+  if (!res) {
+    return NULL;
+  }
+  for (i = 0; i < NR_EM_FEATURES + 2; i++) {
+    arg->f[i] = ntohl(res->f[i]);
+  }
+  return arg;
+}
+
+struct feature_freq *
+anthy_find_feature_freq(const void *image,
+			const struct feature_list *fl,
+			struct feature_freq *arg)
 {
   int i, nr;
-  struct feature_freq *res;
-  int f[10];
+  int f[NR_EM_FEATURES + 2];
+
   /* 配列にコピーする */
   nr = anthy_feature_list_nr(fl);
-  for (i = 0; i < 10; i++) {
+  for (i = 0; i < NR_EM_FEATURES + 2; i++) {
     if (i < nr) {
       f[i] = anthy_feature_list_nth(fl, i);
     } else {
       f[i] = 0;
     }
   }
-  res = bsearch(f, array, nr_lines,
-		sizeof(struct feature_freq),
-		compare_line);
-  return res;
+  return anthy_find_array_freq(image, f, NR_EM_FEATURES, arg);
 }
 
 void

@@ -5,14 +5,12 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <dic.h>
-#include <xstr.h>
-#include <alloc.h>
-#include <record.h>
-#include <matrix.h>
+#include <anthy/dic.h>
+#include <anthy/xstr.h>
+#include <anthy/matrix.h>
+#include <anthy/word_dic.h>
 #include "dic_main.h"
 #include "dic_ent.h"
-#include <word_dic.h>
 
 /**/
 int anthy_word_dic_check_word_relation(struct word_dic *wdic,

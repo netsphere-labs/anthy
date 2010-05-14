@@ -24,8 +24,8 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <anthy.h>
-#include <convdb.h>
+#include <anthy/anthy.h>
+#include <anthy/convdb.h>
 #include <config.h>
 
 /* Makefile の $(srcdir) (静的データファイルの基準ディレクトリ) */

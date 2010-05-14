@@ -5,6 +5,7 @@ Project Heke のメンバー達によって開発を開始し、その後は
 
 SPECIAL THANKS
 *辞書のCannadicの開発者であるSUGIMOTOさん(http://cannadic.oucrc.org/)
+*Cannadicをベースとしてalt-cannadicを開発している大泉さん
 *Google Summer of Codeで有用なコードを書いてくださった東山さん、花岡さん
  この機会を与えてくださったGoogle, FSIJ
 *実家でのコーディングの時にいつも側にいてくれた(故)トラ猫ニーヤさん
@@ -14,6 +15,7 @@ SPECIAL THANKS
 *2001年度にIPAの未踏ソフトウェアにプロジェクトを採択してくださり，
  その後も開発に協力してくださる
  g新部裕さん
+*例文を送ってくださるIidaさん
 *デバッグやテストをしてくださったり、アイディアを出してくださった
  春山さん(http://www.unixuser.org/~haruyama/)
 *北斗の拳辞書の開発者であるri(李)さん
@@ -40,6 +42,7 @@ SPECIAL THANKS
 *IRCで単語の不足を指摘してくださるゆきち(Yukichi)さん
 *郵便番号辞書を提供してくださった田郷さん(tagoh)
 *辞書ツールkasumi作者の中本さん
+*例文を送ってくださったIida Masanariさん
 
 上記のうちにはプログラムの構造などの変化によってソースコード上から
 消えたものもありますが、プロジェクトに協力していただいたという点で、

@@ -2,15 +2,11 @@
 
 SUBDIRS =
 
-if WITH_RUBY
-SUBDIRS += ruby
-endif
-
 # Files
 # Dictionary utilities
 ELISP_FILES = anthy.el anthy-dic.el anthy-conf.el leim-list.el \
  anthy-isearch.el anthy-azik.el anthy-kyuri.el
-EXTRA_DIST = $(ELISP_FILES) typetab dic-tool-usage.txt rcsize.rb anthy.i
+EXTRA_DIST = $(ELISP_FILES) typetab dic-tool-usage.txt anthy.i
 bin_PROGRAMS = anthy-dic-tool anthy-agent anthy-morphological-analyzer
 ELCFILES = anthy.elc anthy-dic.elc anthy-azik.elc anthy-conf.elc anthy-isearch.elc anthy-kyuri.elc leim-list.elc
 if ELISP
@@ -20,7 +16,7 @@ endif
 noinst_LTLIBRARIES = libconvdb.la
 libconvdb_la_SOURCES = convdb.c
 
-INCLUDES = -I$(top_srcdir)/include
+INCLUDES = -I$(top_srcdir)/
 anthy_dic_tool_SOURCES = dic-tool.c
 anthy_dic_tool_LDADD = ../src-worddic/libanthydic.la
 anthy_agent_SOURCES = agent.c egg.c

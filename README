@@ -1,4 +1,5 @@
 This document is written in Japanese(EUC-JP).
+please read README.en
 
 インストール(及びアンインストール)の方法はINSTALLをお読みください。
 
@@ -29,9 +30,12 @@ IMKit-anthy :Zaurus用input method
 Anthyで使用する辞書は現在に至るまで、Canna, Wnn, SKKなどの
 フリーな日本語入力システムの製作者/愛用者等によって
 メンテナンスされてきたものであり、それらの人々に感謝します。
-特に、cannadicをメンテナンスされているすぎもと氏に感謝します。
+特に、alt-cannadicをメンテナンスされている大泉氏、
+cannadicをメンテナンスされているすぎもと氏に感謝します。
 
-*辞書 cannadic http://cannadic.oucrc.org/ を同梱しています．
+*辞書 alt-cannadic http://vagus.seesaa.net を同梱しています．
+ 開発者の大泉さんに感謝します
+*辞書 cannadic http://cannadic.oucrc.org/ を同梱していました．
  開発者のすぎもとさんに感謝します
 *Anthyの変換効率の低さを辞書の量／質／構造が原因であると短絡的に
  解釈される人がいますが，現時点のAnthyの性能はそれ以前に変換の
@@ -54,11 +58,11 @@ COPYING		本ソフトウェアの再配布や改変の条件について書いてあります
 AUTHORS		開発者や協力者のみなさまです
 ChangeLog	重要な変更があれば書きます
 NEWS		ユーザにわかるニュースがあれば書いていきます
-cannadic/	cannadicの配布物を同梱しています
+alt-cannadic/	alt-cannadicの配布物を同梱しています
 doc/		ドキュメント類
 calctrans/      文節クラスの接続行列を計算するコード
 depgraph/	付属語グラフ
-include/	各モジュールで共有されるヘッダや
+anthy/		各モジュールで共有されるヘッダや
 		インストールされるヘッダを入れる
 src-main/	変換エンジンのコアの部分
 src-splitter/	文字列から文節の境界を検出する部分

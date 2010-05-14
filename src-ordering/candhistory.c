@@ -10,8 +10,8 @@
  */
 #include <stdlib.h>
 
-#include <segment.h>
-#include <record.h>
+#include <anthy/segment.h>
+#include <anthy/record.h>
 #include "sorter.h"
 
 #define HISTORY_DEPTH 8
@@ -149,35 +149,20 @@ reorder_by_candidate(struct seg_ent *se)
   anthy_mark_row_used();
 }
 
-static void
-raise_score_for_suffix(struct seg_ent *se, struct cand_ent *cand)
-{
-  int i;
-  int score;
-  score = cand->score;
-  for (i = 0; i < se->nr_cands; i++) {
-    struct cand_ent *ce = se->cands[i];
-    if (ce == cand) {
-      continue;
-    }
-    if (ce->mw == cand->mw &&
-	ce->score > score) {
-      score = ce->score + 1;
-    }
-  }
-  cand->score = score;
-}
-
-
+/* 接尾辞の学習を適用する */
 static void
 reorder_by_suffix(struct seg_ent *se)
 {
   int i, j;
+  int delta = 0;
+  int top_cand = -1;
   if (anthy_select_section("SUFFIX_HISTORY", 0)) {
     return ;
   }
+  /* 各候補 */
   for (i = 0; i < se->nr_cands; i++) {
     struct cand_ent *ce = se->cands[i];
+    /* 候補を構成する各単語 */
     for (j = 0; j < ce->nr_words; j++) {
       struct cand_elm *elm = &ce->elm[j];
       xstr xs;
@@ -187,15 +172,27 @@ reorder_by_suffix(struct seg_ent *se)
       if (anthy_wtype_get_pos(elm->wt) != POS_SUC) {
 	continue;
       }
+      /* 変換元の文字列をキーに検索 */
       if (anthy_select_row(&elm->str, 0)) {
 	continue;
       }
+      /* 変換後の文字列を取得 */
       if (anthy_get_nth_dic_ent_str(elm->se, &elm->str, elm->nth, &xs)) {
 	continue;
       }
-      if (!anthy_xstrcmp(&xs, anthy_get_nth_xstr(0))) {
-	raise_score_for_suffix(se, ce);
+      /* 履歴中の文字列と比較する */
+      if (anthy_xstrcmp(&xs, anthy_get_nth_xstr(0))) {
+	free(xs.str);
+	continue;
       }
+      /**/
+      if (top_cand < 0) {
+	top_cand = i;
+      }
+      if (delta == 0) {
+	delta = (se->cands[top_cand]->score - ce->score) + 1;
+      }
+      ce->score += delta;
       free(xs.str);
     }
   }

@@ -11,8 +11,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <alloc.h>
-#include <splitter.h>
+#include <anthy/alloc.h>
+#include <anthy/splitter.h>
 #include "wordborder.h"
 
 static int
@@ -59,12 +59,6 @@ metaword_constraint_check(struct splitter_context *sc,
 	mw->can_use = ng;
 	break;
       }
-    }
-    /* breakÌµ¤· */
-  case MW_CHECK_PAIR:
-    {
-      struct meta_word* mw1 = mw->mw1;
-      struct meta_word* mw2 = mw->mw2;
       if (mw1)
 	metaword_constraint_check(sc, mw1, from, border);
       if (mw2)

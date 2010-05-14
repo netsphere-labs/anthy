@@ -38,12 +38,12 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <anthy.h>
-#include <conf.h>
-#include <dic.h>
-#include <texttrie.h>
-#include <textdict.h>
-#include <dicutil.h>
+#include <anthy/anthy.h>
+#include <anthy/conf.h>
+#include <anthy/dic.h>
+#include <anthy/texttrie.h>
+#include <anthy/textdict.h>
+#include <anthy/dicutil.h>
 
 #include "dic_main.h"
 #include "dic_personality.h"
@@ -202,7 +202,7 @@ anthy_priv_dic_delete(void)
 }
 
 static int
-scan_cb(void *p, int next_offset, const char *key, const char *n)
+scan_one_word_cb(void *p, int next_offset, const char *key, const char *n)
 {
   (void)p;
   set_current_line(key, n);
@@ -217,7 +217,7 @@ select_first_entry_in_textdict(void)
   set_current_line(NULL, NULL);
   anthy_textdict_scan(anthy_private_text_dic,
 		      word_iterator.dicfile_offset, NULL,
-		      scan_cb);
+		      scan_one_word_cb);
   if (word_iterator.current_line) {
     word_iterator.in_tt = 0;
     return 0;
@@ -233,14 +233,13 @@ anthy_priv_dic_select_first_entry(void)
   if (dic_util_encoding == ANTHY_UTF8_ENCODING) {
     return select_first_entry_in_textdict();
   }
-  if (!anthy_private_tt_dic) {
-    return ANTHY_DIC_UTIL_INVALID;
-  }
-  sprintf(word_iterator.key_buf, encoding_prefix(dic_util_encoding));
-  /* prefixの次のエントリが最初のエントリ */
-  if (find_next_key(encoding_prefix(dic_util_encoding))) {
-    word_iterator.in_tt = 1;
-    return 0;
+  if (anthy_private_tt_dic) {
+    sprintf(word_iterator.key_buf, encoding_prefix(dic_util_encoding));
+    /* prefixの次のエントリが最初のエントリ */
+    if (find_next_key(encoding_prefix(dic_util_encoding))) {
+      word_iterator.in_tt = 1;
+      return 0;
+    }
   }
   /* 単語が無いのでtextdictに移動を試みる */
   return select_first_entry_in_textdict();
@@ -254,7 +253,7 @@ anthy_priv_dic_select_next_entry(void)
     set_current_line(NULL, NULL);
     anthy_textdict_scan(anthy_private_text_dic, word_iterator.dicfile_offset,
 			NULL,
-			scan_cb);
+			scan_one_word_cb);
     if (word_iterator.current_line) {
       return 0;
     }
@@ -421,6 +420,57 @@ do_add_word_to_textdict(struct textdict *td, int offset,
 }
 
 static int
+dup_word_check(const char *v, const char *word, const char *wt)
+{
+  struct word_line res;
+
+  if (anthy_parse_word_line(v, &res)) {
+    return 0;
+  }
+
+  /* 読みと単語を比較する */
+  if (!strcmp(res.wt, wt) &&
+      !strcmp(res.word, word)) {
+    return 1;
+  }
+  return 0;
+}
+
+static int
+find_same_word(char *idx_buf, const char *yomi,
+	       const char *word, const char *wt_name, int yomi_len)
+{
+  int found = 0;
+  sprintf(idx_buf, "%s%s ",
+	  encoding_prefix(dic_util_encoding),
+	  yomi);
+  anthy_trie_find_next_key(anthy_private_tt_dic,
+			   idx_buf, yomi_len + 12);
+
+  /* trieのインデックスを探す */
+  do {
+    char *v;
+    if (strncmp(&idx_buf[2], yomi, yomi_len) ||
+	idx_buf[yomi_len+2] != ' ') {
+      /* 見出語が異なるのでループ終了 */
+      break;
+    }
+    /* texttrieにアクセスして、見出語以外も一致しているかをチェック */
+    v = anthy_trie_find(anthy_private_tt_dic, idx_buf);
+    if (v) {
+      found = dup_word_check(v, word, wt_name);
+      free(v);
+      if (found) {
+	break;
+      }
+    }
+  } while (anthy_trie_find_next_key(anthy_private_tt_dic,
+				    idx_buf, yomi_len + 12));
+
+  return found;
+}
+
+static int
 add_word_to_textdict(const char *yomi, const char *word,
 		     const char *wt_name, int freq)
 {
@@ -436,19 +486,32 @@ add_word_to_textdict(const char *yomi, const char *word,
     return ANTHY_DIC_UTIL_ERROR;
   }
 
+  /* texttrieにあれば消す */
+  if (anthy_private_tt_dic) {
+    char *idx_buf = malloc(yomi_len + 12);
+    if (find_same_word(idx_buf, yomi, word, wt_name, yomi_len)) {
+      anthy_trie_delete(anthy_private_tt_dic, idx_buf);
+    }
+    free(idx_buf);
+  }
+
+  /* 同じ物があったら消す */
   sc.yomi = yomi;
   sc.word = word;
   sc.wt_name = wt_name;
-
-  /* 同じ物があったら消す */
+  /**/
   sc.offset = 0;
   sc.found_word = 0;
   anthy_textdict_scan(anthy_private_text_dic, 0, &sc,
 		      find_cb);
-  if (sc.found_word == 0) {
+  if (sc.found_word == 1) {
     anthy_textdict_delete_line(anthy_private_text_dic, sc.offset);
   }
+  if (freq == 0) {
+    return ANTHY_DIC_UTIL_OK;
+  }
   /* 追加する場所を探す */
+  sc.offset = 0;
   sc.found_word = 0;
   anthy_textdict_scan(anthy_private_text_dic, 0, &sc,
 		      order_cb);

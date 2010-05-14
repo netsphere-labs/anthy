@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <anthy.h>
+#include <anthy/anthy.h>
 
 
 /* Makefile の $(srcdir) (静的データファイルの基準ディレクトリ) */

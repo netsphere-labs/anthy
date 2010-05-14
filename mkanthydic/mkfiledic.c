@@ -17,18 +17,33 @@
  *   : 各ファイルの内容
  *
  * Copyright (C) 2005-2006 YOSHIDA Yuichi
- * Copyright (C) 2006 TABATA Yusuke
+ * Copyright (C) 2006-2007 TABATA Yusuke
  *
+ */
+/*
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#include <xstr.h>
-#include <diclib.h>
+#include <anthy/xstr.h>
+#include <anthy/diclib.h>
 
-#define SECTION_ALIGNMENT 8
+#define SECTION_ALIGNMENT 64
 #define DIC_NAME "anthy.dic"
 
 struct header_entry {
@@ -188,6 +203,11 @@ main(int argc, char* argv[])
   struct header_entry entries[] = {
     {"word_dic", "/mkworddic/anthy.wdic"},
     {"dep_dic", "/depgraph/anthy.dep"},
+    {"trans_info", "/calctrans/anthy.trans_info"},
+    {"cand_info", "/calctrans/anthy.cand_info"},
+    {"weak_words", "/calctrans/anthy.weak_words"},
+    {"corpus_bucket", "/calctrans/anthy.corpus_bucket"},
+    {"corpus_array", "/calctrans/anthy.corpus_array"},
   };
 
   for (i = 1; i < argc; i++) {

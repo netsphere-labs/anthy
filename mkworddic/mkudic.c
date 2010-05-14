@@ -7,8 +7,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <anthy/matrix.h>
 #include "mkdic.h"
-#include "matrix.h"
 
 #define LINE_LEN 256
 

@@ -23,6 +23,7 @@
  */
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <dirent.h>
 #include <fcntl.h>
 #include <unistd.h>
 
@@ -30,26 +31,30 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <anthy.h>
-#include <alloc.h>
-#include <dic.h>
-#include <record.h>
-#include <dicutil.h>
-#include <conf.h>
-#include <logger.h>
-#include <texttrie.h>
-#include <textdict.h>
-#include <dic_ent.h>
-#include <word_dic.h>
+#include <anthy/anthy.h>
+#include <anthy/alloc.h>
+#include <anthy/dic.h>
+#include <anthy/record.h>
+#include <anthy/dicutil.h>
+#include <anthy/conf.h>
+#include <anthy/logger.h>
+#include <anthy/texttrie.h>
+#include <anthy/textdict.h>
+#include <anthy/word_dic.h>
 #include "dic_main.h"
+#include "dic_ent.h"
 
 /* 個人辞書 */
 struct text_trie *anthy_private_tt_dic;
 struct textdict *anthy_private_text_dic;
+static struct textdict *anthy_imported_text_dic;
+static char *imported_dic_dir;
 /* ロック用の変数 */
 static char *lock_fn;
 static int lock_depth;
 static int lock_fd;
+
+#define MAX_DICT_SIZE 100000000
 
 /* 個人辞書のディレクトリの有無を確認する */
 void
@@ -90,17 +95,17 @@ open_tt_dic(const char *home, const char *id)
   struct text_trie *tt;
   char *buf = malloc(strlen(home) + strlen(id) + 40);
   sprintf(buf, "%s/.anthy/private_dict_%s.tt", home, id);
-  tt = anthy_trie_open(buf, 1);
+  tt = anthy_trie_open(buf, 0);
   free(buf);
   return tt;
 }
 
 static struct textdict *
-open_textdic(const char *home, const char *id)
+open_textdic(const char *home, const char *name, const char *id)
 {
-  char *fn = malloc(strlen(home) + strlen(id) + 40);
+  char *fn = malloc(strlen(home) + strlen(name) + strlen(id) + 10);
   struct textdict *td;
-  sprintf(fn, "%s/.anthy/private_words_%s", home, id);
+  sprintf(fn, "%s/.anthy/%s%s", home, name, id);
   td = anthy_textdict_open(fn, 0);
   free(fn);
   return td;
@@ -153,6 +158,10 @@ anthy_priv_dic_unlock(void)
 void
 anthy_priv_dic_update(void)
 {
+  if (!anthy_private_tt_dic) {
+    return ;
+  }
+
   anthy_trie_update_mapping(anthy_private_tt_dic);
 }
 
@@ -164,7 +173,9 @@ add_to_seq_ent(const char *line, int encoding, struct seq_ent *seq)
   wtype_t wt;
   xstr *xs;
   /* */
-  anthy_parse_word_line(line, &wl);
+  if (anthy_parse_word_line(line, &wl)) {
+    return ;
+  }
   xs = anthy_cstr_to_xstr(wl.word, encoding);
   anthy_type_to_wtype(wl.wt, &wt);
   anthy_mem_dic_push_back_dic_ent(seq, 0, xs, wt,
@@ -224,42 +235,15 @@ anthy_copy_words_from_private_dic(struct seq_ent *seq,
   /* 個人辞書から取ってくる */
   copy_words_from_tt(seq, xs, ANTHY_EUC_JP_ENCODING, "  ");
   copy_words_from_tt(seq, xs, ANTHY_UTF8_ENCODING, " p");
-  /* 未知語辞書から取ってくる */
-  copy_words_from_tt(seq, xs, ANTHY_UTF8_ENCODING, " U");
-}
-
-static void
-migrate_words(void)
-{
-  int encoding = anthy_dic_util_set_encoding(-1);
-  if (anthy_select_section("PRIVATEDIC", 0) == -1) {
-    return ;
+  /**/
+  if (!anthy_select_section("UNKNOWN_WORD", 0) &&
+      !anthy_select_row(xs, 0)) {
+    wtype_t wt;
+    xstr *word_xs;
+    anthy_type_to_wtype("#T35", &wt);
+    word_xs = anthy_get_nth_xstr(0);
+    anthy_mem_dic_push_back_dic_ent(seq, 0, word_xs, wt, NULL, 10, 0);
   }
-  anthy_select_first_row();
-  do {
-    int i, nr;
-    xstr *idx_xs = anthy_get_index_xstr();
-    nr = anthy_get_nr_values();
-    for (i = 0; i < nr; i += 3) {
-      xstr *word_xs = anthy_get_nth_xstr(i);
-      int freq = anthy_get_nth_value(i+2);
-      xstr *wt_xs = anthy_get_nth_xstr(i+1);
-      /**/
-      char *idx = anthy_xstr_to_cstr(idx_xs, encoding);
-      char *word =anthy_xstr_to_cstr(word_xs, encoding);
-      char *wt = anthy_xstr_to_cstr(wt_xs, encoding);
-      anthy_priv_dic_add_entry(idx, word, wt, freq);
-      free(idx);
-      free(wt);
-      free(word);
-    }
-  } while (anthy_select_next_row() == 0);
-  /* 2005/11/13
-   * 大量に単語が登録されている場合、旧形式の単語は消した方が良いかもしれない
-   * もし、将来にこのコードの意味が不明であれば、この関数(migrate_words)ごと
-   * 消してください
-   */
-  /*anthy_release_section();*/
 }
 
 int
@@ -283,45 +267,73 @@ anthy_parse_word_line(const char *line, struct word_line *res)
   } else {
     res->freq = 1;
   }
+  if (!buf || !(*buf)) {
+    res->word = "";
+    return -1;
+  }
   buf++;
   /* 単語 */
   res->word = buf;
   return 0;
 }
 
-static void
-update_unknown_word(const char *yomi_buf, struct word_line *wl)
+void
+anthy_ask_scan(void (*request_scan)(struct textdict *, void *),
+	       void *arg)
 {
-  char *word_buf = malloc(strlen(wl->word) + 20);
-  sprintf(word_buf, "#T*%d %s", wl->freq, wl->word);
-  anthy_trie_add(anthy_private_tt_dic, yomi_buf, word_buf);
-  free(word_buf);
+  DIR *dir;
+  struct dirent *de;
+  int size = 0;
+  request_scan(anthy_private_text_dic, arg);
+  request_scan(anthy_imported_text_dic, arg);
+  dir = opendir(imported_dic_dir);
+  if (!dir) {
+    return ;
+  }
+  while ((de = readdir(dir))) {
+    struct stat st_buf;
+    struct textdict *td;
+    char *fn = malloc(strlen(imported_dic_dir) +
+		      strlen(de->d_name) + 3);
+    if (!fn) {
+      break;
+    }
+    sprintf(fn, "%s/%s", imported_dic_dir, de->d_name);
+    if (stat(fn, &st_buf)) {
+      free(fn);
+      continue;
+    }
+    if (!S_ISREG(st_buf.st_mode)) {
+      free(fn);
+      continue;
+    }
+    size += st_buf.st_size;
+    if (size > MAX_DICT_SIZE) {
+      free(fn);
+      break;
+    }
+    td = anthy_textdict_open(fn, 0);
+    request_scan(td, arg);
+    anthy_textdict_close(td);
+    free(fn);
+  }
+  closedir(dir);
 }
 
 static void
-do_add_unknown_word(char *yomi_cs, xstr *word, int freq)
+add_unknown_word(xstr *yomi, xstr *word)
 {
-  struct word_line wl;
-  char *word_cs;
-  wl.freq = freq;
-  sprintf(wl.wt, "#T");
-  word_cs = anthy_xstr_to_cstr(word, ANTHY_UTF8_ENCODING);
-  wl.word = word_cs;
-  update_unknown_word(yomi_cs, &wl);
-  free(word_cs);
-}
-
-static void
-add_unknown_word(xstr *yomi, xstr *word, int freq)
-{
-  char *yomi_cs, *yomi_buf;
-  yomi_cs = anthy_xstr_to_cstr(yomi, ANTHY_UTF8_ENCODING);
-  yomi_buf = malloc(strlen(yomi_cs) + 10);
-  sprintf(yomi_buf, " U%s 0", yomi_cs);
-  /* 追加 */
-  do_add_unknown_word(yomi_buf, word, freq);
-  free(yomi_buf);
-  free(yomi_cs);
+  /* recordに追加 */
+  if (anthy_select_section("UNKNOWN_WORD", 1)) {
+    return ;
+  }
+  if (!anthy_select_row(yomi, 0)) {
+    anthy_mark_row_used();
+  }
+  if (anthy_select_row(yomi, 1)) {
+    return ;
+  }
+  anthy_set_nth_xstr(0, word);
 }
 
 void
@@ -335,7 +347,7 @@ anthy_add_unknown_word(xstr *yomi, xstr *word)
     return ;
   }
   /**/
-  add_unknown_word(yomi, word, 10);
+  add_unknown_word(yomi, word);
 }
 
 void
@@ -344,10 +356,22 @@ anthy_forget_unused_unknown_word(xstr *xs)
   char key_buf[128];
   char *v;
 
+  if (!anthy_private_tt_dic) {
+    return ;
+  }
+
   v = anthy_xstr_to_cstr(xs, ANTHY_UTF8_ENCODING);
   sprintf(key_buf, " U%s 0", v);
   free(v);
   anthy_trie_delete(anthy_private_tt_dic, key_buf);
+
+  /* recordに記録された物を消す */
+  if (anthy_select_section("UNKNOWN_WORD", 0)) {
+    return ;
+  }
+  if (!anthy_select_row(xs, 0)) {
+    anthy_release_row();
+  }
 }
 
 void
@@ -357,19 +381,20 @@ anthy_init_private_dic(const char *id)
   if (anthy_private_tt_dic) {
     anthy_trie_close(anthy_private_tt_dic);
   }
-  if (anthy_private_text_dic) {
-    anthy_textdict_close(anthy_private_text_dic);
-  }
+  /**/
+  anthy_textdict_close(anthy_private_text_dic);
+  anthy_textdict_close(anthy_imported_text_dic);
+  /**/
   if (lock_fn) {
     free(lock_fn);
   }
   init_lock_fn(home, id);
   anthy_private_tt_dic = open_tt_dic(home, id);
-  anthy_private_text_dic = open_textdic(home, id);
-  /* 旧形式の辞書に含まれている単語をコピーして、texttrieに移す */
-  anthy_priv_dic_lock();
-  migrate_words();
-  anthy_priv_dic_unlock();
+  /**/
+  anthy_private_text_dic = open_textdic(home, "private_words_", id);
+  anthy_imported_text_dic = open_textdic(home, "imported_words_", id);
+  imported_dic_dir = malloc(strlen(home) + strlen(id) + 30);
+  sprintf(imported_dic_dir, "%s/.anthy/imported_words_%s.d/", home, id);
 }
 
 void
@@ -379,10 +404,14 @@ anthy_release_private_dic(void)
     anthy_trie_close(anthy_private_tt_dic);
     anthy_private_tt_dic = NULL;
   }
-  if (anthy_private_text_dic) {
-    anthy_textdict_close(anthy_private_text_dic);
-    anthy_private_text_dic = NULL;
-  }
+  /**/
+  anthy_textdict_close(anthy_private_text_dic);
+  anthy_textdict_close(anthy_imported_text_dic);
+  free(imported_dic_dir);
+  anthy_private_text_dic = NULL;
+  anthy_imported_text_dic = NULL;
+  imported_dic_dir = NULL;
+  /**/
   if (lock_depth > 0) {
     /* not sane situation */
     lock_depth = 0;

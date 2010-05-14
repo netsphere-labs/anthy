@@ -7,10 +7,10 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <anthy.h>
-#include <convdb.h>
-#include "segment.h"
-#include "feature_set.h"
+#include <anthy/anthy.h>
+#include <anthy/convdb.h>
+#include <anthy/segment.h>
+#include <anthy/feature_set.h>
 /**/
 #include "../src-main/main.h"
 #include "../src-splitter/wordborder.h"
@@ -25,8 +25,6 @@
 struct word {
   /* WORD_* */
   int type;
-  /* idは自立語の時のみ有効 */
-  int id;
   /* 付属語のhash(WORD_INDEP)もしくは変換後の文字列のhash(WORD_DEP) */
   int hash;
   /* 読みの文字列のhash */
@@ -37,8 +35,6 @@ struct word {
   xstr *conv_xs;
   /* 変換後の品詞 */
   const char *wt;
-  /* 文節クラス */
-  int seg_class;
 };
 
 static struct cand_ent *
@@ -271,7 +267,6 @@ init_word(struct word *w, int type)
   w->raw_xs = NULL;
   w->conv_xs = NULL;
   w->wt = NULL;
-  w->seg_class = -1;
 }
 
 static void
@@ -286,8 +281,6 @@ static void
 fill_indep_word(struct word *w, struct cand_elm *elm)
 {
   init_word(w, WORD_INDEP);
-  /**/
-  w->id = elm->id;
   /* 変換前の読みを取得する */
   w->raw_xs = anthy_xstr_dup(&elm->str);
   w->yomi_hash = anthy_xstr_hash(w->raw_xs);
@@ -302,7 +295,6 @@ fill_dep_word(struct word *w, struct cand_elm *elm)
 {
   init_word(w, WORD_DEP);
   /**/
-  w->id = 0;
   w->hash = anthy_xstr_hash(&elm->str);
   w->yomi_hash = w->hash;
   w->raw_xs = anthy_xstr_dup(&elm->str);
@@ -339,8 +331,7 @@ print_word(const char *prefix, struct word *w, struct feature_list *fl)
     return ;
   }
   /* 自立語 */
-  printf("indep_word id=%d hash=%d",
-	 w->id, w->hash);
+  printf("indep_word hash=%d", w->hash);
   /**/
   if (fl) {
     print_features(fl);
@@ -395,12 +386,7 @@ set_features(struct feature_list *fl,
     if (ce->mw) {
       anthy_feature_list_set_dep_class(fl, ce->mw->dep_class);
       anthy_feature_list_set_mw_features(fl, ce->mw->mw_features);
-    }
-  }
-  if (prev_seg) {
-    struct cand_ent *ce =  selected_candidate(prev_seg);
-    if (ce->mw && ce->mw->mw_features & MW_FEATURE_WEAK) {
-      anthy_feature_list_set_prev_weak(fl);
+      anthy_feature_list_set_noun_cos(fl, ce->mw->core_wt);
     }
   }
   anthy_feature_list_set_class_trans(fl, pc, cl);
@@ -410,19 +396,16 @@ set_features(struct feature_list *fl,
 
 static void
 print_element(const char *prefix,
-	      struct seg_ent *prev_seg, struct seg_ent *seg,
 	      struct cand_elm *elm, struct feature_list *fl)
 {
   struct word w;
 
-  int seg_class = get_seg_class(seg, SEG_BUNSETSU);
   if (elm->str.len == 0) {
     return ;
   }
   if (elm->id != -1) {
     /* 自立語 */
     fill_indep_word(&w, elm);
-    w.seg_class = seg_class;
     print_word(prefix, &w, fl);
   } else {
     /* 付属語 */
@@ -470,9 +453,9 @@ get_prefix(int flag)
 }
 
 static void
-print_segment(int is_negative,
-	      struct seg_ent *prev_seg,
-	      struct seg_ent *seg)
+print_segment_info(int is_negative,
+		   struct seg_ent *prev_seg,
+		   struct seg_ent *seg)
 {
   int i;
   struct feature_list fl;
@@ -489,7 +472,7 @@ print_segment(int is_negative,
       prefix = get_prefix(is_negative | CONV_INVALID);
     }
     /* 出力する */
-    print_element(prefix, prev_seg, seg, elm, &fl);
+    print_element(prefix, elm, &fl);
     /* 自立語を数える */
     if (elm->id != -1) {
       nr_indep ++;
@@ -506,7 +489,7 @@ print_size_miss_segment_info(anthy_context_t ac, int nth)
   if (nth > 0) {
     prev_seg = anthy_get_nth_segment(&ac->seg_list, nth - 1);
   }
-  print_segment(CONV_SIZE_MISS, prev_seg, seg);
+  print_segment_info(CONV_SIZE_MISS, prev_seg, seg);
 }
 
 void
@@ -517,7 +500,7 @@ print_cand_miss_segment_info(anthy_context_t ac, int nth)
   if (nth > 0) {
     prev_seg = anthy_get_nth_segment(&ac->seg_list, nth - 1);
   }
-  print_segment(CONV_CAND_MISS, prev_seg, seg);
+  print_segment_info(CONV_CAND_MISS, prev_seg, seg);
 }
 
 void
@@ -537,11 +520,19 @@ print_context_info(anthy_context_t ac, struct conv_res *cr)
     }
 
     /* 各要素に対して */
-    /* 要素が無いものはそのまま表示 */
     if (!ce->nr_words) {
+      /* 要素が無いものはそのまま表示 */
       print_unconverted(ce);
     } else {
-      print_segment(is_negative, prev_seg, seg);
+      /* 候補の変更があった場合はそれを表示 */
+      if (seg->committed > 0) {
+	int tmp = seg->committed;
+	seg->committed = 0;
+	print_cand_miss_segment_info(ac, i);
+	seg->committed = tmp;
+      }
+      /* 文節の構成を表示 */
+      print_segment_info(is_negative, prev_seg, seg);
     }
     /**/
     prev_seg = seg;

@@ -11,7 +11,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <anthy.h>
+#include <anthy/anthy.h>
 
 #include "config.h"
 
@@ -34,6 +34,8 @@ struct context {
 
 #define MAX_CONTEXT 16
 static struct context contexts[MAX_CONTEXT];
+
+extern int use_utf8;
 
 #define INITIAL_BUFLEN 512
 #define INITIAL_SELLEN 128
@@ -66,6 +68,9 @@ new_context (void)
 	free (c->selection);
 	c->selection = NULL;
 	return -1;
+      }
+      if (use_utf8) {
+	anthy_context_set_encoding(c->ac, ANTHY_UTF8_ENCODING);
       }
 
       c->buflen = INITIAL_BUFLEN;

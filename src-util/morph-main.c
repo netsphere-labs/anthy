@@ -22,8 +22,9 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "anthy.h"
-#include "convdb.h"
+#include <anthy/anthy.h>
+/* for print_context_info() */
+#include <anthy/convdb.h>
 
 struct test_context {
   anthy_context_t ac;
@@ -33,6 +34,7 @@ static void read_file(struct test_context *tc, const char *fn);
 extern void anthy_reload_record(void);
 
 int verbose;
+int use_utf8;
 
 /**/
 static void
@@ -40,6 +42,9 @@ init_test_context(struct test_context *tc)
 {
   tc->ac = anthy_create_context();
   anthy_set_reconversion_mode(tc->ac, ANTHY_RECONVERT_ALWAYS);
+  if (use_utf8) {
+    anthy_context_set_encoding(tc->ac, ANTHY_UTF8_ENCODING);
+  }
   anthy_reload_record();
 }
 
@@ -116,7 +121,9 @@ parse_args(int argc, char **argv)
   int i;
   for (i = 1; i < argc; i++) {
     char *arg = argv[i];
-    if (arg[i] == '-') {
+    if (!strcmp(arg, "--utf8")) {
+      use_utf8 = 1;
+    } else if (arg[i] == '-') {
       print_usage();
     }
   }

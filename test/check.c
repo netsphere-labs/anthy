@@ -1,8 +1,8 @@
 /* リリース前のチェックを行う */
 #include <stdio.h>
 #include <stdlib.h>
-#include <anthy.h>
-#include <xstr.h>
+#include <anthy/anthy.h>
+#include <anthy/xstr.h>
 
 static int
 init(void)

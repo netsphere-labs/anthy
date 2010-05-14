@@ -28,8 +28,8 @@
 #include <fcntl.h>
 #include <stdlib.h>
 
-#include "logger.h"
-#include <filemap.h>
+#include <anthy/filemap.h>
+#include <anthy/logger.h>
 
 struct filemapping {
   /* 書き込みモード */

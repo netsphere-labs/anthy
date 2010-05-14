@@ -7,15 +7,17 @@
 #include <stdlib.h>
 #include <time.h>
 
-#include <ordering.h>
-#include <record.h>
-#include "splitter.h"
-#include "segment.h"
+#include <anthy/ordering.h>
+#include <anthy/record.h>
+#include <anthy/splitter.h>
+#include <anthy/segment.h>
 #include "sorter.h"
 
 #define MAX_OCHAIRE_ENTRY_COUNT 100
 #define MAX_OCHAIRE_LEN 32
 #define MAX_PREDICTION_ENTRY 100
+
+#define MAX_UNKNOWN_WORD 100
 
 /* ∏Ú¥π§µ§Ï§ø∏ı ‰§Ú√µ§π */
 static void
@@ -84,6 +86,9 @@ clear_resized_segment(struct splitter_context *sc,
       xs.len = len;
       anthy_forget_unused_unknown_word(&xs);
     }
+  }
+  if (!anthy_select_section("UNKNOWN_WORD", 0)) {
+    anthy_truncate_section(MAX_UNKNOWN_WORD);
   }
 }
 

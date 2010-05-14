@@ -46,28 +46,31 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include <dic.h>
-#include <splitter.h>
-#include <conf.h>
-#include <ordering.h>
-#include <logger.h>
-#include <record.h>
-#include <anthy.h>
-#include <record.h>
-#include <xchar.h> /* for KK_VU */
+#include <anthy/dic.h>
+#include <anthy/splitter.h>
+#include <anthy/conf.h>
+#include <anthy/ordering.h>
+#include <anthy/logger.h>
+#include <anthy/record.h>
+#include <anthy/anthy.h>
+#include <anthy/record.h>
+#include <anthy/xchar.h> /* for KK_VU */
 #include "main.h"
 #include "config.h"
 
 
 /** Anthyの初期化が完了したかどうかのフラグ */
 static int is_init_ok;
-
+/** コンテキスト生成時のエンコーディング */
 static int default_encoding;
+/***/
+static char *history_file;
 
 /** (API) 全体の初期化 */
 int
 anthy_init(void)
 {
+  char *hfn;
   if (is_init_ok) {
     /* 2度初期化しないように */
     return 0;
@@ -85,9 +88,19 @@ anthy_init(void)
   }
   anthy_init_contexts();
   anthy_init_personality();
+  anthy_infosort_init();
+  anthy_relation_init();
 
+  /**/
   default_encoding = ANTHY_EUC_JP_ENCODING;
   is_init_ok = 1;
+  history_file = NULL;
+  hfn = getenv("ANTHY_HISTORY_FILE");
+  if (hfn) {
+    history_file = strdup(hfn);
+  }
+
+  /**/
   return 0;
 }
 
@@ -105,6 +118,11 @@ anthy_quit(void)
   anthy_quit_dic();
 
   is_init_ok = 0;
+  /**/
+  if (history_file) {
+    free(history_file);
+  }
+  history_file = NULL;
 }
 
 /** (API) 設定項目の上書き */
@@ -185,6 +203,10 @@ anthy_set_string(struct anthy_context *ac, const char *s)
 {
   xstr *xs;
   int retval;
+
+  if (!ac) {
+    return -1;
+  }
 
   /*初期化*/
   anthy_do_reset_context(ac);
@@ -393,6 +415,8 @@ anthy_commit_segment(struct anthy_context *ac, int s, int c)
   if (commit_all_segment_p(ac)) {
     /* 今、すべてのセグメントがコミットされた */
     anthy_proc_commit(&ac->seg_list, &ac->split_info);
+    /**/
+    anthy_save_history(history_file, ac);
   }
   return 0;
 }

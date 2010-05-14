@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <diclib.h>
-#include <filemap.h>
-#include <alloc.h>
-#include <conf.h>
-#include <logger.h>
+#include <anthy/diclib.h>
+#include <anthy/filemap.h>
+#include <anthy/alloc.h>
+#include <anthy/conf.h>
+#include <anthy/logger.h>
 #include "diclib_inner.h"
 
 /**

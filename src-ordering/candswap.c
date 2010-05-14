@@ -11,11 +11,11 @@
  */
 #include <stdlib.h>
 
-#include <record.h>
-#include "segment.h"
+#include <anthy/record.h>
+#include <anthy/segment.h>
 /* for OCHAIRE_SCORE */
-#include <splitter.h>
-#include <sorter.h>
+#include <anthy/splitter.h>
+#include "sorter.h"
 
 #define MAX_INDEP_PAIR_ENTRY 100
 
@@ -123,6 +123,8 @@ prepare_swap_candidate(xstr *target)
   return n;
 }
 
+#include <src-worddic/dic_ent.h>
+
 /*
  * 自立語のみ
  */
@@ -132,19 +134,20 @@ proc_swap_candidate_indep(struct seg_ent *se)
   xstr *xs;
   xstr key;
   int i;
-  int core_idx = se->cands[0]->core_elm_index;
+  int core_elm_idx;
   int res;
   struct cand_elm *core_elm;
 
-  if (core_idx < 0) {
+  core_elm_idx = se->cands[0]->core_elm_index;
+  if (core_elm_idx < 0) {
     return ;
   }
 
-  core_elm = &se->cands[0]->elm[core_idx];
+  /* 0番目の候補の文字列を取り出す */
+  core_elm = &se->cands[0]->elm[core_elm_idx];
   if (core_elm->nth < 0) {
     return ;
   }
-
   res = anthy_get_nth_dic_ent_str(core_elm->se,
 				  &core_elm->str,
 				  core_elm->nth,
@@ -152,8 +155,9 @@ proc_swap_candidate_indep(struct seg_ent *se)
   if (res) {
     return ;
   }
-  anthy_select_section("INDEPPAIR", 1);
 
+  /**/
+  anthy_select_section("INDEPPAIR", 1);
   xs = prepare_swap_candidate(&key);
   free(key.str);
   if (!xs) {
@@ -163,11 +167,11 @@ proc_swap_candidate_indep(struct seg_ent *se)
   /* 第一候補 -> xs なので xsの候補を探す */
   for (i = 1; i < se->nr_cands; i++) {
     if (se->cands[i]->nr_words == se->cands[0]->nr_words &&
-	se->cands[i]->core_elm_index == se->cands[0]->core_elm_index) {
+	se->cands[i]->core_elm_index == core_elm_idx) {
       xstr cand;
-      res = anthy_get_nth_dic_ent_str(se->cands[i]->elm[core_idx].se,
-				      &se->cands[i]->elm[core_idx].str,
-				      se->cands[i]->elm[core_idx].nth,
+      res = anthy_get_nth_dic_ent_str(se->cands[i]->elm[core_elm_idx].se,
+				      &se->cands[i]->elm[core_elm_idx].str,
+				      se->cands[i]->elm[core_elm_idx].nth,
 				      &cand);
       if (res == 0 &&
 	  !anthy_xstrcmp(&cand, xs)) {

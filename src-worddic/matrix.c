@@ -64,9 +64,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <diclib.h>
+#include <anthy/diclib.h>
 /* public APIs */
-#include "matrix.h"
+#include <anthy/matrix.h>
 
 /* maximum length allowed for hash chain */
 #define MAX_FAILURE 50
@@ -76,7 +76,7 @@ struct list_elm {
   int value;
   void *ptr;
   struct list_elm *next;
-  /* bypass to mitigate O(n^2) insertion cost */
+  /* bypass to mitigate O(n) insertion cost */
   struct list_elm *orig_next;
 };
 

@@ -4,7 +4,7 @@ DEPWORDS = master.depword noun.depword v.depword \
  ajv.depword noun-variant.depword \
  fix.depword conjugate.depword \
  conjugate.table
-INCLUDES = -I$(top_srcdir)/include -DSRCDIR=\"$(srcdir)\"
+INCLUDES = -I$(top_srcdir)/ -DSRCDIR=\"$(srcdir)\"
 CLEANFILES = anthy.dep
 EXTRA_DIST = indepword.txt $(DEPWORDS)
 

@@ -1,4 +1,5 @@
 EGG との通信のプロトコル
+ anthy-agentコマンドに--eggオプションを設定して起動することで利用可能です。
 
 挨拶
 	greeting = server-name " (" version ") " options " :" string CRLF

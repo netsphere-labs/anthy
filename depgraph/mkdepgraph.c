@@ -27,15 +27,15 @@
 #include <string.h>
 #include <stdlib.h>
 
-#include <alloc.h>
-#include <conf.h>
-#include <ruleparser.h>
-#include <xstr.h>
-#include <logger.h>
-#include <splitter.h>
-#include <anthy.h>
-#include <depgraph.h>
-#include <diclib.h>
+#include <anthy/alloc.h>
+#include <anthy/conf.h>
+#include <anthy/ruleparser.h>
+#include <anthy/xstr.h>
+#include <anthy/logger.h>
+#include <anthy/splitter.h>
+#include <anthy/anthy.h>
+#include <anthy/depgraph.h>
+#include <anthy/diclib.h>
 
 #ifndef SRCDIR
 #define SRCDIR "."
@@ -349,8 +349,14 @@ write_transition(FILE* fp, struct dep_transition* transition)
 static void
 write_xstr(FILE* fp, xstr* str)
 {
+  int i;
+  xchar c;
   write_nl(fp, str->len);
-  fwrite(str->str, sizeof(xchar), str->len, fp);
+
+  for (i = 0; i < str->len; i++) {
+    c = anthy_dic_htonl(str->str[i]);
+    fwrite(&c, sizeof(xchar), 1, fp);
+  }
 }
 
 static void

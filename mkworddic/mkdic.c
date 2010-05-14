@@ -23,7 +23,6 @@
  *  5 ページのインデックス
  *  6 用例辞書(?)
  *  7 読み hash
- *  8 接頭辞、接尾辞の接続行列
  *
  * source 元の辞書ファイル
  * file_dic 生成するファイル
@@ -43,12 +42,12 @@
 
 #include <config.h>
 
-#include <anthy.h>
-#include <xstr.h>
-#include <wtype.h>
-#include <ruleparser.h>
-#include <word_dic.h>
-#include <diclib.h>
+#include <anthy/anthy.h>
+#include <anthy/xstr.h>
+#include <anthy/wtype.h>
+#include <anthy/ruleparser.h>
+#include <anthy/word_dic.h>
+#include <anthy/diclib.h>
 #include "mkdic.h"
 
 #define MAX_LINE_LEN 10240
@@ -132,6 +131,7 @@ open_output_files(void)
   }
 }
 
+/* fflushする */
 static void
 flush_output_files (void)
 {
@@ -226,7 +226,7 @@ index_hash(xstr *xs)
   int i;
   unsigned int h = 0;
   for (i = 0; i < xs->len; i++) {
-    h += xs->str[i];
+    h += xs->str[i] * 11;
   }
   return (int)(h % YOMI_HASH);
 }
@@ -250,7 +250,7 @@ get_wt_name(const char *name)
 static void
 push_back_word_entry(struct mkdic_stat *mds,
 		     struct yomi_entry *ye, const char *wt_name,
-		     int freq, const char *word)
+		     int freq, const char *word, int order)
 {
   wtype_t wt;
   char *s;
@@ -266,8 +266,9 @@ push_back_word_entry(struct mkdic_stat *mds,
 			(ye->nr_entries + 1));
   ye->entries[ye->nr_entries].ye = ye;
   ye->entries[ye->nr_entries].wt_name = get_wt_name(wt_name);
-  ye->entries[ye->nr_entries].freq = freq;
+  ye->entries[ye->nr_entries].raw_freq = freq;
   ye->entries[ye->nr_entries].feature = 0;
+  ye->entries[ye->nr_entries].source_order = order;
   if (mds->input_encoding == ANTHY_EUC_JP_ENCODING) {
     s = anthy_conv_euc_to_utf8(word);
   } else {
@@ -374,6 +375,7 @@ push_back_word_entry_line(struct mkdic_stat *mds, struct yomi_entry *ye,
   char *n;
   char wtbuf[MAX_WTYPE_LEN];
   int freq = 0;
+  int order = 0;
 
   strcpy(buf, ent);
   wtbuf[0] = 0;
@@ -400,18 +402,21 @@ push_back_word_entry_line(struct mkdic_stat *mds, struct yomi_entry *ye,
 	if (cur[1] == '_' &&
 	    check_compound_candidate(mds, ye->index_xstr, &cur[1])) {
 	  /* #_ 複合候補 */
-	  push_back_word_entry(mds, ye, wtbuf, freq, cur);
+	  push_back_word_entry(mds, ye, wtbuf, freq, cur, order);
+	  order ++;
 	}
       }
     } else {
       /* 品詞が除去リストに入っているかをチェック */
       if (!is_excluded_wtype(mds, wtbuf)) {
 	/* 単語を追加 */
-	push_back_word_entry(mds, ye, wtbuf, freq, cur);
-      } /*else {
-	anthy_putxstr(ye->index_xstr);
-	printf(" %s*%d %s\n", wtbuf, freq, cur);
-	}*/
+	push_back_word_entry(mds, ye, wtbuf, freq, cur, order);
+	order ++;
+      }/* :to extract excluded words
+	  else {
+	  anthy_putxstr(ye->index_xstr);
+	  printf(" %s*%d %s\n", wtbuf, freq, cur);
+	  }*/
     }
     if (!n) {
       /* 行末 */
@@ -430,7 +435,7 @@ check_same_word(struct yomi_entry *ye, int idx)
   int i;
   for (i = idx -1; i >= 0; i--) {
     struct word_entry *cur = &ye->entries[i];
-    if (base->freq != cur->freq) {
+    if (base->raw_freq != cur->raw_freq) {
       return 0;
     }
     if (strcmp(base->wt_name, cur->wt_name)) {
@@ -451,7 +456,7 @@ compare_word_entry_by_freq(const void *p1, const void *p2)
 {
   const struct word_entry *e1 = p1;
   const struct word_entry *e2 = p2;
-  return e2->freq - e1->freq;
+  return e2->raw_freq - e1->raw_freq;
 }
 
 /** qsort用の比較関数 */
@@ -468,7 +473,7 @@ compare_word_entry_by_wtype(const void *p1, const void *p2)
   }
 }
 
-/** いらない単語を消す */
+/** 読みに対する単語を頻度順に並べ、いらない単語を消す */
 static int
 normalize_word_entry(struct yomi_entry *ye)
 {
@@ -483,7 +488,7 @@ normalize_word_entry(struct yomi_entry *ye)
   /* ダブったら、0点 */
   for (i = 0; i < ye->nr_entries; i++) {
     if (check_same_word(ye, i)) {
-      ye->entries[i].freq = 0;
+      ye->entries[i].raw_freq = 0;
       nr_dup ++;
     }
   }
@@ -690,16 +695,16 @@ apply_adjust_command(struct yomi_entry_list *yl,
       continue;
     }
     if (cmd->type == ADJUST_FREQ_UP) {
-      we->freq *= 4;
+      we->raw_freq *= 4;
     }
     if (cmd->type == ADJUST_FREQ_DOWN) {
-      we->freq /= 4;
-      if (we->freq == 0) {
-	we->freq = 1;
+      we->raw_freq /= 4;
+      if (we->raw_freq == 0) {
+	we->raw_freq = 1;
       }
     }
     if (cmd->type == ADJUST_FREQ_KILL) {
-      we->freq = 0;
+      we->raw_freq = 0;
     }
   }
 }
@@ -862,6 +867,9 @@ complete_words(struct mkdic_stat *mds)
   /* 頻度補正を適用する */
   apply_adjust_command(&mds->yl, &mds->ac_list);
 
+  /**/
+  calc_freq(&mds->yl);
+
   /* 読みで並び替える */
   sort_word_dict(&mds->yl);
 
@@ -942,7 +950,8 @@ reverse_multi_segment_word(struct mkdic_stat *mds, struct word_entry *we)
   word = anthy_xstr_to_cstr(word_xs, mds->input_encoding);
 
   /* 逆変換用の辞書はfreqが負 */
-  push_back_word_entry(mds, target_ye, we->wt_name, -we->freq, word);
+  push_back_word_entry(mds, target_ye, we->wt_name, -we->raw_freq,
+		       word, we->source_order);
 
   free(word);
   anthy_free_xstr(yomibuf);
@@ -998,7 +1007,8 @@ build_reverse_dict(struct mkdic_stat *mds)
       word = anthy_xstr_to_cstr(we->ye->index_xstr, mds->input_encoding);
 
       /* 逆変換用の辞書はfreqが負 */
-      push_back_word_entry(mds, target_ye, we->wt_name, -we->freq, word);
+      push_back_word_entry(mds, target_ye, we->wt_name, -we->raw_freq,
+			   word, we->source_order);
 
       anthy_free_xstr(yomi_xs);
       free(word);
@@ -1059,6 +1069,7 @@ write_dict_file(struct mkdic_stat *mds)
     printf("can not build without use case dict\n");
     exit(1);
   }
+
   /* 用例辞書を作る */
   make_ucdict(uc_out, mds->ud);
 
