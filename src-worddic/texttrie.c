@@ -322,7 +322,7 @@ encode_tail(struct cell *c, char *buf)
   buf += sprintf(buf, "T");
   buf += sput_int(buf, c->u.tail.prev);
   buf += sput_int(buf, c->next_tail);
-  sprintf(buf, " \"%s\"",
+  sprintf(buf, "\"%s\"",
 	  c->u.tail.obj);
 }
 
@@ -362,6 +362,11 @@ write_back_cell(struct text_trie *tt, struct cell *c, int idx)
 {
   int i;
   char buf[LINE_LEN+1];
+  /* sanity check */
+  if (((anthy_mmap_size(tt->mapping) / LINE_LEN) < (idx + 1)) ||
+      idx < 0) {
+    return ;
+  }
   for (i = 0; i < LINE_LEN; i++) {
     buf[i] = ' ';
   }
@@ -376,18 +381,20 @@ write_back_cell(struct text_trie *tt, struct cell *c, int idx)
   }
 }
 
-/* destructive! */
 static char *
-decode_str(char *raw_buf)
+decode_str(char *raw_buf, int off)
 {
   char *head;
-  char copy_buf[LINE_LEN];
+  char copy_buf[LINE_LEN + 1];
   char *buf;
   int i;
-  for (i = 0; i < LINE_LEN; i++) {
+  /* from off to before last '\n' */
+  for (i = 0; i < LINE_LEN - off - 1; i++) {
     copy_buf[i] = raw_buf[i];
   }
+  copy_buf[i] = 0;
   buf = copy_buf;
+  /* find first double quote */
   while (*buf && *buf != '\"') {
     buf ++;
   }
@@ -397,13 +404,16 @@ decode_str(char *raw_buf)
   }
   buf ++;
   head = buf;
-  while(*buf) {
+  /* go to the end of string */
+  while (*buf) {
     buf ++;
   }
-  while(*buf != '\"') {
+  /* find last double quote */
+  while (*buf != '\"') {
     buf--;
   }
   *buf = 0;
+  /**/
   return strdup(head);
 }
 
@@ -462,7 +472,7 @@ decode_body(struct cell *c, char *buf)
   buf = pass_str(buf, "B");
   buf = sget_int(buf, &c->next_tail);
   buf = sget_int(buf, &c->u.body.owner);
-  c->u.body.obj = decode_str(buf);
+  c->u.body.obj = decode_str(buf, 9);
   return 0;
 }
 
@@ -473,7 +483,7 @@ decode_tail(struct cell *c, char *buf)
   buf = pass_str(buf, "T");
   buf = sget_int(buf, &c->u.tail.prev);
   buf = sget_int(buf, &c->next_tail);
-  c->u.tail.obj = decode_str(buf);
+  c->u.tail.obj = decode_str(buf, 9);
   return 0;
 }
 
@@ -1417,6 +1427,7 @@ disconnect(struct text_trie *tt, int parent_idx, int target_idx)
 	free_cell(tt, target_idx);
 	return ;
       }
+      child_idx = cur.u.node.next;
     }
   }
 }

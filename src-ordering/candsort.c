@@ -144,6 +144,7 @@ eval_candidate_by_metaword(struct seg_ent *seg,
     struct cand_elm *elm = &ce->elm[i];
     int one_score;
     int pos, div = 1;
+    int freq;
 
     if (elm->nth < 0) {
       /* 候補割り当ての対象外なのでスキップ */
@@ -152,15 +153,17 @@ eval_candidate_by_metaword(struct seg_ent *seg,
     }
     pos = anthy_wtype_get_pos(elm->wt);
     if (pos == POS_PRE || pos == POS_SUC) {
-      div = 8;
+      div = 4;
     }
     /*
       頻度とelm->ratioは殆んど比例関係なので両方使用するのは不適当？
      */
-    one_score = anthy_get_nth_dic_ent_freq(elm->se, elm->nth) * elm->ratio / (RATIO_BASE * div);
+    freq = anthy_get_nth_dic_ent_freq(elm->se, elm->nth);
+    one_score = freq * elm->ratio / RATIO_BASE;
+    one_score /= div;
     score += INT_MAX / 256 / (one_score ? one_score : 1);
   }
-  score = INT_MAX / 256 / score * ce->nr_words;
+  score = INT_MAX / 256 / (score * ce->nr_words);
 
   if (ce->mw) {
     /* もしその文節で一番評価が高かった品詞と候補の品詞が一致していたら加点 */
@@ -171,16 +174,16 @@ eval_candidate_by_metaword(struct seg_ent *seg,
 	score *= 5;
       }
     }
-    /* 弱い接続はスコアを下げる */
-    if (ce->mw->weak_len) {
-      score = score / ce->mw->len * (ce->mw->len - ce->mw->weak_len);
-    }
   }
   /* 自立語部の割合いに対する調整 */
   assigned_len = seg->len - unassigned_len;
   score = score * (assigned_len + 1) * (assigned_len + 1)
       /((seg->len + 1)*(seg->len + 1));
   ce->score = score;
+
+  /**/
+  ce->score *= ce->mw->dep_score;
+  ce->score /= RATIO_BASE;
 }
 
 /* 候補を評価する */

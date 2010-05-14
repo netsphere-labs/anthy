@@ -4,6 +4,10 @@
 #ifndef _dicutil_h_included_
 #define _dicutil_h_included_
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* 返り値 / anthy_priv_dic_add_entry*/
 /* OK / 単語が登録できた */
 #define ANTHY_DIC_UTIL_OK 0
@@ -11,6 +15,8 @@
 #define ANTHY_DIC_UTIL_ERROR -1
 /* 同じ単語が登録してあった、頻度だけを上書き */
 #define ANTHY_DIC_UTIL_DUPLICATE -2
+/* 辞書が存在しない */
+#define ANTHY_DIC_UTIL_INVALID -3
 
 void anthy_dic_util_init(void);
 void anthy_dic_util_quit(void);
@@ -35,5 +41,9 @@ int anthy_priv_dic_add_entry(const char *yomi, const char *word,
 /* experimental and unstable /usr/share/dict/wordsから単語を探す */
 #define HAS_ANTHY_DIC_SEARCH_WORDS_FILE
 char *anthy_dic_search_words_file(const char *word);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

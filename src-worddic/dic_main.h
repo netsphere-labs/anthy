@@ -82,6 +82,11 @@ void anthy_check_user_dir(void);
 void anthy_priv_dic_lock(void);
 void anthy_priv_dic_unlock(void);
 void anthy_priv_dic_update(void);
-
+struct word_line {
+  char wt[10];
+  int freq;
+  const char *word;
+};
+int anthy_parse_word_line(const char *line, struct word_line *res);
 
 #endif

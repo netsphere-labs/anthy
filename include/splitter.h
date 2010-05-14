@@ -76,8 +76,8 @@ enum metaword_type {
  */
 struct meta_word {
   int from, len;
-  int weak_len;
   int score;
+  int dep_score;
   enum seg_class seg_class;
   int mw_count;/* metawordの数 */
   enum constraint_stat can_use; /* セグメント境界に跨がっていない */

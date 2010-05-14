@@ -1,7 +1,6 @@
 /*
  * 個人辞書を扱うためのコード
- * しばらくの間、個人辞書のstorageがrecordとtexttrieになる
- * 混乱をここで扱う
+ *
  */
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -12,6 +11,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <dic.h>
 #include <record.h>
 #include <dicutil.h>
 #include <conf.h>
@@ -122,25 +122,20 @@ anthy_priv_dic_update(void)
   anthy_trie_update_mapping(anthy_private_tt_dic);
 }
 
-/* '\\'をエンコードしてseq_entに追加する */
+/* seq_entに追加する */
 static void
-add_to_seq_ent(const char *v, struct seq_ent *seq, xstr *xs)
+add_to_seq_ent(const char *line, struct seq_ent *seq)
 {
-  int len = strlen(v);
-  char *buf = malloc(len * 2);
-  int i, pos = 0;
-  for (i = 0; i < len; i++) {
-    char c = v[i];
-    if (c == ' ' || c == '\\') {
-      buf[pos] = '\\';
-      pos ++;
-    }
-    buf[pos] = c;
-    pos ++;
-  }
-  buf[pos] = 0;
-  anthy_fill_dic_ent(buf, 0, seq, xs, 0);
-  free(buf);
+  struct word_line wl;
+  wtype_t wt;
+  xstr *xs;
+  /* */
+  anthy_parse_word_line(line, &wl);
+  xs = anthy_cstr_to_xstr(wl.word, 0);
+  anthy_type_to_wtype(wl.wt, &wt);
+  anthy_mem_dic_push_back_dic_ent(seq, xs, wt,
+				  NULL, wl.freq);
+  anthy_free_xstr(xs);
 }
 
 /* texttrieに登録されているかをチェックし、
@@ -148,11 +143,13 @@ add_to_seq_ent(const char *v, struct seq_ent *seq, xstr *xs)
  */
 static void
 copy_words_from_tt(struct seq_ent *seq,
-		   xstr *xs)
+		   xstr *xs, const char *prefix)
 {
   char *key, *v;
   int key_len;
   char *key_buf;
+  int prefix_len = strlen(prefix);
+  /**/
   if (!anthy_private_tt_dic) {
     return ;
   }
@@ -162,17 +159,21 @@ copy_words_from_tt(struct seq_ent *seq,
   /* 辞書中には各単語が「見出し XXXX」(XXXXはランダムな文字列)を
    * キーとして保存されているので列挙する
    */
-  sprintf(key_buf, "  %s ", key);
+  sprintf(key_buf, "%s%s ", prefix, key);
   do {
     if (strncmp(&key_buf[2], key, key_len) ||
+	strncmp(&key_buf[0], prefix, prefix_len) ||
 	key_buf[key_len+2] != ' ') {
+      /* 「見出し 」で始まっていないので対象外 */
       break;
     }
+    /* 単語を読み出して登録 */
     v = anthy_trie_find(anthy_private_tt_dic, key_buf);
     if (v) {
-      add_to_seq_ent(v, seq, xs);
+      add_to_seq_ent(v, seq);
     }
     free(v);
+    /**/
   } while (anthy_trie_find_next_key(anthy_private_tt_dic,
 				    key_buf, key_len + 8));
   free(key);
@@ -183,9 +184,13 @@ void
 anthy_copy_words_from_private_dic(struct seq_ent *seq,
 				  xstr *xs, int is_reverse)
 {
-  if (!is_reverse || !anthy_private_tt_dic) {
-    copy_words_from_tt(seq, xs);
+  if (is_reverse || !anthy_private_tt_dic) {
+    return ;
   }
+  /* 個人辞書から取ってくる */
+  copy_words_from_tt(seq, xs, "  ");
+  /* 未知語辞書から取ってくる */
+  copy_words_from_tt(seq, xs, " U");
 }
 
 static void
@@ -215,9 +220,98 @@ migrate_words(void)
   } while (anthy_select_next_row() == 0);
   /* 2005/11/13
    * 大量に単語が登録されている場合、旧形式の単語は消した方が良いかもしれない
-   * もし、将来にこのコードの意味が不明であれば、この関数ごと消してください
+   * もし、将来にこのコードの意味が不明であれば、この関数(migrate_words)ごと
+   * 消してください
    */
   /*anthy_release_section();*/
+}
+
+int
+anthy_parse_word_line(const char *line, struct word_line *res)
+{
+  int i;
+  const char *buf = line;
+  /* default values */
+  res->wt[0] = 0;
+  res->freq = 1;
+  res->word = NULL;
+  /* 品詞と頻度をparse */
+  for (i = 0; i < 9 && *buf && *buf != '*' && *buf != ' '; buf++, i++) {
+    res->wt[i] = *buf;
+  }
+  res->wt[i] = 0;
+  if (*buf == '*') {
+    buf ++;
+    sscanf(buf, "%d", &res->freq);
+    buf = strchr(buf, ' ');
+  } else {
+    res->freq = 1;
+  }
+  buf++;
+  /* 単語 */
+  res->word = buf;
+  return 0;
+}
+
+static void
+update_unknown_word(const char *yomi_buf, struct word_line *wl)
+{
+  char *word_buf = malloc(strlen(wl->word) + 20);
+  sprintf(word_buf, "#T*%d %s", wl->freq, wl->word);
+  anthy_trie_add(anthy_private_tt_dic, yomi_buf, word_buf);
+  free(word_buf);
+}
+
+static void
+do_add_unknown_word(char *yomi_cs, xstr *word, int freq)
+{
+  struct word_line wl;
+  char *word_cs;
+  wl.freq = freq;
+  sprintf(wl.wt, "#T");
+  word_cs = anthy_xstr_to_cstr(word, 0);
+  wl.word = word_cs;
+  update_unknown_word(yomi_cs, &wl);
+  free(word_cs);
+}
+
+static void
+add_unknown_word(xstr *yomi, xstr *word, int freq)
+{
+  char *yomi_cs, *yomi_buf;
+  yomi_cs = anthy_xstr_to_cstr(yomi, 0);
+  yomi_buf = malloc(strlen(yomi_cs) + 10);
+  sprintf(yomi_buf, " U%s 0", yomi_cs);
+  /* 追加 */
+  do_add_unknown_word(yomi_buf, word, freq);
+  free(yomi_buf);
+  free(yomi_cs);
+}
+
+void
+anthy_add_unknown_word(xstr *yomi, xstr *word)
+{
+  if (!(anthy_get_xstr_type(word) & XCT_KATA) &&
+      !(anthy_get_xstr_type(word) & XCT_HIRA)) {
+    return ;
+  }
+  if (yomi->len < 4 || yomi->len > 30) {
+    return ;
+  }
+  /**/
+  add_unknown_word(yomi, word, 10);
+}
+
+void
+anthy_forget_unused_unknown_word(xstr *xs)
+{
+  char key_buf[128];
+  char *v;
+
+  v = anthy_xstr_to_cstr(xs, 0);
+  sprintf(key_buf, " U%s 0", v);
+  free(v);
+  anthy_trie_delete(anthy_private_tt_dic, key_buf);
 }
 
 void

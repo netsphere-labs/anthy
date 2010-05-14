@@ -513,6 +513,14 @@ anthy_get_nth_dic_ent_wtype_of_ext_ent(xstr *xs, int nth,
 }
 
 int
+anthy_get_nth_dic_ent_freq_of_ext_ent(struct seq_ent *se, int nth)
+{
+  (void)se;
+  (void)nth;
+  return 100;
+}
+
+int
 anthy_get_ext_seq_ent_wtype(struct seq_ent *se, wtype_t w)
 {
   if (se == &num_ent) {

@@ -35,20 +35,18 @@
 #include <splitter.h>
 #include <wtype.h>
 #include <diclib.h>
+#include <matrix.h>
 #include "wordborder.h"
 
 /* 遷移グラフ */
 static struct dep_dic ddic;
-
-#define  NORMAL_CONNECTION 1
-#define  WEAKER_CONNECTION 2
-#define  WEAK_CONNECTION 8
+static int *dep_matrix;
 
 
 static void
 match_branch(struct splitter_context *sc,
 	     struct word_list *tmpl,
-	     xstr *xs, xstr *cond_xs, struct dep_branch *db);
+	     xstr *xs, struct dep_branch *db);
 static void
 match_nodes(struct splitter_context *sc,
 	    struct word_list *wl,
@@ -134,9 +132,48 @@ match_nodes(struct splitter_context *sc,
 	new_follow.str = &follow_str.str[cond_xs.len];
 	new_follow.len = follow_str.len - cond_xs.len;
 	/* 遷移してみる */
-	match_branch(sc, &new_wl, &new_follow, &cond_xs, db);
+	match_branch(sc, &new_wl, &new_follow, db);
       }
     }
+  }
+}
+
+static int
+get_row_index_from_wtype(wtype_t wt)
+{
+  int col = 3;
+  int pos, scos;
+  pos = anthy_wtype_get_pos(wt);
+  scos = anthy_wtype_get_scos(wt);
+  if (pos == POS_NOUN) {
+    col = 1;
+    if (scos == SCOS_T35) {
+      col = 4;
+    } else if (scos == SCOS_T30) {
+      col = 5;
+    }
+  } else if (pos == POS_V) {
+    col = 2;
+  }
+
+  return col;
+}
+
+static void
+calc_dep_score(struct word_list *wl, xstr *xs)
+{
+  xstr dep;
+  dep.len = wl->part[PART_DEPWORD].len;
+  dep.str = xs->str - dep.len;
+  if (dep.len == 0) {
+    wl->dep_score = 2000;
+  } else {
+    int hash, col;
+    col = get_row_index_from_wtype(wl->part[PART_CORE].wt);
+    hash = anthy_xstr_hash(&dep);
+    wl->dep_score *= (anthy_matrix_image_peek(dep_matrix, col, hash) / 8 +
+		      RATIO_BASE);
+    wl->dep_score /= RATIO_BASE;
   }
 }
 
@@ -145,46 +182,34 @@ match_nodes(struct splitter_context *sc,
  *
  * tmpl ここまでに構成したword_list
  * xs 残りの文字列
- * cond_xs 遷移に使われた文字列
  * db 現在調査中のbranch
  */
 static void
 match_branch(struct splitter_context *sc,
 	     struct word_list *tmpl,
-	     xstr *xs, xstr *cond_xs, struct dep_branch *db)
+	     xstr *xs, struct dep_branch *db)
 {
   struct part_info *part = &tmpl->part[PART_DEPWORD];
   int i;
 
   /* 遷移先を順にトライする */
   for (i = 0; i < db->nr_transitions; i++) {
-    int conn_ratio = part->ratio; /* scoreを保存 */
-    int weak_len = tmpl->weak_len;/* weakな遷移の長さを保存*/ 
     int head_pos = tmpl->head_pos; /* 品詞の情報 */
     enum dep_class dc = part->dc;
     struct dep_transition *transition = &db->transition[i];
-
-    /* この遷移のスコア */
-    part->ratio *= anthy_dic_ntohl(transition->trans_ratio);
-    part->ratio /= RATIO_BASE;
-    if (anthy_dic_ntohl(transition->weak) || /* 弱い遷移 */
-	(anthy_dic_ntohl(transition->dc) == DEP_END && xs->len > 0)) { /* 終端じゃないのに終端属性*/
-      tmpl->weak_len += cond_xs->len;
-    } else {
-      /* 強い遷移の付属語に加点 */
-      part->ratio += cond_xs->len * cond_xs->len * cond_xs->len * 3;
-    }
 
     tmpl->tail_ct = anthy_dic_ntohl(transition->ct);
     /* 遷移の活用形と品詞 */
     if (anthy_dic_ntohl(transition->dc) != DEP_NONE) {
       part->dc = anthy_dic_ntohl(transition->dc);
-
     }
     /* 名詞化する動詞等で品詞名を上書き */
     if (anthy_dic_ntohl(transition->head_pos) != POS_NONE) {
       tmpl->head_pos = anthy_dic_ntohl(transition->head_pos);
     }
+    /**/
+    tmpl->dep_score *= anthy_dic_ntohl(transition->trans_ratio);
+    tmpl->dep_score /= RATIO_BASE;
 
     /* 遷移か終端か */
     if (anthy_dic_ntohl(transition->next_node)) {
@@ -192,7 +217,6 @@ match_branch(struct splitter_context *sc,
       match_nodes(sc, tmpl, *xs, anthy_dic_ntohl(transition->next_node));
     } else {
       struct word_list *wl;
-      xstr xs_tmp;
 
       /* 
        * 終端ノードに到達したので、
@@ -202,21 +226,12 @@ match_branch(struct splitter_context *sc,
       *wl = *tmpl;
       wl->len += part->len;
 
-      /* 一文字の付属語で強い接続のものかどうかを判定する */
-      xs_tmp = *xs;
-      xs_tmp.str--;
-      if (wl->part[PART_DEPWORD].len == 1 &&
-	  (anthy_get_xchar_type(xs_tmp.str[0]) & XCT_STRONG)) {
-	wl->part[PART_DEPWORD].ratio *= 3;
-	wl->part[PART_DEPWORD].ratio /= 2;
-      }
+      calc_dep_score(wl, xs);
       /**/
       anthy_commit_word_list(sc, wl);
     }
     /* 書き戻し */
-    part->ratio = conn_ratio;
     part->dc = dc;
-    tmpl->weak_len = weak_len;
     tmpl->head_pos = head_pos;
   }
 }
@@ -316,13 +331,13 @@ anthy_get_nth_dep_rule(int index, struct wordseq_rule *rule)
   /* ディスク上の情報からデータを取り出す */
   struct ondisk_wordseq_rule *r = &ddic.rules[index];
   rule->wt = anthy_get_wtype(r->wt[0], r->wt[1], r->wt[2], r->wt[3], r->wt[4], r->wt[5]);
-  rule->ratio = anthy_dic_ntohl(r->ratio);
   rule->node_id = anthy_dic_ntohl(r->node_id);
 }
 
 int
 anthy_init_depword_tab()
 {
+  dep_matrix = anthy_file_dic_get_section("matrix");
   read_file();
   return 0;
 }

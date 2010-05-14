@@ -247,13 +247,19 @@ anthy_get_nth_dic_ent_str(seq_ent_t se, xstr *o,
 }
 
 int
-anthy_get_nth_dic_ent_freq(seq_ent_t se, int n)
+anthy_get_nth_dic_ent_freq(seq_ent_t se, int nth)
 {
   struct seq_ent *s = se;
-  if (!s || s->nr_dic_ents <= n) {
+  if (!s) {
     return 0;
   }
-  return s->dic_ents[n]->freq;
+  if (!s->dic_ents) {
+    return anthy_get_nth_dic_ent_freq_of_ext_ent(se, nth);
+  }
+  if (s->nr_dic_ents <= nth) {
+    return anthy_get_nth_dic_ent_freq_of_ext_ent(se, nth - se->nr_dic_ents);
+  }
+  return s->dic_ents[nth]->freq;
 }
 
 int

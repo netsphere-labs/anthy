@@ -265,7 +265,7 @@ make_cand_elem_from_word_list(struct seg_ent *se,
     ce->elm[i + index].str.str = core_xs.str;
     ce->elm[i + index].str.len = core_xs.len;
     ce->elm[i + index].wt = part->wt;
-    ce->elm[i + index].ratio = part->ratio * (wl->len - wl->weak_len);
+    ce->elm[i + index].ratio = RATIO_BASE * wl->len;
     from += part->len;
   }
 }

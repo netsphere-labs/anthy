@@ -191,8 +191,14 @@ matrix.each do |row|
   end
 end
 
+#
+#matrix.each do |row|
+#  print "{"
+#  print row.join(',')
+#  print "},\n"
+#end
+
 matrix.each do |row|
-  print "{"
   print row.join(',')
-  print "},\n"
+  print ",\n"
 end

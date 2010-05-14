@@ -136,6 +136,11 @@ char * エンコードにはEUC-JPを利用する。
        変換前のひらがな文字列を得ることができる(再変換
        (anthy_set_string参照)を行なった場合、一度ひらがなに
        変換された文字列が対象となる)
+       他にも次の候補番号が指定できる
+        NTH_KATAKANA_CANDIDATE カタカナの候補
+        NTH_HIRAGANA_CANDIDATE 平仮名の候補
+        NTH_HALFKANA_CANDIDATE 半角カナの候補
+       NTH_HALFKANA_CANDIDATEに限り確定しても学習は行われない。
  返り値: 失敗の場合は -1、成功の場合は文字数(nullは含まない)を返す
  s番目の文節のn番目の候補を取得することができる。結果はbuf中に最後のnull
  terminateまで含めてlenバイトまで確保される。

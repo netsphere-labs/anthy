@@ -495,6 +495,9 @@ do_matrix_peek(int *image, int row, int col, int en)
 int
 anthy_matrix_image_peek(int *image, int row, int col)
 {
+  if (!image) {
+    return 0;
+  }
   return do_matrix_peek(image, row, col, 1);
 }
 

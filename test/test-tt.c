@@ -30,6 +30,9 @@ dump(const char *fn)
   char buf[32];
   char *key;
   tt = anthy_trie_open(fn, 0);
+  if (!tt) {
+    printf("#open fail\n");
+  }
   buf[0] = 0;
   printf("#dump start\n");
   while ((key = anthy_trie_find_next_key(tt, buf, 32))) {
@@ -72,7 +75,7 @@ load_from_stdin(const char *fn)
 {
   struct text_trie *tt;
   char buf[1024];
-  tt = anthy_trie_open(fn, 0);
+  tt = anthy_trie_open(fn, 1);
   while (fgets(buf, 1024, stdin)) {
     char *p = buf;
     char *key, *val;
@@ -138,6 +141,12 @@ test3(const char *fn)
   anthy_trie_close(tt);
 }
 
+static void
+test4(const char *fn)
+{
+  anthy_trie_open(fn, 1);
+}
+
 int
 main(int argc, char **argv)
 {
@@ -162,6 +171,9 @@ main(int argc, char **argv)
       exit(0);
     } else if (!strcmp(arg, "--test3")) {
       test3(next_arg);
+      exit(0);
+    } else if (!strcmp(arg, "--test4")) {
+      test4(next_arg);
       exit(0);
     }
   }

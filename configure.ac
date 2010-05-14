@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src-main/main.c)
 
-AM_INIT_AUTOMAKE(anthy, 7500)
+AM_INIT_AUTOMAKE(anthy, 7900)
 AM_CONFIG_HEADER(config.h)
 
 dnl Checks for programs.

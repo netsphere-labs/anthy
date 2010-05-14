@@ -37,6 +37,9 @@ typedef struct anthy_context *anthy_context_t;
 
 /* constants */
 #define NTH_UNCONVERTED_CANDIDATE -1
+#define NTH_KATAKANA_CANDIDATE -2
+#define NTH_HIRAGANA_CANDIDATE -3
+#define NTH_HALFKANA_CANDIDATE -4
 /* following constants are unstable API */
 #define ANTHY_COMPILED_ENCODING 0
 #define ANTHY_EUC_JP_ENCODING 1
