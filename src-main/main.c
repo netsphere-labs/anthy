@@ -8,9 +8,9 @@
  *
  * Funded by IPA未踏ソフトウェア創造事業 2001 9/22
  * Funded by IPA未踏ソフトウェア創造事業 2005
- * Copyright (C) 2000-2006 TABATA Yusuke, UGAWA Tomoharu
+ * Copyright (C) 2000-2007 TABATA Yusuke, UGAWA Tomoharu
  * Copyright (C) 2004-2006 YOSHIDA Yuichi
- * Copyright (C) 2000-2006 KMC(Kyoto University Micro Computer Club)
+ * Copyright (C) 2000-2007 KMC(Kyoto University Micro Computer Club)
  * Copyright (C) 2001-2002 TAKAI Kosuke, Nobuoka Takahiro
  *
  */
@@ -149,10 +149,17 @@ anthy_release_context(struct anthy_context *ac)
  * 再変換が必要かどうかの判定
  */
 static int
-need_reconvert(xstr *xs)
+need_reconvert(struct anthy_context *ac, xstr *xs)
 {
   int i;
-  
+
+  if (ac->reconversion_mode == ANTHY_RECONVERT_ALWAYS) {
+    return 1;
+  }
+  if (ac->reconversion_mode == ANTHY_RECONVERT_DISABLE) {
+    return 0;
+  }
+
   for (i = 0; i < xs->len; ++i) {
     xchar xc = xs->str[i];
     int type = anthy_get_xchar_type(xc);
@@ -162,7 +169,8 @@ need_reconvert(xstr *xs)
      * 逆変換の対象とはしない
      */
     if (!(type & (XCT_HIRA | XCT_SYMBOL | XCT_NUM |
-		  XCT_WIDENUM | XCT_OPEN | XCT_CLOSE)) &&
+		  XCT_WIDENUM | XCT_OPEN | XCT_CLOSE |
+		  XCT_ASCII)) &&
 	xc != KK_VU) {
       return 1;
     }
@@ -178,13 +186,24 @@ anthy_set_string(struct anthy_context *ac, const char *s)
   xstr *xs;
   int retval;
 
+  /*初期化*/
+  anthy_do_reset_context(ac);
+
+  /* 辞書セッションの開始 */
+  if (!ac->dic_session) {
+    ac->dic_session = anthy_dic_create_session();
+    if (!ac->dic_session) {
+      return -1;
+    }
+  }
+
   anthy_dic_activate_session(ac->dic_session);
   /* 変換を開始する前に個人辞書をreloadする */
   anthy_reload_record();
 
   xs = anthy_cstr_to_xstr(s, ac->encoding);
   /**/
-  if (!need_reconvert(xs)) {
+  if (!need_reconvert(ac, xs)) {
     /* 普通に変換する */
     retval = anthy_do_context_set_str(ac, xs, 0);
   } else {
@@ -193,7 +212,7 @@ anthy_set_string(struct anthy_context *ac, const char *s)
     struct seg_ent *seg;
     int i;
     xstr* hira_xs;
-    /* あたえられた文字列に変換をかける */
+    /* 与えられた文字列に変換をかける */
     retval = anthy_do_context_set_str(ac, xs, 1);
 
     /* 各文節の第一候補を取得して平仮名列を得る */
@@ -204,6 +223,7 @@ anthy_set_string(struct anthy_context *ac, const char *s)
       hira_xs = anthy_xstrcat(hira_xs, &seg->cands[0]->str);
     }
     /* 改めて変換を行なう */
+    anthy_release_segment_list(ac);
     retval = anthy_do_context_set_str(ac, hira_xs, 0);
     anthy_free_xstr(hira_xs);
   }
@@ -437,6 +457,20 @@ anthy_get_prediction(struct anthy_context *ac, int nth, char* buf, int buflen)
   }
 }
 
+/** (API) 予測の結果を確定する
+ */
+int
+anthy_commit_prediction(struct anthy_context *ac, int nth)
+{
+  struct prediction_cache* pc = &ac->prediction;
+  if (nth < 0 || nth >= pc->nr_prediction) {
+    return -1;
+  }
+  anthy_do_commit_prediction(pc->predictions[nth].src_str,
+			     pc->predictions[nth].str);
+  return 0;
+}
+
 /** (API) 開発用 */
 void
 anthy_print_context(struct anthy_context *ac)
@@ -461,16 +495,27 @@ anthy_get_version_string (void)
 int
 anthy_context_set_encoding(struct anthy_context *ac, int encoding)
 {
-#ifdef USE_UCS4
   if (!ac) {
-    default_encoding = encoding;
-  } else {
+    return ANTHY_EUC_JP_ENCODING;
+  }
+  if (encoding == ANTHY_UTF8_ENCODING ||
+      encoding == ANTHY_EUC_JP_ENCODING) {
     ac->encoding = encoding;
   }
-  return encoding;
-#else
-  (void)ac;
-  (void)encoding;
-  return ANTHY_EUC_JP_ENCODING;
-#endif
+  return ac->encoding;
+}
+
+/** (API) */
+int
+anthy_set_reconversion_mode(anthy_context_t ac, int mode)
+{
+  if (!ac) {
+    return ANTHY_RECONVERT_AUTO;
+  }
+  if (mode == ANTHY_RECONVERT_AUTO ||
+      mode == ANTHY_RECONVERT_DISABLE ||
+      mode == ANTHY_RECONVERT_ALWAYS) {
+    ac->reconversion_mode = mode;
+  }
+  return ac->reconversion_mode;
 }

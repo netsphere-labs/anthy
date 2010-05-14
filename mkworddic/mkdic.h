@@ -10,8 +10,10 @@ struct word_entry {
   const char *wt_name;
   /** 頻度 */
   int freq;
+  /**/
+  int feature;
   /** 単語 */
-  char *word;
+  char *word_utf8;
   /** 辞書ファイル中のオフセット */
   int offset;
   /** 属すyomi_entry*/
@@ -48,6 +50,9 @@ struct yomi_entry_list {
   /**/
   struct yomi_entry *hash[YOMI_HASH];
   struct yomi_entry **ye_array;
+  /**/
+  int index_encoding;
+  int body_encoding;
 };
 
 #define ADJUST_FREQ_UP 1

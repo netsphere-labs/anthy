@@ -31,6 +31,8 @@ struct cand_ent {
   struct cand_elm *elm;
   /** 自立語部のインデックス */
   int core_elm_index;
+  /** 付属語のhash値 */
+  int dep_word_hash;
   /** 候補のフラグ CEF_? */
   unsigned int flag;
   struct meta_word *mw;
@@ -67,9 +69,9 @@ struct seg_ent {
   int nr_metaword;
   struct meta_word **mw_array;
 
-  /* hmmで一番成績の良かったクラス */
+  /* 一番成績の良かったクラス */
   enum seg_class best_seg_class;
-  /* hmmで一番成績の良かったmeta_word
+  /* 一番成績の良かったmeta_word
    * mw_array中にも、含まれることが期待できるが、保証はしない */
   struct meta_word *best_mw;
 
@@ -91,6 +93,8 @@ void anthy_print_candidate(struct cand_ent *ce);
 
 /* compose.c */
 /* 候補を作り出す */
-void anthy_do_make_candidates(struct seg_ent *e, int is_reverse);
+struct splitter_context;
+void anthy_do_make_candidates(struct splitter_context *sc,
+			      struct seg_ent *e, int is_reverse);
 
 #endif

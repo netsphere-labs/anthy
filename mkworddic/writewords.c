@@ -6,25 +6,62 @@
  *
  * output_word_dict()が呼び出される
  *
- * Copyright (C) 2000-2005 TABATA Yusuke
+ * Copyright (C) 2000-2006 TABATA Yusuke
+ */
+/*
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <anthy.h>
 #include <word_dic.h>
 #include "mkdic.h"
 
 extern FILE *page_out, *page_index_out;
 extern FILE *yomi_entry_index_out, *yomi_entry_out;
 
-/** 一つの読みに対する単語の内容を出力する */
 static int
-output_yomi_entry(struct yomi_entry *ye)
+write_word(struct word_entry *we, int encoding)
+{
+  int count;
+  if (encoding == ANTHY_UTF8_ENCODING) {
+    count = fprintf(yomi_entry_out, "%s", we->word_utf8);
+  } else {
+    char *s = anthy_conv_utf8_to_euc(we->word_utf8);
+    count = fprintf(yomi_entry_out, "%s", s);
+    free(s);
+  }
+  return count;
+}
+
+/** 一つの読みに対する単語の内容を出力する
+ * 返り値は出力したバイト数
+ */
+static int
+output_word_entry_for_a_yomi(struct yomi_entry *ye, int encoding)
 {
   int i;
   int count = 0;
 
   if (!ye) {
     return 0;
+  }
+  if (encoding == ANTHY_UTF8_ENCODING) {
+    count ++;
+    fputc('u', yomi_entry_out);
   }
   /* 各単語を出力する */
   for (i = 0; i < ye->nr_entries; i++) {
@@ -39,10 +76,14 @@ output_yomi_entry(struct yomi_entry *ye)
     }
     /* 品詞と頻度を出力する */
     if (i == 0 ||
-	(strcmp(ye->entries[i-1].word, we->word) ||
+	(strcmp(ye->entries[i-1].word_utf8, we->word_utf8) ||
 	 strcmp(ye->entries[i-1].wt_name, we->wt_name) ||
-	 ye->entries[i-1].freq != we->freq)) {
+	 ye->entries[i-1].freq != we->freq ||
+	 ye->entries[i-1].feature != we->feature)) {
       count += fprintf(yomi_entry_out, "%s", we->wt_name);
+      if (we->feature != 0) {
+	count += fprintf(yomi_entry_out, ",");
+      }
       if (we->freq != 0) {
 	count += fprintf(yomi_entry_out, "*%d", we->freq);
       }
@@ -51,7 +92,7 @@ output_yomi_entry(struct yomi_entry *ye)
     /* 単語を出力する場所がこの単語のid */
     we->offset = count + ye->offset;
     /* 単語を出力する */
-    count += fprintf(yomi_entry_out, "%s", we->word);
+    count += write_word(we, encoding);
   }
 
   fputc(0, yomi_entry_out);
@@ -86,7 +127,7 @@ common_len(xstr *s1, xstr *s2)
  * \0x2BBBと出力される。
  */
 static int
-output_diff(xstr *p, xstr *c)
+output_diff(xstr *p, xstr *c, int encoding)
 {
   int i, m, len = 1;
   m = common_len(p, c);
@@ -97,7 +138,7 @@ output_diff(xstr *p, xstr *c)
   }
   for (i = m; i < c-> len; i++) {
     char buf[8];
-    len += anthy_sputxchar(buf, c->str[i], 0);
+    len += anthy_sputxchar(buf, c->str[i], encoding);
     fputs(buf, page_out);
   }
   return len;
@@ -141,7 +182,7 @@ generate_yomi_to_offset_map(struct yomi_entry_list *yl)
     }
 
     /* 読みに対応する情報を出力する */
-    page_index += output_diff(prev, ye->index_xstr);
+    page_index += output_diff(prev, ye->index_xstr, yl->index_encoding);
 
     output_entry_index(ye->offset);
     /***/
@@ -163,13 +204,13 @@ output_word_dict(struct yomi_entry_list *yl)
     /* 単語を出力して、ファイル中の位置(offset)を計算する */
     ye = yl->ye_array[i];
     ye->offset = entry_index;
-    entry_index += output_yomi_entry(ye);
+    entry_index += output_word_entry_for_a_yomi(ye, yl->body_encoding);
   }
   /* 読みの文字列からファイル中の位置(offset)を求めるためのテーブルを作る */
   generate_yomi_to_offset_map(yl);
 
   /* 最後の読みを終了 */
-  entry_index += output_yomi_entry(ye);
+  entry_index += output_word_entry_for_a_yomi(ye, yl->body_encoding);
   write_nl(yomi_entry_index_out, entry_index);
   write_nl(page_index_out, 0);
 

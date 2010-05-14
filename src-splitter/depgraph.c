@@ -16,8 +16,8 @@
  *  |      |
  *  +------+
  *
- * Copyright (C) 2005 YOSHIDA Yuichi
- * Copyright (C) 2000-2005 TABATA Yusuke
+ * Copyright (C) 2000-2007 TABATA Yusuke
+ * Copyright (C) 2006 YOSHIDA Yuichi
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,12 +35,10 @@
 #include <splitter.h>
 #include <wtype.h>
 #include <diclib.h>
-#include <matrix.h>
 #include "wordborder.h"
 
 /* 遷移グラフ */
 static struct dep_dic ddic;
-static int *dep_matrix;
 
 
 static void
@@ -138,45 +136,6 @@ match_nodes(struct splitter_context *sc,
   }
 }
 
-static int
-get_row_index_from_wtype(wtype_t wt)
-{
-  int col = 3;
-  int pos, scos;
-  pos = anthy_wtype_get_pos(wt);
-  scos = anthy_wtype_get_scos(wt);
-  if (pos == POS_NOUN) {
-    col = 1;
-    if (scos == SCOS_T35) {
-      col = 4;
-    } else if (scos == SCOS_T30) {
-      col = 5;
-    }
-  } else if (pos == POS_V) {
-    col = 2;
-  }
-
-  return col;
-}
-
-static void
-calc_dep_score(struct word_list *wl, xstr *xs)
-{
-  xstr dep;
-  dep.len = wl->part[PART_DEPWORD].len;
-  dep.str = xs->str - dep.len;
-  if (dep.len == 0) {
-    wl->dep_score = 2000;
-  } else {
-    int hash, col;
-    col = get_row_index_from_wtype(wl->part[PART_CORE].wt);
-    hash = anthy_xstr_hash(&dep);
-    wl->dep_score *= (anthy_matrix_image_peek(dep_matrix, col, hash) / 8 +
-		      RATIO_BASE);
-    wl->dep_score /= RATIO_BASE;
-  }
-}
-
 /*
  * 各遷移を実行してみる
  *
@@ -194,8 +153,11 @@ match_branch(struct splitter_context *sc,
 
   /* 遷移先を順にトライする */
   for (i = 0; i < db->nr_transitions; i++) {
+    /**/
     int head_pos = tmpl->head_pos; /* 品詞の情報 */
+    int features = tmpl->mw_features;
     enum dep_class dc = part->dc;
+    /**/
     struct dep_transition *transition = &db->transition[i];
 
     tmpl->tail_ct = anthy_dic_ntohl(transition->ct);
@@ -207,9 +169,9 @@ match_branch(struct splitter_context *sc,
     if (anthy_dic_ntohl(transition->head_pos) != POS_NONE) {
       tmpl->head_pos = anthy_dic_ntohl(transition->head_pos);
     }
-    /**/
-    tmpl->dep_score *= anthy_dic_ntohl(transition->trans_ratio);
-    tmpl->dep_score /= RATIO_BASE;
+    if (transition->weak) {
+      tmpl->mw_features |= MW_FEATURE_WEAK;
+    }
 
     /* 遷移か終端か */
     if (anthy_dic_ntohl(transition->next_node)) {
@@ -226,13 +188,13 @@ match_branch(struct splitter_context *sc,
       *wl = *tmpl;
       wl->len += part->len;
 
-      calc_dep_score(wl, xs);
       /**/
       anthy_commit_word_list(sc, wl);
     }
     /* 書き戻し */
     part->dc = dc;
     tmpl->head_pos = head_pos;
+    tmpl->mw_features = features;
   }
 }
 
@@ -328,16 +290,16 @@ anthy_get_nr_dep_rule()
 void
 anthy_get_nth_dep_rule(int index, struct wordseq_rule *rule)
 {
-  /* ディスク上の情報からデータを取り出す */
+  /* ファイル上の情報からデータを取り出す */
   struct ondisk_wordseq_rule *r = &ddic.rules[index];
-  rule->wt = anthy_get_wtype(r->wt[0], r->wt[1], r->wt[2], r->wt[3], r->wt[4], r->wt[5]);
+  rule->wt = anthy_get_wtype(r->wt[0], r->wt[1], r->wt[2],
+			     r->wt[3], r->wt[4], r->wt[5]);
   rule->node_id = anthy_dic_ntohl(r->node_id);
 }
 
 int
 anthy_init_depword_tab()
 {
-  dep_matrix = anthy_file_dic_get_section("matrix");
   read_file();
   return 0;
 }

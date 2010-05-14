@@ -50,6 +50,7 @@ alloc_cand_ent(void)
   ce->elm = NULL;
   ce->mw = NULL;
   ce->core_elm_index = -1;
+  ce->dep_word_hash = 0;
   return ce;
 }
 
@@ -70,6 +71,7 @@ dup_candidate(struct cand_ent *ce)
   ce_new->core_elm_index = ce->core_elm_index;
   ce_new->mw = ce->mw;
   ce_new->score = ce->score;
+  ce_new->dep_word_hash = ce->dep_word_hash;
 
   for (i = 0 ; i < ce->nr_words ; i++) {
     ce_new->elm[i] = ce->elm[i];
@@ -86,6 +88,11 @@ push_back_candidate(struct seg_ent *seg, struct cand_ent *ce)
   seg->cands = (struct cand_ent **)
     realloc(seg->cands, sizeof(struct cand_ent *) * seg->nr_cands);
   seg->cands[seg->nr_cands - 1] = ce;
+  /**/
+  if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_CAND) {
+    anthy_print_candidate(ce);
+    printf("\n");
+  }
 }
 
 static void
@@ -122,6 +129,7 @@ enum_candidates(struct seg_ent *seg,
   int i, p;
   struct cand_ent *cand;
   int nr_cands = 0;
+  int pos;
 
   if (n == ce->mw->nr_parts) {
     /* 完成形 */
@@ -135,10 +143,41 @@ enum_candidates(struct seg_ent *seg,
   }
 
   p = anthy_get_nr_dic_ents(ce->elm[n].se, &ce->elm[n].str);
+
+  /* 品詞が割当てられているので、その品詞にマッチするものを割当てる */
+  for (i = 0; i < p; i++) {
+    wtype_t wt;
+    if (anthy_get_nth_dic_ent_is_compound(ce->elm[n].se, i)) {
+      continue;
+    }
+    anthy_get_nth_dic_ent_wtype(ce->elm[n].se, &ce->elm[n].str, i, &wt);
+
+    ce->elm[n].wt = anthy_get_wtype_with_ct(ce->elm[n].wt, CT_NONE);
+    if (anthy_wtype_include(ce->elm[n].wt, wt)) {
+      xstr word, yomi;
+
+      yomi.len = ce->elm[n].str.len;
+      yomi.str = &seg->str.str[from];
+      cand = dup_candidate(ce);
+      anthy_get_nth_dic_ent_str(cand->elm[n].se,
+				&yomi, i, &word);
+      cand->elm[n].nth = i;
+      cand->elm[n].id = anthy_xstr_hash(&word);
+
+      /* 単語の本体 */
+      anthy_xstrcat(&cand->str, &word);
+      free(word.str);
+      /* 自分を再帰呼び出しして続きを割り当てる */
+      nr_cands += enum_candidates(seg, cand, 
+				  from + yomi.len,
+				  n+1);
+      anthy_release_cand_ent(cand);
+    }
+  }
+
   /* 品詞不定の場合には未変換で次の単語へ行く */
-  if (anthy_wtype_get_pos(ce->elm[n].wt) == POS_INVAL ||
-      anthy_wtype_get_pos(ce->elm[n].wt) == POS_NONE ||
-      p == 0) {
+  pos = anthy_wtype_get_pos(ce->elm[n].wt);
+  if (nr_cands == 0 || pos == POS_INVAL || pos == POS_NONE) {
     xstr xs;
     xs.len = ce->elm[n].str.len;
     xs.str = &seg->str.str[from];
@@ -153,31 +192,6 @@ enum_candidates(struct seg_ent *seg,
     return nr_cands;
   }
 
-  /* 品詞が割当てられているので、その品詞にマッチするものを割当てる */
-  for (i = 0; i < p; i++) {
-    wtype_t wt;
-    anthy_get_nth_dic_ent_wtype(ce->elm[n].se, &ce->str, i, &wt);
-    ce->elm[n].wt = anthy_get_wtype_with_ct(ce->elm[n].wt, CT_NONE);
-    if (anthy_wtype_include(ce->elm[n].wt, wt)) {
-      xstr word, yomi;
-      yomi.len = ce->elm[n].str.len;
-      yomi.str = &seg->str.str[from];
-      cand = dup_candidate(ce);
-      anthy_get_nth_dic_ent_str(cand->elm[n].se,
-				&yomi, i, &word);
-      cand->elm[n].nth = i;
-      cand->elm[n].id = anthy_xstr_hash(&word);
-
-      /* 単語の本体 */
-      anthy_xstrcat(&cand->str, &word);
-      free(word.str);
-      /* 自分を再帰呼び出しして続きをわりあてる */
-      nr_cands += enum_candidates(seg, cand, 
-				  from + yomi.len,
-				  n+1);
-      anthy_release_cand_ent(cand);
-    }
-  }
   return nr_cands;
 }
 
@@ -199,6 +213,9 @@ push_back_singleword_candidate(struct seg_ent *seg,
   /* 辞書の各エントリに対して */
   for (i = 0; i < n; i++) {
     int ct;
+    if (anthy_get_nth_dic_ent_is_compound(se, i)) {
+      continue;
+    }
     /* 品詞を取り出して */
     anthy_get_nth_dic_ent_wtype(se, &seg->str, i, &wt);
     ct = anthy_wtype_get_ct(wt);
@@ -236,6 +253,17 @@ push_back_noconv_candidate(struct seg_ent *seg)
   ce->flag = CEF_KATAKANA;
   anthy_free_xstr(xs);
   push_back_candidate(seg, ce);
+
+  /* 記号のみの文節 */
+  xs = anthy_conv_half_wide(&seg->str);
+  if (xs) {
+    ce = alloc_cand_ent();
+    ce->str.str = anthy_xstr_dup_str(xs);
+    ce->str.len = xs->len;
+    ce->flag = CEF_NONE;
+    anthy_free_xstr(xs);
+    push_back_candidate(seg, ce);
+  }
 }
 
 /* word_listの要素part_infoの配列からcand_elmの配列を作る */
@@ -261,6 +289,9 @@ make_cand_elem_from_word_list(struct seg_ent *se,
     }
     core_xs.str = &se->str.str[from];
     core_xs.len = part->len;
+    if (i == PART_DEPWORD) {
+      ce->dep_word_hash = anthy_dep_word_hash(&core_xs);
+    }
     ce->elm[i + index].se = anthy_get_seq_ent_from_xstr(&core_xs, is_reverse);
     ce->elm[i + index].str.str = core_xs.str;
     ce->elm[i + index].str.len = core_xs.len;
@@ -290,7 +321,7 @@ make_candidate_from_simple_metaword(struct seg_ent *se,
   ce->str.str = NULL;
   ce->str.len = 0;
   ce->elm = calloc(sizeof(struct cand_elm),ce->nr_words);
-  ce->mw = top_mw;
+  ce->mw = mw;
   ce->score = 0;
 
   /* 接頭辞, 自立語部, 接尾辞, 付属語 */
@@ -351,6 +382,7 @@ make_candidate_from_combined_metaword(struct seg_ent *se,
 static void
 proc_splitter_info(struct seg_ent *se,
 		   struct meta_word *mw,
+		   /* topとはtreeのトップ */
 		   struct meta_word *top_mw,
 		   int is_reverse)
 {
@@ -389,27 +421,25 @@ proc_splitter_info(struct seg_ent *se,
     /* BREAK THROUGH */
   case MW_STATUS_OCHAIRE:
     {
-    /* metawordを持たない */
-      /* 候補文字列がダイレクトに指定された */
-      {
-	struct cand_ent *ce;
-	ce = alloc_cand_ent();
-	ce->str.str = anthy_xstr_dup_str(&mw->cand_hint);
-	ce->str.len = mw->cand_hint.len;
-	ce->mw = top_mw;
-	ce->flag = (st == MW_STATUS_OCHAIRE) ? CEF_OCHAIRE : CEF_COMPOUND_PART;
+    /* metawordを持たない候補文字列が
+       直接に指定された */
+      struct cand_ent *ce;
+      ce = alloc_cand_ent();
+      ce->str.str = anthy_xstr_dup_str(&mw->cand_hint);
+      ce->str.len = mw->cand_hint.len;
+      ce->mw = top_mw;
+      ce->flag = (st == MW_STATUS_OCHAIRE) ? CEF_OCHAIRE : CEF_COMPOUND_PART;
 
-	if (mw->len < se->len) {
-	  /* metawordでカバーされてない領域の文字列を付ける */
-	  xstr xs;
-	  xs.str = &se->str.str[mw->len];
-	  xs.len = se->len - mw->len;
-	  anthy_xstrcat(&ce->str ,&xs);
-	}
-	push_back_candidate(se, ce);
+      if (mw->len < se->len) {
+	/* metawordでカバーされてない領域の文字列を付ける */
+	xstr xs;
+	xs.str = &se->str.str[mw->len];
+	xs.len = se->len - mw->len;
+	anthy_xstrcat(&ce->str ,&xs);
       }
-      break;
+      push_back_candidate(se, ce);
     }
+    break;
   case MW_STATUS_NONE:
     break;
   default:
@@ -421,28 +451,18 @@ proc_splitter_info(struct seg_ent *se,
  * 一つ以上の候補を必ず生成する
  */
 void
-anthy_do_make_candidates(struct seg_ent *se, int is_reverse)
+anthy_do_make_candidates(struct splitter_context *sc,
+			 struct seg_ent *se, int is_reverse)
 {
-  int i, limit = 0;
+  int i;
 
-  /* 0番目のmetawordのスコアの1/3を候補生成の下限にする */
-  if (se->nr_metaword) {
-    int best = se->mw_array[0]->score;
-    if (best > RATIO_BASE) {
-      best = RATIO_BASE;
-    }
-    limit = best / 3;
-  }
-
-  /* hmmでのbestのmeta_wordから候補を生成*/
-  proc_splitter_info(se, se->best_mw, se->best_mw, is_reverse);
-  /* limitよりも高いscoreを持つmetawordから候補を生成する */
+  /* metawordから候補を生成する */
   for (i = 0; i < se->nr_metaword; i++) {
     struct meta_word *mw = se->mw_array[i];
-    if (mw->score > limit && mw != se->best_mw) {
-      /**/
-      proc_splitter_info(se, mw, mw, is_reverse);
+    if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_CAND) {
+      anthy_print_metaword(sc, mw);
     }
+    proc_splitter_info(se, mw, mw, is_reverse);
   }
   /* 単漢字などの候補 */
   push_back_singleword_candidate(se, is_reverse);
@@ -450,7 +470,6 @@ anthy_do_make_candidates(struct seg_ent *se, int is_reverse)
   /* ひらがな、カタカナの無変換エントリを作る */
   push_back_noconv_candidate(se);
 
-  /* 候補が二つしか無いときは最後が助詞にで残りが平仮名の候補を作れるか試す */
+  /* 候補が二つしか無いときは最後が助詞で残りが平仮名の候補を作れるか試す */
   push_back_guessed_candidate(se);
 }
-

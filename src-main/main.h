@@ -38,6 +38,8 @@ struct anthy_context {
   struct prediction_cache prediction;
   /** エンコーディング */
   int encoding;
+  /** 再変換のモード */
+  int reconversion_mode;
 };
 
 
@@ -55,6 +57,7 @@ void anthy_do_release_context(struct anthy_context *c);
 void anthy_do_resize_segment(struct anthy_context *c,int nth,int resize);
 
 int anthy_do_set_prediction_str(struct anthy_context *c, xstr *x);
+void anthy_release_segment_list(struct anthy_context *ac);
 
 /* for debug */
 void anthy_do_print_context(struct anthy_context *c, int encoding);

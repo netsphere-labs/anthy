@@ -1,4 +1,4 @@
-/* 
+/*
  * Anthy内部で使う文字列
  * 特に実装を隠蔽しようとしているわけでは無いので、
  * ここにある関数の使用は強制しない。
@@ -7,7 +7,7 @@
 #define _xstr_h_included_
 
 /** 文字型
- * EUCが入っている */
+ * UCS4が入っている */
 typedef int xchar;
 
 /** 文字列
@@ -27,15 +27,13 @@ void anthy_putxstrln(xstr *);
 
 /* Cの文字列への書き出し */
 int anthy_sputxchar(char *, xchar , int encoding);
-int anthy_sputxstr(char *, xstr *);
+int anthy_sputxstr(char *, xstr *, int encoding);
 int anthy_snputxstr(char *, int , xstr *, int encoding);
 
 /* xstrとstr共にmallocされる、freeで両方解放するかanthy_free_xstrで解放する */
 xstr *anthy_cstr_to_xstr(const char *, int );
 /* 結果はmallocで確保される */
 char *anthy_xstr_to_cstr(xstr *, int);
-xstr *anthy_file_dic_str_to_xstr(const char *);
-char *anthy_xstr_to_file_dic_str(xstr *);
 
 /* xstrとstr共にmallocされる */
 xstr *anthy_xstr_dup(xstr *);
@@ -64,6 +62,7 @@ xstr *anthy_xstr_wide_num_to_num(xstr *);
 xstr *anthy_xstr_hira_to_kata(xstr *);
 /**/
 xstr *anthy_xstr_hira_to_half_kata(xstr *);
+xstr *anthy_conv_half_wide(xstr *xs);
 
 /*  xcharの型 */
 #define XCT_ALL 0xffffffff
@@ -98,10 +97,13 @@ int anthy_xstr_hash(xstr *);
 int anthy_init_xstr(void);
 void anthy_quit_xstr(void);
 void anthy_xstr_set_print_encoding(int );
-/* おもにfile_dic.cから使用するためのエンコーディング関係の関数
-   USE_UCS4が定義されたときだけ実体が存在する */
-const char *
-anthy_utf8_to_ucs4_xchar(const char *s, xchar *res);
 
+int anthy_euc_to_ucs(int ec);
+int anthy_ucs_to_euc(int uc);
+
+const char *anthy_utf8_to_ucs4_xchar(const char *s, xchar *res);
+/**/
+char *anthy_conv_euc_to_utf8(const char *s);
+char *anthy_conv_utf8_to_euc(const char *s);
 
 #endif

@@ -3,7 +3,7 @@
  *
  * Funded by IPA未踏ソフトウェア創造事業 2002 1/1
  *
- * Copyright (C) 2000-2005 TABATA Yusuke
+ * Copyright (C) 2000-2007 TABATA Yusuke
  * Copyright (C) 2005 YOSHIDA Yuichi
  * Copyright (C) 2001-2002 TAKAI Kousuke
  */
@@ -43,10 +43,7 @@
 
 #include <config.h>
 
-#ifdef USE_UCS4
-#include <iconv.h>
-#endif
-
+#include <anthy.h>
 #include <xstr.h>
 #include <wtype.h>
 #include <ruleparser.h>
@@ -86,10 +83,6 @@ struct file_section {
   {NULL, NULL},
 };
 
-#ifdef USE_UCS4
-static iconv_t euc_to_utf8;
-#endif
-
 /* 辞書生成の状態 */
 struct mkdic_stat {
   /* 単語のリスト */
@@ -100,6 +93,8 @@ struct mkdic_stat {
   struct uc_dict *ud;
   /**/
   const char *output_fn;
+  /**/
+  int input_encoding;
   /**/
   int nr_excluded;
   char **excluded_wtypes;
@@ -155,31 +150,6 @@ flush_output_files (void)
   }
 }
 
-/* オリジナルの辞書ファイルのエンコーディングから
-   内部のエンコーディングに変換する */
-static char *
-source_str_to_file_dic_str(char *str)
-{
-#ifdef USE_UCS4
-  /* EUCからUTF8に変換する */
-  char *inbuf = str;
-  size_t outbytesleft = strlen(str) * 6 + 2;
-  char *outbuf = alloca(outbytesleft);
-  char *buf = outbuf;
-  size_t inbytesleft = strlen(str);
-  size_t res;
-  res = iconv(euc_to_utf8, &inbuf, &inbytesleft, &outbuf, &outbytesleft);
-  if (res == (size_t) -1) {
-    fprintf(stderr, "failed to iconv()\n");
-    exit(1);
-  }
-  *outbuf = 0;
-  return strdup(buf);
-#else
-  return strdup(str);
-#endif
-}
-
 /* ネットワークbyteorderで4bytes書き出す */
 void
 write_nl(FILE *fp, int i)
@@ -222,19 +192,20 @@ read_line(FILE *fp, char *buf)
 }
 
 /** cannadic形式の辞書の行からindexとなる部分を取り出す */
-static char *
-get_index_from_line(char *buf)
+static xstr *
+get_index_from_line(struct mkdic_stat *mds, char *buf)
 {
-  char *sp, *res;
+  char *sp;
+  xstr *xs;
   sp = strchr(buf, ' ');
   if (!sp) {
     /* 辞書のフォーマットがおかしい */
     return NULL;
   }
   *sp = 0;
-  res = source_str_to_file_dic_str(buf);
+  xs = anthy_cstr_to_xstr(buf, mds->input_encoding);
   *sp = ' ';
-  return res;
+  return xs;
 }
 
 /** cannadic形式の辞書の行からindex以外の部分を取り出す */
@@ -246,7 +217,7 @@ get_entry_from_line(char *buf)
   while(*sp == ' ') {
     sp ++;
   }
-  return source_str_to_file_dic_str(sp);
+  return strdup(sp);
 }
 
 static int
@@ -277,10 +248,12 @@ get_wt_name(const char *name)
 
 /** 読みに対して、単語を一つを追加する */
 static void
-push_back_word_entry(struct yomi_entry *ye, const char *wt_name,
+push_back_word_entry(struct mkdic_stat *mds,
+		     struct yomi_entry *ye, const char *wt_name,
 		     int freq, const char *word)
 {
   wtype_t wt;
+  char *s;
   if (freq == 0) {
     return ;
   }
@@ -294,7 +267,13 @@ push_back_word_entry(struct yomi_entry *ye, const char *wt_name,
   ye->entries[ye->nr_entries].ye = ye;
   ye->entries[ye->nr_entries].wt_name = get_wt_name(wt_name);
   ye->entries[ye->nr_entries].freq = freq;
-  ye->entries[ye->nr_entries].word = strdup(word);
+  ye->entries[ye->nr_entries].feature = 0;
+  if (mds->input_encoding == ANTHY_EUC_JP_ENCODING) {
+    s = anthy_conv_euc_to_utf8(word);
+  } else {
+    s = strdup(word);
+  }
+  ye->entries[ye->nr_entries].word_utf8 = s;
   ye->nr_entries ++;
 }
 
@@ -338,10 +317,10 @@ get_element_len(xchar xc)
 
 /** 複合候補の形式チェック */
 static int
-check_compound_candidate(xstr *index, const char *cur)
+check_compound_candidate(struct mkdic_stat *mds, xstr *index, const char *cur)
 {
   /* 読みの文字数の合計を数える */
-  xstr *xs = anthy_cstr_to_xstr(cur, 0);
+  xstr *xs = anthy_cstr_to_xstr(cur, mds->input_encoding);
   int i, total = 0;
   for (i = 0; i < xs->len - 1; i++) {
     if (xs->str[i] == '_') {
@@ -419,16 +398,16 @@ push_back_word_entry_line(struct mkdic_stat *mds, struct yomi_entry *ye,
 	freq = parse_wtype(wtbuf, cur);
       } else {
 	if (cur[1] == '_' &&
-	    check_compound_candidate(ye->index_xstr, &cur[1])) {
+	    check_compound_candidate(mds, ye->index_xstr, &cur[1])) {
 	  /* #_ 複合候補 */
-	  push_back_word_entry(ye, wtbuf, freq, cur);
+	  push_back_word_entry(mds, ye, wtbuf, freq, cur);
 	}
       }
     } else {
       /* 品詞が除去リストに入っているかをチェック */
       if (!is_excluded_wtype(mds, wtbuf)) {
 	/* 単語を追加 */
-	push_back_word_entry(ye, wtbuf, freq, cur);
+	push_back_word_entry(mds, ye, wtbuf, freq, cur);
       } /*else {
 	anthy_putxstr(ye->index_xstr);
 	printf(" %s*%d %s\n", wtbuf, freq, cur);
@@ -457,7 +436,7 @@ check_same_word(struct yomi_entry *ye, int idx)
     if (strcmp(base->wt_name, cur->wt_name)) {
       return 0;
     }
-    if (strcmp(base->word, cur->word)) {
+    if (strcmp(base->word_utf8, cur->word_utf8)) {
       return 0;
     }
     /* 同じだった */
@@ -540,7 +519,7 @@ find_yomi_entry(struct yomi_entry_list *yl, xstr *index, int create)
   ye->entries = 0;
   ye->next = NULL;
   ye->index_xstr = anthy_xstr_dup(index);
-  ye->index_str = anthy_xstr_to_cstr(index, 0);
+  ye->index_str = NULL;
 
   /* hash chainにつなぐ */
   ye->hash_next = yl->hash[hash];
@@ -622,9 +601,9 @@ parse_modify_freq_command(const char *buf)
   }
   cmd = malloc(sizeof(struct adjust_command));
   cmd->type = type;
-  cmd->yomi = anthy_cstr_to_xstr(yomi, 0);
+  cmd->yomi = anthy_cstr_to_xstr(yomi, ANTHY_EUC_JP_ENCODING);
   cmd->wt = get_wt_name(wt);
-  cmd->word = strdup(word);
+  cmd->word = anthy_conv_euc_to_utf8(word);
   return cmd;
 }
 
@@ -648,21 +627,20 @@ parse_dict_file(FILE *fin, struct mkdic_stat *mds)
 {
   xstr *index_xs;
   char buf[MAX_LINE_LEN];
-  char *ent, *index_str;
+  char *ent;
   struct yomi_entry *ye = NULL;
 
   /* １行ずつ処理 */
   while (read_line(fin, buf)) {
-    if (buf[0] == '\\') {
+    if (buf[0] == '\\' && buf[1] != ' ') {
       parse_adjust_command(buf, &mds->ac_list);
       continue ;
     }
-    index_str = get_index_from_line(buf);
-    if (!index_str) {
+    index_xs = get_index_from_line(mds, buf);
+    if (!index_xs) {
       break;
     }
     ent = get_entry_from_line(buf);
-    index_xs = anthy_file_dic_str_to_xstr(index_str);
 
     /* 読みが30文字を越える場合は無視 */
     if (index_xs->len < 31) {
@@ -671,7 +649,6 @@ parse_dict_file(FILE *fin, struct mkdic_stat *mds)
     }
 
     free(ent);
-    free(index_str);
     anthy_free_xstr(index_xs);
   }
 }
@@ -681,19 +658,19 @@ static struct word_entry *
 find_word_entry(struct yomi_entry_list *yl, xstr *yomi,
 		const char *wt, char *word)
 {
-    struct yomi_entry *ye = find_yomi_entry(yl, yomi, 0);
-    int i;
-    if (!ye) {
-      return NULL;
-    }
-    for (i = 0; i < ye->nr_entries; i++) {
-      struct word_entry *we = &ye->entries[i];
-      if (!strcmp(we->wt_name, wt) &&
-	  !strcmp(we->word, word)) {
-	return we;
-      }
-    }
+  struct yomi_entry *ye = find_yomi_entry(yl, yomi, 0);
+  int i;
+  if (!ye) {
     return NULL;
+  }
+  for (i = 0; i < ye->nr_entries; i++) {
+    struct word_entry *we = &ye->entries[i];
+    if (!strcmp(we->wt_name, wt) &&
+	!strcmp(we->word_utf8, word)) {
+      return we;
+    }
+  }
+  return NULL;
 }
 		
 /* 頻度調整のコマンドを適用する */
@@ -706,7 +683,7 @@ apply_adjust_command(struct yomi_entry_list *yl,
     struct word_entry *we = find_word_entry(yl, cmd->yomi,
 					    cmd->wt, cmd->word);
     if (!we) {
-      char *yomi = anthy_xstr_to_cstr(cmd->yomi, 0);
+      char *yomi = anthy_xstr_to_cstr(cmd->yomi, ANTHY_UTF8_ENCODING);
       printf("failed to find target of adjust command (%s, %s, %s)\n",
 	     yomi, cmd->wt, cmd->word);
       free(yomi);
@@ -751,11 +728,16 @@ sort_word_dict(struct yomi_entry_list *yl)
       yl->nr_valid_entries ++;
     }
   }
+  /**/
+  for (i = 0; i < yl->nr_valid_entries; i++) {
+    struct yomi_entry *ye = yl->ye_array[i];
+    ye->index_str = anthy_xstr_to_cstr(ye->index_xstr, yl->index_encoding);
+  }
   /* ソートする */
   qsort(yl->ye_array, yl->nr_valid_entries,
 	sizeof(struct yomi_entry *),
 	compare_yomi_entry);
-  /**/
+  /* 不要な単語を消す */
   yl->nr_words = 0;
   for (i = 0; i < yl->nr_valid_entries; i++) {
     struct yomi_entry *ye = yl->ye_array[i];
@@ -930,7 +912,7 @@ reverse_multi_segment_word(struct mkdic_stat *mds, struct word_entry *we)
   int yomi_seg_start = 0;
   int word_seg_start = 0;
   int word_seg_len = 0;
-  xstr *yomibuf = anthy_cstr_to_xstr(we->word, 0);
+  xstr *yomibuf = anthy_cstr_to_xstr(we->word_utf8, ANTHY_UTF8_ENCODING);
   xstr *wordbuf = we->ye->index_xstr;
   xstr *yomi_xs = anthy_cstr_to_xstr("", 0);
   xstr *word_xs = anthy_cstr_to_xstr("#", 0);
@@ -957,10 +939,10 @@ reverse_multi_segment_word(struct mkdic_stat *mds, struct word_entry *we)
   }
 
   target_ye = find_yomi_entry(&mds->yl, yomi_xs, 1);
-  word = anthy_xstr_to_cstr(word_xs, 0);
+  word = anthy_xstr_to_cstr(word_xs, mds->input_encoding);
 
   /* 逆変換用の辞書はfreqが負 */
-  push_back_word_entry(target_ye, we->wt_name, -we->freq, word);
+  push_back_word_entry(mds, target_ye, we->wt_name, -we->freq, word);
 
   free(word);
   anthy_free_xstr(yomibuf);
@@ -1002,8 +984,8 @@ build_reverse_dict(struct mkdic_stat *mds)
     struct yomi_entry *target_ye;
 
     we = &we_array[i];
-    if (we->word[0] == '#') {
-      if (we->word[1] == '_') {
+    if (we->word_utf8[0] == '#') {
+      if (we->word_utf8[1] == '_') {
 	reverse_multi_segment_word(mds, we);
       }
     } else {
@@ -1011,12 +993,12 @@ build_reverse_dict(struct mkdic_stat *mds)
       xstr *yomi_xs;
       char *word;
 
-      yomi_xs = anthy_cstr_to_xstr(we->word, 0);
+      yomi_xs = anthy_cstr_to_xstr(we->word_utf8, ANTHY_UTF8_ENCODING);
       target_ye = find_yomi_entry(&mds->yl, yomi_xs, 1);
-      word = anthy_xstr_to_cstr(we->ye->index_xstr, 0);
+      word = anthy_xstr_to_cstr(we->ye->index_xstr, mds->input_encoding);
 
       /* 逆変換用の辞書はfreqが負 */
-      push_back_word_entry(target_ye, we->wt_name, -we->freq, word);
+      push_back_word_entry(mds, target_ye, we->wt_name, -we->freq, word);
 
       anthy_free_xstr(yomi_xs);
       free(word);
@@ -1048,6 +1030,25 @@ set_exclude_wtypes(struct mkdic_stat *mds, int nr, char **tokens)
   /**/
   for (i = 1; i < nr; i++) {
     mds->excluded_wtypes[i - 1] = strdup(tokens[i]);
+  }
+}
+
+static void
+set_dict_encoding(struct mkdic_stat *mds, const char *enc)
+{
+  if (!strcmp(enc, "utf8")) {
+    mds->yl.body_encoding = ANTHY_UTF8_ENCODING;
+  }
+}
+
+static void
+set_input_encoding(struct mkdic_stat *mds, const char *enc)
+{
+  if (!strcmp(enc, "utf8")) {
+    mds->input_encoding = ANTHY_UTF8_ENCODING;
+  }
+  if (!strcmp(enc, "eucjp")) {
+    mds->input_encoding = ANTHY_EUC_JP_ENCODING;
   }
 }
 
@@ -1089,9 +1090,9 @@ execute_batch(struct mkdic_stat *mds, const char *fn)
   while (!anthy_read_line(&tokens, &nr)) {
     char *cmd = tokens[0];
     show_command(tokens, nr);
-    if (!strcmp(cmd, "read")) {
+    if (!strcmp(cmd, "read") && nr == 2) {
       read_dict_file(mds, tokens[1]);
-    } else if (!strcmp(cmd, "read_uc")) {
+    } else if (!strcmp(cmd, "read_uc") && nr == 2) {
       read_udict_file(mds, tokens[1]);
     } else if (!strcmp(cmd, "build_reverse_dict")) {
       build_reverse_dict(mds);
@@ -1101,6 +1102,10 @@ execute_batch(struct mkdic_stat *mds, const char *fn)
       set_exclude_wtypes(mds, nr, tokens);
     } else if (!strcmp(cmd, "clear_exclude_wtypes")) {
       clear_exclude_wtypes(mds);
+    } else if (!strcmp(cmd, "set_dict_encoding") && nr == 2) {
+      set_dict_encoding(mds, tokens[1]);
+    } else if (!strcmp(cmd, "set_input_encoding") && nr == 2) {
+      set_input_encoding(mds, tokens[1]);
     } else if (!strcmp(cmd, "done")) {
       anthy_free_line();
       break;
@@ -1127,8 +1132,12 @@ init_mds(struct mkdic_stat *mds)
   for (i = 0; i < YOMI_HASH; i++) {
     mds->yl.hash[i] = NULL;
   }
+  mds->yl.index_encoding = ANTHY_UTF8_ENCODING;
+  mds->yl.body_encoding = ANTHY_EUC_JP_ENCODING;
   /**/
   mds->ac_list.next = NULL;
+  /**/
+  mds->input_encoding = ANTHY_EUC_JP_ENCODING;
   /**/
   mds->nr_excluded = 0;
   mds->excluded_wtypes = NULL;
@@ -1144,14 +1153,6 @@ init_libs(void)
     fprintf (stderr, "failed to init dic lib\n");
     exit(1);
   }
-
-#ifdef USE_UCS4
-  euc_to_utf8 = iconv_open("UTF-8", "EUC-JP");
-  if (euc_to_utf8 == (iconv_t) -1) {
-    fprintf(stderr, "failed in iconv_open(%s)", strerror(errno));
-    exit(1);
-  }
-#endif
 }
 
 /**/

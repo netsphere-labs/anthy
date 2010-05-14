@@ -21,11 +21,6 @@ init_lib(void)
     printf("failed to init anthy\n");
     exit(0);
   }
-#ifdef USE_UCS4
-  /* 表示するためのエンコーディングを設定する */
-  anthy_context_set_encoding(NULL, ANTHY_UTF8_ENCODING);
-#endif
-  
 }
 
 
@@ -52,6 +47,7 @@ int main(int argc, char** argv)
     printf("%s, %d\n", buf, len);
     free(buf);
   }
+  anthy_commit_prediction(ac, 0);
 
   anthy_release_context(ac);
 

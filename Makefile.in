@@ -41,7 +41,7 @@ DIST_COMMON = README $(am__configure_deps) $(srcdir)/Makefile.am \
 	$(srcdir)/anthy-test-conf.in $(srcdir)/anthy.pc.in \
 	$(srcdir)/anthy.spec.in $(srcdir)/config.h.in \
 	$(top_srcdir)/configure AUTHORS COPYING ChangeLog INSTALL NEWS \
-	config.guess config.sub depcomp elisp-comp install-sh \
+	compile config.guess config.sub depcomp elisp-comp install-sh \
 	ltmain.sh missing mkinstalldirs
 subdir = .
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
@@ -100,7 +100,6 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-CANNADIC_SRCDIR = @CANNADIC_SRCDIR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -145,10 +144,25 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
+RUBY = @RUBY@
+RUBY_CFLAGS = @RUBY_CFLAGS@
+RUBY_DLEXT = @RUBY_DLEXT@
+RUBY_LDFLAGS = @RUBY_LDFLAGS@
+RUBY_LIBS = @RUBY_LIBS@
+RUBY_SITE_ARCH_DIR = @RUBY_SITE_ARCH_DIR@
+RUBY_SITE_LIB_DIR = @RUBY_SITE_LIB_DIR@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+SWIG = @SWIG@
+SWIG_CPPFLAGS = @SWIG_CPPFLAGS@
+SWIG_INTERFACE = @SWIG_INTERFACE@
+SWIG_OPTIONS = @SWIG_OPTIONS@
 VERSION = @VERSION@
+WITH_RUBY_FALSE = @WITH_RUBY_FALSE@
+WITH_RUBY_TRUE = @WITH_RUBY_TRUE@
+WITH_SWIG_FALSE = @WITH_SWIG_FALSE@
+WITH_SWIG_TRUE = @WITH_SWIG_TRUE@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
@@ -196,7 +210,7 @@ target_alias = @target_alias@
 AUTOMAKE_OPTIONS = dejagnu
 EXTRA_DIST = README.en DIARY anthy-conf.in anthy-test-conf.in anthy.spec.in anthy.pc.in Doxyfile
 SRCDIR = src-diclib src-worddic src-splitter src-ordering src-main src-util
-SUBDIRS = $(SRCDIR) include depgraph mkworddic mkmatrix mkanthydic doc test cannadic calctrans
+SUBDIRS = $(SRCDIR) include depgraph mkworddic mkanthydic doc test cannadic calctrans
 sysconf_DATA = anthy-conf
 pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = anthy.pc
@@ -477,7 +491,7 @@ distclean-DEJAGNU:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/mkworddic $(distdir)/test
+	$(mkdir_p) $(distdir)/. $(distdir)/mkworddic
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

@@ -21,7 +21,7 @@ VPATH = @srcdir@
 pkgdatadir = $(datadir)/@PACKAGE@
 pkglibdir = $(libdir)/@PACKAGE@
 pkgincludedir = $(includedir)/@PACKAGE@
-top_builddir = ..
+top_builddir = ../..
 am__cd = CDPATH="$${ZSH_VERSION+.}$(PATH_SEPARATOR)" && cd
 INSTALL = @INSTALL@
 install_sh_DATA = $(install_sh) -c -m 644
@@ -37,8 +37,7 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = mkmatrix$(EXEEXT)
-subdir = mkmatrix
+subdir = src-util/ruby
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
@@ -48,10 +47,19 @@ am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES =
-PROGRAMS = $(noinst_PROGRAMS)
-am_mkmatrix_OBJECTS = mkmatrix.$(OBJEXT)
-mkmatrix_OBJECTS = $(am_mkmatrix_OBJECTS)
-mkmatrix_DEPENDENCIES = ../src-worddic/libanthydic.la
+am__vpath_adj_setup = srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`;
+am__vpath_adj = case $$p in \
+    $(srcdir)/*) f=`echo "$$p" | sed "s|^$$srcdirstrip/||"`;; \
+    *) f=$$p;; \
+  esac;
+am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
+am__installdirs = "$(DESTDIR)$(rubyextdir)" "$(DESTDIR)$(rubylibdir)"
+rubyextLTLIBRARIES_INSTALL = $(INSTALL)
+LTLIBRARIES = $(rubyext_LTLIBRARIES)
+anthy_la_DEPENDENCIES = $(top_builddir)/src-main/libanthy.la \
+	$(top_builddir)/src-worddic/libanthydic.la
+am_anthy_la_OBJECTS = anthy_la-anthy_swig_rb_wrap.lo
+anthy_la_OBJECTS = $(am_anthy_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -63,9 +71,10 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(mkmatrix_SOURCES)
-DIST_SOURCES = $(mkmatrix_SOURCES)
-DATA = $(noinst_DATA)
+SOURCES = $(anthy_la_SOURCES)
+DIST_SOURCES = $(anthy_la_SOURCES)
+rubylibDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(rubylib_DATA)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -78,7 +87,6 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-CANNADIC_SRCDIR = @CANNADIC_SRCDIR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -123,10 +131,25 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
+RUBY = @RUBY@
+RUBY_CFLAGS = @RUBY_CFLAGS@
+RUBY_DLEXT = @RUBY_DLEXT@
+RUBY_LDFLAGS = @RUBY_LDFLAGS@
+RUBY_LIBS = @RUBY_LIBS@
+RUBY_SITE_ARCH_DIR = @RUBY_SITE_ARCH_DIR@
+RUBY_SITE_LIB_DIR = @RUBY_SITE_LIB_DIR@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+SWIG = @SWIG@
+SWIG_CPPFLAGS = @SWIG_CPPFLAGS@
+SWIG_INTERFACE = @SWIG_INTERFACE@
+SWIG_OPTIONS = @SWIG_OPTIONS@
 VERSION = @VERSION@
+WITH_RUBY_FALSE = @WITH_RUBY_FALSE@
+WITH_RUBY_TRUE = @WITH_RUBY_TRUE@
+WITH_SWIG_FALSE = @WITH_SWIG_FALSE@
+WITH_SWIG_TRUE = @WITH_SWIG_TRUE@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
@@ -171,12 +194,26 @@ sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
-EXTRA_DIST = dep.sorted
-INCLUDES = -I$(top_srcdir)/include
-mkmatrix_LDADD = ../src-worddic/libanthydic.la -lm
-mkmatrix_SOURCES = mkmatrix.c
-noinst_DATA = matrix
-CLEANFILES = matrix
+MAINTAINERCLEANFILES = Makefile.in
+SWIG_RB_FEATURE = anthy
+SWIG_RB_OPTIONS = $(SWIG_OPTIONS) -ruby -feature $(SWIG_RB_FEATURE)
+CLEANFILES = anthy_swig_rb_wrap.* $(SWIG_FEATURE).$(RUBY_DLEXT)
+rubylibdir = $(RUBY_SITE_LIB_DIR)
+rubylib_DATA = anthy.rb
+rubyextdir = $(RUBY_SITE_ARCH_DIR)
+rubyext_LTLIBRARIES = anthy.la
+anthy_la_SOURCES = anthy_swig_rb_wrap.c
+anthy_la_CFLAGS = $(RUBY_CFLAGS)
+anthy_la_LDFLAGS = -avoid-version \
+		   -rpath $(rubyextdir) \
+		   -module \
+		   -shrext .$(RUBY_DLEXT) \
+		   $(RUBY_LIBS)
+
+anthy_la_LIBADD = $(top_builddir)/src-main/libanthy.la \
+		  $(top_builddir)/src-worddic/libanthydic.la
+
+EXTRA_DIST = $(rubylib_DATA)
 all: all-am
 
 .SUFFIXES:
@@ -190,9 +227,9 @@ $(srcdir)/Makefile.in:  $(srcdir)/Makefile.am  $(am__configure_deps)
 	      exit 1;; \
 	  esac; \
 	done; \
-	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  mkmatrix/Makefile'; \
+	echo ' cd $(top_srcdir) && $(AUTOMAKE) --gnu  src-util/ruby/Makefile'; \
 	cd $(top_srcdir) && \
-	  $(AUTOMAKE) --gnu  mkmatrix/Makefile
+	  $(AUTOMAKE) --gnu  src-util/ruby/Makefile
 .PRECIOUS: Makefile
 Makefile: $(srcdir)/Makefile.in $(top_builddir)/config.status
 	@case '$?' in \
@@ -210,16 +247,35 @@ $(top_srcdir)/configure:  $(am__configure_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
 $(ACLOCAL_M4):  $(am__aclocal_m4_deps)
 	cd $(top_builddir) && $(MAKE) $(AM_MAKEFLAGS) am--refresh
-
-clean-noinstPROGRAMS:
-	@list='$(noinst_PROGRAMS)'; for p in $$list; do \
-	  f=`echo $$p|sed 's/$(EXEEXT)$$//'`; \
-	  echo " rm -f $$p $$f"; \
-	  rm -f $$p $$f ; \
+install-rubyextLTLIBRARIES: $(rubyext_LTLIBRARIES)
+	@$(NORMAL_INSTALL)
+	test -z "$(rubyextdir)" || $(mkdir_p) "$(DESTDIR)$(rubyextdir)"
+	@list='$(rubyext_LTLIBRARIES)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    f=$(am__strip_dir) \
+	    echo " $(LIBTOOL) --mode=install $(rubyextLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) '$$p' '$(DESTDIR)$(rubyextdir)/$$f'"; \
+	    $(LIBTOOL) --mode=install $(rubyextLTLIBRARIES_INSTALL) $(INSTALL_STRIP_FLAG) "$$p" "$(DESTDIR)$(rubyextdir)/$$f"; \
+	  else :; fi; \
 	done
-mkmatrix$(EXEEXT): $(mkmatrix_OBJECTS) $(mkmatrix_DEPENDENCIES) 
-	@rm -f mkmatrix$(EXEEXT)
-	$(LINK) $(mkmatrix_LDFLAGS) $(mkmatrix_OBJECTS) $(mkmatrix_LDADD) $(LIBS)
+
+uninstall-rubyextLTLIBRARIES:
+	@$(NORMAL_UNINSTALL)
+	@set -x; list='$(rubyext_LTLIBRARIES)'; for p in $$list; do \
+	  p=$(am__strip_dir) \
+	  echo " $(LIBTOOL) --mode=uninstall rm -f '$(DESTDIR)$(rubyextdir)/$$p'"; \
+	  $(LIBTOOL) --mode=uninstall rm -f "$(DESTDIR)$(rubyextdir)/$$p"; \
+	done
+
+clean-rubyextLTLIBRARIES:
+	-test -z "$(rubyext_LTLIBRARIES)" || rm -f $(rubyext_LTLIBRARIES)
+	@list='$(rubyext_LTLIBRARIES)'; for p in $$list; do \
+	  dir="`echo $$p | sed -e 's|/[^/]*$$||'`"; \
+	  test "$$dir" != "$$p" || dir=.; \
+	  echo "rm -f \"$${dir}/so_locations\""; \
+	  rm -f "$${dir}/so_locations"; \
+	done
+anthy.la: $(anthy_la_OBJECTS) $(anthy_la_DEPENDENCIES) 
+	$(LINK) -rpath $(rubyextdir) $(anthy_la_LDFLAGS) $(anthy_la_OBJECTS) $(anthy_la_LIBADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -227,7 +283,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mkmatrix.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/anthy_la-anthy_swig_rb_wrap.Plo@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \
@@ -250,6 +306,13 @@ distclean-compile:
 @AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCC_FALSE@	$(LTCOMPILE) -c -o $@ $<
 
+anthy_la-anthy_swig_rb_wrap.lo: anthy_swig_rb_wrap.c
+@am__fastdepCC_TRUE@	if $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(anthy_la_CFLAGS) $(CFLAGS) -MT anthy_la-anthy_swig_rb_wrap.lo -MD -MP -MF "$(DEPDIR)/anthy_la-anthy_swig_rb_wrap.Tpo" -c -o anthy_la-anthy_swig_rb_wrap.lo `test -f 'anthy_swig_rb_wrap.c' || echo '$(srcdir)/'`anthy_swig_rb_wrap.c; \
+@am__fastdepCC_TRUE@	then mv -f "$(DEPDIR)/anthy_la-anthy_swig_rb_wrap.Tpo" "$(DEPDIR)/anthy_la-anthy_swig_rb_wrap.Plo"; else rm -f "$(DEPDIR)/anthy_la-anthy_swig_rb_wrap.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	source='anthy_swig_rb_wrap.c' object='anthy_la-anthy_swig_rb_wrap.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCC_FALSE@	DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCC_FALSE@	$(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(anthy_la_CFLAGS) $(CFLAGS) -c -o anthy_la-anthy_swig_rb_wrap.lo `test -f 'anthy_swig_rb_wrap.c' || echo '$(srcdir)/'`anthy_swig_rb_wrap.c
+
 mostlyclean-libtool:
 	-rm -f *.lo
 
@@ -259,6 +322,23 @@ clean-libtool:
 distclean-libtool:
 	-rm -f libtool
 uninstall-info-am:
+install-rubylibDATA: $(rubylib_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(rubylibdir)" || $(mkdir_p) "$(DESTDIR)$(rubylibdir)"
+	@list='$(rubylib_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(rubylibDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(rubylibdir)/$$f'"; \
+	  $(rubylibDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(rubylibdir)/$$f"; \
+	done
+
+uninstall-rubylibDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(rubylib_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(rubylibdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(rubylibdir)/$$f"; \
+	done
 
 ID: $(HEADERS) $(SOURCES) $(LISP) $(TAGS_FILES)
 	list='$(SOURCES) $(HEADERS) $(LISP) $(TAGS_FILES)'; \
@@ -337,8 +417,11 @@ distdir: $(DISTFILES)
 	done
 check-am: all-am
 check: check-am
-all-am: Makefile $(PROGRAMS) $(DATA)
+all-am: Makefile $(LTLIBRARIES) $(DATA)
 installdirs:
+	for dir in "$(DESTDIR)$(rubyextdir)" "$(DESTDIR)$(rubylibdir)"; do \
+	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
+	done
 install: install-am
 install-exec: install-exec-am
 install-data: install-data-am
@@ -364,9 +447,10 @@ distclean-generic:
 maintainer-clean-generic:
 	@echo "This command is intended for maintainers to use"
 	@echo "it deletes files that may require special tools to rebuild."
+	-test -z "$(MAINTAINERCLEANFILES)" || rm -f $(MAINTAINERCLEANFILES)
 clean: clean-am
 
-clean-am: clean-generic clean-libtool clean-noinstPROGRAMS \
+clean-am: clean-generic clean-libtool clean-rubyextLTLIBRARIES \
 	mostlyclean-am
 
 distclean: distclean-am
@@ -385,7 +469,7 @@ info: info-am
 
 info-am:
 
-install-data-am:
+install-data-am: install-rubyextLTLIBRARIES install-rubylibDATA
 
 install-exec-am:
 
@@ -413,23 +497,25 @@ ps: ps-am
 
 ps-am:
 
-uninstall-am: uninstall-info-am
+uninstall-am: uninstall-info-am uninstall-rubyextLTLIBRARIES \
+	uninstall-rubylibDATA
 
 .PHONY: CTAGS GTAGS all all-am check check-am clean clean-generic \
-	clean-libtool clean-noinstPROGRAMS ctags distclean \
+	clean-libtool clean-rubyextLTLIBRARIES ctags distclean \
 	distclean-compile distclean-generic distclean-libtool \
 	distclean-tags distdir dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am install-exec \
 	install-exec-am install-info install-info-am install-man \
-	install-strip installcheck installcheck-am installdirs \
-	maintainer-clean maintainer-clean-generic mostlyclean \
-	mostlyclean-compile mostlyclean-generic mostlyclean-libtool \
-	pdf pdf-am ps ps-am tags uninstall uninstall-am \
-	uninstall-info-am
+	install-rubyextLTLIBRARIES install-rubylibDATA install-strip \
+	installcheck installcheck-am installdirs maintainer-clean \
+	maintainer-clean-generic mostlyclean mostlyclean-compile \
+	mostlyclean-generic mostlyclean-libtool pdf pdf-am ps ps-am \
+	tags uninstall uninstall-am uninstall-info-am \
+	uninstall-rubyextLTLIBRARIES uninstall-rubylibDATA
 
 
-matrix	: mkmatrix $(top_srcdir)/mkmatrix/dep.sorted
-	./mkmatrix $(top_srcdir)/mkmatrix/dep.sorted -o matrix
+anthy_swig_rb_wrap.c: $(SWIG_INTERFACE)
+	$(SWIG) $(SWIG_RB_OPTIONS) -o $@ $(SWIG_INTERFACE)
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.
 .NOEXPORT:

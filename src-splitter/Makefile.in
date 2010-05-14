@@ -49,7 +49,7 @@ CONFIG_CLEAN_FILES =
 LTLIBRARIES = $(noinst_LTLIBRARIES)
 libsplit_la_LIBADD =
 am_libsplit_la_OBJECTS = wordlist.lo metaword.lo depgraph.lo \
-	splitter.lo evalborder.lo compose.lo hmm.lo segclass.lo
+	splitter.lo evalborder.lo compose.lo lattice.lo segclass.lo
 libsplit_la_OBJECTS = $(am_libsplit_la_OBJECTS)
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
@@ -76,7 +76,6 @@ AUTOCONF = @AUTOCONF@
 AUTOHEADER = @AUTOHEADER@
 AUTOMAKE = @AUTOMAKE@
 AWK = @AWK@
-CANNADIC_SRCDIR = @CANNADIC_SRCDIR@
 CC = @CC@
 CCDEPMODE = @CCDEPMODE@
 CFLAGS = @CFLAGS@
@@ -121,10 +120,25 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
+RUBY = @RUBY@
+RUBY_CFLAGS = @RUBY_CFLAGS@
+RUBY_DLEXT = @RUBY_DLEXT@
+RUBY_LDFLAGS = @RUBY_LDFLAGS@
+RUBY_LIBS = @RUBY_LIBS@
+RUBY_SITE_ARCH_DIR = @RUBY_SITE_ARCH_DIR@
+RUBY_SITE_LIB_DIR = @RUBY_SITE_LIB_DIR@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
+SWIG = @SWIG@
+SWIG_CPPFLAGS = @SWIG_CPPFLAGS@
+SWIG_INTERFACE = @SWIG_INTERFACE@
+SWIG_OPTIONS = @SWIG_OPTIONS@
 VERSION = @VERSION@
+WITH_RUBY_FALSE = @WITH_RUBY_FALSE@
+WITH_RUBY_TRUE = @WITH_RUBY_TRUE@
+WITH_SWIG_FALSE = @WITH_SWIG_FALSE@
+WITH_SWIG_TRUE = @WITH_SWIG_TRUE@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
@@ -174,7 +188,7 @@ INCLUDES = -I$(top_srcdir)/include
 noinst_LTLIBRARIES = libsplit.la
 libsplit_la_SOURCES = wordlist.c metaword.c depgraph.c\
  splitter.c evalborder.c compose.c\
- wordborder.h hmm.c segclass.c transition.h
+ wordborder.h lattice.c segclass.c transition.h
 
 all: all-am
 
@@ -230,7 +244,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/compose.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/depgraph.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/evalborder.Plo@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/hmm.Plo@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/lattice.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/metaword.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/segclass.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/splitter.Plo@am__quote@

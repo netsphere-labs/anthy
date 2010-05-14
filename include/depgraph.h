@@ -8,8 +8,6 @@
 struct dep_transition {
   /** 遷移先のノードの番号 0の場合は終端 */
   int next_node;
-  /** 遷移のスコア */
-  int trans_ratio;
   /** 品詞 */
   int pos;
   /** 活用形 */
@@ -44,15 +42,13 @@ struct dep_node {
 /** 自立語の品詞とその後に続く付属語のグラフ中のノードの対応 */
 struct wordseq_rule {
   wtype_t wt; /* 自立語の品詞 */
-  int ratio; /* 候補のスコアに対する倍率 */
   int node_id; /* この自立語の後ろに続く付属語グラフ中のノードのid */
 };
 
 /** 付属語グラフのファイル上での形式 */
 struct ondisk_wordseq_rule {
   char wt[8];
-  /* 次のふたつはネットワークバイトオーダー */
-  int ratio;
+  /* ネットワークバイトオーダー */
   int node_id;
 };
 

@@ -7,9 +7,8 @@ This document is written in Japanese(EUC-JP).
 
 ******** Anthy (かな漢字変換エンジン) ********
 
-Canna等のようなかな漢字変換エンジンです。
-Linuxなどで使用されることを主な目的としています。
-
+Linuxなどで使用されることを主な目的として開発された
+かな漢字変換エンジンです。
 
 このパッケージにはかな漢字変換エンジンのライブラリと
 emacs から使用するためのプログラム(doc/ELISPを見てください)、
@@ -23,7 +22,7 @@ IMKit-anthy :Zaurus用input method
  http://zaurus-ja.sourceforge.jp
 などがあります。
 
-お問い合わせは 田畑 yusuke@w5.dion.ne.jp までどうぞ
+お問い合わせは 田畑 yusuke@ofanim.net までどうぞ
 最新情報は http://anthy.sourceforge.jp/ で取得できます。
 
 
@@ -38,6 +37,8 @@ Anthyで使用する辞書は現在に至るまで、Canna, Wnn, SKKなどの
  解釈される人がいますが，現時点のAnthyの性能はそれ以前に変換の
  アルゴリズムに問題がある状況であると認識しています．
  作者は常に変換のアルゴリズムを練ることが必要と感じています．
+*本ソフトウェアはGoogle Summer of Code 2006の成果を
+ 利用しています。
 *本ソフトウェアの多くの部分は情報処理振興事業協会(IPA)の
  「未踏ソフトウェア創造事業(2001,2005年度)」の資金援助をうけて
  開発を行いました。

@@ -6,6 +6,7 @@
 # 別のスクリプトからこのファイルをechoやcat、sed等を
 # 駆使して生成することも想定
 #
+set_input_encoding eucjp
 # 地名はplacename.tに集約するので、cannadicに含まれるものを除外
 set_exclude_wtypes #CN #CNS
 read @top_srcdir@/cannadic/gcanna.ctd
@@ -19,8 +20,14 @@ read @top_srcdir@/mkworddic/compound.t
 read @top_srcdir@/mkworddic/extra.t
 read @top_srcdir@/mkworddic/base.t
 read @top_srcdir@/mkworddic/placename.t
+#
+#set_input_encoding utf8
+#read @top_srcdir@/mkworddic/utf8.t
+#
 # this command will make reverse dictionary
 build_reverse_dict
+# this command will make dictionary body in utf8
+set_dict_encoding utf8
 read_uc @top_srcdir@/mkworddic/udict
 write anthy.wdic
 done

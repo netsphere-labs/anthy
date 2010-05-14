@@ -499,7 +499,8 @@ decode_nth_cell(struct text_trie *tt, struct cell *c, int nth)
 {
   int res;
   char *buf;
-  if ((anthy_mmap_size(tt->mapping) / LINE_LEN) <
+  if (nth < 0 ||
+      (anthy_mmap_size(tt->mapping) / LINE_LEN) <
       (nth + 1)) {
     return NULL;
   }
@@ -810,7 +811,29 @@ do_fopen(const char *fn, int create)
 }
 
 static struct text_trie *
-trie_open(const char *fn, int create)
+alloc_tt(const char *fn, FILE *wfp)
+{
+  struct text_trie *tt;
+  tt = malloc(sizeof(struct text_trie));
+  tt->fatal = 0;
+  tt->wfp = wfp;
+  tt->valid_super = 0;
+  tt->fn = strdup(fn);
+  tt->mapping = NULL;
+  return tt;
+}
+
+static void
+clear_file(const char *fn)
+{
+  FILE *fp = fopen(fn, "w");
+  if (fp) {
+    fclose(fp);
+  }
+}
+
+static struct text_trie *
+trie_open(const char *fn, int create, int do_retry)
 {
   struct text_trie *tt;
   FILE *fp;
@@ -820,15 +843,23 @@ trie_open(const char *fn, int create)
     return NULL;
   }
   /**/
-  tt = malloc(sizeof(struct text_trie));
-  tt->fatal = 0;
-  tt->wfp = fp;
-  tt->valid_super = 0;
-  tt->fn = strdup(fn);
-  tt->mapping = NULL;
+  tt = alloc_tt(fn, fp);
+  if (!tt) {
+    fclose(fp);
+    return NULL;
+  }
   /**/
   update_mapping(tt);
   load_super(tt);
+  /**/
+  if (tt->fatal) {
+    anthy_trie_close(tt);
+    if (!do_retry) {
+      return NULL;
+    }
+    clear_file(fn);
+    return trie_open(fn, create, 0);
+  }
   /**/
   return tt;
 }
@@ -840,7 +871,7 @@ anthy_trie_open(const char *fn, int create)
 {
   struct text_trie *tt;
   anthy_priv_dic_lock();
-  tt = trie_open(fn, create);
+  tt = trie_open(fn, create, 1);
   anthy_priv_dic_unlock();
   purge_cache(tt);
   return tt;
@@ -1292,6 +1323,22 @@ do_find_next_key(struct text_trie *tt, struct path *p,
 }
 
 static int
+find_partial_key(struct text_trie *tt, struct path *p, int idx)
+{
+  struct cell c;
+  if (!decode_nth_node(tt, &c, idx)) {
+    return -1;
+  }
+  if (c.type != TT_NODE) {
+    return -1;
+  }
+  p->len ++;
+  p->path[p->cur] = c.u.node.key;
+  p->cur ++;
+  return 0;
+}
+
+static int
 trie_find_next_key(struct text_trie *tt, struct path *p)
 {
   int root_idx = get_root_idx(tt);
@@ -1313,14 +1360,7 @@ trie_find_next_key(struct text_trie *tt, struct path *p)
   target_idx = trie_search_rec(tt, p, root_idx, 0);
   tmp_idx = find_child(tt, target_idx, p->path[p->len], 0);
   if (tmp_idx) {
-    struct cell c;
-    if (!decode_nth_node(tt, &c, tmp_idx)) {
-      return -1;
-    }
-    p->len ++;
-    p->path[p->cur] = c.u.node.key;
-    p->cur ++;
-    return 0;
+    return find_partial_key(tt, p, tmp_idx);
   }
   return do_find_next_key(tt, p, root_idx, target_idx);
 }

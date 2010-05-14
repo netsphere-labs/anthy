@@ -2,7 +2,7 @@
 
 # Files
 noinst_SCRIPTS =
-EXTRA_DICS = base.t extra.t compound.t name.t adjust.t katakana.t placename.t
+EXTRA_DICS = base.t extra.t compound.t name.t adjust.t katakana.t placename.t utf8.t
 ZIPCODE_DICT = zipcode.t
 CANNADIC_DIST = gcanna.ctd gcannaf.ctd
 INCLUDES = -I$(top_srcdir)/include

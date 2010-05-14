@@ -1,7 +1,9 @@
 /*
  * Anthyの辞書ライブラリの中心
  *
- * Copyright (C) 2000-2006 TABATA Yusuke
+ * anthy_get_seq_ent_from_xstr()で辞書をひく
+ *
+ * Copyright (C) 2000-2007 TABATA Yusuke
  * Copyright (C) 2005-2006 YOSHIDA Yuichi
  *
  */
@@ -21,13 +23,17 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 #include <stdlib.h>
+#include <string.h>
 
+#include <anthy.h>
 #include <dic.h>
 #include <conf.h>
 #include <record.h>
 #include <alloc.h>
 #include <logger.h>
 #include <xchar.h>
+#include <feature_set.h>
+#include <textdict.h>
 
 #include <diclib.h>
 
@@ -47,6 +53,8 @@ struct mem_dic *anthy_current_personal_dic_cache;/* キャッシュ */
 /**/
 struct record_stat *anthy_current_record;
 
+extern struct textdict *anthy_private_text_dic;
+
 
 /** 同じ読みに対する、単語からフラグを計算する */
 static void
@@ -58,38 +66,19 @@ calc_seq_flags(struct seq_ent *se)
   for (i = 0; i < se->nr_dic_ents; i++) {
     int p;
     p = anthy_wtype_get_pos(se->dic_ents[i]->type);
-    switch (p) {
-    case POS_NOUN:
-      {
-	int c;
-	c = anthy_wtype_get_cos(se->dic_ents[i]->type);
-	if (c == COS_NN) {
-
-	}else if (c == COS_JN) {
-	  int s;
-	  s = anthy_wtype_get_scos(se->dic_ents[i]->type);
-	  if (s == SCOS_FSTNAME) {
-	    se->flags |= NF_FSTNAME;
-	  } else if (s == SCOS_FAMNAME) {
-	    se->flags |= NF_FAMNAME;
-	  } else {
-	    se->flags |= NF_UNSPECNAME;
-	  }
-	}
+    if (p != POS_NOUN) {
+      continue;
+    }
+    if (anthy_wtype_get_cos(se->dic_ents[i]->type) == COS_JN) {
+      int s;
+      s = anthy_wtype_get_scos(se->dic_ents[i]->type);
+      if (s == SCOS_FSTNAME) {
+	se->flags |= NF_FSTNAME;
+      } else if (s == SCOS_FAMNAME) {
+	se->flags |= NF_FAMNAME;
+      } else {
+	se->flags |= NF_UNSPECNAME;
       }
-      break;
-    case POS_PRE:
-    case POS_SUC:
-      {
-	int c;
-	c = anthy_wtype_get_cos(se->dic_ents[i]->type);
-	if (c == COS_JN) {
-	  se->flags |= SF_JN;
-	}else if (c == COS_NN) {
-	  se->flags |= SF_NUM;
-	}
-      }
-      break;
     }
   }
 }
@@ -110,8 +99,8 @@ cache_get_seq_ent_to_mem_dic(struct mem_dic *dd, xstr *xs, int is_reverse)
   return seq;
 }
 
-struct seq_ent *
-anthy_cache_get_seq_ent(xstr *xs, int is_reverse)
+static struct seq_ent *
+cache_get_seq_ent(xstr *xs, int is_reverse)
 {
   struct seq_ent *seq;
 
@@ -149,7 +138,7 @@ do_get_seq_ent_from_xstr(xstr *xs, int is_reverse)
 {
   struct seq_ent *se;
   /* キャッシュから取り出す */
-  se = anthy_cache_get_seq_ent(xs, is_reverse);
+  se = cache_get_seq_ent(xs, is_reverse);
   if (!se) {
     /* 数字などの辞書に無い文字列を検索する */
     return anthy_get_ext_seq_ent_from_xstr(xs, is_reverse);
@@ -205,6 +194,141 @@ anthy_get_seq_ent_from_xstr(xstr *xs, int is_reverse)
   return do_get_seq_ent_from_xstr(xs, is_reverse);
 }
 
+
+
+struct gang_elm {
+  char *key;
+  xstr xs;
+  struct gang_elm *next;
+};
+
+static void
+gang_elm_dtor(void *p)
+{
+  struct gang_elm *ge = p;
+  free(ge->key);
+}
+
+static int
+find_gang_elm(allocator ator, struct gang_elm *head, xstr *xs)
+{
+  char *str = anthy_xstr_to_cstr(xs, ANTHY_UTF8_ENCODING);
+  struct gang_elm *ge;
+  for (ge = head->next; ge; ge = ge->next) {
+    if (!strcmp(ge->key, str)) {
+      free(str);
+      return 0;
+    }
+  }
+  ge = anthy_smalloc(ator);
+  ge->xs = *xs;
+  ge->key = str;
+  ge->next = head->next;
+  head->next = ge;
+  return 1;
+}
+
+static int
+gang_elm_compare_func(const void *p1, const void *p2)
+{
+  const struct gang_elm * const *s1 = p1;
+  const struct gang_elm * const *s2 = p2;
+  return strcmp((*s1)->key, (*s2)->key);
+}
+
+struct gang_scan_context {
+  /**/
+  int nr;
+  struct gang_elm **array;
+  /**/
+  int nth;
+};
+
+static void
+load_word(xstr *xs, const char *n)
+{
+  struct seq_ent *seq = anthy_get_seq_ent_from_xstr(xs, 0);
+  xstr *word_xs;
+  wtype_t wt;  
+  struct word_line wl;
+  if (!seq) {
+    seq = cache_get_seq_ent_to_mem_dic(anthy_current_personal_dic_cache,
+				      xs, 0);
+  }
+  anthy_parse_word_line(n, &wl);
+  word_xs = anthy_cstr_to_xstr(wl.word, ANTHY_UTF8_ENCODING);
+  anthy_type_to_wtype(wl.wt, &wt);
+  anthy_mem_dic_push_back_dic_ent(seq, 0, word_xs, wt,
+				  NULL, wl.freq, 0);
+  anthy_free_xstr(word_xs);
+}
+
+static int
+gang_scan(void *p, int offset, const char *key, const char *n)
+{
+  struct gang_scan_context *gsc = p;
+  struct gang_elm *elm;
+  int r;
+  (void)offset;
+  while (1) {
+    if (gsc->nth >= gsc->nr) {
+      return 0;
+    }
+    elm = gsc->array[gsc->nth];
+    r = strcmp(elm->key, key);
+    if (r == 0) {
+      /* find it */
+      load_word(&elm->xs, n);
+      /* go next in dictionary */
+      return 0;
+    } else if (r > 0) {
+      /* go next in dictionary */
+      return 0;
+    } else {
+      /* go next in lookup */
+      gsc->nth ++;
+    }
+  }
+  return 0;
+}
+
+void
+anthy_gang_load_dic(xstr *sentence)
+{
+  allocator ator = anthy_create_allocator(sizeof(struct gang_elm),
+					  gang_elm_dtor);
+  int from, len;
+  xstr xs;
+  int i, nr;
+  struct gang_elm head;
+  struct gang_elm **array, *cur;
+  struct gang_scan_context gsc;
+  head.next = NULL;
+  nr = 0;
+  for (from = 0; from < sentence->len ; from ++) {
+    for (len = 1; len < 32 && from + len <= sentence->len; len ++) {
+      xs.str = &sentence->str[from];
+      xs.len = len;
+      nr += find_gang_elm(ator, &head, &xs);
+    }
+  }
+  array = malloc(sizeof(struct gang_elm *) * nr);
+  cur = head.next;
+  for (i = 0; i < nr; i++) {
+    array[i] = cur;
+    cur = cur->next;
+  }
+  qsort(array, nr, sizeof(struct gang_elm *), gang_elm_compare_func);
+  /**/
+  gsc.nr = nr;
+  gsc.array = array;
+  gsc.nth = 0;
+  anthy_textdict_scan(anthy_private_text_dic, 0, &gsc, gang_scan);
+  /**/
+  free(array);
+  anthy_free_allocator(ator);
+}
+
 /*
  * seq_entの取得
  ************************
@@ -227,6 +351,9 @@ anthy_get_nr_dic_ents(seq_ent_t se, xstr *xs)
   if (!s) {
     return 0;
   }
+  if (!xs) {
+    return s->nr_dic_ents;
+  }
   return s->nr_dic_ents + anthy_get_nr_dic_ents_of_ext_ent(se, xs);
 }
 
@@ -234,16 +361,27 @@ int
 anthy_get_nth_dic_ent_str(seq_ent_t se, xstr *o,
 			  int n, xstr *x)
 {
-  struct seq_ent *s = se;
-  if (!s) {
+  if (!se) {
     return -1;
   }
-  if (n >= s->nr_dic_ents) {
-    return anthy_get_nth_dic_ent_str_of_ext_ent(se, o, n - s->nr_dic_ents, x);
+  if (n >= se->nr_dic_ents) {
+    return anthy_get_nth_dic_ent_str_of_ext_ent(se, o, n - se->nr_dic_ents, x);
   }
-  x->len = s->dic_ents[n]->str.len;
-  x->str = anthy_xstr_dup_str(&s->dic_ents[n]->str);
+  x->len = se->dic_ents[n]->str.len;
+  x->str = anthy_xstr_dup_str(&se->dic_ents[n]->str);
   return 0;
+}
+
+int
+anthy_get_nth_dic_ent_is_compound(seq_ent_t se, int nth)
+{
+  if (!se) {
+    return 0;
+  }
+  if (nth >= se->nr_dic_ents) {
+    return 0;
+  }
+  return se->dic_ents[nth]->is_compound;
 }
 
 int
@@ -274,7 +412,7 @@ anthy_get_nth_dic_ent_wtype(seq_ent_t se, xstr *xs,
   if (s->nr_dic_ents <= n) {
     int r;
     r = anthy_get_nth_dic_ent_wtype_of_ext_ent(xs, n - s->nr_dic_ents, w);
-    if ( r == -1) {
+    if (r == -1) {
       *w = anthy_wt_none;
     }
     return r;
@@ -332,27 +470,46 @@ anthy_get_seq_ent_ct(seq_ent_t se, int pos, int ct)
  * wtの品詞を持つ単語の中で最大の頻度を持つものを返す
  */
 int
-anthy_get_seq_ent_wtype_freq(seq_ent_t se, wtype_t wt)
+anthy_get_seq_ent_wtype_freq(seq_ent_t seq, wtype_t wt)
 {
   int i, f;
 
-  struct seq_ent *s = se;
-  if (!s) {
+  if (!seq) {
     return 0;
   }
   /**/
-  if (s->nr_dic_ents == 0) {
-    return anthy_get_ext_seq_ent_wtype(se, wt);
+  if (seq->nr_dic_ents == 0) {
+    return anthy_get_ext_seq_ent_wtype(seq, wt);
   }
 
   f = 0;
   /* 単語 */
-  for (i = 0; i < s->nr_dic_ents; i++) {
-    if (s->dic_ents[i]->order == 0 &&
-	anthy_wtype_include(wt, s->dic_ents[i]->type)) {
-      if (f < s->dic_ents[i]->freq) {
-	f = s->dic_ents[i]->freq;
+  for (i = 0; i < seq->nr_dic_ents; i++) {
+    if (seq->dic_ents[i]->order == 0 &&
+	anthy_wtype_include(wt, seq->dic_ents[i]->type)) {
+      if (f < seq->dic_ents[i]->freq) {
+	f = seq->dic_ents[i]->freq;
       }
+    }
+  }
+  return f;
+}
+
+int
+anthy_get_seq_ent_wtype_feature(seq_ent_t seq, wtype_t wt)
+{
+  int i, f;
+
+  if (!seq) {
+    return 0;
+  }
+
+  f = 0;
+  /* 単語 */
+  for (i = 0; i < seq->nr_dic_ents; i++) {
+    if (seq->dic_ents[i]->order == 0 &&
+	anthy_wtype_include(wt, seq->dic_ents[i]->type)) {
+      f |= seq->dic_ents[i]->feature;
     }
   }
   return f;
@@ -371,10 +528,13 @@ anthy_get_seq_ent_wtype_compound_freq(seq_ent_t se, wtype_t wt)
   }
   /**/
   f = 0;
-  for (i = 0; i < s->nr_compound_ents; i++) {
-    if (anthy_wtype_include(wt, s->compound_ents[i]->type)) {
-      if (f < s->compound_ents[i]->freq) {
-	f = s->compound_ents[i]->freq;
+  for (i = 0; i < s->nr_dic_ents; i++) {
+    if (!anthy_get_nth_dic_ent_is_compound(se, i)) {
+      continue;
+    }
+    if (anthy_wtype_include(wt, s->dic_ents[i]->type)) {
+      if (f < s->dic_ents[i]->freq) {
+	f = s->dic_ents[i]->freq;
       }
     }
   }
@@ -401,7 +561,7 @@ anthy_get_seq_ent_indep(seq_ent_t se)
 }
 
 int
-anthy_get_nr_compound_ents(seq_ent_t se)
+anthy_has_compound_ents(seq_ent_t se)
 {
   if (!se) {
     return 0;
@@ -415,8 +575,8 @@ anthy_get_nth_compound_ent(seq_ent_t se, int nth)
   if (!se) {
     return NULL;
   }
-  if (nth >= 0 && nth < se->nr_compound_ents) {
-    return se->compound_ents[nth];
+  if (nth >= 0 && nth < se->nr_dic_ents) {
+    return se->dic_ents[nth];
   }
   return NULL;
 }
@@ -446,17 +606,17 @@ get_nth_elm_compound(compound_ent_t ce, struct elm_compound *elm, int nth)
   int i, j;
   for (i = 0; i <= nth; i++) {
     /* nth番目の要素の先頭へ移動する */
-    while (!(ce->str->str[off] == '_' &&
-	     get_element_len(ce->str->str[off+1]) > 0)) {
+    while (!(ce->str.str[off] == '_' &&
+	     get_element_len(ce->str.str[off+1]) > 0)) {
       off ++;
-      if (off + 1 >= ce->str->len) {
+      if (off + 1 >= ce->str.len) {
 	return NULL;
       }
     }
     /* 構造体へ情報を取り込む */
-    elm->len = get_element_len(ce->str->str[off+1]);
-    elm->str.str = &ce->str->str[off+2];
-    elm->str.len = ce->str->len - off - 2;
+    elm->len = get_element_len(ce->str.str[off+1]);
+    elm->str.str = &ce->str.str[off+2];
+    elm->str.len = ce->str.len - off - 2;
     for (j = 0; j < elm->str.len; j++) {
       if (elm->str.str[j] == '_') {
 	elm->str.len = j;
@@ -516,7 +676,6 @@ anthy_compound_get_freq(compound_ent_t ce)
   return ce->freq;
 }
 
-
 /* フロントエンドから呼ばれる */
 void
 anthy_lock_dic(void)
@@ -536,20 +695,19 @@ anthy_unlock_dic(void)
 dic_session_t
 anthy_dic_create_session(void)
 {
-  return anthy_create_session();
+  return anthy_create_mem_dic();
 }
 
 void
 anthy_dic_activate_session(dic_session_t d)
 {
-  anthy_activate_session(d);
+  anthy_current_personal_dic_cache = d;
 }
 
 void
 anthy_dic_release_session(dic_session_t d)
 {
-  anthy_release_session(d);
-  anthy_shrink_mem_dic(anthy_current_personal_dic_cache);
+  anthy_release_mem_dic(d);
 }
 
 void
@@ -578,6 +736,7 @@ anthy_init_dic(void)
   anthy_init_mem_dic();
   anthy_init_record();
   anthy_init_ext_ent();
+  anthy_init_features();
 
   anthy_init_word_dic();
   master_dic_file = anthy_create_word_dic();
@@ -600,9 +759,6 @@ anthy_quit_dic(void)
   }
   if (anthy_current_record) {
     anthy_release_record(anthy_current_record);
-  }
-  if (anthy_current_personal_dic_cache) {
-    anthy_release_mem_dic(anthy_current_personal_dic_cache);
   }
   anthy_release_private_dic();
   anthy_current_record = NULL;

@@ -150,7 +150,7 @@ anthy_mark_border(struct splitter_context *sc,
     return ;
   }
 
-  /* 境界マーク用とhmmで用いられるクラス用の領域を確保 */
+  /* 境界マーク用とlatticeの検索で用いられるクラス用の領域を確保 */
   info = sc->word_split_info;
   info->seg_border = alloca(sizeof(int)*(sc->char_count + 1));
   info->best_seg_class = alloca(sizeof(enum seg_class)*(sc->char_count + 1));
@@ -291,11 +291,14 @@ anthy_init_splitter(void)
       if (strchr(fs, 'm')) {
 	splitter_debug_flags |= SPLITTER_DEBUG_MW;
       }
-      if (strchr(fs, 'h')) {
-	splitter_debug_flags |= SPLITTER_DEBUG_HM;
+      if (strchr(fs, 'l')) {
+	splitter_debug_flags |= SPLITTER_DEBUG_LN;
       }
       if (strchr(fs, 'i')) {
 	splitter_debug_flags |= SPLITTER_DEBUG_ID;
+      }
+      if (strchr(fs, 'c')) {
+	splitter_debug_flags |= SPLITTER_DEBUG_CAND;
       }
     }
   }

@@ -1,6 +1,9 @@
 ****学習機構の説明****
 
+文節の境界の決定及び候補の順序の決定の際に次のルールが適用されます。
+
 *［お茶入れ］学習
+ 連続する文節の区切り方と候補をそのまま覚える
  学習 src-ordering/commit.c
  利用 src-splitter/metaword.c
  セクション OCHAIRE
@@ -15,9 +18,17 @@
  MAX_EXPAND_PAIR_ENTRY_COUNT 1000
 
 *候補交換の学習(自立語部)
+ 2番め以降に出した候補が確定されたときに自立語部を覚える
  学習，利用 src-ordering/candswap.c
  セクション INDEPPAIR
  MAX_INDEP_PAIR_ENTRY 100
 
 *履歴の学習
  学習、利用 src-ordering/candhistory.c
+ セクション CAND_HISTORY
+ HISTORY_DEPTH 8
+ MAX_HISTORY_ENTRY 200
+
+*未知語の学習
+ 学習、利用 src-worddic/priv_dic.c
+ セクション " U"

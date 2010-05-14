@@ -1,3 +1,5 @@
+このディレクトリは下記のパッケージに対し、改変を行なったものを含んでいます。(田畑)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 かんな辞書 cannadic
 
 'cannadic' is a Japanese kana-kanji conversion dictionary for Canna (and Anthy,
@@ -275,3 +277,5 @@ http://www.ceres.dti.ne.jp/%7Eknak/yc.html
 感想、御意見、誤字脱字の指摘、新語登録などのメールはこちら。
 すぎもとまさお <sugimoto@oucrc.org>
 
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+改変によって発生している問題点については、anthy開発者まで御連絡ください。

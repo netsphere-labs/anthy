@@ -10,13 +10,18 @@
 #include "diclib_inner.h"
 #include "xchar.h"
 
-static struct xchar_ent{
-  xchar xc;
-  int type;
+#define PAGE_SIZE 128
+#define NR_PAGES 512
+#include "e2u.h"
+#include "u2e.h"
+
+/* this use UCS4 */
+static struct xchar_ent {
+  const xchar xc;
+  const int type;
   struct xchar_ent *next;/* hash chain */
 } xchar_tab[] =
 {
-#ifdef USE_UCS4
   {0x309b, XCT_CLOSE, 0}, /* ” */
   {0xff08, XCT_OPEN, 0}, /* （　*/
   {0xff09, XCT_CLOSE, 0}, /* ） */
@@ -42,33 +47,7 @@ static struct xchar_ent{
   {0xff0e, XCT_PUNCTUATION, 0},  /* ．　*/
   {0xff1f, XCT_PUNCTUATION, 0},  /* ？　*/
   {0xff01, XCT_PUNCTUATION, 0},  /* ！　*/
-#else
-  {0xa1c9, XCT_CLOSE, 0}, /* ” */
-  {0xa1ca, XCT_OPEN, 0},  /* （　*/
-  {0xa1cb, XCT_CLOSE, 0}, /* ） */
-  {0xa1cc, XCT_OPEN, 0},  /* 〔 */
-  {0xa1cd, XCT_CLOSE, 0}, /* 〕 */
-  {0xa1ce, XCT_OPEN, 0}, /* ［ */
-  {0xa1cf, XCT_CLOSE, 0}, /* ] */
-  {0xa1d0, XCT_OPEN, 0},  /* { */
-  {0xa1d1, XCT_CLOSE, 0},  /* ｝　*/
-  {0xa1d2, XCT_OPEN, 0},  /* ＜　*/
-  {0xa1d3, XCT_CLOSE, 0},  /* ＞　*/
-  {0xa1d4, XCT_OPEN, 0},  /* 《　*/
-  {0xa1d5, XCT_CLOSE, 0},  /* 》　*/
-  {0xa1d6, XCT_OPEN, 0},  /* 「　*/
-  {0xa1d7, XCT_CLOSE, 0},  /* 」　*/
-  {0xa1d8, XCT_OPEN, 0},  /* 『　*/
-  {0xa1d9, XCT_CLOSE, 0},  /* 』　*/
-  {0xa1da, XCT_OPEN, 0},  /* 【　*/
-  {0xa1db, XCT_CLOSE, 0},  /* 】　*/
-  {0xa1a2, XCT_PUNCTUATION, 0},  /* 、　*/
-  {0xa1a3, XCT_PUNCTUATION, 0},  /* 。　*/
-  {0xa1a4, XCT_PUNCTUATION, 0},  /* ，　*/
-  {0xa1a5, XCT_PUNCTUATION, 0},  /* ．　*/
-  {0xa1a9, XCT_PUNCTUATION, 0},  /* ？　*/
-  {0xa1aa, XCT_PUNCTUATION, 0},  /* ！　*/
-#endif
+
   {28, XCT_OPEN, 0}, /* ( */
   {133, XCT_OPEN, 0}, /* [ */
   {29, XCT_CLOSE, 0}, /* ) */
@@ -105,7 +84,7 @@ static struct xchar_ent{
 #define DDOT 0x8ede
 #define CIRCLE 0x8edf
 
-static struct half_kana_table half_kana_tab[] = {
+static const struct half_kana_table half_kana_tab[] = {
   {HK_A,0x8eb1,0},
   {HK_I,0x8eb2,0},
   {HK_U,0x8eb3,0},
@@ -194,10 +173,64 @@ static struct half_kana_table half_kana_tab[] = {
   {0,0,0}
 };
 
-struct half_kana_table *
+static const struct half_wide_ent {
+  const xchar half;
+  const xchar wide;
+} half_wide_tab[] = {
+  {'!', 0xff01},
+  {'\"', 0x201d},
+  {'#', 0xff03},
+  {'$', 0xff04},
+  {'%', 0xff05},
+  {'&', 0xff06},
+  {'\'', 0x2019},
+  {'(', 0xff08},
+  {')', 0xff09},
+  {'*', 0xff0a},
+  {'+', 0xff0b},
+  {',', 0xff0c},
+  {'-', 0xff0d},
+  {'.', 0xff0e},
+  {'/', 0xff0f},
+  {':', 0xff1a},
+  {';', 0xff1b},
+  {'<', 0xff1c},
+  {'=', 0xff1d},
+  {'>', 0xff1e},
+  {'?', 0xff1f},
+  {'@', 0xff20},
+  {'[', 0xff3b},
+  {'\\', 0xff3c},
+  {']', 0xff3d},
+  {'^', 0xff3e},
+  {'_', 0xff3f},
+  {'`', 0xff40},
+  {'{', 0xff5b},
+  {'|', 0xff5c},
+  {'}', 0xff5d},
+  {'~', 0xff5e},
+  {0, 0}
+};
+
+xchar
+anthy_lookup_half_wide(xchar xc)
+{
+  const struct half_wide_ent *hw;
+  for (hw = half_wide_tab; hw->half; hw ++) {
+    if (hw->half == xc) {
+      return hw->wide;
+    }
+    if (hw->wide == xc) {
+      return hw->half;
+    }
+  }
+  return 0;
+}
+
+const struct half_kana_table *
 anthy_find_half_kana(xchar xc)
 {
-  struct half_kana_table *tab;
+  const struct half_kana_table *tab;
   for (tab = half_kana_tab; tab->src; tab ++) {
     if (tab->src == xc && tab->dst) {
       return tab;
@@ -223,13 +256,14 @@ find_xchar_type(xchar xc)
 static int
 is_hira(xchar xc)
 {
-  if ((xc & 0xff00) == 0xa400) {
-    return 1;
-  }
   if (xc == HK_DDOT) {
     return 1;
   }
   if (xc == HK_BAR) {
+    return 1;
+  }
+  xc = anthy_ucs_to_euc(xc);
+  if ((xc & 0xff00) == 0xa400) {
     return 1;
   }
   return 0;
@@ -238,10 +272,11 @@ is_hira(xchar xc)
 static int
 is_kata(xchar xc)
 {
-  if ((xc & 0xff00) == 0xa500) {
+  if (xc == HK_BAR) {
     return 1;
   }
-  if (xc == HK_BAR) {
+  xc = anthy_ucs_to_euc(xc);
+  if ((xc & 0xff00) == 0xa500) {
     return 1;
   }
   return 0;
@@ -250,6 +285,7 @@ is_kata(xchar xc)
 static int
 is_symbol(xchar xc)
 {
+  xc = anthy_ucs_to_euc(xc);
   if ((xc & 0xff00) == 0xa100) {
     return 1;
   }
@@ -262,16 +298,45 @@ is_symbol(xchar xc)
 static int
 is_kanji(xchar xc)
 {
-#ifdef USE_UCS4
   if (xc > 0x4e00 && xc < 0xa000) {
     return 1;
   }
-#else
-  if (xc > 0xb000 && xc < 0xf400) {
-    return 1;
-  }
-#endif
   return 0;
+}
+
+static int
+search(const int *tab[], int v, int geta)
+{
+  int page = v / PAGE_SIZE;
+  int off = v % PAGE_SIZE;
+  const int *t;
+  if (page >= NR_PAGES) {
+    return geta;
+  }
+  t = tab[page];
+  if (!t) {
+    return geta;
+  }
+  if (!t[off] && v) {
+    return geta;
+  }
+  return t[off];
+}
+
+int
+anthy_euc_to_ucs(int ec)
+{
+  return search(e2u_index, ec, UCS_GETA);
+}
+
+int
+anthy_ucs_to_euc(int uc)
+{
+  int r = search(u2e_index, uc, EUC_GETA);
+  if (r > 65536) {
+    return EUC_GETA;
+  }
+  return r;
 }
 
 int
