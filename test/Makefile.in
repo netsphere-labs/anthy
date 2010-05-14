@@ -36,13 +36,11 @@ PRE_UNINSTALL = :
 POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
-noinst_PROGRAMS = anthy$(EXEEXT) checklib$(EXEEXT) prediction$(EXEEXT) \
-	test-matrix$(EXEEXT) test-tt$(EXEEXT)
+noinst_PROGRAMS = anthy$(EXEEXT) checklib$(EXEEXT)
 subdir = test
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -57,18 +55,6 @@ am_checklib_OBJECTS = check.$(OBJEXT)
 checklib_OBJECTS = $(am_checklib_OBJECTS)
 checklib_DEPENDENCIES = ../src-main/libanthy.la \
 	../src-worddic/libanthydic.la
-am_prediction_OBJECTS = prediction.$(OBJEXT)
-prediction_OBJECTS = $(am_prediction_OBJECTS)
-prediction_DEPENDENCIES = ../src-main/libanthy.la \
-	../src-worddic/libanthydic.la
-am_test_matrix_OBJECTS = test-matrix.$(OBJEXT)
-test_matrix_OBJECTS = $(am_test_matrix_OBJECTS)
-test_matrix_DEPENDENCIES = ../src-main/libanthy.la \
-	../src-worddic/libanthydic.la
-am_test_tt_OBJECTS = test-tt.$(OBJEXT)
-test_tt_OBJECTS = $(am_test_tt_OBJECTS)
-test_tt_DEPENDENCIES = ../src-main/libanthy.la \
-	../src-worddic/libanthydic.la
 DEFAULT_INCLUDES = -I. -I$(srcdir) -I$(top_builddir)
 depcomp = $(SHELL) $(top_srcdir)/depcomp
 am__depfiles_maybe = depfiles
@@ -80,11 +66,8 @@ LTCOMPILE = $(LIBTOOL) --tag=CC --mode=compile $(CC) $(DEFS) \
 CCLD = $(CC)
 LINK = $(LIBTOOL) --tag=CC --mode=link $(CCLD) $(AM_CFLAGS) $(CFLAGS) \
 	$(AM_LDFLAGS) $(LDFLAGS) -o $@
-SOURCES = $(anthy_SOURCES) $(checklib_SOURCES) $(prediction_SOURCES) \
-	$(test_matrix_SOURCES) $(test_tt_SOURCES)
-DIST_SOURCES = $(anthy_SOURCES) $(checklib_SOURCES) \
-	$(prediction_SOURCES) $(test_matrix_SOURCES) \
-	$(test_tt_SOURCES)
+SOURCES = $(anthy_SOURCES) $(checklib_SOURCES)
+DIST_SOURCES = $(anthy_SOURCES) $(checklib_SOURCES)
 RECURSIVE_TARGETS = all-recursive check-recursive dvi-recursive \
 	html-recursive info-recursive install-data-recursive \
 	install-exec-recursive install-info-recursive \
@@ -148,25 +131,10 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
-RUBY = @RUBY@
-RUBY_CFLAGS = @RUBY_CFLAGS@
-RUBY_DLEXT = @RUBY_DLEXT@
-RUBY_LDFLAGS = @RUBY_LDFLAGS@
-RUBY_LIBS = @RUBY_LIBS@
-RUBY_SITE_ARCH_DIR = @RUBY_SITE_ARCH_DIR@
-RUBY_SITE_LIB_DIR = @RUBY_SITE_LIB_DIR@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
-SWIG = @SWIG@
-SWIG_CPPFLAGS = @SWIG_CPPFLAGS@
-SWIG_INTERFACE = @SWIG_INTERFACE@
-SWIG_OPTIONS = @SWIG_OPTIONS@
 VERSION = @VERSION@
-WITH_RUBY_FALSE = @WITH_RUBY_FALSE@
-WITH_RUBY_TRUE = @WITH_RUBY_TRUE@
-WITH_SWIG_FALSE = @WITH_SWIG_FALSE@
-WITH_SWIG_TRUE = @WITH_SWIG_TRUE@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
@@ -212,20 +180,14 @@ sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 SUBDIRS = 
-EXTRA_DIST = test.txt test.exp
-INCLUDES = -I$(top_srcdir)/include -DSRCDIR=\"$(srcdir)\" \
+EXTRA_DIST = test.txt test.exp prediction.c test-matrix.c
+INCLUDES = -I$(top_srcdir)/ -DSRCDIR=\"$(srcdir)\" \
 	  -DTEST_HOME=\""`pwd`"\"
 
 anthy_SOURCES = main.c
 checklib_SOURCES = check.c
-prediction_SOURCES = prediction.c
-test_matrix_SOURCES = test-matrix.c
-test_tt_SOURCES = test-tt.c
 anthy_LDADD = ../src-util/libconvdb.la ../src-main/libanthy.la ../src-worddic/libanthydic.la
 checklib_LDADD = ../src-main/libanthy.la ../src-worddic/libanthydic.la
-prediction_LDADD = ../src-main/libanthy.la ../src-worddic/libanthydic.la
-test_matrix_LDADD = ../src-main/libanthy.la ../src-worddic/libanthydic.la
-test_tt_LDADD = ../src-main/libanthy.la ../src-worddic/libanthydic.la
 all: all-recursive
 
 .SUFFIXES:
@@ -272,15 +234,6 @@ anthy$(EXEEXT): $(anthy_OBJECTS) $(anthy_DEPENDENCIES)
 checklib$(EXEEXT): $(checklib_OBJECTS) $(checklib_DEPENDENCIES) 
 	@rm -f checklib$(EXEEXT)
 	$(LINK) $(checklib_LDFLAGS) $(checklib_OBJECTS) $(checklib_LDADD) $(LIBS)
-prediction$(EXEEXT): $(prediction_OBJECTS) $(prediction_DEPENDENCIES) 
-	@rm -f prediction$(EXEEXT)
-	$(LINK) $(prediction_LDFLAGS) $(prediction_OBJECTS) $(prediction_LDADD) $(LIBS)
-test-matrix$(EXEEXT): $(test_matrix_OBJECTS) $(test_matrix_DEPENDENCIES) 
-	@rm -f test-matrix$(EXEEXT)
-	$(LINK) $(test_matrix_LDFLAGS) $(test_matrix_OBJECTS) $(test_matrix_LDADD) $(LIBS)
-test-tt$(EXEEXT): $(test_tt_OBJECTS) $(test_tt_DEPENDENCIES) 
-	@rm -f test-tt$(EXEEXT)
-	$(LINK) $(test_tt_LDFLAGS) $(test_tt_OBJECTS) $(test_tt_LDADD) $(LIBS)
 
 mostlyclean-compile:
 	-rm -f *.$(OBJEXT)
@@ -290,9 +243,6 @@ distclean-compile:
 
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/check.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/main.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/prediction.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-matrix.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/test-tt.Po@am__quote@
 
 .c.o:
 @am__fastdepCC_TRUE@	if $(COMPILE) -MT $@ -MD -MP -MF "$(DEPDIR)/$*.Tpo" -c -o $@ $<; \

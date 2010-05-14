@@ -19,8 +19,8 @@
 #include <string.h>
 #include <assert.h>
 
-#include <anthy.h>
-#include <input.h>
+#include <anthy/anthy.h>
+#include <anthy/input.h>
 
 #include "rkconv.h"
 #include "rkhelper.h"

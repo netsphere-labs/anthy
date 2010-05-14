@@ -25,10 +25,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <xchar.h>
-#include <anthy.h> /* for ANTHY_*_ENCODING */
-#include <conf.h>
-#include <xstr.h>
+#include <anthy/anthy.h> /* for ANTHY_*_ENCODING */
+#include <anthy/conf.h>
+#include <anthy/xstr.h>
+#include <anthy/xchar.h>
 #include "dic_main.h"
 #include "dic_ent.h"
 
@@ -462,7 +462,7 @@ anthy_get_ext_seq_ent_pos(struct seq_ent *se, int pos)
   if (se == &num_ent && pos == POS_NOUN) {
     return 10;
   }
-  if ((se->seq_type & ST_UNKSEQ) && pos == POS_NOUN) {
+  if ((se == &unkseq_ent) && pos == POS_NOUN) {
     return 10;
   }
   return 0;
@@ -550,15 +550,12 @@ void
 anthy_init_ext_ent(void)
 {
   /**/
-  unkseq_ent.seq_type = ST_UNKSEQ|ST_WORD;
+  unkseq_ent.seq_type = 0;
   unkseq_ent.nr_dic_ents = 0;
-  unkseq_ent.flags = F_NONE;
-  num_ent.seq_type = ST_WORD;
+  num_ent.seq_type = 0;
   num_ent.nr_dic_ents = 0;
-  num_ent.flags = F_NONE;
-  sep_ent.seq_type = ST_WORD|ST_SEP;
+  sep_ent.seq_type = 0;
   sep_ent.nr_dic_ents = 0;
-  sep_ent.flags = F_NONE;
   /**/
   wt_num = anthy_init_wtype_by_name("¿ô»ì");
 }

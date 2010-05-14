@@ -1,15 +1,15 @@
 Source code in this package is released under the terms of LGPL,
 so you can use shared libraries under the terms of LGPL.
 
-files listed below are released under the terms of GPL (cannadic/COPYING)
- ./cannadic/*
- ./mkworddic/*.t (exept base.t, zipcode.t)
+files listed below are released under the terms of GPL (alt-cannadic/COPYING)
+ ./alt-cannadic/*
+ ./mkworddic/*.t (except base.t, zipcode.t)
 anything else is released under the terms of LGPL
 
-GPLのフォントや辞書とそれを読むコードが共存していてる状況は，
-GPLの「mere aggregation」に相当すると解釈しています．
-結局は http://www.gnu.org/licenses/gpl-faq.html#MereAggregation にある
-「This is a legal question, which ultimately judges will decide.」ですが．
+I think GPLed dictionary is almost in same situation of GPLed fonts.
+It would be considered `mere aggregation' in GPL.
+anyway http://www.gnu.org/licenses/gpl-faq.html#MereAggregation says
+`This is a legal question, which ultimately judges will decide.'
 
 --------
                   GNU LESSER GENERAL PUBLIC LICENSE

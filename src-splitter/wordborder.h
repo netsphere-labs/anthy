@@ -3,10 +3,10 @@
 #define _wordborder_h_included_
 
 
-#include <dic.h>
-#include <alloc.h>
-#include <segclass.h>
-#include <depgraph.h>
+#include <anthy/dic.h>
+#include <anthy/alloc.h>
+#include <anthy/segclass.h>
+#include <anthy/depgraph.h>
 
 struct splitter_context;
 
@@ -20,7 +20,6 @@ enum mw_check {
   MW_CHECK_SINGLE,
   MW_CHECK_BORDER,
   MW_CHECK_WRAP,
-  MW_CHECK_PAIR,
   MW_CHECK_OCHAIRE,
   MW_CHECK_NUMBER,
   MW_CHECK_COMPOUND
@@ -117,9 +116,10 @@ struct word_list {
   int from, len; /* 文節全体 */
   int is_compound; /* 複合語かどうか */
 
-  int score;/* スコア */
+  /**/
   int dep_word_hash;
   int mw_features;
+  /**/
   enum seg_class seg_class;
   enum constraint_stat can_use; /* セグメント境界に跨がっていない */
 
@@ -198,7 +198,6 @@ extern wtype_t anthy_wtype_name_noun;
 extern wtype_t anthy_wtype_num_noun;
 extern wtype_t anthy_wtype_prefix;
 extern wtype_t anthy_wtype_num_prefix;
-extern wtype_t anthy_wtype_postfix;
 extern wtype_t anthy_wtype_num_postfix;
 extern wtype_t anthy_wtype_name_postfix;
 extern wtype_t anthy_wtype_sv_postfix;
@@ -207,7 +206,5 @@ extern wtype_t anthy_wtype_v_renyou;
 extern wtype_t anthy_wtype_noun_tail;/* いれ「たて」とか */
 extern wtype_t anthy_wtype_n1;
 extern wtype_t anthy_wtype_n10;
-extern wtype_t anthy_wtype_noun_and_postfix;
-
 
 #endif

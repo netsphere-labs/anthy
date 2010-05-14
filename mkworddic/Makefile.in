@@ -43,8 +43,7 @@ subdir = mkworddic
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in \
 	$(srcdir)/dict.args.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -52,7 +51,7 @@ CONFIG_HEADER = $(top_builddir)/config.h
 CONFIG_CLEAN_FILES = dict.args
 PROGRAMS = $(noinst_PROGRAMS)
 am_mkworddic_OBJECTS = mkdic.$(OBJEXT) writewords.$(OBJEXT) \
-	mkudic.$(OBJEXT)
+	mkudic.$(OBJEXT) calcfreq.$(OBJEXT)
 mkworddic_OBJECTS = $(am_mkworddic_OBJECTS)
 mkworddic_DEPENDENCIES = ../src-worddic/libanthydic.la
 SCRIPTS = $(noinst_SCRIPTS)
@@ -134,25 +133,10 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
-RUBY = @RUBY@
-RUBY_CFLAGS = @RUBY_CFLAGS@
-RUBY_DLEXT = @RUBY_DLEXT@
-RUBY_LDFLAGS = @RUBY_LDFLAGS@
-RUBY_LIBS = @RUBY_LIBS@
-RUBY_SITE_ARCH_DIR = @RUBY_SITE_ARCH_DIR@
-RUBY_SITE_LIB_DIR = @RUBY_SITE_LIB_DIR@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
-SWIG = @SWIG@
-SWIG_CPPFLAGS = @SWIG_CPPFLAGS@
-SWIG_INTERFACE = @SWIG_INTERFACE@
-SWIG_OPTIONS = @SWIG_OPTIONS@
 VERSION = @VERSION@
-WITH_RUBY_FALSE = @WITH_RUBY_FALSE@
-WITH_RUBY_TRUE = @WITH_RUBY_TRUE@
-WITH_SWIG_FALSE = @WITH_SWIG_FALSE@
-WITH_SWIG_TRUE = @WITH_SWIG_TRUE@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
@@ -200,10 +184,10 @@ target_alias = @target_alias@
 
 # Files
 noinst_SCRIPTS = 
-EXTRA_DICS = base.t extra.t compound.t name.t adjust.t katakana.t placename.t utf8.t
+EXTRA_DICS = base.t extra.t compound.t name.t adjust.t utf8.t tankanji.t
 ZIPCODE_DICT = zipcode.t
 CANNADIC_DIST = gcanna.ctd gcannaf.ctd
-INCLUDES = -I$(top_srcdir)/include
+INCLUDES = -I$(top_srcdir)/
 # HOKUTODIC_DIST = hokuto.t
 # You can get it from
 # http://winnie.kuis.kyoto-u.ac.jp/members/ri/hokuto/dic/index.html
@@ -213,7 +197,7 @@ EXTRA_DIST = \
  $(EXTRA_DICS) $(ZIPCODE_DICT) $(HOKUTODIC_DIST) \
  udict dict.args.in
 
-mkworddic_SOURCES = mkdic.c writewords.c mkudic.c mkdic.h
+mkworddic_SOURCES = mkdic.c writewords.c mkudic.c calcfreq.c mkdic.h
 mkworddic_LDADD = ../src-worddic/libanthydic.la
 noinst_DATA = anthy.wdic
 
@@ -271,6 +255,7 @@ mostlyclean-compile:
 distclean-compile:
 	-rm -f *.tab.c
 
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/calcfreq.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mkdic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/mkudic.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/writewords.Po@am__quote@

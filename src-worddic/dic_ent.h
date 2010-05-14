@@ -1,17 +1,11 @@
 #ifndef _dic_ent_h_included_
 #define _dic_ent_h_included_
 
-#include <wtype.h>
-#include "dic.h"
+#include <anthy/wtype.h>
+#include <anthy/dic.h>
 
 /* 文字列のタイプ (seq_ent->seq_type) */
 #define ST_NONE 0
-/* Anthy的になんらかの意味のある文字列 */
-#define ST_WORD 1
-/* 辞書にのってない自立語 */
-#define ST_UNKSEQ 2
-/* 辞書にのってない非自立語、主にセパレータ */
-#define ST_SEP 4
 /**/
 #define ST_REVERSE 8
 
@@ -35,7 +29,6 @@ struct seq_ent {
   xstr str;/* 読み */
 
   int seq_type; /** ST_(type) */
-  int flags; /** ?F_* */
 
   /** dic_entの配列 */
   int nr_dic_ents;

@@ -1,16 +1,18 @@
 #ifndef _mkdic_h_included_
 #define _mkdic_h_included_
 
-#include <xstr.h>
 #include <stdio.h>
+#include <anthy/xstr.h>
 
 /** 単語 */
 struct word_entry {
   /** 品詞名 */
   const char *wt_name;
   /** 頻度 */
+  int raw_freq;
+  int source_order;
   int freq;
-  /**/
+  /* 素性 */
   int feature;
   /** 単語 */
   char *word_utf8;
@@ -24,6 +26,7 @@ struct word_entry {
 struct yomi_entry {
   /* 読みの文字列 */
   xstr *index_xstr;
+  /* 読みの文字列(辞書ファイル内のインデックス) */
   char *index_str;
   /* 辞書ファイル中のページ中のオフセット */
   int offset;
@@ -35,7 +38,7 @@ struct yomi_entry {
   struct yomi_entry *hash_next;
 };
 
-#define YOMI_HASH 16384
+#define YOMI_HASH (16384 * 16)
 
 /* 辞書全体 */
 struct yomi_entry_list {
@@ -87,5 +90,8 @@ void make_ucdict(FILE *out, struct uc_dict *uc);
 
 /* writewords.c */
 void output_word_dict(struct yomi_entry_list *yl);
+
+/* calcfreq.c */
+void calc_freq(struct yomi_entry_list *yl);
 
 #endif

@@ -24,17 +24,17 @@
 #include <string.h>
 
 #include "config.h"
-#include <anthy.h>
+#include <anthy/anthy.h>
 
-#include <conf.h>
-#include <ruleparser.h>
-#include <xstr.h>
-#include <filemap.h>
-#include <logger.h>
-#include <segclass.h>
-#include <splitter.h>
-#include <wtype.h>
-#include <diclib.h>
+#include <anthy/conf.h>
+#include <anthy/ruleparser.h>
+#include <anthy/xstr.h>
+#include <anthy/filemap.h>
+#include <anthy/logger.h>
+#include <anthy/segclass.h>
+#include <anthy/splitter.h>
+#include <anthy/wtype.h>
+#include <anthy/diclib.h>
 #include "wordborder.h"
 
 /* 遷移グラフ */
@@ -58,12 +58,14 @@ anthy_xstrcmp_with_ondisk(xstr *xs,
   int *d = (int *)dxs;
   int len = anthy_dic_ntohl(d[0]);
   int i;
+  xchar c;
   if (len != xs->len) {
     return 1;
   }
   d++;
   for (i = 0; i < len; i++) {
-    if (xs->str[i] != d[i]) {
+    c = anthy_dic_ntohl(d[i]);
+    if (xs->str[i] != c) {
       return 1;
     }
   }
@@ -170,7 +172,7 @@ match_branch(struct splitter_context *sc,
       tmpl->head_pos = anthy_dic_ntohl(transition->head_pos);
     }
     if (transition->weak) {
-      tmpl->mw_features |= MW_FEATURE_WEAK;
+      tmpl->mw_features |= MW_FEATURE_WEAK_CONN;
     }
 
     /* 遷移か終端か */

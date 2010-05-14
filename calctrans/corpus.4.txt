@@ -1,6 +1,4 @@
 #
-# ./proccorpus corpus.?.txt > file;
-# ./calctrans file -o ../src-splitter/transition.h
 #
 # ~は候補のミス
 # !は文節区切りのミス
@@ -15,3 +13,4 @@
 |きょうつう| |~今日通|
 |さいえんす| |~再演す|
 |ねん| |~寝ん|
+|わたしの|なまえは|やまだです| |私の|~生枝は|山田です|

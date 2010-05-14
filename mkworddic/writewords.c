@@ -26,8 +26,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <anthy.h>
-#include <word_dic.h>
+#include <anthy/anthy.h>
+#include <anthy/word_dic.h>
 #include "mkdic.h"
 
 extern FILE *page_out, *page_index_out;
@@ -45,6 +45,29 @@ write_word(struct word_entry *we, int encoding)
     free(s);
   }
   return count;
+}
+
+static int
+write_freq(FILE *fp, struct word_entry *we)
+{
+  int count = 0;
+  int freq = we->freq / 100;
+  if (freq != 1) {
+    count += fprintf(fp, "*%d", freq);
+  }
+  return count;
+}
+
+static int
+compare_word_entry(struct word_entry *prev_we,
+		   struct word_entry *we)
+{
+  if (strcmp(prev_we->wt_name, we->wt_name) ||
+      (prev_we->freq / 100) != (we->freq / 100) ||
+      prev_we->feature != we->feature) {
+    return 1;
+  }
+  return 0;
 }
 
 /** 一つの読みに対する単語の内容を出力する
@@ -66,8 +89,12 @@ output_word_entry_for_a_yomi(struct yomi_entry *ye, int encoding)
   /* 各単語を出力する */
   for (i = 0; i < ye->nr_entries; i++) {
     struct word_entry *we = &ye->entries[i];
+    struct word_entry *prev_we = NULL;
+    if (i != 0) {
+      prev_we = &ye->entries[i-1];
+    }
     /**/
-    if (!we->freq) {
+    if (!we->raw_freq) {
       continue;
     }
     if (i > 0) {
@@ -76,17 +103,12 @@ output_word_entry_for_a_yomi(struct yomi_entry *ye, int encoding)
     }
     /* 品詞と頻度を出力する */
     if (i == 0 ||
-	(strcmp(ye->entries[i-1].word_utf8, we->word_utf8) ||
-	 strcmp(ye->entries[i-1].wt_name, we->wt_name) ||
-	 ye->entries[i-1].freq != we->freq ||
-	 ye->entries[i-1].feature != we->feature)) {
+	compare_word_entry(prev_we, we)) {
       count += fprintf(yomi_entry_out, "%s", we->wt_name);
       if (we->feature != 0) {
 	count += fprintf(yomi_entry_out, ",");
       }
-      if (we->freq != 0) {
-	count += fprintf(yomi_entry_out, "*%d", we->freq);
-      }
+      count += write_freq(yomi_entry_out, we);
       count += fprintf(yomi_entry_out, " ");
     }
     /* 単語を出力する場所がこの単語のid */

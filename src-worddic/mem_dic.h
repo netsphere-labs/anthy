@@ -1,7 +1,7 @@
 #ifndef _mem_dic_h_included_
 #define _mem_dic_h_included_
 
-#include <alloc.h>
+#include <anthy/alloc.h>
 #include "dic_ent.h"
 
 

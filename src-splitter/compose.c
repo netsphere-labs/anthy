@@ -35,9 +35,9 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <dic.h>
-#include <splitter.h>
-#include <segment.h>
+#include <anthy/dic.h>
+#include <anthy/splitter.h>
+#include <anthy/segment.h>
 #include "wordborder.h"
 
 
@@ -313,7 +313,6 @@ make_candidate_from_simple_metaword(struct seg_ent *se,
    * 各単語の品詞が決定された状態でコミットされる。
    */
   struct cand_ent *ce;
-  struct word_list *wl = mw->wl;
 
   /* 複数(1も含む)の単語で構成される文節に単語を割当てていく */
   ce = alloc_cand_ent();
@@ -325,7 +324,7 @@ make_candidate_from_simple_metaword(struct seg_ent *se,
   ce->score = 0;
 
   /* 接頭辞, 自立語部, 接尾辞, 付属語 */
-  make_cand_elem_from_word_list(se, ce, wl, 0, is_reverse);
+  make_cand_elem_from_word_list(se, ce, mw->wl, 0, is_reverse);
 
   /* WRAPされていたらGUESSと同じ扱いにして点数を下げる */
   if (anthy_metaword_type_tab[top_mw->type].status != MW_STATUS_WRAPPED) {
@@ -463,6 +462,9 @@ anthy_do_make_candidates(struct splitter_context *sc,
       anthy_print_metaword(sc, mw);
     }
     proc_splitter_info(se, mw, mw, is_reverse);
+  }
+  if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_CAND) {
+    printf("#done\n");
   }
   /* 単漢字などの候補 */
   push_back_singleword_candidate(se, is_reverse);

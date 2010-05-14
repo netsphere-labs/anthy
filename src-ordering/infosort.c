@@ -24,25 +24,28 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <segment.h>
-#include <ordering.h>
-#include <feature_set.h>
-#include <splitter.h>
+#include <anthy/segment.h>
+#include <anthy/ordering.h>
+#include <anthy/feature_set.h>
+#include <anthy/splitter.h>
+#include <anthy/diclib.h>
 #include "sorter.h"
 
-#define CAND_INFO
-#include "../src-splitter/transition.h"
+static void *cand_info_array;
 
 static double
 calc_probability(struct feature_list *fl)
 {
-  struct feature_freq *res;
-  res = anthy_find_feature_freq(fl, feature_array, total_line_count);
+  struct feature_freq *res, arg;
+  res = anthy_find_feature_freq(cand_info_array,
+				fl, &arg);
   if (res) {
-    double pos = (double)res->f[9];
-    double neg = (double)res->f[8];
+    double pos = (double)res->f[15];
+    double neg = (double)res->f[14];
     double prob = pos / (pos + neg);
-    return prob * prob * prob;
+    prob = prob * prob;
+    /**/
+    return prob;
   }
   return 0;
 }
@@ -72,24 +75,22 @@ mw_eval(struct seg_ent *prev_seg, struct seg_ent *seg,
   /* 計算する */
   prob = 0.1 + calc_probability(&fl);
   if (prob < 0) {
-    prob = (double)1 / (double)total_line_count;
+    prob = (double)1 / (double)1000;
   }
-  /*anthy_feature_list_print(&fl);
-    printf(" prob=%f\n", prob);*/
   anthy_feature_list_free(&fl);
   mw->struct_score = RATIO_BASE * RATIO_BASE;
   mw->struct_score *= prob;
+  /*
+  anthy_feature_list_print(&fl);
+  printf(" prob=%f, struct_score=%d\n", prob, mw->struct_score);
+  */
 
-  /* 「可能制」とか出てくるのを避ける、そのうち素性が充実したら避けれるはず */
-  if (mw->type == MW_NOUN_NOUN_SUFFIX) {
-    mw->struct_score /= 5;
-  }
   /**/
   if (mw->mw_features & MW_FEATURE_SUFFIX) {
     mw->struct_score /= 2;
   }
-  if (mw->mw_features & MW_FEATURE_WEAK) {
-    mw->struct_score /= 5;
+  if (mw->mw_features & MW_FEATURE_WEAK_CONN) {
+    mw->struct_score /= 10;
   }
 }
 
@@ -136,4 +137,10 @@ anthy_sort_metaword(struct segment_list *seg_list)
     qsort(seg->mw_array, seg->nr_metaword, sizeof(struct meta_word *),
 	  metaword_compare_func);
   }
+}
+
+void
+anthy_infosort_init(void)
+{
+  cand_info_array = anthy_file_dic_get_section("cand_info");
 }

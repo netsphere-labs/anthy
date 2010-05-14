@@ -3,7 +3,22 @@
  * conf_initで設定される変数とconf_overrideで設定される
  * 変数の関係に注意
  *
- * Copyright (C) 2000-2004 TABATA Yusuke
+ * Copyright (C) 2000-2007 TABATA Yusuke
+ */
+/*
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 #include <unistd.h>
 #include <pwd.h>
@@ -13,9 +28,9 @@
 #include <stdio.h>
 #include <string.h>
 
-#include <alloc.h>
-#include <conf.h>
-#include <logger.h>
+#include <anthy/alloc.h>
+#include <anthy/conf.h>
+#include <anthy/logger.h>
 
 #include <config.h>
 
@@ -55,11 +70,91 @@ find_val_ent(const char *v)
     }
   }
   e = malloc(sizeof(struct val_ent));
+  if (!e) {
+    return NULL;
+  }
   e->var = strdup(v);
   e->val = 0;
   e->next = ent_list;
   ent_list = e;
   return e;
+}
+
+/** ${変数名}の形の変数の値を取得する
+ */
+static const char *
+get_subst(const char *s)
+{
+  if (s[0] == '$' && s[1] == '{' &&
+      strchr(s, '}')) {
+    struct val_ent *val;
+    char *var = strdup(&s[2]);
+    char *k = strchr(var, '}');
+    *k = 0;
+    val = find_val_ent(var);
+    free(var);
+    if (!val || !val->val) {
+      return "";
+    }
+    return val->val;
+  }
+  return NULL;
+}
+
+struct expand_buf {
+  int len;
+  int size;
+  char *buf;
+  char *cur;
+};
+
+static void
+ensure_buffer(struct expand_buf *eb, int count)
+{
+  int required = count - (eb->size - eb->len) + 16;
+  if (required > 0) {
+    eb->size += required;
+    eb->buf = realloc(eb->buf, eb->size);
+    eb->cur = &eb->buf[eb->len];
+  }
+}
+
+static char *
+expand_string(const char *s)
+{
+  struct expand_buf eb;
+  char *res;
+  eb.size = 256;
+  eb.buf = malloc(eb.size);
+  eb.cur = eb.buf;
+  eb.len = 0;
+
+  while (*s) {
+    const char *subst = get_subst(s);
+    if (subst) {
+      int len = strlen(subst);
+      ensure_buffer(&eb, len + 1);
+      *eb.cur = 0;
+      strcat(eb.buf, subst);
+      eb.cur += len;
+      eb.len += len;
+      s = strchr(s, '}');
+      s ++;
+    } else {
+      *eb.cur = *s;
+      /**/
+      eb.cur ++;
+      s++;
+      eb.len ++;
+    }
+    /**/
+    ensure_buffer(&eb, 256);
+  }
+  *eb.cur = 0;
+  /**/
+  res = strdup(eb.buf);
+  free(eb.buf);
+  return res;
 }
 
 static void
@@ -70,7 +165,7 @@ add_val(const char *var, const char *val)
   if (e->val) {
     free((void *)e->val);
   }
-  e->val = strdup(val);
+  e->val = expand_string(val);
 }
 
 static void
@@ -78,16 +173,16 @@ read_conf_file(void)
 {
   const char *fn;
   FILE *fp;
-  char buf[256];
+  char buf[1024];
   fn = anthy_conf_get_str("CONFFILE");
   fp = fopen(fn, "r");
   if (!fp){
     anthy_log(0, "Failed to open %s\n", fn);
     return ;
   }
-  while(fgets(buf, 256, fp)) {
+  while(fgets(buf, 1024, fp)) {
     if (buf[0] != '#') {
-      char var[256], val[256];
+      char var[1024], val[1024];
       if (sscanf(buf, "%s %s", var, val) == 2){
 	add_val(var, val);
       }

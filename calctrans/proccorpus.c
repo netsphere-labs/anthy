@@ -2,13 +2,18 @@
  * コーパスとなる文章を読んで、文節の長さを調整して
  * 形態素解析の結果を出力する
  *
+ * 出力形式について
+ *  まず伸縮を行った文節が最初の長さで出力される
+ *  次に各文節毎に(あれば)誤った候補、正しい候補の順で情報を出力する
+ *
+ *
  * Copyright (C) 2006-2007 TABATA Yusuke
  *
  */
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "../include/convdb.h"
+#include <anthy/convdb.h>
 
 static int verbose;
 
@@ -45,7 +50,7 @@ trim_segment(anthy_context_t ac, struct conv_res *cr,
 }
 
 /*
- * nth番目の文節の候補がsegになるようにする
+ * nth番目の文節で候補segを探して確定する
  */
 static int
 find_candidate(anthy_context_t ac, struct conv_res *cr,
@@ -56,6 +61,7 @@ find_candidate(anthy_context_t ac, struct conv_res *cr,
   struct anthy_segment_stat ass;
 
   if (seg[0] == '~') {
+    /* 候補ミスのマーク「~」をスキップする */
     seg++;
     cr->cand_check[nth] = 1;
   }
@@ -64,9 +70,7 @@ find_candidate(anthy_context_t ac, struct conv_res *cr,
   for (i = 0; i < ass.nr_candidate; i++) {
     anthy_get_segment(ac, nth, i, seg_buf, 1024);
     if (!strcmp(seg_buf, seg)) {
-      if (i != 0) {
-	print_cand_miss_segment_info(ac, nth);
-      }
+      /* 一致する候補を見つけたので確定する */
       anthy_commit_segment(ac, nth, i);
       return 0;
     }
@@ -137,6 +141,7 @@ proc_sentence(anthy_context_t ac, struct conv_res *cr)
   if (verbose) {
     anthy_print_context(ac);
   }
+  /* 出力する */
   print_context_info(ac, cr);
 }
 

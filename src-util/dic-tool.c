@@ -12,16 +12,33 @@
  */
 /*
  * Funded by IPA未踏ソフトウェア創造事業 2001 9/22
+ *
+ * Copyright (C) 2000-2007 TABATA Yusuke
+ */
+/*
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include <anthy.h>
-#include <dicutil.h>
+#include <anthy/anthy.h>
+#include <anthy/dicutil.h>
 /**/
-#include <xstr.h>
-#include <config.h>
+#include <anthy/xstr.h>
+#include "config.h"
 
 #define UNSPEC 0
 #define DUMP_DIC 1
@@ -135,10 +152,15 @@ read_line(char *buf, int len, FILE *fp)
 {
   while (fgets(buf, len, fp)) {
     if (buf[0] != '#') {
+      /* 改行を削除する */
       int l = strlen(buf);
       if (l > 0 && buf[l-1] == '\n') {
 	buf[l-1] = 0;
       }
+      if (l > 1 && buf[l-2] == '\r') {
+	buf[l-1] = 0;
+      }
+      /**/
       return buf;
     }
   }

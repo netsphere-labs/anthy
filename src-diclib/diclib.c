@@ -2,26 +2,24 @@
 #include <netinet/in.h>
 
 /**/
-#include <diclib.h>
-#include <xstr.h>
-#include <alloc.h>
-#include <conf.h>
+#include <anthy/diclib.h>
+#include <anthy/xstr.h>
+#include <anthy/alloc.h>
+#include <anthy/conf.h>
 #include "diclib_inner.h"
 
 
-int
-anthy_dic_ntohl(int a)
+unsigned int
+anthy_dic_ntohl(unsigned int a)
 {
   return ntohl(a);
 }
 
-int
-anthy_dic_htonl(int a)
+unsigned int
+anthy_dic_htonl(unsigned int a)
 {
   return htonl(a);
 }
-
-
 
 int
 anthy_init_diclib()

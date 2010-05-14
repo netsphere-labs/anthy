@@ -5,8 +5,8 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include <anthy.h>
-#include <logger.h>
+#include <anthy/anthy.h>
+#include <anthy/logger.h>
 
 static void (*logger)(int lv, const char *str);
 static int current_level = 1;

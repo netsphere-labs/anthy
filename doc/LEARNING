@@ -30,5 +30,7 @@
  MAX_HISTORY_ENTRY 200
 
 *未知語の学習
- 学習、利用 src-worddic/priv_dic.c
- セクション " U"
+ 学習 src-worddic/priv_dic.c
+ 利用 src-worddic/commit.c
+ セクション UNKNOWN_WORD
+ MAX_UNKNOWN_WORD 100

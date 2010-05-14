@@ -20,9 +20,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <anthy/filemap.h>
+#include <anthy/textdict.h>
 #include "dic_main.h"
-#include "filemap.h"
-#include "textdict.h"
 
 struct textdict {
   char *fn;
@@ -34,7 +34,14 @@ struct textdict *
 anthy_textdict_open(const char *fn, int create)
 {
   struct textdict *td = malloc(sizeof(struct textdict));
+  if (!td) {
+    return NULL;
+  }
   td->fn = strdup(fn);
+  if (!td->fn) {
+    free(td);
+    return NULL;
+  }
   td->mapping = NULL;
   return td;
 }
@@ -52,6 +59,9 @@ unmap(struct textdict *td)
 void
 anthy_textdict_close(struct textdict *td)
 {
+  if (!td) {
+    return ;
+  }
   unmap(td);
   free(td->fn);
   free(td);
@@ -103,6 +113,9 @@ anthy_textdict_scan(struct textdict *td, int offset, void *ptr,
 {
   FILE *fp;
   char buf[1024];
+  if (!td) {
+    return ;
+  }
   fp = fopen(td->fn, "r");
   if (!fp) {
     return ;
@@ -175,6 +188,9 @@ anthy_textdict_insert_line(struct textdict *td, int offset,
 {
   int len = strlen(line);
   int size;
+  if (!td) {
+    return -1;
+  }
   if (expand_file(td, len)) {
     return -1;
   }

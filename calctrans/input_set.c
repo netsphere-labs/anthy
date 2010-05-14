@@ -1,7 +1,7 @@
 /* 入力のセットを管理するコード
- * TODO: IIS関連を消す
  *
  * Copyright (C) 2006 HANAOKA Toshiyuki
+ * Copyright (C) 2006-2007 TABATA Yusuke
  *
  * Special Thanks: Google Summer of Code Program 2006
  *
@@ -12,21 +12,48 @@
 #include <math.h>
 #include "input_set.h"
 
-struct input_set {
-  int max_feature;
-  double *feature_weight;
-  double *negative_weight;
-  /**/
-  double total_weight;
-  struct input_line *lines;
+#define HASH_SIZE 1024
+
+struct int_map_node {
+  int key;
+  int val;
+  struct int_map_node *next;
 };
 
-/* too slow */
+struct int_map {
+  /**/
+  int nr;
+  struct int_map_node *hash_head;
+  /**/
+  int array_size;
+  struct int_map_node **array;
+};
+
+struct input_set {
+  /**/
+  struct input_line *lines;
+  struct input_line *buckets[HASH_SIZE];
+  /**/
+  struct int_map *feature_freq;
+};
+
+static int
+line_hash(const int *ar, int nr)
+{
+  int i;
+  unsigned h = 0;
+  for (i = 0; i < nr; i++) {
+    h += ar[i];
+  }
+  return (h % HASH_SIZE);
+}
+
 static struct input_line *
 find_same_line(struct input_set *is, int *features, int nr)
 {
   struct input_line *il;
-  for (il = is->lines; il; il = il->next_line) {
+  int h = line_hash(features, nr);
+  for (il = is->buckets[h]; il; il = il->next_in_hash) {
     int i;
     if (il->nr_features != nr) {
       continue;
@@ -46,11 +73,11 @@ find_same_line(struct input_set *is, int *features, int nr)
 static struct input_line *
 add_line(struct input_set *is, int *features, int nr)
 {
-  int i;
+  int i, h;
   struct input_line *il;
   il = malloc(sizeof(struct input_line));
   il->nr_features = nr;
-  il->features = malloc(sizeof(double) * nr);
+  il->features = malloc(sizeof(int) * nr);
   for (i = 0; i < nr; i++) {
     il->features[i] = features[i];
   }
@@ -59,43 +86,31 @@ add_line(struct input_set *is, int *features, int nr)
   /* link */
   il->next_line = is->lines;
   is->lines = il;
+  /**/
+  h = line_hash(features, nr);
+  il->next_in_hash = is->buckets[h];
+  is->buckets[h] = il;
   return il;
 }
 
 static void
-accumlate_features(struct input_set *is, int *features,
-		   int nr, double weight)
+add_feature_count(struct int_map *im, int nr, int *features, int weight)
 {
   int i;
   for (i = 0; i < nr; i++) {
     int f = features[i];
-    is->feature_weight[f] += weight;
+    int v = int_map_peek(im, f);
+    int_map_set(im, f, v + weight);
   }
 }
 
-static void
-accumlate_negative_features(struct input_set *is, int *features,
-			    int nr, double weight)
-{
-  int i;
-  for (i = 0; i < nr; i++) {
-    int f = features[i];
-    is->negative_weight[f] -= weight;
-  }
-}
-
+/* input_setに入力を一つ加える */
 void
 input_set_set_features(struct input_set *is, int *features,
-		       int nr, double weight)
+		       int nr, int weight)
 {
   struct input_line *il;
-  double abs_weight = fabs(weight);
-
-  if (weight < 0) {
-    accumlate_negative_features(is, features, nr, weight);
-  } else {
-    accumlate_features(is, features, nr, weight);
-  }
+  int abs_weight = abs(weight);
 
   /**/
   il = find_same_line(is, features, nr);
@@ -108,40 +123,24 @@ input_set_set_features(struct input_set *is, int *features,
   } else {
     il->negative_weight += abs_weight;
   }
-  is->total_weight += abs_weight;
-}
-
-void
-iis_dump(struct input_set *is)
-{
-  struct input_line *il;
-  int i;
-  printf("total_weight,%f\n", is->total_weight);
-  for (il = is->lines; il; il = il->next_line) {
-    printf(" nr=%f ", il->weight);
-    for (i = 0; i < il->nr_features; i++) {
-      printf("%d,", il->features[i]);
-    }
-    printf(" (%f)\n", il->weight / is->total_weight);
-  }
+  /**/
+  add_feature_count(is->feature_freq, nr, features, abs_weight);
 }
 
 struct input_set *
-input_set_create(int nr)
+input_set_create(void)
 {
-  struct input_set *is;
   int i;
+  struct input_set *is;
   is = malloc(sizeof(struct input_set));
   is->lines = NULL;
-  is->total_weight = 0;
   /**/
-  is->max_feature = nr;
-  is->feature_weight = malloc(sizeof(double) * nr);
-  is->negative_weight = malloc(sizeof(double) * nr);
-  for (i = 0; i < nr; i++) {
-    is->feature_weight[i] = 0;
-    is->negative_weight[i] = 0;
+  for (i = 0; i < HASH_SIZE; i++) {
+    is->buckets[i] = NULL;
   }
+  /**/
+  is->feature_freq = int_map_new();
+  /**/
   return is;
 }
 
@@ -149,4 +148,138 @@ struct input_line *
 input_set_get_input_line(struct input_set *is)
 {
   return is->lines;
+}
+
+struct input_set *
+input_set_filter(struct input_set *is,
+		 double pos, double neg)
+{
+  struct input_set *new_is = input_set_create();
+  struct input_line *il;
+  for (il = is->lines; il; il = il->next_line) {
+    if (il->weight > pos ||
+	il->negative_weight > neg) {
+      input_set_set_features(new_is, il->features,
+			     il->nr_features, il->weight);
+      input_set_set_features(new_is, il->features,
+			     il->nr_features, -il->negative_weight);
+    }
+  }
+  return new_is;
+}
+
+void
+input_set_output_feature_freq(FILE *fp, struct input_set *is)
+{
+  int i;
+  struct int_map *im = is->feature_freq;
+  fprintf(fp, "0 %d\n", im->array_size);
+  int_map_flatten(im);
+  for (i = 0; i < im->array_size; i++) {
+    if (!im->array[i]) {
+      fprintf(fp, "0 0\n");
+    } else {
+      fprintf(fp, "%d %d\n", im->array[i]->key,
+	      im->array[i]->val);
+    }
+  }
+}
+
+struct int_map *
+int_map_new(void)
+{
+  int i;
+  struct int_map *im = malloc(sizeof(struct int_map));
+  im->nr = 0;
+  im->hash_head = malloc(sizeof(struct int_map_node) * HASH_SIZE);
+  for (i = 0; i < HASH_SIZE; i++) {
+    im->hash_head[i].next = NULL;
+  }
+  return im;
+}
+
+static int
+node_index(int idx)
+{
+  return idx % HASH_SIZE;
+}
+
+static struct int_map_node *
+find_int_map_node(struct int_map *im, int idx)
+{
+  struct int_map_node *node;
+  int h = node_index(idx);
+  for (node = im->hash_head[h].next; node; node = node->next) {
+    if (node->key == idx) {
+      return node;
+    }
+  }
+  return NULL;
+}
+
+int
+int_map_peek(struct int_map *im, int idx)
+{
+  struct int_map_node *node = find_int_map_node(im, idx);
+  if (node) {
+    return node->val;
+  }
+  return 0;
+}
+
+void
+int_map_set(struct int_map *im, int idx, int val)
+{
+  struct int_map_node *node = find_int_map_node(im, idx);
+  int h;
+  if (node) {
+    node->val = val;
+    return ;
+  }
+  /**/
+  node = malloc(sizeof(struct int_map_node));
+  node->key = idx;
+  node->val = val;
+  h = node_index(idx);
+  node->next = im->hash_head[h].next;
+  im->hash_head[h].next = node;
+  /**/
+  im->nr ++;
+}
+
+void
+int_map_flatten(struct int_map *im)
+{
+  int i;
+  struct int_map_node *node;
+  int max_n = 0;
+  /* 配列を準備する */
+  im->array_size = im->nr * 2;
+  im->array = malloc(sizeof(struct int_map_node *) * 
+		     im->array_size);
+  for (i = 0; i < im->array_size; i++) {
+    im->array[i] = NULL;
+  }
+  /* 要素を置いていく */
+  for (i = 0; i < HASH_SIZE; i++) {
+    for (node = im->hash_head[i].next; node; node = node->next) {
+      int n = 0;
+      while (1) {
+	int h;
+	h = node->key + n;
+	h %= im->array_size;
+	if (!im->array[h]) {
+	  im->array[h] = node;
+	  break;
+	}
+	/**/
+	n++;
+      }
+      if (n > max_n) {
+	max_n = n;
+      }
+    }
+  }
+  /**/
+  printf(" max_collision=%d\n", max_n);
 }

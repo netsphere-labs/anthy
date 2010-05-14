@@ -13,11 +13,17 @@ cc(conjugate class) どの活用か (何行何段とか)
 
 commit(コミット) 入力の確定
 
+compose:
+	品詞を割当てられた文節に対して候補を割当てる
+
 conjugate:
 	活用(infectionの方が適切かも)
 
 context:
 	入力コンテキスト 変換する文字列一つに対応する
+
+corpus:
+	例文
 
 cos(class of speech):
 	副品詞
@@ -40,14 +46,27 @@ dtor:
 ent:
 	entry
 
-externt:
-	文字列中の範囲
+feature:
+	素性、0,1の値を取る関数
+
+feature_set:
+	素性の集合、二値のベクトルもしくは素性番号のリストとして扱える
 
 file_dic:
 	ファイル辞書
 
+gang look up:
+	複数の検索キーに対する検索を一度に行う
+
+lattice:
+	束、集合論の概念
+
 metaword:
 	文節を複数まとめたもの
+
+mmap:
+	OSの機能
+	ファイルの内容をプロセスのアドレス空間に見えるようにする
 
 nr:
 	NumbeR。nr_?? でなにかの数を意味する
@@ -79,9 +98,6 @@ seg:
 seq_ent_t:
 	辞書上の見出語
 
-compose:
-	品詞を割当てられた文節に対して候補を割当てる
-
 segment:
 	文節(国文法の文節では無い)
 
@@ -90,6 +106,10 @@ segstruct:
 
 splitter:
 	ひらがな列を文節に分割する
+
+trie:
+	n-way tree 一般的には256などを用いる
+        文字列やIPアドレス等の高速検索に用いられる
 
 word_list:
 	文節を構成する単位、自立語を一つ含む
@@ -109,17 +129,13 @@ xchar:
 xstr:
 	文字列(長さとxcharへのポインタを持つ)
 
+ビタビアルゴリズム:
+	viterbi algorithm、動的計画法の一種
+
 
 ** xchar **
-Wnnではw_char、Cannaはwchar_tを内部の文字コードとして使用している。
-昔のwide charは16ビット文字コードに対して地域化を行うための枠組に
-使用するものであって、かつlibcのサポートもほとんど無くて、問題は
-ほとんど無かったのだが。最近ではwchar_tはlibcの国際化機能のために
-使用するという規格/合意/実装が行われているので、CannaやWnnのような構成は
-コードを読む者を混乱させたり、libcと衝突したりしてしまう可能性がある。
-そのため、anthyではxcharという独自の文字型を作って文字を扱うように
-している。
-xcharは現時点では32bitでEUCもしくはASCIIのコードが入っている。
+anthyではxcharという独自の文字型を作って文字を扱うようにしている。
+xcharは現時点では32bitでUCS4もしくはASCIIのコードが入っている。
 
 
 ** context **

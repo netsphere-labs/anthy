@@ -33,8 +33,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <alloc.h>
-#include <logger.h>
+#include <anthy/alloc.h>
+#include <anthy/logger.h>
 
 /**/
 #define PAGE_MAGIC 0x12345678

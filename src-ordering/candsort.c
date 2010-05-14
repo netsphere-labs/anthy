@@ -25,13 +25,14 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
-#include <stdlib.h>
-#include <segment.h>
-#include <splitter.h>
-#include "sorter.h"
-#include "ordering.h"
-#include <stdio.h>
 #include <limits.h>
+#include <stdlib.h>
+#include <stdio.h>
+
+#include <anthy/segment.h>
+#include <anthy/splitter.h>
+#include <anthy/ordering.h>
+#include "sorter.h"
 
 /* お茶入れ学習による候補 */
 #define OCHAIRE_BASE OCHAIRE_SCORE
@@ -131,13 +132,10 @@ check_dupl_candidate(struct seg_ent *se)
 
 /* 品詞割り当てによって生成された候補を評価する */
 static void
-eval_candidate_by_metaword(struct seg_ent *seg,
-			   struct cand_ent *ce)
+eval_candidate_by_metaword(struct cand_ent *ce)
 {
   int i;
   int score = 1;
-  int unassigned_len = 0;
-  int assigned_len;
 
   /* まず、単語の頻度によるscoreを加算 */
   for (i = 0; i < ce->nr_words; i++) {
@@ -147,7 +145,6 @@ eval_candidate_by_metaword(struct seg_ent *seg,
 
     if (elm->nth < 0) {
       /* 候補割り当ての対象外なのでスキップ */
-      unassigned_len += elm->str.len;
       continue;
     }
     pos = anthy_wtype_get_pos(elm->wt);
@@ -158,29 +155,24 @@ eval_candidate_by_metaword(struct seg_ent *seg,
     freq = anthy_get_nth_dic_ent_freq(elm->se, elm->nth);
     score += freq / div;
   }
-  /*score = INT_MAX / 256 / (score * ce->nr_words);*/
 
   if (ce->mw) {
     score *= ce->mw->struct_score;
     score /= RATIO_BASE;
   }
-  /* 自立語部の割合いに対する調整 */
-  assigned_len = seg->len - unassigned_len;
-  score = score * (assigned_len + 1) * (assigned_len + 1)
-      /((seg->len + 1)*(seg->len + 1));
   ce->score = score;
 }
 
 /* 候補を評価する */
 static void
-eval_candidate(struct seg_ent *seg, struct cand_ent *ce, int uncertain)
+eval_candidate(struct cand_ent *ce, int uncertain)
 {
   if ((ce->flag &
        (CEF_OCHAIRE | CEF_SINGLEWORD | CEF_HIRAGANA |
 	CEF_KATAKANA | CEF_GUESS | CEF_COMPOUND | CEF_COMPOUND_PART |
 	CEF_BEST)) == 0) {
     /* splitterからの情報(metaword)によって生成された候補 */
-    eval_candidate_by_metaword(seg, ce);
+    eval_candidate_by_metaword(ce);
   } else if (ce->flag & CEF_OCHAIRE) {
     ce->score = OCHAIRE_BASE;
   } else if (ce->flag & CEF_SINGLEWORD) {
@@ -218,7 +210,7 @@ eval_segment(struct seg_ent *se)
   int i;
   int uncertain = uncertain_segment_p(se);
   for (i = 0; i < se->nr_cands; i++) {
-    eval_candidate(se, se->cands[i], uncertain);
+    eval_candidate(se->cands[i], uncertain);
   }
 }
 

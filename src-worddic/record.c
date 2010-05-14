@@ -44,14 +44,14 @@
 #include <stdlib.h>
 
 #include "config.h"
-#include <anthy.h>
-#include <dic.h>
-#include <alloc.h>
-#include <conf.h>
-#include <ruleparser.h>
-#include <record.h>
-#include <logger.h>
-#include <prediction.h>
+#include <anthy/anthy.h>
+#include <anthy/dic.h>
+#include <anthy/alloc.h>
+#include <anthy/conf.h>
+#include <anthy/ruleparser.h>
+#include <anthy/record.h>
+#include <anthy/logger.h>
+#include <anthy/prediction.h>
 
 #include "dic_main.h"
 #include "dic_personality.h"

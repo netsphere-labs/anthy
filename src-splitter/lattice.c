@@ -42,14 +42,16 @@
 #include <string.h>
 #include <math.h>
 
-#include <alloc.h>
-#include <xstr.h>
-#include <segclass.h>
-#include <splitter.h>
-#include "feature_set.h"
+#include <anthy/alloc.h>
+#include <anthy/xstr.h>
+#include <anthy/segclass.h>
+#include <anthy/splitter.h>
+#include <anthy/feature_set.h>
+#include <anthy/diclib.h>
 #include "wordborder.h"
 
 static float anthy_normal_length = 20.0; /* 文節の期待される長さ */
+static void *trans_info_array;
 
 #define NODE_MAX_SIZE 50
 
@@ -61,7 +63,6 @@ struct lattice_node {
 
   double real_probability;  /* ここに至るまでの確率(文節数補正無し) */
   double adjusted_probability;  /* ここに至るまでの確率(文節数補正有り) */
-  int score_sum; /* 使用しているmetawordのスコアの合計*/
 
 
   struct lattice_node* before_node; /* 一つ前の遷移状態 */
@@ -83,11 +84,6 @@ struct lattice_info {
   allocator node_allocator;
 };
 
-/* 経験的確率の分布
- */
-#define TRANSITION_INFO
-#include "transition.h"
-
 /*
  */
 static void
@@ -97,8 +93,7 @@ print_lattice_node(struct lattice_info *info, struct lattice_node *node)
     printf("**lattice_node (null)*\n");
     return ;
   }
-  printf("**lattice_node score_sum=%d*\n", node->score_sum);
-  printf("probability=%.128f\n", node->real_probability);
+  printf("**lattice_node probability=%.128f\n", node->real_probability);
   if (node->mw) {
     anthy_print_metaword(info->sc, node->mw);
   }
@@ -124,14 +119,25 @@ static double
 get_form_bias(struct meta_word *mw)
 {
   double bias;
-  int len;
+  int r;
   /* wrapされている場合は内部のを使う */
   while (mw->type == MW_WRAP) {
     mw = mw->mw1;
   }
   /* 文節長による調整 */
-  len = mw->len;
-  bias = get_poisson(anthy_normal_length, len);
+  r = mw->len;
+  if (r > 6) {
+    r = 6;
+  }
+  if (r < 2) {
+    r = 2;
+  }
+  if (mw->seg_class == SEG_RENTAI_SHUSHOKU &&
+      r < 3) {
+    /* 指示語 */
+    r = 3;
+  }
+  bias = get_poisson(anthy_normal_length, r);
   return bias;
 }
 
@@ -159,6 +165,8 @@ build_feature_list(struct lattice_node *node,
     anthy_feature_list_set_dep_word(features,
 				    mw->dep_word_hash);
     anthy_feature_list_set_mw_features(features, mw->mw_features);
+    anthy_feature_list_set_noun_cos(features, mw->core_wt);
+
   }
   anthy_feature_list_sort(features);
 }
@@ -166,20 +174,21 @@ build_feature_list(struct lattice_node *node,
 static double
 calc_probability(int cc, struct feature_list *fl)
 {
-  struct feature_freq *res;
+  struct feature_freq *res, arg;
   double prob;
 
   /* 確率を計算する */
-  res = anthy_find_feature_freq(fl, feature_array, total_line_count);
+  res = anthy_find_feature_freq(trans_info_array,
+				fl, &arg);
+  prob = 0;
   if (res) {
-    double pos = res->f[9];
-    double neg = res->f[8];
+    double pos = res->f[15];
+    double neg = res->f[14];
     prob = 1 - (neg) / (double) (pos + neg);
-    if (prob < 0) {
-      prob = 1.0f / (double)(total_line_weight * 10);
-    }
-  } else {
-    prob = 1.0f / (double)(total_line_weight * 10);
+  }
+  if (prob <= 0) {
+    /* 例文中に存在しないパターンなので0に近いスコア */
+    prob = 1.0f / (double)(10000 * 100);
   }
 
   if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_LN) {
@@ -231,14 +240,12 @@ calc_node_parameters(struct lattice_node *node)
 
   if (node->before_node) {
     /* 左に隣接するノードがある場合 */
-    node->score_sum = node->before_node->score_sum +
-      (node->mw ? node->mw->score : 0);
     node->real_probability = node->before_node->real_probability *
       get_transition_probability(node);
-    node->adjusted_probability = node->real_probability * node->score_sum;
+    node->adjusted_probability = node->real_probability *
+      (node->mw ? node->mw->score : 1000);
   } else {
     /* 左に隣接するノードが無い場合 */
-    node->score_sum = 0;
     node->real_probability = 1.0;
     node->adjusted_probability = node->real_probability;
   }
@@ -326,11 +333,6 @@ cmp_node(struct lattice_node *lhs, struct lattice_node *rhs)
       /* 学習から作られたノードかどうかを見る */
       ret = cmp_node_by_type(lhs_before, rhs_before, MW_OCHAIRE);
       if (ret != 0) return ret;
-      /* ラップされたものは確率が低い */
-      /*
-	ret = cmp_node_by_type(lhs, rhs, MW_WRAP);
-	if (ret != 0) return -ret;
-      */
 
       /* COMPOUND_PARTよりはCOMPOUND_HEADを優先 */
       ret = cmp_node_by_type_to_type(lhs_before, rhs_before, MW_COMPOUND_HEAD, MW_COMPOUND_PART);
@@ -401,6 +403,7 @@ push_node(struct lattice_info* info, struct lattice_node* new_node,
     previous_node = node;
     node = node->next;
   }
+
   /* 最後のノードの後ろに追加 */
   node->next = new_node;
   info->lattice_node_list[position].nr_nodes ++;
@@ -531,6 +534,7 @@ void
 anthy_mark_borders(struct splitter_context *sc, int from, int to)
 {
   struct lattice_info* info = alloc_lattice_info(sc, to);
+  trans_info_array = anthy_file_dic_get_section("trans_info");
   build_graph(info, from, to);
   choose_path(info, to);
   release_lattice_info(info);

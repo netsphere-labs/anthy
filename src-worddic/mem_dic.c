@@ -23,7 +23,7 @@
  */
 #include <stdlib.h>
 
-#include <alloc.h>
+#include <anthy/alloc.h>
 #include "dic_main.h"
 #include "mem_dic.h"
 
@@ -62,13 +62,12 @@ mem_dic_dtor(void *p)
   anthy_free_allocator(md->dic_ent_allocator);
 }
 
-/** xstrに対応するseq_entのメモリを確保する */
+/** xstrに対応するseq_entを確保する */
 static struct seq_ent *
 alloc_seq_ent_by_xstr(struct mem_dic * md, xstr *x, int is_reverse)
 {
   struct seq_ent *se;
   se = (struct seq_ent *)anthy_smalloc(md->seq_ent_allocator);
-  se->flags = F_NONE;
   if (is_reverse) {
     se->seq_type = ST_REVERSE;
   } else {

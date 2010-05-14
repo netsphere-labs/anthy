@@ -34,10 +34,10 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <alloc.h>
-#include <record.h>
-#include <splitter.h>
-#include <logger.h>
+#include <anthy/alloc.h>
+#include <anthy/record.h>
+#include <anthy/splitter.h>
+#include <anthy/logger.h>
 #include "wordborder.h"
 
 #define MAX_EXPAND_PAIR_ENTRY_COUNT 1000
@@ -50,7 +50,6 @@ wtype_t anthy_wtype_name_noun;
 wtype_t anthy_wtype_num_noun;
 wtype_t anthy_wtype_prefix;
 wtype_t anthy_wtype_num_prefix;
-wtype_t anthy_wtype_postfix;
 wtype_t anthy_wtype_num_postfix;
 wtype_t anthy_wtype_name_postfix;
 wtype_t anthy_wtype_sv_postfix;
@@ -59,7 +58,6 @@ wtype_t anthy_wtype_v_renyou;
 wtype_t anthy_wtype_noun_tail;/* いれ「たて」とか */
 wtype_t anthy_wtype_n1;
 wtype_t anthy_wtype_n10;
-wtype_t anthy_wtype_noun_and_postfix;
 
 
 /** make_word_cacheで作成した文節情報を解放する
@@ -314,10 +312,8 @@ anthy_init_splitter(void)
   anthy_wtype_a_tail_of_v_renyou = anthy_init_wtype_by_name("形容詞化接尾語");
   anthy_wtype_v_renyou = anthy_init_wtype_by_name("動詞連用形");
   anthy_wtype_noun_tail = anthy_init_wtype_by_name("名詞化接尾語");
-  anthy_wtype_noun_and_postfix = anthy_init_wtype_by_name("名詞接尾語");
   anthy_wtype_prefix = anthy_init_wtype_by_name("名詞接頭辞");
   anthy_wtype_num_prefix = anthy_init_wtype_by_name("数接頭辞");
-  anthy_wtype_postfix = anthy_init_wtype_by_name("名詞接尾辞");
   anthy_wtype_num_postfix = anthy_init_wtype_by_name("数接尾辞");
   anthy_wtype_name_postfix = anthy_init_wtype_by_name("人名接尾辞");
   anthy_wtype_sv_postfix = anthy_init_wtype_by_name("サ変接尾辞");

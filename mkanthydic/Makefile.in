@@ -42,8 +42,7 @@ noinst_PROGRAMS = mkfiledic$(EXEEXT)
 subdir = mkanthydic
 DIST_COMMON = $(srcdir)/Makefile.am $(srcdir)/Makefile.in
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
-am__aclocal_m4_deps = $(top_srcdir)/acinclude.m4 \
-	$(top_srcdir)/configure.ac
+am__aclocal_m4_deps = $(top_srcdir)/configure.ac
 am__configure_deps = $(am__aclocal_m4_deps) $(CONFIGURE_DEPENDENCIES) \
 	$(ACLOCAL_M4)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
@@ -132,25 +131,10 @@ PACKAGE_TARNAME = @PACKAGE_TARNAME@
 PACKAGE_VERSION = @PACKAGE_VERSION@
 PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
-RUBY = @RUBY@
-RUBY_CFLAGS = @RUBY_CFLAGS@
-RUBY_DLEXT = @RUBY_DLEXT@
-RUBY_LDFLAGS = @RUBY_LDFLAGS@
-RUBY_LIBS = @RUBY_LIBS@
-RUBY_SITE_ARCH_DIR = @RUBY_SITE_ARCH_DIR@
-RUBY_SITE_LIB_DIR = @RUBY_SITE_LIB_DIR@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
-SWIG = @SWIG@
-SWIG_CPPFLAGS = @SWIG_CPPFLAGS@
-SWIG_INTERFACE = @SWIG_INTERFACE@
-SWIG_OPTIONS = @SWIG_OPTIONS@
 VERSION = @VERSION@
-WITH_RUBY_FALSE = @WITH_RUBY_FALSE@
-WITH_RUBY_TRUE = @WITH_RUBY_TRUE@
-WITH_SWIG_FALSE = @WITH_SWIG_FALSE@
-WITH_SWIG_TRUE = @WITH_SWIG_TRUE@
 ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
@@ -199,7 +183,7 @@ target_alias = @target_alias@
 # Files
 noinst_SCRIPTS = 
 CLEANFILES = anthy.dic
-INCLUDES = -I$(top_srcdir)/include -DSRCDIR=\"$(srcdir)\"
+INCLUDES = -I$(top_srcdir)/ -DSRCDIR=\"$(srcdir)\"
 mkfiledic_SOURCES = mkfiledic.c
 mkfiledic_LDADD = ../src-diclib/libdiclib.la
 
@@ -476,7 +460,7 @@ uninstall-am: uninstall-info-am uninstall-pkgdataDATA
 	uninstall-am uninstall-info-am uninstall-pkgdataDATA
 
 
-anthy.dic : mkfiledic ../mkworddic/anthy.wdic ../depgraph/anthy.dep
+anthy.dic : mkfiledic ../mkworddic/anthy.wdic ../depgraph/anthy.dep ../calctrans/anthy.cand_info ../calctrans/anthy.trans_info ../calctrans/anthy.corpus_array ../calctrans/anthy.corpus_bucket
 	./mkfiledic
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

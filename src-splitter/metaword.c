@@ -15,11 +15,11 @@
 #include <stdio.h>
 #include <math.h>
 
-#include <record.h>
-#include <splitter.h>
-#include <xstr.h>
-#include <segment.h>
-#include <segclass.h>
+#include <anthy/record.h>
+#include <anthy/splitter.h>
+#include <anthy/xstr.h>
+#include <anthy/segment.h>
+#include <anthy/segclass.h>
 #include "wordborder.h"
 
 /* 各種meta_wordをどのように処理するか */
@@ -31,11 +31,9 @@ struct metaword_type_tab_ anthy_metaword_type_tab[] = {
   {MW_COMPOUND,"compound",MW_STATUS_NONE,MW_CHECK_NONE},
   {MW_COMPOUND_LEAF,"compound_leaf",MW_STATUS_COMPOUND,MW_CHECK_NONE},
   {MW_COMPOUND_PART,"compound_part",MW_STATUS_COMPOUND_PART,MW_CHECK_SINGLE},
-  {MW_NAMEPAIR,"namepair",MW_STATUS_COMBINED,MW_CHECK_PAIR},
   {MW_V_RENYOU_A,"v_renyou_a",MW_STATUS_COMBINED,MW_CHECK_BORDER},
   {MW_V_RENYOU_NOUN,"v_renyou_noun",MW_STATUS_COMBINED,MW_CHECK_BORDER},
   {MW_NUMBER,"number",MW_STATUS_COMBINED,MW_CHECK_NUMBER},
-  {MW_NOUN_NOUN_SUFFIX,"noun_noun_suffix",MW_STATUS_COMBINED,MW_CHECK_SINGLE},
   {MW_OCHAIRE,"ochaire",MW_STATUS_OCHAIRE,MW_CHECK_OCHAIRE},
   /**/
   {MW_END,"end",MW_STATUS_NONE,MW_CHECK_NONE}
@@ -65,7 +63,7 @@ print_metaword_features(int features)
   if (features & MW_FEATURE_SV) {
     printf(":sv");
   }
-  if (features & MW_FEATURE_WEAK) {
+  if (features & MW_FEATURE_WEAK_CONN) {
     printf(":weak");
   }
   if (features & MW_FEATURE_SUFFIX) {
@@ -76,6 +74,9 @@ print_metaword_features(int features)
   }
   if (features & MW_FEATURE_CORE1) {
     printf(":c1");
+  }
+  if (features & MW_FEATURE_HIGH_FREQ) {
+    printf(":hf");
   }
 }
 
@@ -98,8 +99,9 @@ anthy_do_print_metaword(struct splitter_context *sc,
     anthy_print_word_list(sc, mw->wl);
   }
   if (mw->cand_hint.str) {
+    printf("(");
     anthy_putxstr(&mw->cand_hint);
-    puts("");
+    printf(")\n");
   }
   if (mw->mw1) {
     anthy_do_print_metaword(sc, mw->mw1, indent + 1);
@@ -125,6 +127,7 @@ alloc_metaword(struct splitter_context *sc)
   mw->score = 0;
   mw->struct_score = 0;
   mw->dep_word_hash = 0;
+  mw->core_wt = anthy_wt_none;
   mw->mw_features = 0;
   mw->dep_class = DEP_NONE;
   mw->wl = NULL;
@@ -188,7 +191,7 @@ make_compound_nth_metaword(struct splitter_context* sc,
   mw->from = from;
   mw->len = len;
   mw->type = type;
-  mw->score = wl->score;
+  mw->score = 1000;
   mw->seg_class = wl->seg_class;
 
   anthy_compound_get_nth_segment_xstr(ce, nth, &xs_core);
@@ -319,10 +322,13 @@ make_simple_metaword(struct splitter_context *sc, struct word_list* wl)
   mw->wl = wl;
   mw->from = wl->from;
   mw->len = wl->len;
-  mw->score = wl->score;
+  mw->score = 1000;
   mw->type = MW_SINGLE;
   mw->dep_class = wl->part[PART_DEPWORD].dc;
   mw->seg_class = wl->seg_class;
+  if (wl->part[PART_CORE].len) {
+    mw->core_wt = wl->part[PART_CORE].wt;
+  }
   mw->nr_parts = NR_PARTS;
   mw->dep_word_hash = wl->dep_word_hash;
   mw->mw_features = wl->mw_features;
@@ -408,51 +414,6 @@ try_combine_v_renyou_noun(struct splitter_context *sc,
   }
 }
 
-
-/*
- * 名詞 + 名詞接尾語(#N2T35, #N2T30) 「サーバ 用」など
- */
-static void
-try_combine_noun_noun_suffix(struct splitter_context *sc,
-			     struct meta_word *mw, struct meta_word *mw2)
-{
-  wtype_t w1;
-  if (!mw->wl || !mw2->wl) return;
-
-  w1 = mw->wl->part[PART_CORE].wt;
-  if (anthy_wtype_get_pos(w1) == POS_NOUN &&
-      mw->wl->part[PART_CORE].len > 1 &&
-      mw->wl->part[PART_POSTFIX].len == 0 &&
-      mw->wl->part[PART_DEPWORD].len == 0 &&
-      mw2->wl->part[PART_CORE].len > 1 &&
-      anthy_wtype_get_pos(mw2->wl->part[PART_CORE].wt) == POS_N2T &&
-      anthy_get_seq_ent_wtype_freq(mw2->wl->part[PART_CORE].seq, 
-				   anthy_wtype_noun_and_postfix)) {
-    list_metaword(sc, MW_NOUN_NOUN_SUFFIX, mw, mw2);
-  }
-}
-
-/*
- * 氏 + 名を結合する
- */
-static void
-try_combine_name(struct splitter_context *sc,
-		 struct meta_word *mw, struct meta_word *mw2)
-{
-  int f, f2;
-  if (!mw->wl || !mw2->wl) return;
-
-  f = anthy_get_seq_flag(mw->wl->part[PART_CORE].seq);
-  f2 = anthy_get_seq_flag(mw2->wl->part[PART_CORE].seq);
-
-  if ((f & NF_FAMNAME) && (f2 & NF_FSTNAME)) {
-    if (anthy_wtype_get_scos(mw->wl->part[PART_CORE].wt) == SCOS_FAMNAME &&
-	anthy_wtype_get_scos(mw2->wl->part[PART_CORE].wt) == SCOS_FSTNAME) {
-      list_metaword(sc, MW_NAMEPAIR, mw, mw2);
-    }
-  }
-}
-
 /*
  * 数字を結合する
  */
@@ -529,10 +490,8 @@ try_combine_metaword(struct splitter_context *sc,
     return;
   }
   
-  try_combine_name(sc, mw1, mw2);
   try_combine_v_renyou_a(sc, mw1, mw2);
   try_combine_v_renyou_noun(sc, mw1, mw2);
-  try_combine_noun_noun_suffix(sc, mw1, mw2);
   try_combine_number(sc, mw1, mw2);
 }
 
@@ -906,8 +865,6 @@ anthy_mark_border_by_metaword(struct splitter_context* sc,
     /* BREAK THROUGH */
   case MW_COMPOUND:
     /* BREAK THROUGH */
-  case MW_NAMEPAIR:
-    /* BREAK THROUGH */
   case MW_NUMBER:
     info->best_mw[mw->mw1->from] = mw->mw1;
     anthy_mark_border_by_metaword(sc, mw->mw1);
@@ -916,8 +873,6 @@ anthy_mark_border_by_metaword(struct splitter_context* sc,
   case MW_V_RENYOU_A:
     /* BREAK THROUGH */
   case MW_V_RENYOU_NOUN:
-    /* BREAK THROUGH */
-  case MW_NOUN_NOUN_SUFFIX:
     info->seg_border[mw->from] = 1;    
     break;
   case MW_WRAP:

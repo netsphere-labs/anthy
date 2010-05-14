@@ -1,8 +1,8 @@
 /* 疎行列のテスト用コード */
 #include <stdio.h>
-#include "dic.h"
-#include "diclib.h"
-#include "matrix.h"
+#include <anthy/dic.h>
+#include <anthy/diclib.h>
+#include <anthy/matrix.h>
 
 static void
 change_endian(struct matrix_image *im)

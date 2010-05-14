@@ -1,8 +1,8 @@
 #include <string.h>
 
-#include <splitter.h>
-#include <wtype.h>
-#include <segclass.h>
+#include <anthy/splitter.h>
+#include <anthy/wtype.h>
+#include <anthy/segclass.h>
 #include "wordborder.h"
 
 static struct {

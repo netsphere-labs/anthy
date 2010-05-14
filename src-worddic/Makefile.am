@@ -1,6 +1,6 @@
 ## $Id: Makefile.am,v 1.4 2002/02/25 07:25:03 yusuke Exp $
 
-INCLUDES = -I$(top_srcdir)/include -DCONF_DIR=\"$(sysconfdir)\"
+INCLUDES = -I$(top_srcdir)/ -DCONF_DIR=\"$(sysconfdir)\"
 
 libanthydic_la_SOURCES = \
 	word_dic.c dic_util.c \

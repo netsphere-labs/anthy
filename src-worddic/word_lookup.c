@@ -4,14 +4,14 @@
  * キャッシュされるのでここでは存在しない単語の
  * サーチを高速にする必要がある。
  *
- * anthy_word_dic_fill_seq_ent_by_xstr()が中心となる関数である
+ * anthy_gang_fill_seq_ent()が中心となる関数である
  *  指定したword_dicから指定した文字列をインデックスとしてもつエントリに
  *  語尾を付加してseq_entに追加する
  *
  * a)辞書の形式とb)辞書アクセスの高速化c)辞書ファイルのエンコーディング
  *  このソース中で扱ってるのでかなり複雑化してます．
  *
- * Copyright (C) 2000-2006 TABATA Yusuke
+ * Copyright (C) 2000-2007 TABATA Yusuke
  * Copyright (C) 2005-2006 YOSHIDA Yuichi
  * Copyright (C) 2001-2002 TAKAI Kosuke
  *
@@ -38,18 +38,27 @@
 #include <ctype.h>
 
 #include "config.h"
-#include <anthy.h>
-#include <alloc.h>
-#include <dic.h>
-#include <word_dic.h>
-#include <logger.h>
-#include <xstr.h>
-#include <diclib.h>
+#include <anthy/anthy.h>
+#include <anthy/alloc.h>
+#include <anthy/dic.h>
+#include <anthy/word_dic.h>
+#include <anthy/logger.h>
+#include <anthy/xstr.h>
+#include <anthy/diclib.h>
 
 #include "dic_main.h"
 #include "dic_ent.h"
 
+#define NO_WORD -1
+
 static allocator word_dic_ator;
+
+struct lookup_context {
+  struct gang_elm **array;
+  int nr;
+  int nth;
+  int is_reverse;
+};
 
 /* 1バイト目を見て、文字が何バイトあるかを返す */
 static int
@@ -151,7 +160,7 @@ parse_wtype_str(struct wt_stat *ws)
   strncpy(buf, &ws->line[ws->offset], len);
   buf[len] = 0;
 
-  /**/
+  /* 素性(未使用) */
   feature_part = strchr(buf, ',');
   if (feature_part) {
     ws->feature = 1;
@@ -169,6 +178,7 @@ parse_wtype_str(struct wt_stat *ws)
     ws->freq = FREQ_RATIO - 2;
   }
 
+  /**/
   wt_name = anthy_type_to_wtype(buf, &ws->wt);
   if (!wt_name) {
     ws->wt = anthy_wt_none;
@@ -397,26 +407,52 @@ mkxstr(char *s, xstr *x)
   return i;
 }
 
-/** ページ中の単語の場所を調べる */
 static int
-search_word_in_page(xstr *x, char *s)
+set_next_idx(struct lookup_context *lc)
+{
+  lc->nth ++;
+  while (lc->nth < lc->nr) {
+    if (lc->array[lc->nth]->tmp.idx != NO_WORD) {
+      return 1;
+    }
+    lc->nth ++;
+  }
+  return 0;
+}
+
+/** ページ中の単語の場所を調べる */
+static void
+search_words_in_page(struct lookup_context *lc, int page, char *s)
 {
   int o = 0;
   xchar *buf;
   xstr xs;
+  int nr = 0;
   /* このページ中にあるもっとも長い単語を格納しうる長さ */
   buf = alloca(sizeof(xchar)*strlen(s)/2);
   xs.str = buf;
   xs.len = 0;
 
   while (*s) {
+    int r;
     s += mkxstr(s, &xs);
-    if (!anthy_xstrcmp(&xs, x)) {
-      return o;
+    r = anthy_xstrcmp(&xs, &lc->array[lc->nth]->xs);
+    if (!r) {
+      lc->array[lc->nth]->tmp.idx = o + page * WORDS_PER_PAGE;
+      nr ++;
+      if (!set_next_idx(lc)) {
+	return ;
+      }
+      /* 同じページ内で次の単語を探す */
     }
     o ++;
   }
-  return -1;
+  if (nr == 0) {
+    /* このページで1語も見つからなかったら、この単語は無い */
+    lc->array[lc->nth]->tmp.idx = NO_WORD;
+    set_next_idx(lc);
+  }
+  /* 現在の単語は次の呼び出しで探す */
 }
 
 /**/
@@ -438,7 +474,7 @@ compare_page_index(struct word_dic *wdic, const char *key, int page)
   return strcmp(key ,buf);
 }
 
-/* バイナリサーチをする */
+/* 再帰的にバイナリサーチをする */
 static int
 get_page_index_search(struct word_dic *wdic, const char *key, int f, int t)
 {
@@ -462,9 +498,10 @@ get_page_index_search(struct word_dic *wdic, const char *key, int f, int t)
  * 範囲チェックをしてバイナリサーチを行うget_page_index_searchを呼ぶ
  */
 static int
-get_page_index(struct word_dic *wdic, const char *key)
+get_page_index(struct word_dic *wdic, struct lookup_context *lc)
 {
   int page;
+  const char *key = lc->array[lc->nth]->key;
   /* 最初のページの読みよりも小さい */
   if (compare_page_index(wdic, key, 0) < 0) {
     return -1;
@@ -473,7 +510,7 @@ get_page_index(struct word_dic *wdic, const char *key)
   if (compare_page_index(wdic, key, wdic->nr_pages-1) >= 0) {
     return wdic->nr_pages-1;
   }
-  /* バイナリサーチ */
+  /* 検索する */
   page = get_page_index_search(wdic, key, 0, wdic->nr_pages);
   return page;
 }
@@ -509,66 +546,94 @@ get_word_dic_sections(struct word_dic *wdic)
 }
 
 /** 指定された単語の辞書中のインデックスを調べる */
-static int
-search_yomi_index(struct word_dic *wdic, xstr *xs)
+static void
+search_yomi_index(struct word_dic *wdic, struct lookup_context *lc)
 {
-  int p, o;
+  int p;
   int page_number;
-  char *key = anthy_xstr_to_cstr(xs, ANTHY_UTF8_ENCODING);
 
-  p = get_page_index(wdic, key);
-  free(key);
+  /* すでに無いことが分かっている */
+  if (lc->array[lc->nth]->tmp.idx == NO_WORD) {
+    set_next_idx(lc);
+    return ;
+  }
+
+  p = get_page_index(wdic, lc);
   if (p == -1) {
-    return -1;
+    lc->array[lc->nth]->tmp.idx = NO_WORD;
+    set_next_idx(lc);
+    return ;
   }
 
   page_number = anthy_dic_ntohl(wdic->page_index[p]);
-  o = search_word_in_page(xs, &wdic->page[page_number]);
+  search_words_in_page(lc, p, &wdic->page[page_number]);
+}
 
-  if (o == -1) {
-    return -1;
+static void
+find_words(struct word_dic *wdic, struct lookup_context *lc)
+{
+  int i;
+  /* 検索前に除去 */
+  for (i = 0; i < lc->nr; i++) {
+    lc->array[i]->tmp.idx = NO_WORD;
+    if (lc->array[i]->xs.len > 31) {
+      /* 32文字以上単語には未対応 */
+      continue;
+    }
+    /* hashにないなら除去 */
+    if (!check_hash_ent(wdic, &lc->array[i]->xs)) {
+      continue;
+    }
+    /* NO_WORDでない値を設定することで検索対象とする */
+    lc->array[i]->tmp.idx = 0;
   }
-  return o + p * WORDS_PER_PAGE;
+  /* 検索する */
+  lc->nth = 0;
+  while (lc->nth < lc->nr) {
+    search_yomi_index(wdic, lc);
+  }
+}
+
+static void
+load_words(struct word_dic *wdic, struct lookup_context *lc)
+{
+  int i;
+  for (i = 0; i < lc->nr; i++) {
+    int yomi_index;
+    yomi_index = lc->array[i]->tmp.idx;
+    if (yomi_index != NO_WORD) {
+      int entry_index;
+      struct seq_ent *seq;
+      seq = anthy_cache_get_seq_ent(&lc->array[i]->xs,
+				    lc->is_reverse);
+      entry_index = anthy_dic_ntohl(wdic->entry_index[yomi_index]);
+      fill_dic_ent(&wdic->entry[entry_index],
+		   seq,
+		   &lc->array[i]->xs,
+		   lc->is_reverse);
+      anthy_validate_seq_ent(seq, &lc->array[i]->xs, lc->is_reverse);
+    }
+  }
 }
 
 /** word_dicから単語を検索する
  * 辞書キャッシュから呼ばれる
- * 指定された活用の単語をword_dicから探し，tailを付加して
- * mem_dic_push_back_dic_entを用いて，seq_entに追加する．
+ * (gang lookupにすることを検討する)
  */
 void
-anthy_word_dic_fill_seq_ent_by_xstr(struct word_dic *wdic, xstr *xs,
-				    struct seq_ent *se,
-				    int is_reverse)
+anthy_gang_fill_seq_ent(struct word_dic *wdic,
+			struct gang_elm **array, int nr,
+			int is_reverse)
 {
-  int yomi_index;
+  struct lookup_context lc;
+  lc.array = array;
+  lc.nr = nr;
+  lc.is_reverse = is_reverse;
 
-  if (xs->len > 31) {
-    /* 32文字以上単語には未対応 */
-    return;
-  }
-  /* hashにないなら除去 */
-  if (!check_hash_ent(wdic, xs)) {
-    return;
-  }
-  yomi_index = search_yomi_index(wdic, xs);
-
-  if (yomi_index >= 0) {
-    /* 該当する読みが辞書中にあれば、それを引数にseq_entを埋める */
-    int entry_index = anthy_dic_ntohl(wdic->entry_index[yomi_index]);
-    se->seq_type |= ST_WORD;
-    fill_dic_ent(&wdic->entry[entry_index],
-		 se,
-		 xs,
-		 is_reverse);
-
-  }
-}
-
-char *
-anthy_word_dic_get_hashmap_ptr(struct word_dic *wdic)
-{
-  return get_section(wdic, 8);
+  /* 各単語の場所を探す */
+  find_words(wdic, &lc);
+  /* 単語の情報を読み込む */
+  load_words(wdic, &lc);
 }
 
 struct word_dic *
