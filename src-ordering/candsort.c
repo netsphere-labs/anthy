@@ -4,13 +4,27 @@
  * ダブった候補の削除もする。
  *
  * Funded by IPA未踏ソフトウェア創造事業 2001 9/22
- * Copyright (C) 2000-2003 TABATA Yusuke
+ * Copyright (C) 2000-2006 TABATA Yusuke
  * Copyright (C) 2001 UGAWA Tomoharu
  *
  * $Id: candsort.c,v 1.27 2002/11/17 14:45:47 yusuke Exp $
  *
  */
+/*
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
 
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ */
 #include <stdlib.h>
 #include <segment.h>
 #include <splitter.h>
@@ -157,6 +171,10 @@ eval_candidate_by_metaword(struct seg_ent *seg,
 	score *= 5;
       }
     }
+    /* 弱い接続はスコアを下げる */
+    if (ce->mw->weak_len) {
+      score = score / ce->mw->len * (ce->mw->len - ce->mw->weak_len);
+    }
   }
   /* 自立語部の割合いに対する調整 */
   assigned_len = seg->len - unassigned_len;
@@ -215,41 +233,52 @@ eval_segment(struct seg_ent *se)
   }
 }
 
-/** 外から呼ばれるエントリポイント */
+/* 学習履歴の内容で順位を調整する */
+static void
+apply_learning(struct segment_list *sl, int nth)
+{
+  int i;
+
+  /*
+   * 優先順位の低いものから順に適用する
+   */
+
+  /* 用例辞書による順序の変更 */
+  anthy_reorder_candidates_by_relation(sl, nth);
+  /* 候補の交換 */
+  for (i = nth; i < sl->nr_segments; i++) {
+    struct seg_ent *seg = anthy_get_nth_segment(sl, i);
+    /* 候補の交換 */
+    anthy_proc_swap_candidate(seg);
+    /* 履歴による順序の変更 */
+    anthy_reorder_candidates_by_history(anthy_get_nth_segment(sl, i));
+  }
+}
+
+/** 外から呼ばれるエントリポイント
+ * @nth以降の文節を対象とする
+ */
 void
 anthy_sort_candidate(struct segment_list *sl, int nth)
 {
   int i;
-  /* まず評価する */
   for (i = nth; i < sl->nr_segments; i++) {
-    eval_segment(anthy_get_nth_segment(sl, i));
+    struct seg_ent *seg = anthy_get_nth_segment(sl, i);
+    /* まず評価する */
+    eval_segment(seg);
+    /* つぎにソートする */
+    sort_segment(seg);
+    /* ダブったエントリの点の低い方に0点を付ける */
+    check_dupl_candidate(seg);
+    /* もういちどソートする */
+    sort_segment(seg);
+    /* 評価0の候補を解放 */
+    release_redundant_candidate(seg);
   }
-  /* つぎにソートする */
-  for (i = nth; i < sl->nr_segments; i++) {
-    sort_segment(anthy_get_nth_segment(sl, i));
-  }
-  /* ダブったエントリの点の低い方に0点を付ける */
-  for (i = nth; i < sl->nr_segments; i++) {
-    check_dupl_candidate(anthy_get_nth_segment(sl, i));
-  }
-  /* もういちどソートする */
-  for ( i = nth ; i < sl->nr_segments ; i++){
-    sort_segment(anthy_get_nth_segment(sl, i));
-  }
-  /* 評価0の候補を解放 */
-  for (i = nth ;i < sl->nr_segments ; i++) {
-    release_redundant_candidate(anthy_get_nth_segment(sl, i));
-  }
-  /**/
-  anthy_reorder_candidates_by_relation(sl, nth);
-  /* 履歴による順序の変更 */
-  for (i = nth; i < sl->nr_segments; i++) {
-    anthy_reorder_candidates_by_history(anthy_get_nth_segment(sl, i));
-  }
-  /* 候補の交換 */
-  for (i = nth; i < sl->nr_segments; i++) {
-    anthy_proc_swap_candidate(anthy_get_nth_segment(sl, i));
-  }
+
+  /* 学習の履歴を適用する */
+  apply_learning(sl, nth);
+
   /* またソートする */
   for ( i = nth ; i < sl->nr_segments ; i++){
     sort_segment(anthy_get_nth_segment(sl, i));

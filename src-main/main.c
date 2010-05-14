@@ -7,9 +7,10 @@
  * 仮名漢字変換エンジンAnthy(アンシー)
  *
  * Funded by IPA未踏ソフトウェア創造事業 2001 9/22
- * Copyright (C) 2000-2005 TABATA Yusuke, UGAWA Tomoharu
- * Copyright (C) 2004-2005 YOSHIDA Yuichi
- * Copyright (C) 2000-2005 KMC(Kyoto University Micro Computer Club)
+ * Funded by IPA未踏ソフトウェア創造事業 2005
+ * Copyright (C) 2000-2006 TABATA Yusuke, UGAWA Tomoharu
+ * Copyright (C) 2004-2006 YOSHIDA Yuichi
+ * Copyright (C) 2000-2006 KMC(Kyoto University Micro Computer Club)
  * Copyright (C) 2001-2002 TAKAI Kosuke, Nobuoka Takahiro
  *
  */
@@ -52,8 +53,11 @@
 #include <logger.h>
 #include <record.h>
 #include <anthy.h>
+#include <record.h>
+#include <xchar.h> /* for KK_VU */
 #include "main.h"
-#include <config.h>
+#include "config.h"
+
 
 /** Anthyの初期化が完了したかどうかのフラグ */
 static int is_init_ok;
@@ -71,7 +75,7 @@ anthy_init(void)
 
   /* 各サブシステムを順に初期化する */
   if (anthy_init_dic()) {
-    anthy_log(0, "Failed to open dictionary.\n");
+    anthy_log(0, "Failed to initialize dictionary.\n");
     return -1;
   }
 
@@ -99,6 +103,7 @@ anthy_quit(void)
   anthy_quit_splitter();
   /* 多くのデータ構造はここでallocatorによって解放される */
   anthy_quit_dic();
+
   is_init_ok = 0;
 }
 
@@ -140,6 +145,32 @@ anthy_release_context(struct anthy_context *ac)
   anthy_do_release_context(ac);
 }
 
+/** 
+ * 再変換が必要かどうかの判定
+ */
+static int
+need_reconvert(xstr *xs)
+{
+  int i;
+  
+  for (i = 0; i < xs->len; ++i) {
+    xchar xc = xs->str[i];
+    int type = anthy_get_xchar_type(xc);
+
+    /* これらの文字種の場合は逆変換する
+     * 「ヴ」はフロントエンドが平仮名モードの文字列として送ってくるので、
+     * 逆変換の対象とはしない
+     */
+    if (!(type & (XCT_HIRA | XCT_SYMBOL | XCT_NUM |
+		  XCT_WIDENUM | XCT_OPEN | XCT_CLOSE)) &&
+	xc != KK_VU) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+
 /** (API) 変換文字列の設定 */
 int
 anthy_set_string(struct anthy_context *ac, const char *s)
@@ -150,11 +181,33 @@ anthy_set_string(struct anthy_context *ac, const char *s)
   anthy_dic_activate_session(ac->dic_session);
   /* 変換を開始する前に個人辞書をreloadする */
   anthy_reload_record();
-  anthy_dic_reload_use_dic();
-  anthy_dic_reload_private_dic();
 
   xs = anthy_cstr_to_xstr(s, ac->encoding);
-  retval = anthy_do_context_set_str(ac, xs);
+  /**/
+  if (!need_reconvert(xs)) {
+    /* 普通に変換する */
+    retval = anthy_do_context_set_str(ac, xs, 0);
+  } else {
+    /* 漢字やカタカナが混じっていたら再変換してみる */
+    struct anthy_conv_stat stat;
+    struct seg_ent *seg;
+    int i;
+    xstr* hira_xs;
+    /* あたえられた文字列に変換をかける */
+    retval = anthy_do_context_set_str(ac, xs, 1);
+
+    /* 各文節の第一候補を取得して平仮名列を得る */
+    anthy_get_stat(ac, &stat);
+    hira_xs = NULL;
+    for (i = 0; i < stat.nr_segment; ++i) {
+      seg = anthy_get_nth_segment(&ac->seg_list, i);
+      hira_xs = anthy_xstrcat(hira_xs, &seg->cands[0]->str);
+    }
+    /* 改めて変換を行なう */
+    retval = anthy_do_context_set_str(ac, hira_xs, 0);
+    anthy_free_xstr(hira_xs);
+  }
+
   anthy_free_xstr(xs);
   return retval;
 }
@@ -289,6 +342,66 @@ anthy_commit_segment(struct anthy_context *ac, int s, int c)
   return 0;
 }
 
+/** (API) 予測してほしい文字列の設定 */
+int
+anthy_set_prediction_string(struct anthy_context *ac, const char* s)
+{
+  int retval;
+  xstr *xs;
+
+  anthy_dic_activate_session(ac->dic_session);
+  /* 予測を開始する前に個人辞書をreloadする */
+  anthy_reload_record();
+
+
+  xs = anthy_cstr_to_xstr(s, ac->encoding);
+
+  retval = anthy_do_set_prediction_str(ac, xs);
+
+  anthy_free_xstr(xs);
+
+  return retval;
+}
+
+/** (API) 予測変換の状態の取得 */
+int 
+anthy_get_prediction_stat(struct anthy_context *ac, struct anthy_prediction_stat * ps)
+{
+  ps->nr_prediction = ac->prediction.nr_prediction;
+  return 0;
+}
+
+/** (API) 予測変換の候補の取得 */
+int
+anthy_get_prediction(struct anthy_context *ac, int nth, char* buf, int buflen)
+{
+  struct prediction_cache* prediction = &ac->prediction;
+  int nr_prediction = prediction->nr_prediction;
+  char* p;
+  int len;
+
+  if (nth < 0 || nr_prediction <= nth) {
+    return -1;
+  }
+
+  p = anthy_xstr_to_cstr(prediction->predictions[nth].str, ac->encoding);
+
+  /* バッファに書き込む */
+  len = strlen(p);
+  if (!buf) {
+    free(p);
+    return len;
+  }
+  if (len + 1 > buflen) {
+    free(p);
+    return -1;
+  } else {
+    strcpy(buf, p);
+    free(p);
+    return len;
+  }
+}
+
 /** (API) 開発用 */
 void
 anthy_print_context(struct anthy_context *ac)
@@ -309,6 +422,7 @@ anthy_get_version_string (void)
 #endif
 }
 
+/** (API) */
 int
 anthy_context_set_encoding(struct anthy_context *ac, int encoding)
 {

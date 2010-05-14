@@ -22,11 +22,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/mman.h>
-#include <sys/stat.h>
-#include <netinet/in.h>
-#include <fcntl.h>
-#include <unistd.h>
 
 #include "config.h"
 #include <anthy.h>
@@ -34,14 +29,16 @@
 #include <conf.h>
 #include <ruleparser.h>
 #include <xstr.h>
+#include <filemap.h>
 #include <logger.h>
 #include <segclass.h>
 #include <splitter.h>
 #include <wtype.h>
+#include <diclib.h>
 #include "wordborder.h"
 
 /* 遷移グラフ */
-static struct file_dep fdep;
+static struct dep_dic ddic;
 
 #define  NORMAL_CONNECTION 1
 #define  WEAKER_CONNECTION 2
@@ -58,6 +55,39 @@ match_nodes(struct splitter_context *sc,
 	    xstr follow_str, int node);
 
 
+static int
+anthy_xstrcmp_with_ondisk(xstr *xs,
+			  ondisk_xstr *dxs)
+{
+  int *d = (int *)dxs;
+  int len = anthy_dic_ntohl(d[0]);
+  int i;
+  if (len != xs->len) {
+    return 1;
+  }
+  d++;
+  for (i = 0; i < len; i++) {
+    if (xs->str[i] != d[i]) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+static ondisk_xstr *
+anthy_next_ondisk_xstr(ondisk_xstr *dxs)
+{
+  int *d = (int *)dxs;
+  int len = anthy_dic_ntohl(d[0]);
+  return &d[len+1];
+}
+
+static int
+anthy_ondisk_xstr_len(ondisk_xstr *dxs)
+{
+  int *d = (int *)dxs;
+  return anthy_dic_ntohl(d[0]);
+}
 
 /*
  * 各ノードにおける遷移条件をテストする
@@ -71,26 +101,30 @@ match_nodes(struct splitter_context *sc,
 	    struct word_list *wl,
 	    xstr follow_str, int node)
 {
-  struct dep_node *dn = &fdep.nodes[node];
+  struct dep_node *dn = &ddic.nodes[node];
   struct dep_branch *db;
   int i,j;
 
   /* 各ルールの */
   for (i = 0; i < dn->nr_branch; i++) {
+    ondisk_xstr *dep_xs;
     db = &dn->branch[i];
+    dep_xs = db->xstrs;
+
     /* 各遷移条件 */
-    for (j = 0; j < db->nr_strs; j++) {
+    for (j = 0; j < db->nr_strs;
+	 j++, dep_xs = anthy_next_ondisk_xstr(dep_xs)) {
       xstr cond_xs;
       /* 付属語の方が遷移条件より長いことが必要 */
-      if (follow_str.len < db->str[j]->len){
+      if (follow_str.len < anthy_ondisk_xstr_len(dep_xs)) {
 	continue;
       }
       /* 遷移条件の部分を切り出す */
       cond_xs.str = follow_str.str;
-      cond_xs.len = db->str[j]->len;
+      cond_xs.len = anthy_ondisk_xstr_len(dep_xs);
 
       /* 遷移条件と比較する */
-      if (!anthy_xstrcmp(&cond_xs, db->str[j])) {
+      if (!anthy_xstrcmp_with_ondisk(&cond_xs, dep_xs)) {
 	/* 遷移条件にmatchした */
 	struct word_list new_wl = *wl;
 	struct part_info *part = &new_wl.part[PART_DEPWORD];
@@ -131,31 +165,31 @@ match_branch(struct splitter_context *sc,
     struct dep_transition *transition = &db->transition[i];
 
     /* この遷移のスコア */
-    part->ratio *= ntohl(transition->trans_ratio);
+    part->ratio *= anthy_dic_ntohl(transition->trans_ratio);
     part->ratio /= RATIO_BASE;
-    if (ntohl(transition->weak) || /* 弱い遷移 */
-	(ntohl(transition->dc) == DEP_END && xs->len > 0)) { /* 終端じゃないのに終端属性*/
+    if (anthy_dic_ntohl(transition->weak) || /* 弱い遷移 */
+	(anthy_dic_ntohl(transition->dc) == DEP_END && xs->len > 0)) { /* 終端じゃないのに終端属性*/
       tmpl->weak_len += cond_xs->len;
     } else {
       /* 強い遷移の付属語に加点 */
       part->ratio += cond_xs->len * cond_xs->len * cond_xs->len * 3;
     }
 
-    tmpl->tail_ct = ntohl(transition->ct);
+    tmpl->tail_ct = anthy_dic_ntohl(transition->ct);
     /* 遷移の活用形と品詞 */
-    if (ntohl(transition->dc) != DEP_NONE) {
-      part->dc = ntohl(transition->dc);
+    if (anthy_dic_ntohl(transition->dc) != DEP_NONE) {
+      part->dc = anthy_dic_ntohl(transition->dc);
 
     }
     /* 名詞化する動詞等で品詞名を上書き */
-    if (ntohl(transition->head_pos) != POS_NONE) {
-      tmpl->head_pos = ntohl(transition->head_pos);
+    if (anthy_dic_ntohl(transition->head_pos) != POS_NONE) {
+      tmpl->head_pos = anthy_dic_ntohl(transition->head_pos);
     }
 
     /* 遷移か終端か */
-    if (ntohl(transition->next_node)) {
+    if (anthy_dic_ntohl(transition->next_node)) {
       /* 遷移 */
-      match_nodes(sc, tmpl, *xs, ntohl(transition->next_node));
+      match_nodes(sc, tmpl, *xs, anthy_dic_ntohl(transition->next_node));
     } else {
       struct word_list *wl;
       xstr xs_tmp;
@@ -202,147 +236,105 @@ anthy_scan_node(struct splitter_context *sc,
 
 
 static void
-read_xstr(struct file_dep* fdep, xstr* str, int* offset)
+read_xstr(struct dep_dic* ddic, int* offset)
 {
-  str->len = ntohl(*(int*)&fdep->file_ptr[*offset]);
+  int len = anthy_dic_ntohl(*(int*)&ddic->file_ptr[*offset]);
   *offset += sizeof(int);
-  str->str = (xchar*)&fdep->file_ptr[*offset];
-  *offset += sizeof(xchar) * str->len;
+  *offset += sizeof(xchar) * len;
 }
 
 static void
-read_branch(struct file_dep* fdep, struct dep_branch* branch, int* offset)
+read_branch(struct dep_dic* ddic, struct dep_branch* branch, int* offset)
 {
   int i;
 
-  branch->nr_strs = ntohl(*(int*)&fdep->file_ptr[*offset]);
+  /* 遷移条件の数を読む */
+  branch->nr_strs = anthy_dic_ntohl(*(int*)&ddic->file_ptr[*offset]);
   *offset += sizeof(int);
-  branch->str = malloc(sizeof(xstr*) * branch->nr_strs);
+  /* 遷移条件の文字列を読み取る */
+  branch->xstrs = (ondisk_xstr *)&ddic->file_ptr[*offset];
 
   for (i = 0; i < branch->nr_strs; ++i) {
-    xstr* str = malloc(sizeof(xstr));
-    read_xstr(fdep, str, offset);
-    branch->str[i] = str;
+    read_xstr(ddic, offset);
   }
 
-  branch->nr_transitions = ntohl(*(int*)&fdep->file_ptr[*offset]);
+  branch->nr_transitions = anthy_dic_ntohl(*(int*)&ddic->file_ptr[*offset]);
   *offset += sizeof(int);
-  branch->transition = (struct dep_transition*)&fdep->file_ptr[*offset];
+  branch->transition = (struct dep_transition*)&ddic->file_ptr[*offset];
   *offset += sizeof(struct dep_transition) * branch->nr_transitions;
 }
 
 static void
-read_node(struct file_dep* fdep, struct dep_node* node, int* offset)
+read_node(struct dep_dic* ddic, struct dep_node* node, int* offset)
 {
   int i;
-  node->nr_branch = ntohl(*(int*)&fdep->file_ptr[*offset]);
+  node->nr_branch = anthy_dic_ntohl(*(int*)&ddic->file_ptr[*offset]);
   *offset += sizeof(int);
     
   node->branch = malloc(sizeof(struct dep_branch) * node->nr_branch);
   for (i = 0; i < node->nr_branch; ++i) {
-    read_branch(fdep, &node->branch[i], offset);
+    read_branch(ddic, &node->branch[i], offset);
   }
-}
-
-static int
-map_file_dep(const char* file_name, struct file_dep* fdep)
-{
-  struct stat st;
-  char* ptr;
-  int fd, r;
-
-  fd = open(file_name, O_RDONLY);
-  if (fd == -1) {
-    anthy_log(0, "Failed to open (%s).\n", file_name);
-    return -1;
-  }
-  r = fstat(fd, &st);
-  if (r == -1) {
-    anthy_log(0, "Failed to stat() (%s).\n", file_name);
-    return -1;
-  }
-  fdep->file_size = st.st_size;
-  ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-  close(fd);
-  if (ptr == MAP_FAILED) {
-    anthy_log(0, "Failed to mmap() (%s).\n", file_name);
-    return -1;
-  }
-  fdep->file_ptr = ptr;
-  return 0;
 }
 
 static void
-read_file(const char* file_name)
+read_file(void)
 {
   int i;
 
   int offset = 0;
 
-  map_file_dep(file_name, &fdep);
+  ddic.file_ptr = anthy_file_dic_get_section("dep_dic");
 
-  fdep.nrRules = ntohl(*(int*)&fdep.file_ptr[offset]);
+  /* 最初にルールの数 */
+  ddic.nrRules = anthy_dic_ntohl(*(int*)&ddic.file_ptr[offset]);
   offset += sizeof(int);
 
-  fdep.rules = (struct ondisk_wordseq_rule*)&fdep.file_ptr[offset];
-  offset += sizeof(struct ondisk_wordseq_rule) * fdep.nrRules;
-  fdep.nrNodes = ntohl(*(int*)&fdep.file_ptr[offset]);
+  /* 各ルールの定義 */
+  ddic.rules = (struct ondisk_wordseq_rule*)&ddic.file_ptr[offset];
+  offset += sizeof(struct ondisk_wordseq_rule) * ddic.nrRules;
+  /* ノードの数 */
+  ddic.nrNodes = anthy_dic_ntohl(*(int*)&ddic.file_ptr[offset]);
   offset += sizeof(int);
 
-  fdep.nodes = malloc(sizeof(struct dep_node) * fdep.nrNodes);
-  for (i = 0; i < fdep.nrNodes; ++i) {
-    read_node(&fdep, &fdep.nodes[i], &offset);
+  /* 各ノードを読み込む */
+  ddic.nodes = malloc(sizeof(struct dep_node) * ddic.nrNodes);
+  for (i = 0; i < ddic.nrNodes; ++i) {
+    read_node(&ddic, &ddic.nodes[i], &offset);
   }
 }
 
 int
 anthy_get_nr_dep_rule()
 {
-  return fdep.nrRules;
+  return ddic.nrRules;
 }
 
 void
 anthy_get_nth_dep_rule(int index, struct wordseq_rule *rule)
 {
   /* ディスク上の情報からデータを取り出す */
-  struct ondisk_wordseq_rule *r = &fdep.rules[index];
-  anthy_wtype_set_pos(&rule->wt, r->wt[0]);
-  anthy_wtype_set_cos(&rule->wt, r->wt[1]);
-  anthy_wtype_set_scos(&rule->wt, r->wt[2]);
-  anthy_wtype_set_cc(&rule->wt, r->wt[3]);
-  anthy_wtype_set_ct(&rule->wt, r->wt[4]);
-  rule->wt.wf = r->wt[5];
-  rule->ratio = ntohl(r->ratio);
-  rule->node_id = ntohl(r->node_id);
+  struct ondisk_wordseq_rule *r = &ddic.rules[index];
+  rule->wt = anthy_get_wtype(r->wt[0], r->wt[1], r->wt[2], r->wt[3], r->wt[4], r->wt[5]);
+  rule->ratio = anthy_dic_ntohl(r->ratio);
+  rule->node_id = anthy_dic_ntohl(r->node_id);
 }
 
 int
 anthy_init_depword_tab()
 {
-  const char *fn;
-
-  fn = anthy_conf_get_str("DEPGRAPH");
-  if (!fn) {
-    anthy_log(0, "Dependent word dictionary is unspecified.\n");
-    return -1;
-  }
-  read_file(fn);
+  read_file();
   return 0;
 }
 
 void
-anthy_release_depword_tab(void)
+anthy_quit_depword_tab(void)
 {
-  int i, j;
-  for (i = 0; i < fdep.nrNodes; i++) {
-    struct dep_node* node = &fdep.nodes[i];
-    for (j = 0; j < node->nr_branch; j++) {
-      free(node->branch[j].str);
-    }
+  int i;
+  for (i = 0; i < ddic.nrNodes; i++) {
+    struct dep_node* node = &ddic.nodes[i];
     free(node->branch);
   }
-  free(fdep.nodes);
-
-  munmap(fdep.file_ptr, fdep.file_size);
+  free(ddic.nodes);
 }
 

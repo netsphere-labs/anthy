@@ -49,6 +49,8 @@ void anthy_free_xstr_str(xstr *);
 xstr* anthy_xstrcpy(xstr *, xstr *);
 /* 文字列を比較する。strcmpと同等の動作(返り値の符号に意味がある) */
 int anthy_xstrcmp(xstr *, xstr *);
+/* n文字目まで文字列を比較する。strncmpと同等の動作(返り値の符号に意味がある) */
+int anthy_xstrncmp(xstr *, xstr *, int);
 /* s->strをreallocする */
 xstr *anthy_xstrcat(xstr *s, xstr *d);
 /* xs->strをreallocする */
@@ -56,6 +58,8 @@ xstr *anthy_xstrappend(xstr *xs, xchar c);
 
 /* strtollのxstr版 */
 long long anthy_xstrtoll(xstr *);
+/* 全角数字から半角数字への変換 */
+xstr *anthy_xstr_wide_num_to_num(xstr *);
 /* ひらがなからカタカナへの変換 */
 xstr *anthy_xstr_hira_to_kata(xstr *);
 
@@ -79,11 +83,13 @@ xstr *anthy_xstr_hira_to_kata(xstr *);
 #define XCT_SYMBOL 1024
 /* 漢字 */
 #define XCT_KANJI 2048
+/* 句読点 */
+#define XCT_PUNCTUATION 4096
 
 /** XCT_*が返ってくる */
-int anthy_get_xchar_type(xchar );
+int anthy_get_xchar_type(const xchar );
 /** 全ての文字に対してXCT_*の論理積をとったもの */
-int anthy_get_xstr_type(xstr *);
+int anthy_get_xstr_type(const xstr *);
 
 /* hash */
 int anthy_xstr_hash(xstr *);

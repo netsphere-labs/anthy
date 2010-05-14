@@ -1,7 +1,7 @@
 ;; anthy-dic.el -- Anthy
 
-;; Copyright (C) 2001 - 2002
-;; Author: Yusuke Tabata<yusuke@cherubim.icw.co.jp>
+;; Copyright (C) 2001 - 2005
+;; Author: Yusuke Tabata<yusuke@w5.dion.ne.jp>
 ;;       : Tomoharu Ugawa
 
 ;; This file is part of Anthy

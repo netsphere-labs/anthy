@@ -21,13 +21,16 @@ struct dep_transition {
   int weak;
 };
 
+typedef int ondisk_xstr;
+
 struct dep_branch {
   /* Á«°Ü¾ò·ï¤ÎÉÕÂ°¸ì¤ÎÇÛÎó */
   /** ÇÛÎóÄ¹ */
   int nr_strs;
   /** Á«°Ü¾ò·ï¤ÎÇÛÎó */
   xstr **str;
-  
+  ondisk_xstr *xstrs;
+
   /** Á«°ÜÀè¤Î¥Î¡¼¥É */
   int nr_transitions;
   struct dep_transition *transition;
@@ -54,8 +57,7 @@ struct ondisk_wordseq_rule {
 };
 
 /* ÉÕÂ°¸ì¥°¥é¥Õ */
-struct file_dep {
-  int file_size;
+struct dep_dic {
   char* file_ptr;
 
   int nrRules;

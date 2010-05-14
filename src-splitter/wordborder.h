@@ -135,7 +135,6 @@ struct word_list {
 
   /* このword_listを作った際の情報 */
   int node_id; /* 付属語グラフの検索開始のnodeのid*/
-  const char *core_wt_name; /* word_list生成に用いたルールの名前 */
 
   /* 同じfromを持つword_listのリスト */
   struct word_list *next;
@@ -162,7 +161,9 @@ void anthy_scan_node(struct splitter_context *sc,
 		     xstr *follow, int node);
 int anthy_get_node_id_by_name(const char *name);
 int anthy_init_depword_tab(void);
-void anthy_release_depword_tab(void);
+void anthy_quit_depword_tab(void);
+
+/* depgraph.c */
 int anthy_get_nr_dep_rule(void);
 void anthy_get_nth_dep_rule(int, struct wordseq_rule *);
 
@@ -171,10 +172,6 @@ void anthy_commit_word_list(struct splitter_context *, struct word_list *wl);
 struct word_list *anthy_alloc_word_list(struct splitter_context *);
 void anthy_print_word_list(struct splitter_context *, struct word_list *);
 void anthy_make_word_list_all(struct splitter_context *);
-int anthy_init_wordlist(void);
-/* extent */
-struct extent *anthy_find_extent(struct splitter_context *,
-				 int from, int len, int force);
 
 /* defined in metaword.c */
 void anthy_commit_meta_word(struct splitter_context *, struct meta_word *mw);

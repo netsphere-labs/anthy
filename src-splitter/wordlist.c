@@ -18,7 +18,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <netinet/in.h>
 
 #include <alloc.h>
 #include <record.h>
@@ -40,7 +39,6 @@ anthy_print_word_list(struct splitter_context *sc,
 		      struct word_list *wl)
 {
   xstr xs;
-  const char *wn = "---";
   if (!wl) {
     printf("--\n");
     return ;
@@ -66,10 +64,7 @@ anthy_print_word_list(struct splitter_context *sc,
 		  wl->part[PART_CORE].len +
 		  wl->part[PART_POSTFIX].len].c;
   anthy_putxstr(&xs);
-  if (wl->core_wt_name) {
-    wn = wl->core_wt_name;
-  }
-  printf(" %s %d %d %s\n", wn, wl->score, wl->part[PART_DEPWORD].ratio, anthy_seg_class_name(wl->seg_class));
+  printf(" %d %d %s\n", wl->score, wl->part[PART_DEPWORD].ratio, anthy_seg_class_name(wl->seg_class));
 }
 
 /** word_listを評価する */
@@ -255,7 +250,7 @@ make_suc_words(struct splitter_context *sc,
     seq_ent_t suc;
     xs.str = sc->ce[right].c;
     xs.len = i;
-    suc = anthy_get_seq_ent_from_xstr(&xs);
+    suc = anthy_get_seq_ent_from_xstr(&xs, sc->is_reverse);
     if (anthy_get_seq_ent_pos(suc, POS_SUC)) {
       /* 右側の文字列は付属語なので、自立語の品詞にあわせてチェック */
       struct word_list new_tmpl;
@@ -316,7 +311,7 @@ make_pre_words(struct splitter_context *sc,
     xstr xs;
     xs.str = sc->ce[tmpl->part[PART_CORE].from - i].c;
     xs.len = i;
-    pre = anthy_get_seq_ent_from_xstr(&xs);
+    pre = anthy_get_seq_ent_from_xstr(&xs, sc->is_reverse);
     if (anthy_get_seq_ent_pos(pre, POS_PRE)) {
       struct word_list new_tmpl;
       if (anthy_get_seq_ent_wtype_freq(pre, anthy_wtype_num_prefix)) {
@@ -358,8 +353,6 @@ setup_word_list(struct word_list *wl, int from, int len, int is_compound)
   wl->last_part = PART_CORE;
   wl->head_pos = POS_NONE;
   wl->tail_ct = CT_NONE;
-  /**/
-  wl->core_wt_name = NULL;
 }
 
 /*
@@ -390,6 +383,7 @@ make_word_list(struct splitter_context *sc,
     } else {
       freq = anthy_get_seq_ent_wtype_compound_freq(se, rule.wt);
     }
+
     if (freq) {
       /* 自立語の品詞はそのルールにあっている */
       if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_ID) {
@@ -438,16 +432,6 @@ make_dummy_head(struct splitter_context *sc)
   make_suc_words(sc, &tmpl);
 }
 
-
-static int
-is_indep(seq_ent_t se)
-{
-  if (!se) {
-    return 0;
-  }
-  return anthy_get_seq_ent_indep(se);
-}
-
 /* コンテキストの文字列中の全てのword_listを列挙する */
 void 
 anthy_make_word_list_all(struct splitter_context *sc)
@@ -465,7 +449,7 @@ anthy_make_word_list_all(struct splitter_context *sc)
   allocator de_ator;
 
   info = sc->word_split_info;
-  head = 0;
+  head = NULL;
   de_ator = anthy_create_allocator(sizeof(struct depword_ent), 0);
 
   /* 全ての自立語を列挙 */
@@ -479,26 +463,29 @@ anthy_make_word_list_all(struct splitter_context *sc)
 
     /* 文字列長のループ(長い方から) */
     for (j = search_len; j > search_from; j--) {
+      /* seq_entを取得する */
       xs.len = j;
       xs.str = sc->ce[i].c;
+      se = anthy_get_seq_ent_from_xstr(&xs, sc->is_reverse);
 
-      se = anthy_get_seq_ent_from_xstr(&xs);
+      /* 単語として認識できない */
+      if (!se) {
+	continue;
+      }
 
-      if (se) {
-	/* 各、部分文字列が単語ならば接頭辞、接尾辞の
-	   最大長を調べてマークする */
-	if (j > info->seq_len[i] &&
-	    anthy_get_seq_ent_pos(se, POS_SUC)) {
-	  info->seq_len[i] = j;
-	}
-	if (j > info->rev_seq_len[i + j] &&
-	    anthy_get_seq_ent_pos(se, POS_PRE)) {
-	  info->rev_seq_len[i + j] = j;
-	}
+      /* 各、部分文字列が単語ならば接頭辞、接尾辞の
+	 最大長を調べてマークする */
+      if (j > info->seq_len[i] &&
+	  anthy_get_seq_ent_pos(se, POS_SUC)) {
+	info->seq_len[i] = j;
+      }
+      if (j > info->rev_seq_len[i + j] &&
+	  anthy_get_seq_ent_pos(se, POS_PRE)) {
+	info->rev_seq_len[i + j] = j;
       }
 
       /* 発見した自立語をリストに追加 */
-      if (is_indep(se)) {
+      if (anthy_get_seq_ent_indep(se)) {
 	de = (struct depword_ent *)anthy_smalloc(de_ator);
 	de->from = i;
 	de->len = j;
@@ -526,7 +513,6 @@ anthy_make_word_list_all(struct splitter_context *sc)
   for (de = head; de; de = de->next) {
     make_word_list(sc, de->se, de->from, de->len, de->is_compound);
   }
-  
 
     /* 自立語の無いword_list */
   for (i = 0; i < sc->char_count; i++) {
@@ -536,7 +522,9 @@ anthy_make_word_list_all(struct splitter_context *sc)
       make_following_word_list(sc, &tmpl);
     } else {
       int type = anthy_get_xchar_type(*sc->ce[i - 1].c);
-      if (type & XCT_CLOSE || type & XCT_SYMBOL) {
+      if ((type & (XCT_CLOSE | XCT_SYMBOL)) &&
+	  !(type & XCT_PUNCTUATION)) {
+	/* 句読点以外の記号 */
 	make_following_word_list(sc, &tmpl);
       }
     }
@@ -546,12 +534,4 @@ anthy_make_word_list_all(struct splitter_context *sc)
   make_dummy_head(sc);
 
   anthy_free_allocator(de_ator);
-}
-
-
-
-int
-anthy_init_wordlist(void)
-{
-  return 0;
 }

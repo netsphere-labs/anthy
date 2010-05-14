@@ -19,7 +19,7 @@
  *TESTING		テストの方法について
  *GUIDE.english		Guide for non Japanese people
  *protocol.txt		EGG 対応プロトコルの仕様と説明  
- *GRAMMER		日本語文法のうちanthyでの扱いが難しいor微妙なもののメモ
+ *GRAMMAR		日本語文法のうちanthyでの扱いが難しいor微妙なもののメモ
 
 00INDEXというファイル名はlsした時に最初に出てくるように
 という意図をもって名付けてあります。linuxにも

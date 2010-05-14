@@ -62,8 +62,6 @@ struct seg_ent {
   struct cand_ent **cands;/* 配列 */
 
   int from, len;/* len == str.len */
-  /* 変換対象となる部分、前に付いた開き括弧や後の句読点などは無視する */
-  int core_from, core_len;
 
   /* 文節の構成 */
   int nr_metaword;
@@ -93,6 +91,6 @@ void anthy_print_candidate(struct cand_ent *ce);
 
 /* compose.c */
 /* 候補を作り出す */
-void anthy_do_make_candidates(struct seg_ent *e);
+void anthy_do_make_candidates(struct seg_ent *e, int is_reverse);
 
 #endif
