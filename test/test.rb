@@ -1,5 +1,6 @@
 #! /usr/bin/ruby
 # EUC-JP/にほんご
+$KCODE = "EUC"
 require 'anthy'
 
 Anthy::quit()

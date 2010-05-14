@@ -166,10 +166,23 @@
 #define WT_CT 4
 #define WT_FLAGS 5
 
+/* ³Æbit field¤ÎÉý */
+#define POS_BITS 5
+#define COS_BITS 4
+#define SCOS_BITS 7
+#define CC_BITS 5
+#define CT_BITS 4
+#define WF_BITS 4
+/* 29bits */
+
 /** ÉÊ»ì */
 struct wtype{
-  unsigned short pad;
-  unsigned char type[6];
+  unsigned int pos  : POS_BITS;
+  unsigned int cos  : COS_BITS;
+  unsigned int scos : SCOS_BITS;
+  unsigned int cc   : CC_BITS;
+  unsigned int ct   : CT_BITS;
+  unsigned int wf   : WF_BITS;
 };
 
 typedef struct wtype wtype_t;

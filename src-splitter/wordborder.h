@@ -79,8 +79,9 @@ enum mw_status {
 /* metawordの種類による処理の違い (metaword.c) */
 extern struct metaword_type_tab_ {
   enum metaword_type type;
+  const char *name;
   int score;
-  enum mw_status si;
+  enum mw_status status;
   enum mw_check check;
 } anthy_metaword_type_tab[];
 
@@ -146,12 +147,10 @@ struct word_list {
 #define SPLITTER_DEBUG_WL 1
 /* metawordの表示 */
 #define SPLITTER_DEBUG_MW 2
-/* A*nodeの表示 */
-#define SPLITTER_DEBUG_AN 4
+/* hmm nodeの表示 */
+#define SPLITTER_DEBUG_HM 4
 /* 自立語のマッチした品詞 */
 #define SPLITTER_DEBUG_ID 8
-/* 一文節だけ */
-#define SPLITTER_DEBUG_1 16
 int anthy_splitter_debug_flags(void);
 
 

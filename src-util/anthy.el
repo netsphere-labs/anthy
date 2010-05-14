@@ -106,6 +106,7 @@
       ;; 文節の移動
       (define-key map [left] 'anthy-insert)
       (define-key map [right] 'anthy-insert)
+      (define-key map [backspace] 'anthy-insert)
       (setq anthy-preedit-keymap map)))
 
 ;; anthy-agentに送る際にキーをエンコードするためのテーブル
@@ -134,6 +135,7 @@
     (right . "(right)")
     (left . "(left)")
     (up . "(up)")
+    (backspace . "(ctrl H)")
     ;; xemacs
     ((shift right) . "(shift right)")
     ((shift left) . "(shift left)")
@@ -618,7 +620,7 @@
 	  (setq anthy-enum-rcandidate-p nil))
       (message "%s" anthy-candidate-minibuffer))))
 
-(defvar anthy-rkmap-keybind
+(defvar anthy-default-rkmap-keybind
   '(
     ;; q
     (("hiragana" . 113) . "katakana")
@@ -636,6 +638,10 @@
     (("hiragana" . 17) . "hankaku_kana")
     (("hankaku_kana" . 17) . "hiragana")
     ))
+
+
+(defvar anthy-rkmap-keybind anthy-default-rkmap-keybind)
+
 
 (defun anthy-find-rkmap-keybind (ch)
   (let ((res
@@ -814,31 +820,36 @@
             (not anthy-mode)
           (> (prefix-numeric-value arg) 0)))
   (anthy-update-mode))
+
+(defun anthy-select-map (map)
+  (anthy-send-recv-command (concat " MAP_SELECT " map "\n"))
+  (setq anthy-current-rkmap map)
+  (anthy-update-mode-line))
 ;;
 (defun anthy-hiragana-map (&optional arg)
   "Hiragana mode"
   (interactive "P")
-  (anthy-send-recv-command " MAP_SELECT hiragana\n"))
+  (anthy-select-map "hiragana"))
 ;;
 (defun anthy-katakana-map (&optional arg)
-  "Hiragana mode"
+  "Katakana mode"
   (interactive "P")
-  (anthy-send-recv-command " MAP_SELECT katakana\n"))
+  (anthy-select-map "katakana"))
 ;;
 (defun anthy-alpha-map (arg)
   "Alphabet mode"
   (interactive "P")
-  (anthy-send-recv-command " MAP_SELECT alphabet\n"))
+  (anthy-select-map "alphabet"))
 ;;
 (defun anthy-wide-alpha-map (arg)
   "Wide Alphabet mode"
   (interactive "P")
-  (anthy-send-recv-command " MAP_SELECT walphabet\n"))
+  (anthy-select-map "walphabet"))
 ;;
 (defun anthy-hankaku-kana-map (arg)
   "Hankaku Katakana mode"
   (interactive "P")
-  (anthy-send-recv-command " MAP_SELECT hankaku_kana\n"))
+  (anthy-select-map "hankaku_kana"))
 ;;
 ;;
 ;; leim の inactivate
@@ -883,15 +894,26 @@
 ;;
 ;;
 ;;
-(global-set-key [(meta escape)] 'anthy-mode)
+;(global-set-key [(meta escape)] 'anthy-mode)
 (provide 'anthy)
 
-(load "anthy-dic")
-(load "anthy-conf")
+(require 'anthy-dic)
+(require 'anthy-conf)
 
-;; these should go away for i18n
-(if (boundp 'default-input-method)
-    (setq-default default-input-method "japanese-anthy"))
-(setq default-input-method "japanese-anthy")
+;; is it ok for i18n?
+(set-language-info "Japanese" 'input-method "japanese-anthy")
+(if (equal current-language-environment "Japanese")
+    (progn
+      (if (boundp 'default-input-method)
+	  (setq-default default-input-method "japanese-anthy"))
+      (setq default-input-method "japanese-anthy")))
+
+(defun anthy-default-mode ()
+  (interactive)
+  (setq anthy-rkmap-keybind anthy-default-rkmap-keybind)
+  (anthy-send-recv-command " MAP_CLEAR 1\n")
+  (anthy-send-recv-command " SET_PREEDIT_MODE 0\n")
+  (anthy-hiragana-map))
+
 ;;;
 ;;; anthy.el ends here

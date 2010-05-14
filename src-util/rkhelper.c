@@ -275,13 +275,14 @@ make_rkmap_shiftascii(struct rk_option* opt)
   char work[2*128 + 3];
   char* w;
   int c;
+  int toggle_char = opt->toggle;
   
   p = var_part;
   w = work;
   for (c = 0; c < 128; c++) {
     if (rk_default_symbol[c]) {
-      if (c == opt->toggle) {
-	/* トグルの場合 */
+      if (c == toggle_char) {
+	/* トグルする文字の場合 */
 	w[0] = c;
 	w[1] = '\0';
 	rkrule_set(p++, w, "\xff" "o", NULL);
@@ -291,7 +292,7 @@ make_rkmap_shiftascii(struct rk_option* opt)
 	rkrule_set(p++, w + 2, w, NULL);
 	w += 5;	
       } else {
-	/* 普通の場合 */
+	/* 普通の文字の場合 */
 	w[0] = c;
 	w[1] = '\0';
 	rkrule_set(p++, w, w, NULL);
@@ -357,7 +358,7 @@ make_rkmap_hirakata(const struct rk_rule* rule,
   nr_rule = count_rk_rule_ent(opt, map_no);
 
   rk_var_part = alloca(sizeof(struct rk_rule) *(nr_rule + 2));
-  work = alloca(2*128 + 6);
+  work = alloca(2*128 + 8);
   p = rk_var_part;
   w = work;
 

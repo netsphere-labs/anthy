@@ -288,14 +288,11 @@ anthy_init_splitter(void)
       if (strchr(fs, 'm')) {
 	splitter_debug_flags |= SPLITTER_DEBUG_MW;
       }
-      if (strchr(fs, 'a')) {
-	splitter_debug_flags |= SPLITTER_DEBUG_AN;
+      if (strchr(fs, 'h')) {
+	splitter_debug_flags |= SPLITTER_DEBUG_HM;
       }
       if (strchr(fs, 'i')) {
 	splitter_debug_flags |= SPLITTER_DEBUG_ID;
-      }
-      if (strchr(fs, '1')) {
-	splitter_debug_flags |= SPLITTER_DEBUG_1;
       }
     }
   }

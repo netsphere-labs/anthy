@@ -483,7 +483,7 @@ get_file_dic_sections(struct file_dic *fdic)
 
 /** 指定された単語の辞書中のインデックスを調べる */
 static int
-search_word(struct file_dic *fdic, xstr *xs)
+search_yomi_index(struct file_dic *fdic, xstr *xs)
 {
   int p, o;
   int page_number;
@@ -509,9 +509,9 @@ search_word(struct file_dic *fdic, xstr *xs)
  */
 void
 anthy_file_dic_fill_seq_ent_by_xstr(struct file_dic *fd, xstr *xs,
-				    struct seq_ent *e)
+				    struct seq_ent *se)
 {
-  int i;
+  int yomi_index;
 
   if (xs->len > 31) {
     /* 32文字以上単語には未対応 */
@@ -522,13 +522,15 @@ anthy_file_dic_fill_seq_ent_by_xstr(struct file_dic *fd, xstr *xs,
     return ;
   }
 
-  i = search_word(fd, xs);
-  if (i >= 0) {
-    int entry_index = anthy_dic_ntohl(fd->entry_index[i]);
-    e->seq_type |= ST_WORD;
+  yomi_index = search_yomi_index(fd, xs);
+  se->id = yomi_index;
+  if (yomi_index >= 0) {
+    /* 該当する読みが辞書中にあれば、それを引数にseq_entを埋める */
+    int entry_index = anthy_dic_ntohl(fd->entry_index[yomi_index]);
+    se->seq_type |= ST_WORD;
     fill_dic_ent(fd->entry,
 		 entry_index,
-		 e);
+		 se);
   }
 }
 

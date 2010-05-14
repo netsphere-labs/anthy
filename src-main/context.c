@@ -161,7 +161,8 @@ make_metaword_array(struct anthy_context *ac,
 }
 
 static struct seg_ent*
-create_segment(struct anthy_context *ac, int from, int len, struct meta_word* best_mw)
+create_segment(struct anthy_context *ac, int from, int len,
+	       struct meta_word* best_mw)
 {
   struct seg_ent* s;
   s = (struct seg_ent *)malloc(sizeof(struct seg_ent));

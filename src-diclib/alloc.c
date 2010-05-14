@@ -4,8 +4,8 @@
  *
  * $Id: alloc.c,v 1.12 2002/05/15 11:21:10 yusuke Exp $
  *
- * Copyright (C) 2000-2002 TABATA Yusuke, UGAWA Tomoharu
- * Copyright (C) 2002 NIIBE Yutaka
+ * Copyright (C) 2000-2005 TABATA Yusuke, UGAWA Tomoharu
+ * Copyright (C) 2002, 2005 NIIBE Yutaka
  *
  * dtor: destructor
  * 
@@ -13,7 +13,9 @@
  * 使用中のchunkは属するページを指している
  */
 
+#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include <alloc.h>
 #include <logger.h>
@@ -21,25 +23,23 @@
 /*#define MEM_DEBUG*/
 /**/
 #define PAGE_MAGIC 0x12345678
+#define PAGE_SIZE 2048
 
+/* ページ使用量の合計、デバッグの時等に用いる */
 static int nr_pages;
 
-
-#define PAGE_SIZE 4096
-#ifdef MEM_DEBUG
-#define CHUNK_HEADER_SIZE (sizeof(void *) * 2)
-#else
-#define CHUNK_HEADER_SIZE (sizeof(void *))
-#endif
-#define PAGE_HEADER_SIZE (sizeof(void *)*3+sizeof(int))
-
+/* page内のオブジェクトを表すオブジェクト */
 struct chunk {
-  void *ptr;
 #ifdef MEM_DEBUG
   void *ator;
 #endif
-  void *storage[1];
+  union {
+    void *storage[1];
+    /* double型のalignを要求するアーキテクチャ+OSのためのhack */
+    double align;
+  } u;
 };
+#define CHUNK_HEADER_SIZE ((size_t)&((struct chunk *)0)->u.storage)
 
 /*
  * pageのstorage中には 
@@ -50,20 +50,51 @@ struct chunk {
 struct page {
   int magic;
   struct page *prev, *next;
-  struct chunk *free_list;
-  unsigned char storage[1];
 };
 
+
+#define PAGE_HEADER_SIZE (sizeof(struct page))
+#define PAGE_AVAIL(p) ((unsigned char*)p + sizeof(struct page))
+#define MAX_NUM(size) (int)((PAGE_SIZE - PAGE_HEADER_SIZE) / ((size) + CHUNK_HEADER_SIZE + 1.0 / 8))
+#define PAGE_STORAGE(p, size) (PAGE_AVAIL(p) + (MAX_NUM((size)) >> 3) + 1)
+#define PAGE_CHUNK(p, size, i)(struct chunk*)(&PAGE_STORAGE(p, size)[((size) + CHUNK_HEADER_SIZE) * (i)])
+
+
+/**/
 struct allocator_priv {
   int size;
-  int max_obj;
-  int use_count;
   struct page page_list;
   struct allocator_priv *next;
   void (*dtor)(void *);/* sfreeした際に呼ばれる */
 };
 
 static struct allocator_priv *allocator_list;
+
+static int bit_get(unsigned char* bits, int pos)
+{
+  unsigned char filter = 1 << (7 - (pos & 0x7));
+  return bits[pos >> 3] & filter ? 1 : 0;
+}
+
+static int bit_test(unsigned char* bits, int pos)
+{
+  /*
+     bit_getとほぼ同じだがbit != 0の時に0以外を返すことしか保証しない
+   */
+  return bits[pos >> 3] & (1 << (7 - (pos & 0x7)));
+}
+
+
+static int bit_set(unsigned char* bits, int pos, int bit)
+{
+  unsigned char filter = 1 << (7 - (pos & 0x7));
+  if (bit == 0) {
+    return bits[pos >> 3] &= ~filter;
+  } else {
+    return bits[pos >> 3] |= filter;
+  }
+}
+
 
 static struct chunk *
 get_chunk_address(void *s)
@@ -73,38 +104,40 @@ get_chunk_address(void *s)
 }
 
 static struct page *
-alloc_page(void)
+alloc_page(int size)
 {
   struct page *p;
+  unsigned char* avail;
+  int num = MAX_NUM(size);
+    
   p = malloc(PAGE_SIZE);
   if (!p) {
     anthy_log(0, "Fatal error: Failed to allocate memory.\n");
     exit(1);
   }
+
   p->magic = PAGE_MAGIC;
-  p->free_list = NULL;
+  avail = PAGE_AVAIL(p);
+  memset(avail, 0, (num >> 3) + 1);
   return p;
 }
 
 static struct chunk *
 get_chunk_from_page(allocator a, struct page *p)
 {
-  struct chunk *c;
-  if (p->free_list) {
-    c = (struct chunk *)p->free_list;
-    p->free_list = c->ptr;
-    c->ptr = p;
-    return c;
+  int i;
+
+  int num = MAX_NUM(a->size);
+  unsigned char* avail = PAGE_AVAIL(p);
+  unsigned char* storage = PAGE_STORAGE(p, a->size);
+
+  for (i = 0; i < num; ++i) {
+    if (bit_test(avail, i) == 0) {
+      bit_set(avail, i, 1);
+      return PAGE_CHUNK(p, a->size, i);
+    }
   }
-  if (p != a->page_list.next || a->use_count == a->max_obj) {
-    /* It's not the first page or the first page is full. */
-    return NULL;
-  }
-  c = (struct chunk *)
-    &p->storage[a->use_count * (a->size + CHUNK_HEADER_SIZE)];
-  c->ptr = p;
-  a->use_count ++;
-  return c;
+  return NULL;  
 }
 
 allocator
@@ -122,8 +155,6 @@ anthy_create_allocator(int size, void (*dtor)(void *))
   }
   a->size = size;
   a->dtor = dtor;
-  a->max_obj = (PAGE_SIZE - PAGE_HEADER_SIZE) / (size + CHUNK_HEADER_SIZE);
-  a->use_count = 0;
   a->page_list.next = &a->page_list;
   a->page_list.prev = &a->page_list;
   a->next = allocator_list;
@@ -135,26 +166,27 @@ static void
 anthy_free_allocator_internal(allocator a)
 {
   struct page *p, *p_next;
-  int is_first_page = 1;
 
   for (p = a->page_list.next; p != &a->page_list; p = p_next) {
-    int limit = is_first_page ? a->use_count : a->max_obj;
+    unsigned char* avail = PAGE_AVAIL(p);
+
+    int limit = MAX_NUM(a->size);
     int i;
 
     p_next = p->next;
     if (a->dtor) {
       for (i = 0; i < limit; i++) {
-	struct chunk *c;
+	if (bit_test(avail, i)) {
+	  struct chunk *c;
 
-	c = (struct chunk *)&p->storage[i * (a->size + CHUNK_HEADER_SIZE)];
-	if (c->ptr == (void*)p) {
-	  a->dtor(c->storage);
+	  bit_set(avail, i, 0);
+	  c = PAGE_CHUNK(p, a->size, i);
+	  a->dtor(c->u.storage);
 	}
       }
     }
     free(p);
     nr_pages--;
-    is_first_page = 0;
   }
   free(a);
 }
@@ -180,33 +212,38 @@ anthy_smalloc(allocator a)
 {
   struct page *p;
   struct chunk *c;
+  
   for (p = a->page_list.next; p != &a->page_list; p = p->next) {
     c = get_chunk_from_page(a, p);
     if (c) {
 #ifdef MEM_DEBUG
       c->ator = a;
 #endif
-      return c->storage;
+      return c->u.storage;
     }
   }
-  p = alloc_page();
+  p = alloc_page(a->size);
   nr_pages++;
 
   p->next = a->page_list.next;
   p->prev = &a->page_list;
   a->page_list.next->prev = p;
   a->page_list.next = p;
-  a->use_count = 0;
   return anthy_smalloc(a);
 }
 
 void
 anthy_sfree(allocator a, void *ptr)
 {
-  struct chunk *c;
+  struct chunk *c = get_chunk_address(ptr);
   struct page *p;
-  c = get_chunk_address(ptr);
-  p = (struct page *)c->ptr;
+  int index;
+  for (p = a->page_list.next; p != &a->page_list; p = p->next) {
+    if ((int)p < (int)c && (int)c < (int)p + PAGE_SIZE) {
+      break;
+    }
+  }
+
   if (p->magic != PAGE_MAGIC) {
     anthy_log(0, "sfree()ing Invalid Object\n");
     abort();
@@ -217,11 +254,13 @@ anthy_sfree(allocator a, void *ptr)
     abort();
   }
 #endif
+
+  index = ((int)c - (int)PAGE_STORAGE(p, a->size)) / (a->size + CHUNK_HEADER_SIZE);  
+  bit_set(PAGE_AVAIL(p), index, 0);
+
   if (a->dtor) {
     a->dtor(ptr);
   }
-  c->ptr = p->free_list;
-  p->free_list = (void *)c;
 }
 
 void

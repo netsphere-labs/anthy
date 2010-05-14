@@ -10,10 +10,11 @@
  */
 /*
  * Funded by IPA未踏ソフトウェア創造事業 2001 9/30
- * Copyright (C) 2000-2004 TABATA Yusuke
+ * Copyright (C) 2000-2005 TABATA Yusuke
+ * Copyright (C) 2004-2005 YOSHIDA Yuichi
  * Copyright (C) 2002 UGAWA Tomoharu
  *
- * $Id: compose.c,v 1.17 2005/02/20 12:12:21 oxy Exp $
+ * $Id: compose.c,v 1.21 2005/05/15 04:15:59 yusuke Exp $
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -133,6 +134,7 @@ dup_candidate(struct cand_ent *ce)
   ce_new->flag = ce->flag;
   ce_new->core_elm_index = ce->core_elm_index;
   ce_new->mw = ce->mw;
+  ce_new->score = ce->score;
 
   for (i = 0 ; i < ce->nr_words ; i++) {
     ce_new->elm[i] = ce->elm[i];
@@ -332,7 +334,6 @@ make_cand_elem_from_word_list(struct seg_ent *se,
 {
   int i; 
   int from = wl->from - se->from;
-
   for (i = 0; i < NR_PARTS; ++i) {
     struct part_info *part = &wl->part[i];
     xstr core_xs;
@@ -349,7 +350,7 @@ make_cand_elem_from_word_list(struct seg_ent *se,
     ce->elm[i + index].str.str = core_xs.str;
     ce->elm[i + index].str.len = core_xs.len;
     ce->elm[i + index].wt = part->wt;
-    ce->elm[i + index].ratio = part->ratio;
+    ce->elm[i + index].ratio = part->ratio * (wl->len - wl->weak_len);
     from += part->len;
   }
 }
@@ -366,7 +367,6 @@ make_candidate_from_simple_metaword(struct seg_ent *se,
    */
   struct cand_ent *ce;
   struct word_list *wl = mw->wl;
-  int score;
 
   /* 複数(1も含む)の単語で構成される文節に単語を割当てていく */
   ce = alloc_cand_ent();
@@ -375,20 +375,12 @@ make_candidate_from_simple_metaword(struct seg_ent *se,
   ce->str.len = 0;
   ce->elm = calloc(sizeof(struct cand_elm),ce->nr_words);
   ce->mw = top_mw;
+  ce->score = 0;
 
   /* 接頭辞, 自立語部, 接尾辞, 付属語 */
   make_cand_elem_from_word_list(se, ce, wl, 0);
-  /* 構造を評価する */
-  score = mw->score;
-  /* 付属語のパターンに対するスコア */
-  score *= wl->part[PART_DEPWORD].ratio;
-  score /= RATIO_BASE;
-  /* 自立語の活用形によるスコア */
-  score *= wl->part[PART_CORE].ratio;
-  score /= RATIO_BASE;
 
-  ce->score = score;
-  ce->flag = se->best_mw == mw ? CEF_BEST : CEF_NONE;
+  ce->flag = (se->best_mw == mw) ? CEF_BEST : CEF_NONE;
   enum_candidates(se, ce, 0, 0);
   anthy_release_cand_ent(ce);
 }
@@ -396,8 +388,8 @@ make_candidate_from_simple_metaword(struct seg_ent *se,
 /** combinedなmetawordは二つの語を合体して一つの語として出す */
 static void
 make_candidate_from_combined_metaword(struct seg_ent *se,
-				    struct meta_word *mw,
-				    struct meta_word *top_mw)
+				      struct meta_word *mw,
+				      struct meta_word *top_mw)
 {
   /*
    * 各単語の品詞が決定された状態でコミットされる。
@@ -422,7 +414,7 @@ make_candidate_from_combined_metaword(struct seg_ent *se,
   score = mw->score;
 
   ce->score = score;
-  ce->flag = se->best_mw == mw ? CEF_BEST : CEF_NONE;
+  ce->flag = (se->best_mw == mw) ? CEF_BEST : CEF_NONE;
   enum_candidates(se, ce, 0, 0);
   anthy_release_cand_ent(ce);
 }
@@ -435,18 +427,17 @@ proc_splitter_info(struct seg_ent *se,
 		   struct meta_word *mw,
 		   struct meta_word *top_mw)
 {
-  enum mw_status si;
-
-  /* まずwordlistを持つmetawordの場合 */
+  enum mw_status st;
   if (!mw) return;
 
+  /* まずwordlistを持つmetawordの場合 */
   if (mw->wl && mw->wl->len) {
     make_candidate_from_simple_metaword(se, mw, top_mw);
     return;
   }
   
-  si = anthy_metaword_type_tab[mw->type].si;
-  switch (si) {
+  st = anthy_metaword_type_tab[mw->type].status;
+  switch (st) {
   case MW_STATUS_WRAPPED:
     /* wrapされたものの情報を取り出す */
     proc_splitter_info(se, mw->mw1, top_mw);
@@ -479,7 +470,7 @@ proc_splitter_info(struct seg_ent *se,
 	ce->str.str = anthy_xstr_dup_str(&mw->cand_hint);
 	ce->str.len = mw->cand_hint.len;
 	ce->mw = top_mw;
-	ce->flag = (si == MW_STATUS_OCHAIRE) ? CEF_OCHAIRE : CEF_COMPOUND_PART;
+	ce->flag = (st == MW_STATUS_OCHAIRE) ? CEF_OCHAIRE : CEF_COMPOUND_PART;
 
 	if (mw->len < se->len) {
 	  /* metawordでカバーされてない領域の文字列を付ける */
@@ -516,12 +507,14 @@ anthy_do_make_candidates(struct seg_ent *se)
     limit = best / 3;
   }
 
+  /* hmmでのbestのmeta_wordから候補を生成*/
   proc_splitter_info(se, se->best_mw, se->best_mw);
   /* limitよりも高いscoreを持つmetawordから候補を生成する */
   for (i = 0; i < se->nr_metaword; i++) {
-    if (se->mw_array[i]->score > limit) {
+    struct meta_word *mw = se->mw_array[i];
+    if (mw->score > limit && mw != se->best_mw) {
       /**/
-      proc_splitter_info(se, se->mw_array[i], se->mw_array[i]);
+      proc_splitter_info(se, mw, mw);
     }
   }
   /* 単漢字などの候補 */

@@ -179,6 +179,7 @@ print_run_env(void)
     env = "";
   }
   printf("ANTHY_SPLITTER_PRINT=(%s)\n", env);
+  printf("SRCDIR=(%s)\n", SRCDIR);
   t = time(&t);
   printf(PACKAGE "-" VERSION " %s", ctime(&t));
 }

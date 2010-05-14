@@ -31,6 +31,8 @@
 #define COMPOUND_BASE (OCHAIRE_SCORE / 2)
 /* 複合語の一部分を一文節にしたもの */
 #define COMPOUND_PART_BASE 2
+/* 付属語のみ */
+#define DEPWORD_BASE (OCHAIRE_SCORE / 2)
 /* ひらがなカタカナのデフォルトのスコア */
 #define NOCONV_BASE 1
 
@@ -119,16 +121,19 @@ eval_candidate_by_metaword(struct seg_ent *seg,
 			   struct cand_ent *ce)
 {
   int i;
-  int score = 0;
+  int score = 1;
+  int unassigned_len = 0;
+  int assigned_len;
 
   /* まず、単語の頻度によるscoreを加算 */
   for (i = 0; i < ce->nr_words; i++) {
     struct cand_elm *elm = &ce->elm[i];
+    int one_score;
     int pos, div = 1;
-    int kanji_len = elm->str.len;
 
     if (elm->nth < 0) {
       /* 候補割り当ての対象外なのでスキップ */
+      unassigned_len += elm->str.len;
       continue;
     }
     pos = anthy_wtype_get_pos(elm->wt);
@@ -136,34 +141,29 @@ eval_candidate_by_metaword(struct seg_ent *seg,
       div = 8;
     }
 
-    /* 
-       基本的な活用はスコアとして認める
-       例えば"無い"と"内"で"内"の方が優先されるのを防ぐ
-     */
-    if (pos == POS_V ||
-	pos == POS_AJV ||
-	pos == POS_AV ||
-	pos == POS_A) {
-      ++kanji_len;
-    }
     /*
       頻度とelm->ratioは殆んど比例関係なので両方使用するのは不適当？
      */
-    score += anthy_get_nth_dic_ent_freq(elm->se, elm->nth) *
-      elm->ratio * kanji_len * kanji_len / (RATIO_BASE * div);
+    one_score = anthy_get_nth_dic_ent_freq(elm->se, elm->nth) * elm->ratio / (RATIO_BASE * div);
+    score += INT_MAX / 256 / (one_score ? one_score : 1);
   }
-  score = score / ce->nr_words;
+  score = INT_MAX / 256 / score * ce->nr_words;
 
   if (ce->mw) {
     /* もしその文節で一番評価が高かった品詞と候補の品詞が一致していたら加点 */
     if (ce->mw->seg_class == seg->best_seg_class) {
       if (anthy_seg_class_is_depword(seg->best_seg_class)) {
-	score = 1000000;
+	score = DEPWORD_BASE;
       } else {
-	score *= 10;
+	score *= 5;
       }
     }
   }
+  /* 自立語部の割合いに対する調整 */
+  assigned_len = seg->len - unassigned_len;
+  score = score * (assigned_len + 1) * (assigned_len + 1)
+      /((seg->len + 1)*(seg->len + 1));
+  /**/
   ce->score = score;
 }
 

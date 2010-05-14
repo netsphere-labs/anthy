@@ -172,7 +172,6 @@ anthy_commit_word_list(struct splitter_context *sc,
   /* wordlistのリストに追加 */
   wl->next = sc->word_split_info->cnode[wl->from].wl;
   sc->word_split_info->cnode[wl->from].wl = wl;
-
   /* デバッグプリント */
   if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_WL) {
     anthy_print_word_list(sc, wl);

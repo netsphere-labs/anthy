@@ -33,7 +33,7 @@ int anthy_select_section(const char *name, int create_if_not_exist);
 int anthy_select_column(xstr *name, int create_if_not_exist);
 
 /*
- * カレントsection中からnameに最長い文字数でマッチする
+ * カレントsection中からnameに最も長い文字数でマッチする
  * 名前のcolumnをカレントcolumnにする
  * name: columnの名前
  * 返り値: 成功 0 、失敗 -1

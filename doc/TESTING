@@ -34,4 +34,3 @@ $ ./anthy 1
  a A*node
  i 自立語のタイプ
  1 1文節だけ境界検出
- S Syntacticをオフ

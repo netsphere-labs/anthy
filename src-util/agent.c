@@ -396,7 +396,7 @@ make_ll_command(char *buf)
     struct command* cmd0 = NULL;
     int c;
 
-    if (isspace((int) *p)) {
+    if (isspace((int)(unsigned char) *p)) {
       p++;
       continue;
     } else if (*p == '(') {

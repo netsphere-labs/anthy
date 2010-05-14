@@ -91,7 +91,7 @@
 ;;
 (defun anthy-send-change-toggle-command (str)
   (anthy-send-recv-command
-   (concat " MAP_EDIT " str "\n")))
+   (concat " CHANGE_TOGGLE " str "\n")))
 
 ;; should disable toggle
 ;; (ローマ字ではなくて)かなモードにする
@@ -118,3 +118,5 @@
    (if flag
        " BREAK_INTO_ROMAN 1\n"
      " BREAK_INTO_ROMAN 0\n")))
+
+(provide 'anthy-conf)

@@ -20,6 +20,7 @@ so you can use shared libraries under the terms of LGPL.
 ./src-ordering/candswap.c  	GPL/LGPL
 ./src-ordering/commit.c    	GPL/LGPL
 ./src-ordering/relation.c  	GPL/LGPL
+./mkanthydic/compound.t       	GPL
 ./mkanthydic/mkdic.c       	GPL/LGPL
 ./mkanthydic/mkanthydic    	GPL/LGPL
 ./mkanthydic/mkdic.h       	GPL/LGPL

@@ -66,22 +66,22 @@ get_table_by_name(const char *s)
 void
 anthy_init_wtypes(void)
 {
-  anthy_wt_all.type[WT_POS] = POS_NONE;
-  anthy_wt_all.type[WT_CC] = CC_NONE;
-  anthy_wt_all.type[WT_CT] = CT_NONE;
-  anthy_wt_all.type[WT_COS] = COS_NONE;
-  anthy_wt_all.type[WT_SCOS] = SCOS_NONE;
-  anthy_wt_all.type[WT_FLAGS] = WF_NONE;
+  anthy_wt_all.pos = POS_NONE;
+  anthy_wt_all.cc = CC_NONE;
+  anthy_wt_all.ct = CT_NONE;
+  anthy_wt_all.cos = COS_NONE;
+  anthy_wt_all.scos = SCOS_NONE;
+  anthy_wt_all.wf = WF_NONE;
 
   anthy_wt_none = anthy_wt_all;
-  anthy_wt_none.type[WT_POS] = POS_INVAL;
+  anthy_wt_none.pos = POS_INVAL;
 }
 
 const char *
 anthy_type_to_wtype(const char *s, wtype_t *t)
 {
   struct wttable *w;
-  t->type[WT_POS] = POS_INVAL;
+  t->pos = POS_INVAL;
   if (s[0] != '#') {
     return NULL;
   }
@@ -90,12 +90,12 @@ anthy_type_to_wtype(const char *s, wtype_t *t)
   if (!w) {
     return NULL;
   }
-  t->type[WT_CC] = w->cc;
-  t->type[WT_CT] = w->ct;
-  t->type[WT_POS] = w->pos;
-  t->type[WT_COS] = w->cos;
-  t->type[WT_SCOS] = w->scos;
-  t->type[WT_FLAGS] = w->flags;
+  t->cc = w->cc;
+  t->ct = w->ct;
+  t->pos = w->pos;
+  t->cos = w->cos;
+  t->scos = w->scos;
+  t->wf = w->flags;
   return w->name;
 }
 
@@ -111,7 +111,7 @@ anthy_init_wtype_by_name(const char *name, wtype_t *w)
     anthy_wtype_set_cc(w, p->cc);
     anthy_wtype_set_cos(w, p->cos);
     anthy_wtype_set_scos(w, p->scos);
-    w->type[WT_FLAGS] = p->flags;
+    w->wf = p->flags;
     return 0;
   }
   printf("Failed to find wtype(%s).\n", name);
@@ -122,9 +122,8 @@ void
 anthy_print_wtype(wtype_t w)
 {
   printf("(POS=%d,COS=%d,SCOS=%d,CC=%d,CT=%d,flags=%d)\n",
-	 w.type[WT_POS], w.type[WT_COS], w.type[WT_SCOS],
-	 w.type[WT_CC], w.type[WT_CT],
-	 w.type[WT_FLAGS]);
+	 w.pos, w.cos, w.scos,
+	 w.cc, w.ct, w.wf);
 }
 
 /* n は hs の一部かどうか？ */
@@ -132,24 +131,24 @@ int
 anthy_wtypecmp(wtype_t hs, wtype_t n)
 {
   /*printf("POS %d,%d\n", hs.type[WT_POS], n.type[WT_POS]);*/
-  if (hs.type[WT_POS] != POS_NONE &&
-      hs.type[WT_POS] != n.type[WT_POS]) {
+  if (hs.pos != POS_NONE &&
+      hs.pos != n.pos) {
     return 0;
   }
-  if (hs.type[WT_CC] != CC_NONE &&
-      hs.type[WT_CC] != n.type[WT_CC]) {
+  if (hs.cc != CC_NONE &&
+      hs.cc != n.cc) {
     return 0;
   }
-  if (hs.type[WT_CT] != CT_NONE &&
-      hs.type[WT_CT] != n.type[WT_CT]) {
+  if (hs.ct != CT_NONE &&
+      hs.ct != n.ct) {
     return 0;
   }
-  if (hs.type[WT_COS] != COS_NONE &&
-      hs.type[WT_COS] != n.type[WT_COS]) {
+  if (hs.cos != COS_NONE &&
+      hs.cos != n.cos) {
     return 0;
   }
-  if (hs.type[WT_SCOS] != SCOS_NONE &&
-      hs.type[WT_SCOS] != n.type[WT_SCOS]) {
+  if (hs.scos != SCOS_NONE &&
+      hs.scos != n.scos) {
     return 0;
   }
   return 1;
@@ -168,93 +167,93 @@ anthy_name_intern(const char *name)
 int
 anthy_wtype_get_cc(wtype_t t)
 {
-  return t.type[WT_CC];
+  return t.cc;
 }
 
 int
 anthy_wtype_get_ct(wtype_t t)
 {
-  return t.type[WT_CT];
+  return t.ct;
 }
 
 int
 anthy_wtype_get_pos(wtype_t t)
 {
-  return t.type[WT_POS];
+  return t.pos;
 }
 
 int
 anthy_wtype_get_cos(wtype_t t)
 {
-  return t.type[WT_COS];
+  return t.cos;
 }
 
 int
 anthy_wtype_get_scos(wtype_t t)
 {
-  return t.type[WT_SCOS];
+  return t.scos;
 }
 
 int
 anthy_wtype_get_indep(wtype_t t)
 {
-  return t.type[WT_FLAGS]&WF_INDEP;
+  return t.wf & WF_INDEP;
 }
 
 int
 anthy_wtype_get_meisi(wtype_t w)
 {
-  return w.type[WT_FLAGS] & WF_MEISI;
+  return w.wf & WF_MEISI;
 }
 
 int
 anthy_wtype_get_sv(wtype_t w)
 {
-  return w.type[WT_FLAGS] & WF_SV;
+  return w.wf & WF_SV;
 }
 
 int
 anthy_wtype_get_ajv(wtype_t w)
 {
-  return w.type[WT_FLAGS] & WF_AJV;
+  return w.wf & WF_AJV;
 }
 
 void
 anthy_wtype_set_cc(wtype_t *w, int cc)
 {
-  w->type[WT_CC] = cc;
+  w->cc = cc;
 }
 
 void
 anthy_wtype_set_ct(wtype_t *w, int ct)
 {
-  w->type[WT_CT] = ct;
+  w->ct = ct;
 }
 
 void
 anthy_wtype_set_pos(wtype_t *w, int pos)
 {
-  w->type[WT_POS] = pos;
+  w->pos = pos;
 }
 
 void
 anthy_wtype_set_cos(wtype_t *w, int cs)
 {
-  w->type[WT_COS] = cs;
+  w->cos = cs;
 }
 
 void
 anthy_wtype_set_scos(wtype_t *w, int sc)
 {
-  w->type[WT_SCOS] = sc;
+  w->scos = sc;
 }
 
 void
 anthy_wtype_set_dep(wtype_t *w, int isDep)
 {
   if (isDep) {
-    w->type[WT_FLAGS] &= (~WF_INDEP);
+    w->wf &= (~WF_INDEP);
   }else{
-    w->type[WT_FLAGS] |= WF_INDEP;
+    w->wf |= WF_INDEP;
   }
 }

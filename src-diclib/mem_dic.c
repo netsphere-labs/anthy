@@ -66,6 +66,7 @@ alloc_seq_ent_by_xstr(struct mem_dic * md, xstr *x)
   struct seq_ent *se;
   int mask = anthy_get_current_session_mask();
   se = (struct seq_ent *)anthy_smalloc(md->seq_ent_allocator);
+  se->id = -1;
   se->flags = F_NONE;
   se->seq_type = 0;
   se->md = md;

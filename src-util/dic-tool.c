@@ -16,7 +16,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ctype.h>
 
 #include <dicutil.h>
 #include <config.h>
@@ -51,7 +50,8 @@ struct var{
   char *val;
 };
 
-struct trans_tab{
+/* 品詞のパラメータから品詞名を得るためのテーブル */
+struct trans_tab {
   struct trans_tab *next;
   char *type_name; /* 内部での型の名前 T35とか */
   struct var var_list; /* 型を決定するためのパラメータ */
@@ -87,8 +87,10 @@ print_usage_text(void)
   FILE *fp;
   char buf[256];
   int c;
+  /* カレントディレクトリにある場合は、それを使用する */
   fp = fopen(USAGE_TEXT, "r");
   if (!fp) {
+    /* インストールされたものを使用 */
     char *fn;
     fn = strdup(anthy_dic_util_get_anthydir());
     fn = realloc(fn, strlen(fn) + strlen(USAGE_TEXT) + 10);
@@ -100,6 +102,7 @@ print_usage_text(void)
     return ;
   }
   fprintf(stdout, "#" PACKAGE " " VERSION "\n");
+  /* そのままファイルの内容を出力 */
   while ((c = fread(buf, 1, 256, fp)) > 0) {
     fwrite(buf, 1, c, stdout);
   }
@@ -122,7 +125,7 @@ read_line(char *buf, int len, FILE *fp)
 }
 
 static int
-read_var(struct var *head, FILE *fp)
+read_typetab_var(struct var *head, FILE *fp)
 {
   char buf[256];
   char var[256], eq[256], val[256];
@@ -135,20 +138,23 @@ read_var(struct var *head, FILE *fp)
   }
 
   v = malloc(sizeof(struct var));
+  v->var_name = strdup(var);
+  v->val = strdup(val);
+
+  /* リストにつなぐ */
   v->next = head->next;
   head->next = v;
 
-  v->var_name = strdup(var);
-  v->val = strdup(val);
   return 0;
 }
 
 static int
-read_entry(FILE *fp)
+read_typetab_entry(FILE *fp)
 {
-  char buf[256], type_name[256];
+  char buf[256], type_name[257];
   char *res;
   struct trans_tab *t;
+  /* 一行目の品詞名を読む */
   do {
     res = read_line(buf, 256, fp);
     if (!res) {
@@ -159,7 +165,9 @@ read_entry(FILE *fp)
   sprintf(type_name, "#%s", buf);
   t->type_name = strdup(type_name);
   t->var_list.next = 0;
-  while(!read_var(&t->var_list, fp));
+  /* パラメータを読む */
+  while(!read_typetab_var(&t->var_list, fp));
+  /* リストにつなぐ */
   t->next = trans_tab_list.next;
   trans_tab_list.next = t;
   return 0;
@@ -173,7 +181,7 @@ read_typetab(void)
     printf("Failed to open type table.\n");
     exit(1);
   }
-  while (!read_entry(fp));
+  while (!read_typetab_entry(fp));
 }
 
 static struct trans_tab *
@@ -273,7 +281,7 @@ find_wt(void)
   struct var v;
   struct trans_tab *t;
   v.next = 0;
-  while(!read_var(&v, fp_in));
+  while(!read_typetab_var(&v, fp_in));
   for (t = trans_tab_list.next; t; t = t->next) {
     if (var_list_subset_p(&t->var_list, &v) &&
 	var_list_subset_p(&v, &t->var_list)) {
@@ -287,24 +295,11 @@ static int
 find_head(char *yomi, char *freq, char *w)
 {
   char buf[256];
-  char *p;
-  int i;
   do {
     if (!read_line(buf, 256, fp_in)) {
       return -1;
     }
-  } while (sscanf(buf, "%s %s %s",yomi, freq, w) != 3);
-  /* 単語はspaceを含みうるので、切り直し */
-  p = buf;
-  for (i = 0; i < 2; i++) {
-    while (!isspace(p[0]) ||
-	   isspace(p[1])) {
-      p++;
-    }
-    p++;
-  }
-  /* pは3つめのトークンの先頭*/
-  strncpy(w, p, 256);
+  } while (sscanf(buf, "%s %s %[^\n]",yomi, freq, w) != 3);
   return 0;
 }
 
