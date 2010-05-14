@@ -293,3 +293,45 @@ anthy_dic_util_get_anthydir(void)
 {
   return anthy_conf_get_str("ANTHYDIR");
 }
+
+/**/
+static char *
+do_search(FILE *fp, const char *word)
+{
+  char buf[32];
+  char *res = NULL;
+  int word_len = strlen(word);
+  while (fgets(buf, 32, fp)) {
+    int len = strlen(buf);
+    buf[len - 1] = 0;
+    len --;
+    if (len > word_len) {
+      continue;
+    }
+    if (!strncasecmp(buf, word, len)) {
+      if (res) {
+	free(res);
+      }
+      res = strdup(buf);
+    }
+  }
+  return res;
+}
+
+char *
+anthy_dic_search_words_file(const char *word)
+{
+  FILE *fp;
+  char *res;
+  const char *words_dict_fn = anthy_conf_get_str("WORDS_FILE");
+  if (!words_dict_fn) {
+    return NULL;
+  }
+  fp = fopen(words_dict_fn, "r");
+  if (!fp) {
+    return NULL;
+  }
+  res = do_search(fp, word);
+  fclose(fp);
+  return res;
+}

@@ -316,6 +316,7 @@ parse_wtype(char *wtbuf, char *cur)
     return 0;
   }
   strcpy(wtbuf, cur);
+  /* 頻度 */
   t = strchr(wtbuf, '*');
   freq = 1;
   if (t) {
@@ -347,6 +348,7 @@ get_element_len(xchar xc)
 static int
 check_compound_candidate(xstr *index, const char *cur)
 {
+  /* 読みの文字数の合計を数える */
   xstr *xs = anthy_cstr_to_xstr(cur, 0);
   int i, total = 0;
   for (i = 0; i < xs->len - 1; i++) {
@@ -355,6 +357,7 @@ check_compound_candidate(xstr *index, const char *cur)
     }
   }
   anthy_free_xstr(xs);
+  /* 比較する */
   if (total != index->len) {
     fprintf(stderr, "Invalid compound candidate (%s, length = %d).\n",
 	    cur, total);
@@ -378,8 +381,13 @@ push_back_word_entry_line(struct yomi_entry *ye, const char *ent)
 
   while (1) {
     /* トークンを切る。curの後の空白か\0を探す */
-    for (n = cur; *n != ' ' && *n; n++) {
+    for (n = cur; *n != ' ' && *n != '\0'; n++) {
       if (*n == '\\') {
+	if (!n[1]) {
+	  fprintf(stderr, "invalid \\ at the end of line (%s).\n",
+		  ent);
+	  return ;
+	}
 	n++;
       }
     }
@@ -388,8 +396,9 @@ push_back_word_entry_line(struct yomi_entry *ye, const char *ent)
     } else {
       n = NULL;
     }
+    /**/
     if (cur[0] == '#') {
-      if (isalpha(cur[1])) {
+      if (isalpha((unsigned char)cur[1])) {
 	/* #XX*?? をパース */
 	freq = parse_wtype(wtbuf, cur);
       } else {
@@ -404,6 +413,7 @@ push_back_word_entry_line(struct yomi_entry *ye, const char *ent)
       push_back_word_entry(ye, wtbuf, freq, cur);
     }
     if (!n) {
+      /* 行末 */
       return ;
     }
     cur = n;
@@ -428,6 +438,7 @@ check_same_word(struct yomi_entry *ye, int idx)
     if (strcmp(base->word, cur->word)) {
       return 0;
     }
+    /* 同じだった */
     return 1;
   }
   return 0;
@@ -700,6 +711,10 @@ apply_adjust_command(struct yomi_entry_list *yl,
     struct word_entry *we = find_word_entry(yl, cmd->yomi,
 					    cmd->wt, cmd->word);
     if (!we) {
+      char *yomi = anthy_xstr_to_cstr(cmd->yomi, 0);
+      printf("failed to find target of adjust command (%s, %s, %s)\n",
+	     yomi, cmd->wt, cmd->word);
+      free(yomi);
       continue;
     }
     if (cmd->type == ADJUST_FREQ_UP) {
@@ -1002,6 +1017,10 @@ main(int argc, char **argv)
   init();
   parse_args(&arg_list, argc, argv);
 
+  if (arg_list.type == OPT_HELP) {
+    print_usage();
+  }
+
   /* 単語辞書を作る */
   yl.head = NULL;
   yl.nr_entries = 0;
@@ -1009,10 +1028,6 @@ main(int argc, char **argv)
     yl.hash[i] = NULL;
   }
   ac_list.next = NULL;
-
-  if (arg_list.type == OPT_HELP) {
-    print_usage();
-  }
 
   for (arg = arg_list.next; arg; arg = arg->next) {
     if (arg->type == OPT_OUTFN) {
@@ -1029,6 +1044,7 @@ main(int argc, char **argv)
     }
   }
 
+  /* 頻度補正を適用する */
   apply_adjust_command(&yl, &ac_list);
 
   /* 読みで並び替える */

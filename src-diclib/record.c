@@ -1198,15 +1198,17 @@ read_journal_record(struct record_stat* rs)
   if (rs->is_anon) {
     return ;
   }
-  if (stat(rs->journal_fn, &st) == -1) {
-    return ;
-  }
   fp = fopen(rs->journal_fn, "r");
   if (fp == NULL) {
     return;
   }
+  if (fstat(fileno(fp), &st) == -1) {
+    fclose(fp);
+    return ;
+  }
   if (st.st_size < rs->last_update) {
-    /* 最初から読み込む */
+    /* ファイルサイズが小さくなっているので、
+     * 最初から読み込む */
     fseek(fp, 0, SEEK_SET);
   } else {
     fseek(fp, rs->last_update, SEEK_SET);
@@ -1615,9 +1617,9 @@ anthy_select_column(xstr *name, int flag)
   struct trie_node* node;
 
   rst = anthy_current_record;
-  if (!rst->cur_section)
+  if (!rst->cur_section) {
     return -1;
-  
+  }
   if (rst->column_dirty && rst->cur_column) {
     sync_add(rst, rst->cur_section, rst->cur_column);
     rst->column_dirty = 0;

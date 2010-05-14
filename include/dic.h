@@ -40,9 +40,10 @@ void anthy_quit_dic(void);
 /* 文字列の概要 */
 seq_ent_t anthy_get_seq_ent_from_xstr(xstr *);
 int anthy_get_seq_flag(seq_ent_t);
+int anthy_get_seq_ent_id(seq_ent_t);
 /* エントリの情報 */
 int anthy_get_nr_dic_ents(seq_ent_t, xstr *);
-/* caller should free */
+/* caller should free @res */
 int anthy_get_nth_dic_ent_str(seq_ent_t, xstr *orig, int, xstr *res);
 int anthy_get_nth_dic_ent_freq(seq_ent_t, int nth);
 int anthy_get_nth_dic_ent_wtype(seq_ent_t, xstr *, int nth, wtype_t *w);

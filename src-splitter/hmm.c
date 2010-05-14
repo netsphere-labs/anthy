@@ -12,7 +12,7 @@
 
 float anthy_normal_length = 20.0; /* 文節の期待される長さ */
 
-#define NODE_MAX_SIZE 100
+#define NODE_MAX_SIZE 50
 
 /* 各遷移状態 */
 struct hmm_node {
@@ -53,7 +53,9 @@ print_hmm_node(struct hmm_info *info, struct hmm_node *node)
   }
   printf("**hmm_node score_sum=%d, nth=%d*\n", node->score_sum, node->nth);
   printf("probability=%.128f\n", node->real_probability);
-  anthy_print_metaword(info->sc, node->mw);
+  if (node->mw) {
+    anthy_print_metaword(info->sc, node->mw);
+  }
 }
 
 static double
@@ -76,9 +78,8 @@ get_probability(struct hmm_node *node)
 {
   double probability;
   if (anthy_seg_class_is_depword(node->seg_class)) {
-    probability = 1.0 / SEG_SIZE;
-  } else if (node->before_node->seg_class == SEG_HEAD &&
-	     (node->seg_class == SEG_FUKUSHI)) {
+    return probability = 1.0 / SEG_SIZE;
+  } else if (node->seg_class == SEG_FUKUSHI) {
     probability = 1.0 / SEG_SIZE;
   } else if (node->before_node->seg_class == SEG_HEAD &&
 	     (node->seg_class == SEG_SETSUZOKUGO)) {
@@ -216,6 +217,10 @@ push_node(struct hmm_info* info, struct hmm_node* new_node, int position)
   struct hmm_node* node = info->hmm_list[position];
   struct hmm_node* previous_node = NULL;
 
+  if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_HM) {
+    print_hmm_node(info, new_node);
+  }
+
   if (!node) {
     info->hmm_list[position] = new_node;
     return;
@@ -294,7 +299,6 @@ static void
 hmm(int from, int to, struct hmm_info* info)
 {
   int i;
-  int before = 0; /* 遷移の一番後ろ */
   struct hmm_node* node;
   struct hmm_node* first_node;  
 
@@ -307,14 +311,7 @@ hmm(int from, int to, struct hmm_info* info)
 
   /* 全ての遷移を試す */
   for (i = from; i < to; ++i) {
-    /* 
-     * mwの遷移が途中で切れていたら仕方がないので、一番後ろまで来ている遷移を使う
-     */
-    if (info->hmm_list[i] && info->sc->word_split_info->cnode[i].mw) {
-      before = i;
-    }
-
-    for (node = info->hmm_list[before]; node; node = node->next) {
+    for (node = info->hmm_list[i]; node; node = node->next) {
       struct meta_word *mw;
       for (mw = info->sc->word_split_info->cnode[i].mw; mw; mw = mw->next) {
 	int position;
@@ -342,7 +339,6 @@ hmm(int from, int to, struct hmm_info* info)
     struct hmm_node* best_node = NULL;
     int last = to; 
     while (!info->hmm_list[last]) --last; /* 最後まで遷移していなかったら後戻り */
-
     for (node = info->hmm_list[last]; node; node = node->next) {
       if (cmp_node(node, best_node) > 0) {
 	best_node = node;

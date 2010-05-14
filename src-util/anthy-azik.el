@@ -3,6 +3,11 @@
 ;; Copyright (C) 2004
 ;; Author: Yutaka Hara<yhara@kmc.gr.jp>
 
+;; add following 2 lines to ~/.emacs
+;; (load-library "anthy-azik")
+;; (anthy-azik-mode)
+;;
+
 (defvar anthy-azik-mode-hiragana-map
   '(
     (";" . "っ")  ("x;" . ";")  ("b." . "ぶ")  ("bd" . "べん")  ("bh" . "ぶう")  
@@ -210,6 +215,7 @@
 ;     ))
 
 (defun anthy-azik-mode ()
+  (interactive)
   (setq anthy-rkmap-keybind
 	'(
 	  ;; \C-p
@@ -220,7 +226,8 @@
   (mapcar (lambda (x)
 	    (anthy-change-hiragana-map (car x) (cdr x)))
 	  anthy-azik-mode-hiragana-map)
+  (anthy-hiragana-map))
 ;  (mapcar (lambda (x)
 ;	    (anthy-change-katakana-map (car x) (cdr x)))
 ;	  anthy-azik-mode-katakana-map)
-  )
+

@@ -71,7 +71,8 @@ struct seg_ent {
 
   /* hmmで一番成績の良かったクラス */
   enum seg_class best_seg_class;
-  
+  /* hmmで一番成績の良かったmeta_word
+   * mw_array中にも、含まれることが期待できるが、保証はしない */
   struct meta_word *best_mw;
 
   struct seg_ent *prev, *next;

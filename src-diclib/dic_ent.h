@@ -31,6 +31,7 @@ struct compound_ent {
 struct seq_ent {
   xstr str;/* 読み */
   int mask;/* どのdic_sessionによって使用されているかのマスク */
+  int id;/* 辞書中のindex 辞書になかった単語の場合は負数 */
 
   int seq_type; /** ST_(type) */
   int flags; /** ?F_* */

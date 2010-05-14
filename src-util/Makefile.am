@@ -2,7 +2,7 @@
 
 # Files
 # Dictionary utilities
-ELISP_FILES = anthy.el anthy-isearch.el anthy-dic.el anthy-conf.el leim-list.el anthy-azik.el
+ELISP_FILES = anthy.el anthy-isearch.el anthy-dic.el anthy-conf.el leim-list.el anthy-azik.el anthy-kyuri.el
 EXTRA_DIST = $(ELISP_FILES) typetab dic-tool-usage.txt rcsize.rb
 bin_PROGRAMS = anthy-dic-tool anthy-agent
 ELCFILES = anthy.elc anthy-dic.elc

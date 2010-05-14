@@ -20,7 +20,6 @@
  *GUIDE.english		Guide for non Japanese people
  *protocol.txt		EGG 対応プロトコルの仕様と説明  
  *GRAMMER		日本語文法のうちanthyでの扱いが難しいor微妙なもののメモ
- *SYNTACTIC		統語解析の概要
 
 00INDEXというファイル名はlsした時に最初に出てくるように
 という意図をもって名付けてあります。linuxにも

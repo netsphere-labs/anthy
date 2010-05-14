@@ -1,7 +1,7 @@
 ;; anthy-dic.el -- Anthy
 
 ;; Copyright (C) 2001 - 2002
-;; Author: Yusuke Tabata<yusuke@kmc.gr.jp>
+;; Author: Yusuke Tabata<yusuke@cherubim.icw.co.jp>
 ;;       : Tomoharu Ugawa
 
 ;; This file is part of Anthy
@@ -94,15 +94,28 @@
     (setq res (cons `("語幹のみで文節" ,ind) res))
     res))
 
+;; taken from tooltip.el
+(defmacro anthy-region-active-p ()
+  "Value is non-nil if the region is currently active."
+  (if (string-match "^GNU" (emacs-version))
+      `(and transient-mark-mode mark-active)
+    `(region-active-p)))
+
 (defun anthy-add-word-interactive ()
   ""
   (interactive)
   (let
       ((param '()) (res '())
-       (word (read-from-minibuffer "単語(語幹のみ): "))
-       (yomi (read-from-minibuffer "読み: "))
-       (cat (string-to-int
-	     (read-from-minibuffer "カテゴリー 1:一般名詞 2:その他の名詞 3:形容詞 4:副詞: "))))
+       (word (if (anthy-region-active-p)
+		 (buffer-substring (region-beginning) (region-end))
+	       ""))
+       yomi cat)
+    (and (string= word "")
+	 (setq word (read-from-minibuffer "単語(語幹のみ): ")))
+    (setq yomi (read-from-minibuffer (concat "読み (" word "): ")))
+    (setq cat (string-to-int
+	       (read-from-minibuffer
+		"カテゴリー 1:一般名詞 2:その他の名詞 3:形容詞 4:副詞: ")))
     (cond ((= cat 1)
 	   (setq param (anthy-dic-get-noun-category word)))
 	  ((= cat 2)
@@ -115,3 +128,5 @@
 	(setq res (anthy-add-word yomi 1 word param)))
     (if res
 	(message (concat word "(" yomi ")を登録しました")))))
+
+(provide 'anthy-dic)

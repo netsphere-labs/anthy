@@ -23,7 +23,8 @@ learn_swapped_candidates(struct segment_list *sl)
   struct seg_ent *seg;
   for (i = 0; i < sl->nr_segments; i++) {
     seg = anthy_get_nth_segment(sl, i);
-    if (seg->committed > 0) {
+    if (seg->committed != 0) {
+      /* 最初の候補(0番目)でない候補(seg->commited番目)がコミットされた */
       anthy_swap_cand_ent(seg->cands[0],
 			  seg->cands[seg->committed]);
     }
@@ -71,7 +72,8 @@ commit_ochaire(struct seg_ent *seg, int count, xstr* xs)
   }
 }
 
-/* お茶入れ学習のネガティブなエントリを消す */
+/* recordの領域を節約するために、お茶入れ学習のネガティブな
+   エントリを消す */
 static void
 release_negative_ochaire(struct splitter_context *sc,
 			 struct segment_list *sl)
@@ -83,7 +85,7 @@ release_negative_ochaire(struct splitter_context *sc,
   xs.len = sc->char_count;
   xs.str = sc->ce[0].c;
 
-  /* xsの全ての部分文字列に対して */
+  /* xsの部分文字列に対して */
   for (start = 0; start < xs.len; start ++) {
     for (len = 1; len <= xs.len - start && len < MAX_OCHAIRE_LEN; len ++) {
       xstr part;
@@ -121,9 +123,16 @@ learn_ochaire(struct splitter_context *sc,
       xstr xs;
       int j;
       xs = head->str;
+      if (xs.len < 2 && count < 3) {
+	/* 細切れの文節を学習することを避ける、
+	 * いい加減なheuristics */
+	continue;
+      }
+      /* 文節列を構成する文字列を作る */
       for (j = 1, s = head->next; j < count; j++, s = s->next) {
 	xs.len += s->str.len;
       }
+      /**/
       commit_ochaire(head, count, &xs);
     }
   }
@@ -179,7 +188,8 @@ learn_word_relation(struct segment_list *sl)
       nr_learned += check_segment_relation(cur, target);
     }
   }
-  if (nr_learned) {
+  /* 学習が発生していればコミットする */
+  if (nr_learned > 0) {
     anthy_dic_commit_relation();
   }
 }

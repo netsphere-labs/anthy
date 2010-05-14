@@ -116,13 +116,18 @@ struct word_listというデータ構造を構成します。
  dic_util 辞書管理プログラムのための関数群
 
 
-** RECORDの形式 **
-CANDPAIR 変換候補の交換を記録する
- 旧候補 新候補
-PRIVATEDIC 個人辞書
- 読み {単語 品詞 頻度} *
-EXPANDPAIR 文節の拡大の履歴
- 拡大前の文節
+** seq_entについて **
+anthyではひらがな列(読み)に対応するデータ構造として、seq_entという
+構造体を用います。この構造体はdiclibの中で管理されており、
+フロントエンド側からは適切なAPIでアクセスすることができます。
+seq_entは同音異義語の配列を持っています。
+ seq_entの主要メンバ
+  * str: 読み
+  * id: 辞書中のインデックス
+  * seq_type: ST_ のフラグ
+  * flags: F_ のフラグ
+  * dic_ents: 単語の配列
+  * compound_ents: 複合語の配列
 
 
 ** 辞書ファイルの形式 **

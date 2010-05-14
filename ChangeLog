@@ -1,3 +1,23 @@
+2005-06-14  Yusuke TABATA  <yusuke@illusion>
+
+	* README.en : new file
+
+2005-05-21  Yusuke TABATA  <yusuke@illusion>
+
+	* src-util/anthy.el : [anthy-dev 2034] change language environment
+	name from 'japanese to "Japanese".
+	* src-util/dic-tool.c : [anthy-dev 2036] use %[^\n] to extract string
+
+2005-05-08  Yusuke TABATA  <yusuke@illusion>
+
+	* src-util/*.el : Mikeさんからのパッチを一部適用 http://lists.freedesktop.org/archives/uim/2005-May/001076.html
+
+2005-04-24  Yusuke TABATA  <yusuke@illusion>
+
+	* src-util/anthy-dic.el (anthy-region-active-p,
+	anthy-add-word-interactive):  梅本さんからのパッチを適用し、リージョ
+	ンが有効なら登録単語をそこから拾うようにした。
+
 2005-03-07  Yusuke TABATA  <yusuke@illusion>
 
 	* src-splitter.c fixed invalid memory access in anthy-6300c

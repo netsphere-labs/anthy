@@ -7,8 +7,8 @@
  * anthy_print_metaword() 指定されたmetawordを表示する
  *
  * Funded by IPA未踏ソフトウェア創造事業 2001 10/29
- * Copyright (C) 2000-2004 TABATA Yusuke
- * Copyright (C) 2004 YOSHIDA Yuichi
+ * Copyright (C) 2000-2005 TABATA Yusuke
+ * Copyright (C) 2004-2005 YOSHIDA Yuichi
  * Copyright (C) 2000-2003 UGAWA Tomoharu
  */
 #include <stdlib.h>
@@ -24,23 +24,23 @@
 
 /* 各種meta_wordをどのように処理するか */
 struct metaword_type_tab_ anthy_metaword_type_tab[] = {
-  {MW_DUMMY,0,MW_STATUS_NONE,MW_CHECK_SINGLE},
-  {MW_SINGLE,0,MW_STATUS_NONE,MW_CHECK_SINGLE},
-  {MW_WRAP,0,MW_STATUS_WRAPPED,MW_CHECK_WRAP},
-  {MW_COMPOUND_HEAD,0,MW_STATUS_NONE,MW_CHECK_COMPOUND},
-  {MW_COMPOUND,0,MW_STATUS_NONE,MW_CHECK_NONE},
-  {MW_COMPOUND_LEAF,0,MW_STATUS_COMPOUND,MW_CHECK_NONE},
-  {MW_COMPOUND_PART,0,MW_STATUS_COMPOUND_PART,MW_CHECK_SINGLE},
-  {MW_NAMEPAIR,0,MW_STATUS_COMBINED,MW_CHECK_PAIR},
-  {MW_V_RENYOU_A,100,MW_STATUS_COMBINED,MW_CHECK_BORDER},
-  {MW_V_RENYOU_NOUN,100,MW_STATUS_COMBINED,MW_CHECK_BORDER},
-  {MW_NUMBER,0,MW_STATUS_COMBINED,MW_CHECK_NUMBER},
-  {MW_NOUN_NOUN_PREFIX,0,MW_STATUS_COMBINED,MW_CHECK_PAIR},
-  {MW_OCHAIRE,0,MW_STATUS_OCHAIRE,MW_CHECK_OCHAIRE},
+  {MW_DUMMY,"dummy",0,MW_STATUS_NONE,MW_CHECK_SINGLE},
+  {MW_SINGLE,"single",0,MW_STATUS_NONE,MW_CHECK_SINGLE},
+  {MW_WRAP,"wrap",0,MW_STATUS_WRAPPED,MW_CHECK_WRAP},
+  {MW_COMPOUND_HEAD,"compound_head",0,MW_STATUS_NONE,MW_CHECK_COMPOUND},
+  {MW_COMPOUND,"compound",0,MW_STATUS_NONE,MW_CHECK_NONE},
+  {MW_COMPOUND_LEAF,"compound_lead",0,MW_STATUS_COMPOUND,MW_CHECK_NONE},
+  {MW_COMPOUND_PART,"compound_part",0,MW_STATUS_COMPOUND_PART,MW_CHECK_SINGLE},
+  {MW_NAMEPAIR,"namepair",0,MW_STATUS_COMBINED,MW_CHECK_PAIR},
+  {MW_V_RENYOU_A,"v_renyou_a",100,MW_STATUS_COMBINED,MW_CHECK_BORDER},
+  {MW_V_RENYOU_NOUN,"v_renyou_noun",100,MW_STATUS_COMBINED,MW_CHECK_BORDER},
+  {MW_NUMBER,"number",0,MW_STATUS_COMBINED,MW_CHECK_NUMBER},
+  {MW_NOUN_NOUN_PREFIX,"noun_noun_prefix",0,MW_STATUS_COMBINED,MW_CHECK_SINGLE},
+  {MW_OCHAIRE,"ochaire",0,MW_STATUS_OCHAIRE,MW_CHECK_OCHAIRE},
   /**/
-  {MW_SENTENCE,0,MW_STATUS_NONE,MW_CHECK_PAIR},
-  {MW_MODIFIED,0,MW_STATUS_NONE,MW_CHECK_PAIR},
-  {MW_END,0,MW_STATUS_NONE,MW_CHECK_NONE}
+  {MW_SENTENCE,"sentence",0,MW_STATUS_NONE,MW_CHECK_PAIR},
+  {MW_MODIFIED,"modified",0,MW_STATUS_NONE,MW_CHECK_PAIR},
+  {MW_END,"end",0,MW_STATUS_NONE,MW_CHECK_NONE}
 };
 
 static void
@@ -56,6 +56,10 @@ anthy_commit_meta_word(struct splitter_context *sc,
   /* 同じ開始点を持つノードのリスト */
   mw->next = info->cnode[mw->from].mw;
   info->cnode[mw->from].mw = mw;
+  /**/
+  if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_MW) {
+    anthy_print_metaword(sc, mw);
+  }
 }
 
 static void
@@ -67,8 +71,10 @@ anthy_do_print_metaword(struct splitter_context *sc,
   for (i = 0; i < indent; i++) {
     printf(" ");
   }
-  printf("*meta word type=%d(%d-%d)%d:score=%d:seg_class=%d*\n",
-	 mw->type, mw->from, mw->len, mw->mw_count, mw->score, mw->seg_class);
+  printf("*meta word type=%s(%d-%d)%d:score=%d:seg_class=%d:can_use=%d*\n",
+	 anthy_metaword_type_tab[mw->type].name,
+	 mw->from, mw->len, mw->mw_count, mw->score, mw->seg_class,
+	 mw->can_use);
   if (mw->wl) {
     anthy_print_word_list(sc, mw->wl);
   }
@@ -312,7 +318,7 @@ anthy_do_cons_metaword(struct splitter_context *sc,
   if (mw2) {
     n->score = sqrt(mw->score) * sqrt(mw2->score);
   } else {
-    n->score = mw->score;    
+    n->score = mw->score;
   }
   n->type = type;
   n->mw1 = mw;

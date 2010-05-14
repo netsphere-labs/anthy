@@ -92,7 +92,7 @@ DIST_SOURCES = $(libanthyinput_la_SOURCES) $(anthy_agent_SOURCES) \
 lispLISP_INSTALL = $(INSTALL_DATA)
 LISP = $(lisp_LISP)
 am__ELFILES = anthy-azik.el anthy-conf.el anthy-dic.el \
-	anthy-isearch.el anthy.el leim-list.el
+	anthy-isearch.el anthy-kyuri.el anthy.el leim-list.el
 am__ELCFILES = $(am__ELFILES:.el=.elc)
 elisp_comp = $(top_srcdir)/elisp-comp
 pkgdataDATA_INSTALL = $(INSTALL_DATA)
@@ -206,7 +206,7 @@ target_alias = @target_alias@
 
 # Files
 # Dictionary utilities
-ELISP_FILES = anthy.el anthy-isearch.el anthy-dic.el anthy-conf.el leim-list.el anthy-azik.el
+ELISP_FILES = anthy.el anthy-isearch.el anthy-dic.el anthy-conf.el leim-list.el anthy-azik.el anthy-kyuri.el
 EXTRA_DIST = $(ELISP_FILES) typetab dic-tool-usage.txt rcsize.rb
 ELCFILES = anthy.elc anthy-dic.elc
 @ELISP_TRUE@lisp_LISP = $(ELISP_FILES)

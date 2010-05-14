@@ -254,6 +254,15 @@ anthy_get_seq_flag(seq_ent_t seq)
 }
 
 int
+anthy_get_seq_ent_id(seq_ent_t se)
+{
+  if (!se) {
+    return -1;
+  }
+  return se->id;
+}
+
+int
 anthy_get_nr_dic_ents(seq_ent_t se, xstr *xs)
 {
   struct seq_ent *s = se;

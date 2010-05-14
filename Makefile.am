@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS = dejagnu
-EXTRA_DIST = DIARY anthy-conf.in anthy-test-conf.in anthy.spec.in anthy.pc.in Doxyfile
+EXTRA_DIST = README.en DIARY anthy-conf.in anthy-test-conf.in anthy.spec.in anthy.pc.in Doxyfile
 
 SRCDIR = src-diclib src-splitter src-ordering src-main src-util
 

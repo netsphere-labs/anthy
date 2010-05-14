@@ -373,7 +373,7 @@ anthy_sputxstr(char *buf, xstr *x)
   int i, l = 0;
   for (i = 0; i < x->len; i++) {
     anthy_sputxchar(b, x->str[i], 0);
-    sprintf(&buf[l], b);
+    sprintf(&buf[l], "%s", b);
     l += strlen(b);
   }
   return l;
@@ -389,7 +389,7 @@ anthy_snputxstr(char *buf, int n, xstr *x, int encoding)
     if ((int)strlen(b) + l >= n) {
       return l;
     }
-    n -= sprintf(&buf[l], b);
+    n -= sprintf(&buf[l], "%s", b);
     l += strlen(b);
   }
   return l;
@@ -404,7 +404,7 @@ anthy_putxchar(xchar x)
     return ;
   }
   anthy_sputxchar(buf, x, print_encoding);
-  printf(buf);
+  printf("%s", buf);
 }
 
 void
