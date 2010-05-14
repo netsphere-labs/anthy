@@ -237,6 +237,10 @@ anthy_do_create_context(int encoding)
   ac->split_info.ce = NULL;
   ac->ordering_info.oc = NULL;
   ac->dic_session = NULL;
+  ac->prediction.str.str = NULL;
+  ac->prediction.str.len = 0;
+  ac->prediction.nr_prediction = 0;
+  ac->prediction.predictions = NULL;
   ac->encoding = encoding;
 
   return ac;
@@ -261,6 +265,9 @@ void
 anthy_do_reset_context(struct anthy_context *ac)
 {
   int i, sc;
+  struct prediction_cache* prediction = &ac->prediction;
+
+
   /* まず辞書セッションを解放 */
   if (ac->dic_session) {
     anthy_dic_release_session(ac->dic_session);
@@ -281,6 +288,20 @@ anthy_do_reset_context(struct anthy_context *ac)
     pop_back_seg_ent(ac);
   }
   ac->seg_list.nr_segments = 0;
+
+  /* 予測された文字列の解放 */
+  if (prediction->str.str) {
+    free(prediction->str.str);
+    prediction->str.str = NULL;
+  }
+  if (prediction->predictions) {
+    for (i = 0; i < prediction->nr_prediction; ++i) {
+      anthy_free_xstr(prediction->predictions[i].str);
+    }
+    free(prediction->predictions);
+    prediction->predictions = NULL;
+  }
+
 }
 
 void
@@ -290,7 +311,7 @@ anthy_do_release_context(struct anthy_context *ac)
 }
 
 static void
-make_candidates(struct anthy_context *ac, int from, int from2)
+make_candidates(struct anthy_context *ac, int from, int from2, int is_reverse)
 {
   int i;
   int len = ac->str.len;
@@ -308,14 +329,14 @@ make_candidates(struct anthy_context *ac, int from, int from2)
 			      &ac->ordering_info);
   /* 候補を列挙 */
   for (i = 0; i < ac->seg_list.nr_segments; i++) {
-    anthy_do_make_candidates(anthy_get_nth_segment(&ac->seg_list, i));
+    anthy_do_make_candidates(anthy_get_nth_segment(&ac->seg_list, i), is_reverse);
   }
   /* 候補をソート */
   anthy_sort_candidate(&ac->seg_list, 0);
 }
 
 int
-anthy_do_context_set_str(struct anthy_context *ac, xstr *s)
+anthy_do_context_set_str(struct anthy_context *ac, xstr *s, int is_reverse)
 {
   int i;
   /*初期化*/
@@ -335,10 +356,10 @@ anthy_do_context_set_str(struct anthy_context *ac, xstr *s)
   ac->str.str[s->len] = 0;
 
   /* splitterの初期化*/
-  anthy_init_split_context(&ac->str, &ac->split_info);
+  anthy_init_split_context(&ac->str, &ac->split_info, is_reverse);
 
   /* 解の候補を作成 */
-  make_candidates(ac, 0, 0);
+  make_candidates(ac, 0, 0, is_reverse);
   
   /* 最初に設定した文節境界を覚えておく */
   for (i = 0; i < ac->seg_list.nr_segments; i++) {
@@ -388,19 +409,70 @@ anthy_do_resize_segment(struct anthy_context *ac,
   }
 
   /* 解の候補を作成 */
-  make_candidates(ac, index, index+len+resize);
+  make_candidates(ac, index, index+len+resize, 0);
 }
 
+/*
+ * n番めの文節を取得する、無い場合にはNULLを返す
+ */
 struct seg_ent *
 anthy_get_nth_segment(struct segment_list *sl, int n)
 {
   int i;
   struct seg_ent *se;
-  if (n >= sl->nr_segments) {
+  if (n >= sl->nr_segments ||
+      n < 0) {
     return NULL;
   }
   for (i = 0, se = sl->list_head.next; i < n; i++, se = se->next);
   return se;
+}
+
+int
+anthy_do_set_prediction_str(struct anthy_context *ac, xstr* xs)
+{
+  struct prediction_cache* prediction = &ac->prediction;
+  int nr_prediction;
+  int i;
+
+  /* まず辞書セッションを解放 */
+  if (ac->dic_session) {
+    anthy_dic_release_session(ac->dic_session);
+    ac->dic_session = NULL;
+  }
+  /* 予測された文字列の解放 */
+  if (prediction->str.str) {
+    free(prediction->str.str);
+    prediction->str.str = NULL;
+  }
+  if (prediction->predictions) {
+    for (i = 0; i < prediction->nr_prediction; ++i) {
+      anthy_free_xstr(prediction->predictions[i].str);
+    }
+    free(prediction->predictions);
+    prediction->predictions = NULL;
+  }
+  /* 辞書セッションの開始 */
+  if (!ac->dic_session) {
+    ac->dic_session = anthy_dic_create_session();
+    if (!ac->dic_session) {
+      return -1;
+    }
+  }
+
+  prediction->str.str = (xchar*)malloc(sizeof(xchar*)*(xs->len+1));
+  anthy_xstrcpy(&prediction->str, xs);
+  prediction->str.str[xs->len]=0;
+
+  nr_prediction = anthy_traverse_record_for_prediction(xs, NULL);
+  prediction->nr_prediction = nr_prediction;
+
+  if (nr_prediction) {
+    prediction->predictions = (struct prediction_t*)malloc(sizeof(struct prediction_t) *
+							   nr_prediction);
+    anthy_traverse_record_for_prediction(xs, prediction->predictions);
+  }
+  return 0;
 }
 
 /** 候補を表示する */

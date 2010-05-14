@@ -2,7 +2,7 @@
 %include typemaps.i
 
 %{
-#include <../include/anthy.h>
+#include <include/anthy.h>
 %}
 
 %init %{

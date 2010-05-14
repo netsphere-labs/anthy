@@ -9,7 +9,7 @@
 #include <logger.h>
 
 static void (*logger)(int lv, const char *str);
-static int current_level;
+static int current_level = 1;
 
 void
 anthy_do_set_logger(void (*fn)(int lv, const char *str), int lv)

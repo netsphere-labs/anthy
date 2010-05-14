@@ -50,7 +50,7 @@ learn_swap_cand_indep(struct cand_ent *o, struct cand_ent *n)
     return ;
   }
   if (anthy_select_section("INDEPPAIR", 1) == 0) {
-    if (anthy_select_column(&os, 1) == 0) {
+    if (anthy_select_row(&os, 1) == 0) {
       anthy_set_nth_xstr(0, &ns);
     }
   }
@@ -86,7 +86,7 @@ static xstr *
 prepare_swap_candidate(xstr *target)
 {
   xstr *xs, *n;
-  if (anthy_select_column(target, 0) == -1) {
+  if (anthy_select_row(target, 0) == -1) {
     return NULL;
   }
   xs = anthy_get_nth_xstr(0);
@@ -94,8 +94,8 @@ prepare_swap_candidate(xstr *target)
     return NULL;
   }
   /* 第一候補 -> xs となるのを発見 */
-  anthy_mark_column_used();
-  if (anthy_select_column(xs, 0) != 0){
+  anthy_mark_row_used();
+  if (anthy_select_row(xs, 0) != 0){
     /* xs -> ⊥ */
     return xs;
   }
@@ -107,17 +107,17 @@ prepare_swap_candidate(xstr *target)
 
   if (!anthy_xstrcmp(target, n)) {
     /* 第一候補 -> xs -> n で n = 第一候補のループ */
-    anthy_select_column(target, 0);
-    anthy_release_column();
-    anthy_select_column(xs, 0);
-    anthy_release_column();
+    anthy_select_row(target, 0);
+    anthy_release_row();
+    anthy_select_row(xs, 0);
+    anthy_release_row();
     /* 第一候補 -> xs を消して、交換の必要は無し */
     return NULL;
   }
   /* 第一候補 -> xs -> n で n != 第一候補なので
    * 第一候補 -> nを設定
    */
-  if (anthy_select_column(target, 0) == 0){
+  if (anthy_select_row(target, 0) == 0){
     anthy_set_nth_xstr(0, n);
   }
   return n;

@@ -1,5 +1,10 @@
 /*
  * 候補の履歴を覚える
+ *
+ *
+ * ある読みの履歴が 候補A 候補B 候補A 候補A 候補A
+ * であったというような情報をもとに候補のスコアを加点する。
+ *
  */
 #include <segment.h>
 #include <record.h>
@@ -14,7 +19,7 @@ learn_history(struct seg_ent *seg)
 {
   int nr, i;
 
-  if (anthy_select_column(&seg->str, 1)) {
+  if (anthy_select_row(&seg->str, 1)) {
     return ;
   }
   /* シフトする */
@@ -29,6 +34,7 @@ learn_history(struct seg_ent *seg)
   }
   /* 0番目に設定 */
   anthy_set_nth_xstr(0, &seg->cands[seg->committed]->str);
+  anthy_mark_row_used();
 }
 
 /** 外から呼ばれる関数 
@@ -46,7 +52,7 @@ anthy_learn_cand_history(struct segment_list *sl)
     if (seg->committed < 0) {
       continue;
     }
-    if (anthy_select_column(xs, 0)) {
+    if (anthy_select_row(xs, 0)) {
       if (seg->committed == 0) {
 	/* 候補のエントリが無くて、コミットされた候補も先頭のものであればパス */
 	continue;
@@ -69,6 +75,9 @@ get_history_weight(xstr *xs)
   int w = 0;
   for (i = 0; i < nr; i++) {
     xstr *h = anthy_get_nth_xstr(i);
+    if (!h) {
+      continue;
+    }
     if (!anthy_xstrcmp(xs, h)) {
       w++;
       if (i == 0) {
@@ -80,6 +89,7 @@ get_history_weight(xstr *xs)
   return w;
 }
 
+/* 履歴で加点する */
 void
 anthy_reorder_candidates_by_history(struct seg_ent *se)
 {
@@ -88,7 +98,7 @@ anthy_reorder_candidates_by_history(struct seg_ent *se)
   if (anthy_select_section("CAND_HISTORY", 1)) {
     return ;
   }
-  if (anthy_select_column(&se->str, 0)) {
+  if (anthy_select_row(&se->str, 0)) {
     return ;
   }
   /* 最も評価の高い候補 */
@@ -99,5 +109,5 @@ anthy_reorder_candidates_by_history(struct seg_ent *se)
     int weight = get_history_weight(&ce->str);
     ce->score += primary_score / (HISTORY_DEPTH /2) * weight;
   }
-  anthy_mark_column_used();
+  anthy_mark_row_used();
 }

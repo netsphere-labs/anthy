@@ -1,0 +1,26 @@
+#
+# 辞書ファイルを生成するためのスクリプト
+#
+# ./mkworddic -f dict.args
+# 
+# 別のスクリプトからこのファイルをechoやcat、sed等を
+# 駆使して生成することも想定
+#
+# 地名はplacename.tに集約するので、cannadicに含まれるものを除外
+set_exclude_wtypes #CN #CNS
+read @top_srcdir@/cannadic/gcanna.ctd
+clear_exclude_wtypes
+#
+read @top_srcdir@/cannadic/gcannaf.ctd
+read @top_srcdir@/mkworddic/katakana.t
+read @top_srcdir@/mkworddic/adjust.t
+read @top_srcdir@/mkworddic/name.t
+read @top_srcdir@/mkworddic/compound.t
+read @top_srcdir@/mkworddic/extra.t
+read @top_srcdir@/mkworddic/base.t
+read @top_srcdir@/mkworddic/placename.t
+# this command will make reverse dictionary
+build_reverse_dict
+read_uc @top_srcdir@/mkworddic/udict
+write anthy.wdic
+done

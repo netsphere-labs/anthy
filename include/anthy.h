@@ -27,6 +27,10 @@ struct anthy_segment_stat{
   int seg_len;
 };
 
+struct anthy_prediction_stat {
+  int nr_prediction;
+};
+
 typedef struct anthy_context *anthy_context_t;
 
 
@@ -65,7 +69,12 @@ extern int anthy_get_segment(anthy_context_t, int, int, char *, int);
 /* 一文節ごとにコミットする */
 extern int anthy_commit_segment(anthy_context_t, int, int);
 
-
+/* Prediction */
+#define HAS_ANTHY_PREDICTION
+extern int anthy_set_prediction_string(anthy_context_t, const char*);
+extern int anthy_get_prediction_stat(anthy_context_t, struct anthy_prediction_stat *);
+/* context, nth prediction, buffer, buffer len*/
+extern int anthy_get_prediction(anthy_context_t, int, char*, int);
 
 /* Etc */
 extern void anthy_print_context(anthy_context_t);

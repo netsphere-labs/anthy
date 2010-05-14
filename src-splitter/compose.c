@@ -14,7 +14,7 @@
  * Copyright (C) 2004-2005 YOSHIDA Yuichi
  * Copyright (C) 2002 UGAWA Tomoharu
  *
- * $Id: compose.c,v 1.24 2005/07/22 14:09:04 oxy Exp $
+ * $Id: compose.c,v 1.25 2005/08/19 04:20:25 oxy Exp $
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -35,76 +35,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <anthy.h> /* for ANTHY_*_ENCODING */
-#include <conf.h>
 #include <dic.h>
 #include <splitter.h>
 #include <segment.h>
 #include "wordborder.h"
 
-
-/* 郵便番号のindexを作る atoiで上位の桁が落ちているので
- * 0を追加して3桁もしくは7桁のindexを作成する
- */
-static void
-make_zipcode_index(long long num, char *buf)
-{
-  const char *fmt = "";
-  if (num < 10) {
-    fmt = "00%d ";
-  } else if (num < 100) {
-    fmt = "0%d ";
-  } else if (num < 1000) {
-    fmt = "%d ";
-  } else if (num < 10000) {
-    fmt = "000%d ";
-  } else if (num < 100000) {
-    fmt = "00%d ";
-  } else if (num < 1000000) {
-    fmt = "0%d ";
-  } else {
-    fmt = "%d ";
-  }
-  sprintf(buf, fmt, (int)num);
-}
-
-/* 郵便番号辞書から探す */
-static xstr *
-search_zipcode_dict(xstr *xs, long long num)
-{
-  FILE *fp;
-  char buf[1000];
-  char index[30];
-  int len;
-
-  if (xs->len != 3 && xs->len != 7) {
-    return NULL;
-  }
-
-  if (num > 9999999 || num < 1) {
-    return NULL;
-  }
-  fp = fopen(anthy_conf_get_str("ZIPDICT_EUC"), "r");
-  if (!fp) {
-    return NULL;
-  }
-  make_zipcode_index(num, index);
-  len = strlen(index);
-  while (fgets(buf, 1000, fp)) {
-    if (!strncmp(buf, index, len)) {
-      char *tmp;
-      /* 改行を消す */
-      buf[strlen(buf) - 1] = 0;
-      /* 一番最後のスペースのあとを地名としてとりだす(<=まずい)*/
-      tmp = strrchr(buf, ' ');
-      tmp ++;
-      fclose(fp);
-      return anthy_cstr_to_xstr(tmp, ANTHY_EUC_JP_ENCODING);
-    }
-  }
-  fclose(fp);
-  return NULL;
-}
 
 static struct cand_ent *
 alloc_cand_ent(void)
@@ -151,30 +86,6 @@ push_back_candidate(struct seg_ent *seg, struct cand_ent *ce)
   seg->cands = (struct cand_ent **)
     realloc(seg->cands, sizeof(struct cand_ent *) * seg->nr_cands);
   seg->cands[seg->nr_cands - 1] = ce;
-}
-
-
-static void
-push_back_zipcode_candidate(struct seg_ent *seg)
-{
-  struct cand_ent *ce;
-  long long code;
-  xstr *str;
-
-  code = anthy_xstrtoll(&seg->str);
-  if (code == -1) {
-    return ;
-  }
-  str = search_zipcode_dict(&seg->str, code);
-  if (!str) {
-    return ;
-  }
-
-  ce = alloc_cand_ent();
-  ce->str = *str;
-  ce->flag = CEF_SINGLEWORD;
-  push_back_candidate(seg, ce);
-  free(str);
 }
 
 static void
@@ -246,7 +157,7 @@ enum_candidates(struct seg_ent *seg,
   for (i = 0; i < p; i++) {
     wtype_t wt;
     anthy_get_nth_dic_ent_wtype(ce->elm[n].se, &ce->str, i, &wt);
-    anthy_wtype_set_ct(&ce->elm[n].wt, CT_NONE);
+    ce->elm[n].wt = anthy_get_wtype_with_ct(ce->elm[n].wt, CT_NONE);
     if (anthy_wtype_include(ce->elm[n].wt, wt)) {
       xstr word, yomi;
       yomi.len = ce->elm[n].str.len;
@@ -255,7 +166,7 @@ enum_candidates(struct seg_ent *seg,
       anthy_get_nth_dic_ent_str(cand->elm[n].se,
 				&yomi, i, &word);
       cand->elm[n].nth = i;
-      cand->elm[n].id = anthy_get_nth_dic_ent_id(ce->elm[n].se, i);
+      cand->elm[n].id = anthy_xstr_hash(&word);
 
       /* 単語の本体 */
       anthy_xstrcat(&cand->str, &word);
@@ -274,7 +185,8 @@ enum_candidates(struct seg_ent *seg,
  * 文節全体を含む一単語(単漢字を含む)の候補を生成する
  */
 static void
-push_back_singleword_candidate(struct seg_ent *seg)
+push_back_singleword_candidate(struct seg_ent *seg,
+			       int is_reverse)
 {
   seq_ent_t se;
   struct cand_ent *ce;
@@ -282,7 +194,7 @@ push_back_singleword_candidate(struct seg_ent *seg)
   int i, n;
   xstr xs;
 
-  se = anthy_get_seq_ent_from_xstr(&seg->str);
+  se = anthy_get_seq_ent_from_xstr(&seg->str, is_reverse);
   n = anthy_get_nr_dic_ents(se, &seg->str);
   /* 辞書の各エントリに対して */
   for (i = 0; i < n; i++) {
@@ -326,11 +238,13 @@ push_back_noconv_candidate(struct seg_ent *seg)
   push_back_candidate(seg, ce);
 }
 
+/* word_listの要素part_infoの配列からcand_elmの配列を作る */
 static void
 make_cand_elem_from_word_list(struct seg_ent *se,
 			      struct cand_ent *ce,
 			      struct word_list *wl,
-			      int index)
+			      int index,
+			      int is_reverse)
 {
   int i; 
   int from = wl->from - se->from;
@@ -347,7 +261,7 @@ make_cand_elem_from_word_list(struct seg_ent *se,
     }
     core_xs.str = &se->str.str[from];
     core_xs.len = part->len;
-    ce->elm[i + index].se = anthy_get_seq_ent_from_xstr(&core_xs);
+    ce->elm[i + index].se = anthy_get_seq_ent_from_xstr(&core_xs, is_reverse);
     ce->elm[i + index].str.str = core_xs.str;
     ce->elm[i + index].str.len = core_xs.len;
     ce->elm[i + index].wt = part->wt;
@@ -361,7 +275,8 @@ make_cand_elem_from_word_list(struct seg_ent *se,
 static void
 make_candidate_from_simple_metaword(struct seg_ent *se,
 				    struct meta_word *mw,
-				    struct meta_word *top_mw)
+				    struct meta_word *top_mw,
+				    int is_reverse)
 {
   /*
    * 各単語の品詞が決定された状態でコミットされる。
@@ -379,7 +294,7 @@ make_candidate_from_simple_metaword(struct seg_ent *se,
   ce->score = 0;
 
   /* 接頭辞, 自立語部, 接尾辞, 付属語 */
-  make_cand_elem_from_word_list(se, ce, wl, 0);
+  make_cand_elem_from_word_list(se, ce, wl, 0, is_reverse);
 
   /* WRAPされていたらGUESSと同じ扱いにして点数を下げる */
   if (anthy_metaword_type_tab[top_mw->type].status != MW_STATUS_WRAPPED) {
@@ -396,7 +311,8 @@ make_candidate_from_simple_metaword(struct seg_ent *se,
 static void
 make_candidate_from_combined_metaword(struct seg_ent *se,
 				      struct meta_word *mw,
-				      struct meta_word *top_mw)
+				      struct meta_word *top_mw,
+				      int is_reverse)
 {
   /*
    * 各単語の品詞が決定された状態でコミットされる。
@@ -413,9 +329,9 @@ make_candidate_from_combined_metaword(struct seg_ent *se,
   ce->mw = top_mw;
 
   /* 接頭辞, 自立語部, 接尾辞, 付属語 */
-  make_cand_elem_from_word_list(se, ce, mw->mw1->wl, 0);
+  make_cand_elem_from_word_list(se, ce, mw->mw1->wl, 0, is_reverse);
   if (mw->mw2) {
-    make_cand_elem_from_word_list(se, ce, mw->mw2->mw1->wl, NR_PARTS);
+    make_cand_elem_from_word_list(se, ce, mw->mw2->mw1->wl, NR_PARTS, is_reverse);
   }
 
   /* WRAPされていたらGUESSと同じ扱いにして点数を下げる */
@@ -435,14 +351,15 @@ make_candidate_from_combined_metaword(struct seg_ent *se,
 static void
 proc_splitter_info(struct seg_ent *se,
 		   struct meta_word *mw,
-		   struct meta_word *top_mw)
+		   struct meta_word *top_mw,
+		   int is_reverse)
 {
   enum mw_status st;
   if (!mw) return;
 
   /* まずwordlistを持つmetawordの場合 */
   if (mw->wl && mw->wl->len) {
-    make_candidate_from_simple_metaword(se, mw, top_mw);
+    make_candidate_from_simple_metaword(se, mw, top_mw, is_reverse);
     return;
   }
   
@@ -450,10 +367,10 @@ proc_splitter_info(struct seg_ent *se,
   switch (st) {
   case MW_STATUS_WRAPPED:
     /* wrapされたものの情報を取り出す */
-    proc_splitter_info(se, mw->mw1, top_mw);
+    proc_splitter_info(se, mw->mw1, top_mw, is_reverse);
     break;
   case MW_STATUS_COMBINED:
-    make_candidate_from_combined_metaword(se, mw, top_mw);
+    make_candidate_from_combined_metaword(se, mw, top_mw, is_reverse);
     break;
   case MW_STATUS_COMPOUND:
     /* 連文節の葉 */
@@ -504,7 +421,7 @@ proc_splitter_info(struct seg_ent *se,
  * 一つ以上の候補を必ず生成する
  */
 void
-anthy_do_make_candidates(struct seg_ent *se)
+anthy_do_make_candidates(struct seg_ent *se, int is_reverse)
 {
   int i, limit = 0;
 
@@ -518,19 +435,18 @@ anthy_do_make_candidates(struct seg_ent *se)
   }
 
   /* hmmでのbestのmeta_wordから候補を生成*/
-  proc_splitter_info(se, se->best_mw, se->best_mw);
+  proc_splitter_info(se, se->best_mw, se->best_mw, is_reverse);
   /* limitよりも高いscoreを持つmetawordから候補を生成する */
   for (i = 0; i < se->nr_metaword; i++) {
     struct meta_word *mw = se->mw_array[i];
     if (mw->score > limit && mw != se->best_mw) {
       /**/
-      proc_splitter_info(se, mw, mw);
+      proc_splitter_info(se, mw, mw, is_reverse);
     }
   }
   /* 単漢字などの候補 */
-  push_back_singleword_candidate(se);
-  /* 郵便番号 */
-  push_back_zipcode_candidate(se);
+  push_back_singleword_candidate(se, is_reverse);
+
   /* ひらがな、カタカナの無変換エントリを作る */
   push_back_noconv_candidate(se);
 

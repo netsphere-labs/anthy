@@ -577,7 +577,7 @@ make_expanded_metaword_all(struct splitter_context *sc)
       xstr xs;
       xs.len = j;
       xs.str = sc->ce[i].c;
-      if (anthy_select_column(&xs, 0) == 0) {
+      if (anthy_select_row(&xs, 0) == 0) {
 	/* この部分文字列は過去に拡大の対象となった */
         int k;
         int nr = anthy_get_nr_values();
@@ -620,13 +620,16 @@ make_ochaire_metaword(struct splitter_context *sc,
     s += anthy_get_nth_value(j * 2 + 1);
   }
   /* 一番右の文節のmetawordを構成 */
+  xs = anthy_get_nth_xstr((count - 1) * 2 + 2);
+  if (!xs) {
+    return ;
+  }
   seg_len = anthy_get_nth_value((count - 1) * 2 + 1);
   mw = alloc_metaword(sc);
   mw->type = MW_OCHAIRE;
   mw->from = from + s;
   mw->len = seg_len;
   mw->score = OCHAIRE_SCORE;
-  xs = anthy_get_nth_xstr((count - 1) * 2 + 2);
   mw->cand_hint.str = malloc(sizeof(xchar)*xs->len);
   anthy_xstrcpy(&mw->cand_hint, xs);
   anthy_commit_meta_word(sc, mw);
@@ -636,6 +639,10 @@ make_ochaire_metaword(struct splitter_context *sc,
     struct meta_word *n;
     seg_len = anthy_get_nth_value(j * 2 + 1);
     s -= seg_len;
+    xs = anthy_get_nth_xstr(j * 2 + 2);
+    if (!xs) {
+      return ;
+    }
     n = alloc_metaword(sc);
     n->type = MW_OCHAIRE;
     /* 右のmetawordをつなぐ */
@@ -643,7 +650,6 @@ make_ochaire_metaword(struct splitter_context *sc,
     n->from = from + s;
     n->len = seg_len;
     n->score = OCHAIRE_SCORE;
-    xs = anthy_get_nth_xstr(j * 2 + 2);
     n->cand_hint.str = malloc(sizeof(xchar)*xs->len);
     anthy_xstrcpy(&n->cand_hint, xs);
     anthy_commit_meta_word(sc, n);
@@ -667,10 +673,10 @@ make_ochaire_metaword_all(struct splitter_context *sc)
     xstr xs;
     xs.len = sc->char_count - i;
     xs.str = sc->ce[i].c;
-    if (anthy_select_longest_column(&xs) == 0) {
+    if (anthy_select_longest_row(&xs) == 0) {
       xstr* key;
       int len;
-      anthy_mark_column_used();
+      anthy_mark_row_used();
       key = anthy_get_index_xstr();
       len = key->len;
 

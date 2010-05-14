@@ -1,3 +1,23 @@
+/*
+ * HMMとビタビアルゴリズムによって文節の区切りを決定する
+ *
+ * Copyright (C) 2004-2005 YOSHIDA Yuichi
+ */
+/*
+  This library is free software; you can redistribute it and/or
+  modify it under the terms of the GNU Lesser General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+  This library is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  Lesser General Public License for more details.
+
+  You should have received a copy of the GNU Lesser General Public
+  License along with this library; if not, write to the Free Software
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
+ */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -79,8 +99,9 @@ get_probability(struct hmm_node *node)
   double probability;
   if (anthy_seg_class_is_depword(node->seg_class)) {
     return probability = 1.0 / SEG_SIZE;
-  } else if (node->seg_class == SEG_FUKUSHI) {
-    probability = 1.0 / SEG_SIZE;
+  } else if (node->seg_class == SEG_FUKUSHI || 
+	     node->seg_class == SEG_RENTAISHI) {
+    probability = 2.0 / SEG_SIZE;
   } else if (node->before_node->seg_class == SEG_HEAD &&
 	     (node->seg_class == SEG_SETSUZOKUGO)) {
     probability = 1.0 / SEG_SIZE;
@@ -192,8 +213,10 @@ cmp_node(struct hmm_node *lhs, struct hmm_node *rhs)
       ret = cmp_node_by_type(lhs_before, rhs_before, MW_OCHAIRE);
       if (ret != 0) return ret;
       /* ラップされたものは確率が低い */
-      ret = cmp_node_by_type(lhs, rhs, MW_WRAP);
-      if (ret != 0) return -ret;
+      /*
+	ret = cmp_node_by_type(lhs, rhs, MW_WRAP);
+	if (ret != 0) return -ret;
+      */
 
       /* COMPOUND_PARTよりはCOMPOUND_HEADを優先 */
       ret = cmp_node_by_type_to_type(lhs_before, rhs_before, MW_COMPOUND_HEAD, MW_COMPOUND_PART);

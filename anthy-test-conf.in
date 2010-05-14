@@ -8,5 +8,5 @@ ANTHYDIR @abs_srcdir@/depgraph
 DIC_FILE @abs_builddir@/mkanthydic/anthy.dic
 INDEPWORD indepword.txt
 DEPWORD master.depword
-#ZIPDICT_EUC /var/lib/canna/dic/canna/zipcode.ctd
+ZIPDICT_EUC @abs_srcdir@/mkanthydic/zipcode.t
 WORDS_FILE /usr/share/dict/words

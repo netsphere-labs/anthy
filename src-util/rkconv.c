@@ -33,18 +33,23 @@ struct rk_rule_set
   int nr_rules;
 };
 
+struct next_array
+{
+  struct rk_slr_closure* array[128];
+};
+
 struct rk_slr_closure
 {
   char* prefix;
   struct rk_rule* r;
   int is_reduction_only;
-  struct rk_slr_closure* next[128];
+  struct next_array *next;
 };
 
 struct rk_map
 {
   struct rk_rule_set* rs;
-  struct rk_slr_closure* cl;
+  struct rk_slr_closure* root_cl;
   int refcount;
 };
 
@@ -130,12 +135,26 @@ rk_slr_closure_free(struct rk_slr_closure* cl)
 {
   int i;
   free(cl->prefix);
-  for (i = 0; i < 128; i++) {
-    if (cl->next[i]) {
-      rk_slr_closure_free(cl->next[i]);
+  if (cl->next) {
+    for (i = 0; i < 128; i++) {
+      if (cl->next->array[i]) {
+	rk_slr_closure_free(cl->next->array[i]);
+      }
     }
+    free(cl->next);
   }
   free(cl);
+}
+
+static struct next_array *
+alloc_next_array(void)
+{
+  int i;
+  struct next_array *na = malloc(sizeof(struct next_array));
+  for (i = 0; i < 128; i++) {
+    na->array[i] = NULL;
+  }
+  return na;
 }
 
 static struct rk_slr_closure* 
@@ -168,7 +187,7 @@ rk_slr_closure_create(struct rk_rule_set* rs,
     
   cl->r = NULL;
   cl->is_reduction_only = 1;
-  memset(cl->next, 0, sizeof cl->next);
+  cl->next = NULL;
 
   for (i = 0; i < rs->nr_rules; i++) {
     struct rk_rule* r;
@@ -184,10 +203,13 @@ rk_slr_closure_create(struct rk_rule_set* rs,
 	cl->is_reduction_only = 0;
     } else {
       cl->is_reduction_only = 0;
-      if (cl->next[c] == NULL) {
-	cl->next[c] = rk_slr_closure_create(
-					    rs, r->lhs, pflen + 1);
-	if (cl->next[c] == NULL) {
+      if (cl->next == NULL) {
+	cl->next = alloc_next_array();
+      }
+      if (cl->next->array[c] == NULL) {
+	cl->next->array[c] = rk_slr_closure_create(rs, r->lhs,
+						   pflen + 1);
+	if (cl->next->array[c] == NULL) {
 	  rk_slr_closure_free(cl);
 	  return NULL;
 	}
@@ -214,12 +236,14 @@ rk_map_create(const struct rk_rule* rules)
     return NULL;
   }
 
-  map->cl = rk_slr_closure_create(map->rs, NULL, 0);
-  if (map->cl == NULL) {
+  map->root_cl = rk_slr_closure_create(map->rs, NULL, 0);
+  if (map->root_cl == NULL) {
     rk_rule_set_free(map->rs);
     free(map);
     return NULL;
   }
+
+  map->refcount = 0;
 
   return map;
 }
@@ -231,7 +255,7 @@ rk_map_free(struct rk_map* map)
     return -1;
   }
   rk_rule_set_free(map->rs);
-  rk_slr_closure_free(map->cl);
+  rk_slr_closure_free(map->root_cl);
   free(map);
   return 0;
 }
@@ -281,8 +305,8 @@ rk_convert_iterative(struct rk_conv_context* cc, int c,
     *buf = '\0';
  AGAIN:
 
-  if (cur_state->next[c]) {
-    struct rk_slr_closure* next_state = cur_state->next[c];
+  if (cur_state->next && cur_state->next->array[c]) {
+    struct rk_slr_closure* next_state = cur_state->next->array[c];
 
     if (next_state->is_reduction_only) {
       rk_reduce(cc, next_state, buf, size);
@@ -290,7 +314,7 @@ rk_convert_iterative(struct rk_conv_context* cc, int c,
 	cc->cur_state = NULL;
 	return;
       }
-      cur_state = cc->map->cl;
+      cur_state = cc->map->root_cl;
     } else 
       cur_state = next_state;
   } else if (cur_state->r != NULL &&
@@ -303,12 +327,12 @@ rk_convert_iterative(struct rk_conv_context* cc, int c,
       cc->cur_state = NULL;
       return;
     }
-    cur_state = cc->map->cl;
+    cur_state = cc->map->root_cl;
     buf += len;
     size -= len;
     goto AGAIN;
-  } else if (cur_state != cc->map->cl) {
-    cur_state = cc->map->cl;
+  } else if (cur_state != cc->map->root_cl) {
+    cur_state = cc->map->root_cl;
     goto AGAIN;
   }
   cc->cur_state = cur_state;
@@ -448,7 +472,7 @@ void
 rk_flush(struct rk_conv_context* cc)
 {
   brk_roman_flush(cc);
-  cc->cur_state = (cc->map == NULL) ? NULL : cc->map->cl;
+  cc->cur_state = (cc->map == NULL) ? NULL : cc->map->root_cl;
   cc->cur_str[0] = '\0';
   cc->cur_str_len = 0;
 }
@@ -514,7 +538,7 @@ rk_select_map(struct rk_conv_context* cc, struct rk_map* map)
     cc->cur_state = NULL;
   } else {
     map->refcount++;
-    cc->cur_state = map->cl;
+    cc->cur_state = map->root_cl;
     rk_flush(cc);
   }
   cc->map_no = -1;

@@ -11,7 +11,7 @@ EXTRA_DIST = indepword.txt $(DEPWORDS)
 # Generate the dictionary
 noinst_PROGRAMS = mkdepgraph
 mkdepgraph_SOURCES = mkdepgraph.c
-mkdepgraph_LDADD = ../src-diclib/libanthydic.la ../src-main/libanthy.la
+mkdepgraph_LDADD =  ../src-main/libanthy.la ../src-worddic/libanthydic.la
 
 anthy.dep : mkdepgraph
 	./mkdepgraph

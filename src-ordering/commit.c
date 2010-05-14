@@ -5,6 +5,7 @@
  * anthy_proc_commit() が外部から呼ばれる
  */
 #include <stdlib.h>
+#include <time.h>
 
 #include <ordering.h>
 #include <record.h>
@@ -14,6 +15,7 @@
 
 #define MAX_OCHAIRE_ENTRY_COUNT 100
 #define MAX_OCHAIRE_LEN 32
+#define MAX_PREDICTION_ENTRY 100
 
 /* 交換された候補を探す */
 static void
@@ -62,7 +64,7 @@ commit_ochaire(struct seg_ent *seg, int count, xstr* xs)
   if (xs->len >= MAX_OCHAIRE_LEN) {
     return ;
   }
-  if (anthy_select_column(xs, 1)) {
+  if (anthy_select_row(xs, 1)) {
     return ;
   }
   anthy_set_nth_value(0, count);
@@ -91,8 +93,8 @@ release_negative_ochaire(struct splitter_context *sc,
       xstr part;
       part.str = &xs.str[start];
       part.len = len;
-      if (anthy_select_column(&part, 0) == 0) {
-	anthy_release_column();
+      if (anthy_select_row(&part, 0) == 0) {
+	anthy_release_row();
       }
     }
   }
@@ -142,55 +144,48 @@ learn_ochaire(struct splitter_context *sc,
   anthy_truncate_section(MAX_OCHAIRE_ENTRY_COUNT);
 }
 
-static int
-check_segment_relation(struct seg_ent *cur, struct seg_ent *target)
-{
-  /* 先頭の候補で確定されたので、学習しない */
-  if (cur->committed == 0) {
-    return 0;
-  }
-  /* 単純な形式の文節しか学習しない */
-  if (cur->cands[0]->nr_words != 1 ||
-      cur->cands[cur->committed]->nr_words != 1 ||
-      target->cands[target->committed]->nr_words != 1) {
-    return 0;
-  }
-  /* 確定された文節の品詞と、最初に出した候補の品詞が同じであることを確認 */
-  if (anthy_wtype_get_pos(cur->cands[0]->elm[0].wt) !=
-      anthy_wtype_get_pos(cur->cands[cur->committed]->elm[0].wt)) {
-    return 0;
-  }
-  if (cur->cands[cur->committed]->elm[0].id == -1 ||
-      target->cands[target->committed]->elm[0].id == -1) {
-    return 0;
-  }
-  /* 辞書に対して登録をする */
-  anthy_dic_register_relation(target->cands[target->committed]->elm[0].id,
-			      cur->cands[cur->committed]->elm[0].id);
-  return 1;
-			      
-}
-
 static void
-learn_word_relation(struct segment_list *sl)
+learn_prediction(struct segment_list *sl)
 {
   int i, j;
-  int nr_learned = 0;
+  int added = 0;
+  if (anthy_select_section("PREDICTION", 1)) {
+    return ;
+  }
   for (i = 0; i < sl->nr_segments; i++) {
-    struct seg_ent *cur = anthy_get_nth_segment(sl, i);
-    for (j = i - 2; j < i + 2 && j < sl->nr_segments; j++) {
-      struct seg_ent *target;
-      if (i == j || j < 0) {
+    struct seg_ent *seg = anthy_get_nth_segment(sl, i);
+    int nr_predictions;
+    time_t t = time(NULL);
+    xstr *xs = &seg->cands[seg->committed]->str;
+
+    if (seg->committed < 0) {
+      continue;
+    }
+    if (anthy_select_row(&seg->str, 1)) {
+      continue;
+    }
+    nr_predictions = anthy_get_nr_values();
+
+    /* 既に履歴にある場合はタイムスタンプだけ更新 */
+    for (j = 0; j < nr_predictions; j += 2) {
+      xstr *log = anthy_get_nth_xstr(j + 1);
+      if (!log) {
 	continue;
       }
-      target = anthy_get_nth_segment(sl, j);
-      /* i番目とj番目の文節の候補の関係を学習できるかチェックする */
-      nr_learned += check_segment_relation(cur, target);
+      if (anthy_xstrcmp(log, xs) == 0) {
+	anthy_set_nth_value(j, t);
+	break;
+      }
+    }
+    /* ない場合は末尾に追加 */
+    if (j == nr_predictions) {
+      anthy_set_nth_value(nr_predictions, t);
+      anthy_set_nth_xstr(nr_predictions + 1, xs);      
+      added = 1;
     }
   }
-  /* 学習が発生していればコミットする */
-  if (nr_learned > 0) {
-    anthy_dic_commit_relation();
+  if (added) {
+    anthy_truncate_section(MAX_PREDICTION_ENTRY);
   }
 }
 
@@ -202,6 +197,6 @@ anthy_proc_commit(struct segment_list *sl,
   learn_swapped_candidates(sl);
   learn_resized_segment(sc, sl);
   learn_ochaire(sc, sl);
-  learn_word_relation(sl);
+  learn_prediction(sl);
   anthy_learn_cand_history(sl);
 }

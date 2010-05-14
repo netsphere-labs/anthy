@@ -198,15 +198,14 @@ void anthy_print_wtype(wtype_t w);
 /* 辞書ファイル中の名前から品詞を得る(関数名が悪い) */
 const char *anthy_type_to_wtype(const char *name, wtype_t *w);
 /* 品詞の名前から品詞を得る */
-int anthy_init_wtype_by_name(const char *str, wtype_t *w);
-/* 品詞の名前の内部のポインタを返す */
-const char *anthy_name_intern(const char *str);
+wtype_t anthy_init_wtype_by_name(const char *str);
 
 int anthy_wtype_get_pos(wtype_t w);
 int anthy_wtype_get_cc(wtype_t w);
 int anthy_wtype_get_ct(wtype_t w);
 int anthy_wtype_get_cos(wtype_t w);
 int anthy_wtype_get_scos(wtype_t w);
+int anthy_wtype_get_wf(wtype_t w);
 
 /* フラグの取得 */
 int anthy_wtype_get_indep(wtype_t w);
@@ -214,12 +213,17 @@ int anthy_wtype_get_sv(wtype_t w);
 int anthy_wtype_get_meisi(wtype_t w);
 int anthy_wtype_get_ajv(wtype_t w);
 
+wtype_t anthy_get_wtype(int pos, int cos, int scos, int cc, int ct, int wf);
+wtype_t anthy_get_wtype_with_ct(wtype_t base, int ct);
+
 void anthy_wtype_set_pos(wtype_t *w, int pos);
 void anthy_wtype_set_cc(wtype_t *w, int cc);
 void anthy_wtype_set_ct(wtype_t *w, int ct);
 void anthy_wtype_set_cos(wtype_t *w, int cs);
 void anthy_wtype_set_scos(wtype_t *w, int scos);
 void anthy_wtype_set_dep(wtype_t *w, int isDep);
+
+void anthy_init_wtypes(void);
 
 extern wtype_t anthy_wt_all;/* すべてにマッチする自立語 */
 extern wtype_t anthy_wt_none;/* 品詞無しPOS_INVAL */

@@ -187,7 +187,7 @@ proc_expanded_segment(struct splitter_context *sc,
   if (anthy_select_section("EXPANDPAIR", 1) == -1) {
     return ;
   }
-  if (anthy_select_column(&from_xs, 1) == -1) {
+  if (anthy_select_row(&from_xs, 1) == -1) {
     return ;
   }
   nr = anthy_get_nr_values();
@@ -247,13 +247,16 @@ anthy_splitter_debug_flags(void)
 }
 
 void
-anthy_init_split_context(xstr *xs, struct splitter_context *sc)
+anthy_init_split_context(xstr *xs, struct splitter_context *sc, int is_reverse)
 {
   alloc_char_ent(xs, sc);
   alloc_info_cache(sc);
+  sc->is_reverse = is_reverse;
   /* 全ての部分文字列をチェックして、文節の候補を列挙する
      word_listを構成してからmetawordを構成する */
+  anthy_lock_dic();
   anthy_make_word_list_all(sc);
+  anthy_unlock_dic();
   anthy_make_metaword_all(sc);
 
 }
@@ -302,27 +305,26 @@ anthy_init_splitter(void)
     return -1;
   }
   /**/
-  anthy_init_wtype_by_name("名詞35", &anthy_wtype_noun);
-  anthy_init_wtype_by_name("人名", &anthy_wtype_name_noun);
-  anthy_init_wtype_by_name("数詞", &anthy_wtype_num_noun);
-  anthy_init_wtype_by_name("形容詞化接尾語", &anthy_wtype_a_tail_of_v_renyou);
-  anthy_init_wtype_by_name("動詞連用形", &anthy_wtype_v_renyou);
-  anthy_init_wtype_by_name("名詞化接尾語", &anthy_wtype_noun_tail);
-  anthy_init_wtype_by_name("名詞接尾語", &anthy_wtype_noun_and_postfix);
-  anthy_init_wtype_by_name("名詞接頭辞", &anthy_wtype_prefix);
-  anthy_init_wtype_by_name("数接頭辞", &anthy_wtype_num_prefix);
-  anthy_init_wtype_by_name("名詞接尾辞", &anthy_wtype_postfix);
-  anthy_init_wtype_by_name("数接尾辞", &anthy_wtype_num_postfix);
-  anthy_init_wtype_by_name("人名接尾辞", &anthy_wtype_name_postfix);
-  anthy_init_wtype_by_name("サ変接尾辞", &anthy_wtype_sv_postfix);
-  anthy_init_wtype_by_name("数詞1", &anthy_wtype_n1);
-  anthy_init_wtype_by_name("数詞10", &anthy_wtype_n10);
-  /* 自立語と付属語の接続情報を読む */
-  return anthy_init_wordlist();
+  anthy_wtype_noun = anthy_init_wtype_by_name("名詞35");
+  anthy_wtype_name_noun = anthy_init_wtype_by_name("人名");
+  anthy_wtype_num_noun = anthy_init_wtype_by_name("数詞");
+  anthy_wtype_a_tail_of_v_renyou = anthy_init_wtype_by_name("形容詞化接尾語");
+  anthy_wtype_v_renyou = anthy_init_wtype_by_name("動詞連用形");
+  anthy_wtype_noun_tail = anthy_init_wtype_by_name("名詞化接尾語");
+  anthy_wtype_noun_and_postfix = anthy_init_wtype_by_name("名詞接尾語");
+  anthy_wtype_prefix = anthy_init_wtype_by_name("名詞接頭辞");
+  anthy_wtype_num_prefix = anthy_init_wtype_by_name("数接頭辞");
+  anthy_wtype_postfix = anthy_init_wtype_by_name("名詞接尾辞");
+  anthy_wtype_num_postfix = anthy_init_wtype_by_name("数接尾辞");
+  anthy_wtype_name_postfix = anthy_init_wtype_by_name("人名接尾辞");
+  anthy_wtype_sv_postfix = anthy_init_wtype_by_name("サ変接尾辞");
+  anthy_wtype_n1 = anthy_init_wtype_by_name("数詞1");
+  anthy_wtype_n10 = anthy_init_wtype_by_name("数詞10");
+  return 0;
 }
 
 void
 anthy_quit_splitter(void)
 {
-  anthy_release_depword_tab();
+  anthy_quit_depword_tab();
 }

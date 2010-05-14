@@ -1,3 +1,89 @@
+2005-11-01  YOSHIDA Yuichi <oxy@kmc.gr.jp>
+	* ntohl, htonlをラッパで抽象化した
+	Thanks to Etsushi Katoさん [anthy-dev 2587]
+	          Koga Youichirouさん [anthy-dev 2588]
+
+2005-10-16  Yusuke TABATA  <yusuke@ofanim.net>
+
+	* mkanthydic/placename.t 駅名の中で駅の無いものを追加
+	Thanks to Shirou Wakayamaさん [anthy-dev 2551]
+
+2005-10-16  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* src-diclib/wtype.c (anthy_init_wtype_by_name): Change the
+	prototype.
+	* include/wtype.h (anthy_init_wtype_by_name): Change the
+	declaration.
+	* depgraph/mkdepgraph.c (parse_indep): Follow the change.
+	* src-splitter/splitter.c (anthy_init_splitter): Likewise.
+
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* src-splitter/depgraph.c (anthy_get_nth_dep_rule): Use
+	anthy_get_wtype.
+	* src-diclib/wtype.c (anthy_init_wtype_by_name) 
+	(anthy_type_to_wtype): Likewise.
+
+	* src-diclib/file_dic.c (add_dic_ent): Use anthy_get_wtype_with_ct.
+	* src-splitter/compose.c (enum_candidates): Likewise.
+
+	* src-diclib/wtype.c (anthy_get_wtype_with_ct, anthy_get_wtype):
+	New functions.
+	* include/wtype.h (anthy_get_wtype, anthy_get_wtype_with_ct): New
+	function declarations.
+
+	* src-diclib/wtype.c (anthy_type_to_wtype): Don't set POS_INVAL
+	partially, but substitute anthy_wt_none.
+
+	* src-diclib/file_dic.c (parse_wtype_str): Don't set POS_INVAL
+	partially, but substitute anthy_wt_none.
+
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* src-diclib/dic_main.h (anthy_init_wtypes): Removed declaration.
+	* include/wtype.h (anthy_init_wtypes): ... but declared here.
+
+	* mkanthydic/mkdic.c (main): Call anthy_init_wtypes.
+	* depgraph/mkdepgraph.c (main): Likewise.
+
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* src-diclib/wtype.c (anthy_wtype_get_wf): Make it public.
+	* include/wtype.h (anthy_wtype_get_wf): Exported to public.
+
+	* depgraph/mkdepgraph.c (write_wtype): Use anthy_wtype_get_wf.
+
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* src-diclib/wtype.c (anthy_wtype_get_wf): New Function.
+	(anthy_print_wtype): New implementation using accessors.
+
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* src-diclib/wtype.c (struct PTab): Removed.
+	(ptab): Use struct wttable.
+	(get_pos_by_name, anthy_init_wtype_by_name): Follow the changes.
+
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* src-diclib/wtype.c (struct wttable): Change order of members.
+	* src-diclib/wtab.h: Follow the change.
+
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* src-diclib/wtype.c (struct PTab): Change order of members.
+	* src-diclib/ptab.h: Follow the change.
+
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* src-diclib/wtype.c (anthy_pos_name_intern): Removed.
+	* include/wtype.h (anthy_pos_name_intern): Removed.
+
+2005-10-14  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* depgraph/mkdepgraph.c (gRuleWtNames): Removed. 
+	(parse_indep): Don't set gRuleWtNames.
+
 2005-06-14  Yusuke TABATA  <yusuke@illusion>
 
 	* README.en : new file

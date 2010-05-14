@@ -18,6 +18,7 @@ struct splitter_context {
   /** splitter内部で使用する構造体 */
   struct word_split_info_cache *word_split_info;
   int char_count;
+  int is_reverse;
   struct char_ent {
     xchar *c;
     int seg_border;
@@ -98,7 +99,7 @@ struct meta_word {
 int anthy_init_splitter(void);
 void anthy_quit_splitter(void);
 
-void anthy_init_split_context(xstr *xs, struct splitter_context *);
+void anthy_init_split_context(xstr *xs, struct splitter_context *, int is_reverse);
 /*
  * mark_border(context, l1, l2, r1);
  * l1とr1の間の文節を検出する、ただしl1とl2の間は境界にしない。

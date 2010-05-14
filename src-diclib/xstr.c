@@ -26,7 +26,7 @@
 #endif
 
 #include <xstr.h>
-#include "dic_main.h"
+#include "diclib_inner.h"
 #include "xchar.h"
 
 #ifdef USE_UCS4
@@ -188,11 +188,7 @@ euc_cstr_to_euc_xstr(const char *c)
   l = xlengthofcstr(c);
   x = (xstr *)malloc(sizeof(struct xstr_));
   x->len = l;
-  if (l) {
-    x->str = malloc(sizeof(xchar)*l);
-  } else {
-    x->str = 0;
-  }
+  x->str = malloc(sizeof(xchar)*l);
   for (i = 0, j = 0; i < l; i++) {
     if (!(c[j] & 0x80)){
       x->str[i] = c[j];
@@ -297,7 +293,7 @@ anthy_xstr_dup(xstr *s)
   if (s->len) {
     x->str = malloc(sizeof(xchar)*s->len);
   }else{
-    x->str = 0;
+    x->str = NULL;
   }
   for (i = 0; i < x->len; i++) {
     x->str[i] = s->str[i];
@@ -324,6 +320,10 @@ anthy_xstr_dup_str(xstr *s)
 void
 anthy_free_xstr(xstr *x)
 {
+  if (!x) {
+    return ;
+  }
+  /**/
   free(x->str);
   free(x);
 }
@@ -462,16 +462,46 @@ anthy_xstrcmp(xstr *x1, xstr *x2)
   return 0;
 }
 
+/* 返り値の符号はstrncmpと同じ */
+int
+anthy_xstrncmp(xstr *x1, xstr *x2, int n)
+{
+  int i, m;
+  if (x1->len < x2->len) {
+    m = x1->len;
+  }else{
+    m = x2->len;
+  }
+  if (m > n) m = n;
+  for (i = 0 ; i < m ; i++) {
+    if (x1->str[i] < x2->str[i]) {
+      return -1;
+    }
+    if (x1->str[i] > x2->str[i]) {
+      return 1;
+    }
+  }
+  if (x2->len <= n && x1->len < x2->len) {
+    return -1;
+  }
+  if (x1->len <= n && x1->len > x2->len) {
+    return 1;
+  }
+  return 0;
+}
+
+
 xstr *
 anthy_xstrcat(xstr *s, xstr *a)
 {
   int i, l;
-  l = s->len + a->len;
-  if (l) {
-    s->str = realloc(s->str, sizeof(xchar)*l);
-  } else {
-    s->str = 0;
+  if (!s) {
+    s = malloc(sizeof(xstr));
+    s->str = NULL;
+    s->len = 0;
   }
+  l = s->len + a->len;
+  s->str = realloc(s->str, sizeof(xchar)*l);
   for (i = 0; i < a->len; i ++) {
     s->str[s->len+i] = a->str[i];
   }
@@ -510,6 +540,20 @@ anthy_xstrtoll(xstr *x)
   return n;
 }
 
+/** 全角の数字を半角にする
+ */
+xstr *
+anthy_xstr_wide_num_to_num(xstr* src_xs)
+{
+  int i;
+  xstr *dst_xs;
+  dst_xs = anthy_xstr_dup(src_xs);
+  for (i = 0; i < src_xs->len; ++i) {
+    dst_xs->str[i] = anthy_xchar_wide_num_to_num(src_xs->str[i]);
+  }
+  return dst_xs;
+}
+
 /** 平仮名をカタカナに変換する
  */
 xstr *
@@ -546,6 +590,9 @@ int anthy_xstr_hash(xstr *xs)
     h *= 97;
     h += xs->str[i]<<4;
     h += xs->str[i]>>4;
+  }
+  if (h < 0) {
+    return -h;
   }
   return h;
 }

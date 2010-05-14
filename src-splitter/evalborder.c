@@ -1,9 +1,8 @@
 /*
  * 文節の境界を検出する。
- * 文中のextentの連結を評価して、スコアが高くなるようにextentを選んでいく。
+ * 文中のmetawordの連結を評価して、スコアが高くなるようにmetawordを選んでいく。
  *
- * metawordの選択には幅優先探索を行う
- * 検索のノードがAstar_nodeでsearch_statが検索用のキュー
+ * metawordの選択にはHMMを使う
  *
  * anthy_eval_border() で指定された領域を文節に分割する
  *
@@ -170,9 +169,26 @@ metaword_constraint_check_all(struct splitter_context *sc,
 void
 anthy_eval_border(struct splitter_context *sc, int from, int from2, int to)
 {
+  struct meta_word *mw;
+  int nr;
+
   /* 文節候補のうち使えるもののみ選択 */
   metaword_constraint_check_all(sc, from, to, from2);
 
-  /* extentを評価する */
+  /* fromとfrom2の間をカバーするmeta_wordがあるかどうかを探す。
+   * あれば、fromからHMMの解析を行い、なければfrom2から解析をする。
+   */
+  nr = 0;
+  for (mw = sc->word_split_info->cnode[from].mw; mw; mw = mw->next) {
+    if (mw->can_use == ok) {
+      nr ++;
+      break;
+    }
+  }
+  if (nr == 0) {
+    from = from2;
+  }
+
+  /* HMMで文節の切りかたを評価する */
   anthy_hmm(sc, from, to);
 }

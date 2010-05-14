@@ -1,6 +1,6 @@
 /*
  * 文節の関係を処理する
- * Copyright (C) 2002-2004 TABATA Yusuke
+ * Copyright (C) 2002-2006 TABATA Yusuke
  */
 
 #include <stdlib.h>
@@ -9,9 +9,11 @@
 #include <segment.h>
 #include <ordering.h>
 #include <dic.h>
-#include <hash_map.h>
 #include "sorter.h"
 
+/** 文節@segの中に@from_word_idの単語と共起関係にある
+ *  候補があるかどうかを探し、あればスコアを上げる。
+ */
 static void
 reorder_candidate(int from_word_id, struct seg_ent *seg)
 {
@@ -52,12 +54,14 @@ anthy_reorder_candidates_by_relation(struct segment_list *sl, int nth)
     struct seg_ent *cur_seg;
     struct cand_ent *ce;
     int word_id;
+
     cur_seg = anthy_get_nth_segment(sl, i);
     if (cur_seg->cands[0]->core_elm_index == -1) {
       /* 一番目の候補がseq_entから作られた候補ではない */
       continue;
     }
     ce = cur_seg->cands[0];
+    /* 自立語のidを取り出す */
     word_id = ce->elm[ce->core_elm_index].id;
     if (word_id == -1) {
       /**/

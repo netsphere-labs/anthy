@@ -9,25 +9,19 @@
 #   test.sh
 #
 
-srcdir=@SRCDIR@
+srcdir=@top_srcdir@
 
-if test x$srcdir == x. ;then
-  testdir=.
-  confdir=..
-else
-  testdir=${srcdir}/test/
-  confdir=${testdir}
-fi
+testdir=${srcdir}/test/
 
 case x$1 in
 xcomp | xcompile | x-comp | x-compile | x--compile)
-  swig -ruby -I${testdir} anthy_swig.i
+  swig -ruby -I${srcdir} ${srcdir}/test/anthy_swig.i
 
   # do not over write Makefile
   if test ! -d work; then
     mkdir work
   fi
-  (cd work; ruby ${confdir}/extconf.rb)
+  (cd work; CFLAGS=-I${srcdir} ruby ../${testdir}/extconf.rb)
   make -f work/Makefile
   exit;;
   *)

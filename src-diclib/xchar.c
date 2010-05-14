@@ -6,7 +6,7 @@
 #include "config.h"
 #include <xstr.h>
 
-#include "dic_main.h"
+#include "diclib_inner.h"
 #include "xchar.h"
 
 static struct xchar_ent{
@@ -35,6 +35,10 @@ static struct xchar_ent{
   {0x300f, XCT_CLOSE, 0},  /* 』　*/
   {0x3010, XCT_OPEN, 0},  /* 【　*/
   {0x3011, XCT_CLOSE, 0},  /* 】　*/
+  {0x3001, XCT_PUNCTUATION, 0},  /* 、　*/
+  {0x3002, XCT_PUNCTUATION, 0},  /* 。　*/
+  {0xff0c, XCT_PUNCTUATION, 0},  /* ，　*/
+  {0xff0e, XCT_PUNCTUATION, 0},  /* ．　*/
 #else
   {0xa1c9, XCT_CLOSE, 0}, /* ” */
   {0xa1ca, XCT_OPEN, 0},  /* （　*/
@@ -55,6 +59,10 @@ static struct xchar_ent{
   {0xa1d9, XCT_CLOSE, 0},  /* 』　*/
   {0xa1da, XCT_OPEN, 0},  /* 【　*/
   {0xa1db, XCT_CLOSE, 0},  /* 】　*/
+  {0xa1a2, XCT_PUNCTUATION, 0},  /* 、　*/
+  {0xa1a3, XCT_PUNCTUATION, 0},  /* 。　*/
+  {0xa1a4, XCT_PUNCTUATION, 0},  /* ，　*/
+  {0xa1a5, XCT_PUNCTUATION, 0},  /* ．　*/
 #endif
   {28, XCT_OPEN, 0}, /* ( */
   {133, XCT_OPEN, 0}, /* [ */
@@ -155,7 +163,7 @@ is_kanji(xchar xc)
 }
 
 int
-anthy_get_xchar_type(xchar xc)
+anthy_get_xchar_type(const xchar xc)
 {
   int t = find_xchar_type(xc);
   if (xc > 47 && xc < 58) {
@@ -184,7 +192,7 @@ anthy_get_xchar_type(xchar xc)
 }
 
 int
-anthy_get_xstr_type(xstr *xs)
+anthy_get_xstr_type(const xstr *xs)
 {
   int i, t = XCT_ALL;
   for (i = 0; i < xs->len; i++) {
@@ -212,6 +220,24 @@ anthy_xchar_to_num(xchar xc)
     return xc - (int)'0';
   }
   return -1;
+}
+
+xchar
+anthy_xchar_wide_num_to_num(xchar c)
+{
+  switch (c) {
+  case WIDE_0:return '0';
+  case WIDE_1:return '1';
+  case WIDE_2:return '2';
+  case WIDE_3:return '3';
+  case WIDE_4:return '4';
+  case WIDE_5:return '5';
+  case WIDE_6:return '6';
+  case WIDE_7:return '7';
+  case WIDE_8:return '8';
+  case WIDE_9:return '9';
+  default:return c;
+  }
 }
 
 void

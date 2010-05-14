@@ -9,9 +9,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include <malloc.h>
-#include <alloca.h>
-#include <netinet/in.h>
 
 #include <alloc.h>
 #include <conf.h>
@@ -21,24 +18,11 @@
 #include <splitter.h>
 #include <anthy.h>
 #include <depgraph.h>
+#include <diclib.h>
 
 #ifndef SRCDIR
 #define SRCDIR "."
 #endif
-
-/* コマンドラインオプションの解釈 */
-#define OPT_NONE 0
-#define OPT_HELP 1
-#define OPT_OUTFN 2
-#define OPT_DICFN 3
-#define OPT_UCFN 4
-
-struct cmd_arg {
-  int type;
-  char *fn;
-  struct cmd_arg *next;
-};
-
 
 /* メモリ節約のために文字列を共有するpool */
 static struct {
@@ -55,7 +39,6 @@ static allocator wordseq_rule_ator;
 
 /* 単語接続ルール */
 static struct wordseq_rule *gRules;
-static const char** gRuleWtNames;
 int nrRules;
 
 
@@ -342,11 +325,9 @@ parse_indep(char **tokens, int nr)
     return ;
   }
   gRules = realloc(gRules, sizeof(struct wordseq_rule)*(nrRules+1));
-  gRuleWtNames = realloc(gRuleWtNames, sizeof(char*)*(nrRules+1));
 
   /* 行の先頭には品詞の名前が入っている */
-  gRuleWtNames[nrRules] = anthy_name_intern(tokens[0]);
-  anthy_init_wtype_by_name(tokens[0], &gRules[nrRules].wt);
+  gRules[nrRules].wt = anthy_init_wtype_by_name(tokens[0]);
 
   /* 比率 */
   tmp = atoi(tokens[1]);
@@ -397,14 +378,13 @@ init_word_seq_tab(void)
 static void
 write_nl(FILE* fp, int i)
 {
-  i = htonl(i);
+  i = anthy_dic_htonl(i);
   fwrite(&i, sizeof(int), 1, fp);
 }
 
 static void
 write_transition(FILE* fp, struct dep_transition* transition)
 {
-  
   write_nl(fp, transition->next_node); 
   write_nl(fp, transition->trans_ratio); 
   write_nl(fp, transition->pos); 
@@ -445,7 +425,6 @@ write_node(FILE* fp, struct dep_node* node)
   for (i = 0; i < node->nr_branch; ++i) {
     write_branch(fp, &node->branch[i]);
   }
-
 }
 
 static void
@@ -456,8 +435,7 @@ write_wtype(FILE *fp, wtype_t wt)
   fputc(anthy_wtype_get_scos(wt), fp);
   fputc(anthy_wtype_get_cc(wt), fp);
   fputc(anthy_wtype_get_ct(wt), fp);
-  /* 直接のアクセスはlayer violation気味 */
-  fputc(wt.wf, fp);
+  fputc(anthy_wtype_get_wf(wt), fp);
   fputc(0, fp);
   fputc(0, fp);
 }
@@ -509,9 +487,10 @@ int
 main(int argc, char* argv[])
 {
   /* 付属語辞書を読み込んでファイルに書き出す */
-  anthy_conf_override("CONFFILE", SRCDIR "/../anthy-conf");
+  anthy_conf_override("CONFFILE", "../anthy-conf");
   anthy_conf_override("ANTHYDIR", SRCDIR "/../depgraph/");
 
+  anthy_init_wtypes();
   anthy_do_conf_init();
   init_depword_tab();
   init_word_seq_tab();
