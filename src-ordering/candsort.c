@@ -29,8 +29,8 @@
 #define SINGLEWORD_BASE 10
 /* 複合語 */
 #define COMPOUND_BASE (OCHAIRE_SCORE / 2)
-/* 複合語の一部のスコア */
-#define COMPOUND_PART_BASE (COMPOUND_BASE / 2)
+/* 複合語の一部分を一文節にしたもの */
+#define COMPOUND_PART_BASE 2
 /* ひらがなカタカナのデフォルトのスコア */
 #define NOCONV_BASE 1
 
@@ -152,6 +152,7 @@ eval_candidate_by_metaword(struct seg_ent *seg,
     score += anthy_get_nth_dic_ent_freq(elm->se, elm->nth) *
       elm->ratio * kanji_len * kanji_len / (RATIO_BASE * div);
   }
+  score = score / ce->nr_words;
 
   if (ce->mw) {
     /* もしその文節で一番評価が高かった品詞と候補の品詞が一致していたら加点 */
@@ -172,7 +173,8 @@ eval_candidate(struct seg_ent *seg, struct cand_ent *ce, int uncertain)
 {
   if ((ce->flag &
        (CEF_OCHAIRE | CEF_SINGLEWORD | CEF_HIRAGANA |
-	CEF_KATAKANA | CEF_GUESS | CEF_COMPOUND | CEF_COMPOUND_PART)) == 0) {
+	CEF_KATAKANA | CEF_GUESS | CEF_COMPOUND | CEF_COMPOUND_PART |
+	CEF_BEST)) == 0) {
     /* splitterからの情報(metaword)によって生成された候補 */
     eval_candidate_by_metaword(seg, ce);
   } else if (ce->flag & CEF_OCHAIRE) {
@@ -183,6 +185,8 @@ eval_candidate(struct seg_ent *seg, struct cand_ent *ce, int uncertain)
     ce->score = COMPOUND_BASE;
   } else if (ce->flag & CEF_COMPOUND_PART) {
     ce->score = COMPOUND_PART_BASE;
+  } else if (ce->flag & CEF_BEST) {
+    ce->score = OCHAIRE_BASE;
   } else if (ce->flag & (CEF_HIRAGANA | CEF_KATAKANA | CEF_GUESS)) {
     if (uncertain) {
       /*

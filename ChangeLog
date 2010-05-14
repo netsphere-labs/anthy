@@ -1,3 +1,7 @@
+2005-03-07  Yusuke TABATA  <yusuke@illusion>
+
+	* src-splitter.c fixed invalid memory access in anthy-6300c
+
 2004-12-23  Yusuke TABATA  <yusuke@illusion>
 
 	* cannadic/ update to cannadic-0.95c

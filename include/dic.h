@@ -55,6 +55,10 @@ int anthy_get_seq_ent_indep(seq_ent_t );
 /* Ê£¹ç¸ì */
 int anthy_get_nr_compound_ents(seq_ent_t se);
 compound_ent_t anthy_get_nth_compound_ent(seq_ent_t se, int nth);
+int anthy_get_seq_ent_wtype_compound_freq(seq_ent_t se, wtype_t wt);
+/**/
+int anthy_compound_get_wtype(compound_ent_t, wtype_t *w);
+int anthy_compound_get_freq(compound_ent_t ce);
 int anthy_compound_get_nr_segments(compound_ent_t ce);
 int anthy_compound_get_nth_segment_len(compound_ent_t ce, int nth);
 int anthy_compound_get_nth_segment_xstr(compound_ent_t ce, int nth, xstr *xs);

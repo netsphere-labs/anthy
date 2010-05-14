@@ -97,13 +97,15 @@ eval_word_list(struct word_list *wl)
 
   /* 自立語のスコアと頻度による加点 */
   wl->score += part[PART_CORE].freq * anthy_score_per_freq;
-
   /* 付属語に対する加点 */
   if (part[PART_DEPWORD].len) {
     int score;
     int len = part[PART_DEPWORD].len - wl->weak_len;
     if (len > 5) {
       len = 5;
+    }
+    if (len < 0) {
+      len = 0;
     }
     score = len * part[PART_DEPWORD].ratio * anthy_score_per_depword;
     score /= RATIO_BASE;
@@ -393,7 +395,12 @@ make_word_list(struct splitter_context *sc,
 
   /* 各ルールにマッチするか比較 */
   for (r = gRules; r; r = r->next) {
-    int freq = anthy_get_seq_ent_wtype_freq(se, r->wt);
+    int freq;
+    if (!is_compound) {
+      freq = anthy_get_seq_ent_wtype_freq(se, r->wt);
+    } else {
+      freq = anthy_get_seq_ent_wtype_compound_freq(se, r->wt);
+    }
     if (freq) {
       /* 自立語の品詞はそのルールにあっている */
       if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_ID) {
@@ -500,16 +507,23 @@ anthy_make_word_list_all(struct splitter_context *sc)
       }
 
       /* 発見した自立語をリストに追加 */
-      if (is_indep(se) || anthy_get_nr_compound_ents(se) > 0) {
+      if (is_indep(se)) {
 	de = (struct depword_ent *)anthy_smalloc(de_ator);
 	de->from = i;
 	de->len = j;
 	de->se = se;
-	if (anthy_get_nr_compound_ents(se) > 0) {
-	  de->is_compound = 1;
-	} else {
-	  de->is_compound = 0;
-	}
+	de->is_compound = 0;
+
+	de->next = head;
+	head = de;
+      }
+      /* 発見した複合語をリストに追加 */
+      if (anthy_get_nr_compound_ents(se) > 0) {
+	de = (struct depword_ent *)anthy_smalloc(de_ator);
+	de->from = i;
+	de->len = j;
+	de->se = se;
+	de->is_compound = 1;
 
 	de->next = head;
 	head = de;

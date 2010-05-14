@@ -1,7 +1,8 @@
 /*
- * 辞書のセッション管理、辞書キャッシュ中のエントリは
- * 全ての現在アクティブな変換コンテキストが使っていない
- * 場合のみに解放することができる。
+ * 辞書のセッション管理、辞書キャッシュ中のエントリが
+ * どの変換コンテキストによって使用されているかを管理する。
+ * 辞書キャッシュ中のエントリは全ての現在アクティブな
+ * 変換コンテキストが使っていない場合のみに解放することができる。
  */
 
 #include <stdlib.h>
@@ -62,7 +63,7 @@ anthy_init_sessions(struct mem_dic *d)
   int i;
   for (i = 0; i < MAX_SESSION; i++) {
     d->sessions[i].id = i;
-    d->sessions[i].mask = 1<<i;
+    d->sessions[i].mask = (1<<i);
     d->sessions[i].is_free = 1;
   }
 }

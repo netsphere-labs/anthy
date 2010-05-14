@@ -24,17 +24,17 @@
 
 /* 各種meta_wordをどのように処理するか */
 struct metaword_type_tab_ anthy_metaword_type_tab[] = {
-  {MW_DUMMY,0,MW_STATUS_NONE,MW_CHECK_WL_STR},
-  {MW_SINGLE,0,MW_STATUS_NONE,MW_CHECK_WL_SINGLE},
-  {MW_WRAP,0,MW_STATUS_WRAPPED,MW_CHECK_WL_WRAP},
+  {MW_DUMMY,0,MW_STATUS_NONE,MW_CHECK_SINGLE},
+  {MW_SINGLE,0,MW_STATUS_NONE,MW_CHECK_SINGLE},
+  {MW_WRAP,0,MW_STATUS_WRAPPED,MW_CHECK_WRAP},
   {MW_COMPOUND_HEAD,0,MW_STATUS_NONE,MW_CHECK_COMPOUND},
   {MW_COMPOUND,0,MW_STATUS_NONE,MW_CHECK_NONE},
   {MW_COMPOUND_LEAF,0,MW_STATUS_COMPOUND,MW_CHECK_NONE},
-  {MW_COMPOUND_PART,0,MW_STATUS_COMPOUND_PART,MW_CHECK_WL_STR},
+  {MW_COMPOUND_PART,0,MW_STATUS_COMPOUND_PART,MW_CHECK_SINGLE},
   {MW_NAMEPAIR,0,MW_STATUS_COMBINED,MW_CHECK_PAIR},
   {MW_V_RENYOU_A,100,MW_STATUS_COMBINED,MW_CHECK_BORDER},
   {MW_V_RENYOU_NOUN,100,MW_STATUS_COMBINED,MW_CHECK_BORDER},
-  {MW_NUM_XX,0,MW_STATUS_COMBINED,MW_CHECK_PAIR},
+  {MW_NUMBER,0,MW_STATUS_COMBINED,MW_CHECK_NUMBER},
   {MW_NOUN_NOUN_PREFIX,0,MW_STATUS_COMBINED,MW_CHECK_PAIR},
   {MW_OCHAIRE,0,MW_STATUS_OCHAIRE,MW_CHECK_OCHAIRE},
   /**/
@@ -43,6 +43,8 @@ struct metaword_type_tab_ anthy_metaword_type_tab[] = {
   {MW_END,0,MW_STATUS_NONE,MW_CHECK_NONE}
 };
 
+static void
+combine_metaword(struct splitter_context *sc, struct meta_word *mw);
 
 /* コンテキスト中にmetawordを追加する */
 void
@@ -69,6 +71,10 @@ anthy_do_print_metaword(struct splitter_context *sc,
 	 mw->type, mw->from, mw->len, mw->mw_count, mw->score, mw->seg_class);
   if (mw->wl) {
     anthy_print_word_list(sc, mw->wl);
+  }
+  if (mw->cand_hint.str) {
+    anthy_putxstr(&mw->cand_hint);
+    puts("");
   }
   if (mw->mw1) {
     anthy_do_print_metaword(sc, mw->mw1, indent + 1);
@@ -105,6 +111,10 @@ alloc_metaword(struct splitter_context *sc)
   return mw;
 }
 
+
+/*
+ * wlの接頭辞部分と接尾辞部分を文字列として取り出す
+ */
 static void
 get_surrounding_text(struct splitter_context* sc,
 		     struct word_list* wl,
@@ -119,6 +129,9 @@ get_surrounding_text(struct splitter_context* sc,
     xs_post->len = post_len;
 }
 
+/*
+ * 複合語であるwlからn番めの部分を取り出してmwにする
+ */
 static struct meta_word*
 make_compound_nth_metaword(struct splitter_context* sc, 
 			   compound_ent_t ce, int nth,
@@ -185,7 +198,7 @@ make_compound_metaword(struct splitter_context* sc, struct word_list* wl)
       anthy_commit_meta_word(sc, mw);
 
       type = j == 0 ? MW_COMPOUND_HEAD : MW_COMPOUND;
-      mw2 = anthy_do_combine_metaword(sc, type, mw, mw2);
+      mw2 = anthy_do_cons_metaword(sc, type, mw, mw2, 0);
     }
   }
 }
@@ -212,6 +225,7 @@ make_compound_part_metaword(struct splitter_context* sc, struct word_list* wl)
       for (k = j - 1; k >= 0; --k) {
 	mw2 = make_compound_nth_metaword(sc, ce, k, wl, MW_COMPOUND_PART);
 	mw2->len += mw->len;
+	mw2->score += mw->score;
 	anthy_xstrcat(&mw2->cand_hint, &mw->cand_hint);
 
 	anthy_commit_meta_word(sc, mw2);	
@@ -261,21 +275,42 @@ make_metaword_from_word_list(struct splitter_context *sc)
 }
 
 /*
+ * metawordをリスト風に結合する
+ */
+struct meta_word *
+anthy_do_list_metaword(struct splitter_context *sc,
+		       enum metaword_type type,
+		       struct meta_word *mw, struct meta_word *mw2,
+		       int weak)
+{
+  struct meta_word *wrapped_mw = anthy_do_cons_metaword(sc, type, mw2, NULL, weak);
+  struct meta_word *n = anthy_do_cons_metaword(sc, type, mw, wrapped_mw, weak);
+
+  return n;
+}
+
+/*
  * metawordを実際に結合する
  */
 struct meta_word *
-anthy_do_combine_metaword(struct splitter_context *sc,
-			  enum metaword_type type,
-			  struct meta_word *mw, struct meta_word *mw2)
+anthy_do_cons_metaword(struct splitter_context *sc,
+		       enum metaword_type type,
+		       struct meta_word *mw, struct meta_word *mw2,
+		       int weak)
 {
   struct meta_word *n;
  
   n = alloc_metaword(sc);
   n->from = mw->from;
   n->len = mw->len + (mw2 ? mw2->len : 0);
-  n->weak_len = mw->weak_len + (mw2 ? mw2->weak_len : 0);
+  if (weak) {
+    n->weak_len = mw->weak_len + (mw2 ? mw2->len : 0);
+  } else {
+    n->weak_len = mw->weak_len + (mw2 ? mw2->weak_len : 0);
+  }
+
   if (mw2) {
-    n->score = sqrt(mw->score) * sqrt(mw2->score);    
+    n->score = sqrt(mw->score) * sqrt(mw2->score);
   } else {
     n->score = mw->score;    
   }
@@ -295,7 +330,10 @@ static void
 try_combine_v_renyou_a(struct splitter_context *sc,
 		       struct meta_word *mw, struct meta_word *mw2)
 {
-  wtype_t w2 = mw2->wl->part[PART_CORE].wt;
+  wtype_t w2;
+  if (!mw->wl || !mw2->wl) return;
+
+  w2 = mw2->wl->part[PART_CORE].wt;
 
   if (mw->wl->head_pos == POS_V &&
       mw->wl->tail_ct == CT_RENYOU &&
@@ -303,7 +341,7 @@ try_combine_v_renyou_a(struct splitter_context *sc,
     /* 形容詞ではあるので次のチェック */
     if (anthy_get_seq_ent_wtype_freq(mw2->wl->part[PART_CORE].seq, 
 				     anthy_wtype_a_tail_of_v_renyou)) {
-      anthy_do_combine_metaword(sc, MW_V_RENYOU_A, mw, mw2);
+      anthy_do_list_metaword(sc, MW_V_RENYOU_A, mw, mw2, 0);
     }
   }
 }
@@ -315,12 +353,15 @@ static void
 try_combine_v_renyou_noun(struct splitter_context *sc,
 			  struct meta_word *mw, struct meta_word *mw2)
 {
-  wtype_t w2 = mw2->wl->part[PART_CORE].wt;
+  wtype_t w2;
+  if (!mw->wl || !mw2->wl) return;
+
+  w2 = mw2->wl->part[PART_CORE].wt;
   if (mw->wl->head_pos == POS_V &&
       mw->wl->tail_ct == CT_RENYOU &&
       anthy_wtype_get_pos(w2) == POS_NOUN &&
       anthy_wtype_get_scos(w2) == SCOS_T40) {
-    anthy_do_combine_metaword(sc, MW_V_RENYOU_NOUN, mw, mw2);
+    anthy_do_list_metaword(sc, MW_V_RENYOU_NOUN, mw, mw2, 0);
   }
 }
 
@@ -332,7 +373,10 @@ static void
 try_combine_noun_noun_postfix(struct splitter_context *sc,
 			      struct meta_word *mw, struct meta_word *mw2)
 {
-  wtype_t w1 = mw->wl->part[PART_CORE].wt;
+  wtype_t w1;
+  if (!mw->wl || !mw2->wl) return;
+
+  w1 = mw->wl->part[PART_CORE].wt;
   if (anthy_wtype_get_pos(w1) == POS_NOUN &&
       mw->wl->part[PART_CORE].len > 1 &&
       mw->wl->part[PART_POSTFIX].len == 0 &&
@@ -341,7 +385,7 @@ try_combine_noun_noun_postfix(struct splitter_context *sc,
       anthy_wtype_get_pos(mw2->wl->part[PART_CORE].wt) == POS_N2T &&
       anthy_get_seq_ent_wtype_freq(mw2->wl->part[PART_CORE].seq, 
 				   anthy_wtype_noun_and_postfix)) {
-    anthy_do_combine_metaword(sc, MW_NOUN_NOUN_PREFIX, mw, mw2);
+    anthy_do_list_metaword(sc, MW_NOUN_NOUN_PREFIX, mw, mw2, 1);
   }
 }
 
@@ -353,35 +397,79 @@ try_combine_name(struct splitter_context *sc,
 		 struct meta_word *mw, struct meta_word *mw2)
 {
   int f, f2;
+  if (!mw->wl || !mw2->wl) return;
+
   f = anthy_get_seq_flag(mw->wl->part[PART_CORE].seq);
   f2 = anthy_get_seq_flag(mw2->wl->part[PART_CORE].seq);
 
   if ((f & NF_FAMNAME) && (f2 & NF_FSTNAME)) {
     if (anthy_wtype_get_scos(mw->wl->part[PART_CORE].wt) == SCOS_FAMNAME &&
 	anthy_wtype_get_scos(mw2->wl->part[PART_CORE].wt) == SCOS_FSTNAME) {
-      anthy_do_combine_metaword(sc, MW_NAMEPAIR, mw, mw2);
+      anthy_do_list_metaword(sc, MW_NAMEPAIR, mw, mw2, 0);
     }
   }
 }
 
+/*
+ * 数字を結合する
+ */
 static void
-try_combine_10_1(struct splitter_context *sc,
-		 struct meta_word *mw, struct meta_word *mw2)
+try_combine_number(struct splitter_context *sc,
+		 struct meta_word *mw1, struct meta_word *mw2)
 {
-  int pos1, pos2;
-  pos1 = anthy_wtype_get_pos(mw->wl->part[PART_CORE].wt);
-  pos2 = anthy_wtype_get_pos(mw2->wl->part[PART_CORE].wt);
-  if (pos1 != POS_NUMBER) {
-    return ;
+  struct word_list *wl1 = mw1->wl;
+  struct word_list *wl2 = mw2->wl;
+  struct meta_word *combined_mw;
+  int recursive = wl2 ? 0 : 1; /* combinedなmwを結合する場合1 */
+
+  /* 左mwは数詞 */
+  if (anthy_wtype_get_pos(wl1->part[PART_CORE].wt) != POS_NUMBER) return;  
+  if (recursive) {
+    /* 右mwは数字を結合したmw */
+    if (mw2->type != MW_NUMBER) return;
+    wl2 = mw2->mw1->wl;
+  } else {
+    /* 右mwは数詞 */
+    if (anthy_wtype_get_pos(wl2->part[PART_CORE].wt) != POS_NUMBER) return;    
   }
-  if (pos2 != POS_NUMBER) {
-    return ;
-  }
-  if (anthy_get_seq_ent_wtype_freq(mw->wl->part[PART_CORE].seq,
-				   anthy_wtype_n10) &&
-      anthy_get_seq_ent_wtype_freq(mw2->wl->part[PART_CORE].seq,
-				   anthy_wtype_n1)) {
-    anthy_do_combine_metaword(sc, MW_NUM_XX, mw, mw2);
+
+  /* 左mwの後ろに文字が付いていなければ */
+  if (wl1->part[PART_POSTFIX].len == 0 &&
+      wl1->part[PART_DEPWORD].len == 0) {
+    int scos1 = anthy_wtype_get_scos(wl1->part[PART_CORE].wt);
+    int scos2 = anthy_wtype_get_scos(wl2->part[PART_CORE].wt);
+
+    /* #NNは対象外 */
+    if (scos2 == SCOS_NONE) return;
+    /* 
+       左mwの種類によって、後ろにつくことができる右mwの種類が変わる
+       例えば一〜九の後ろには万〜九万、億〜九億しかつくことができないが、
+       十〜九十の後ろには、あわせて一〜九などもつくことができる
+     */
+    switch (scos1) {
+    case SCOS_N1: 
+      if (scos2 == SCOS_N1) return; /* 後ろに一〜九がついてはいけない */
+    case SCOS_N10:
+      if (scos2 == SCOS_N10) return; /* 後ろに十〜九十がついてはいけない */
+    case SCOS_N100:
+      if (scos2 == SCOS_N100) return; /* 後ろに百〜九百がついてはいけない */
+    case SCOS_N1000:
+      if (scos2 == SCOS_N1000) return; /* 後ろに千〜九千がついてはいけない */
+    case SCOS_N10000:
+      /* 万〜九万、億〜九億…などは、
+	 いつでも後ろにつくことができる */
+      break;
+    default:
+      return;
+    }
+
+    if (recursive) {
+      combined_mw = anthy_do_cons_metaword(sc, MW_NUMBER, mw1, mw2, 0);
+    } else {
+      /* 初めて結合する場合は後ろにnullをつけてlistにする */
+      combined_mw = anthy_do_list_metaword(sc, MW_NUMBER, mw1, mw2, 0);
+    }
+    combine_metaword(sc, combined_mw);
   }
 }
 
@@ -390,46 +478,54 @@ static void
 try_combine_metaword(struct splitter_context *sc,
 		     struct meta_word *mw1, struct meta_word *mw2)
 {
-  /**/
-  if (!mw1->wl || !mw2->wl) {
-    return ;
-  }
+  if (!mw1->wl) return;
+
   /* metawordの結合を行うためには、後続の
      metawordに接頭辞がないことが必要 */
-  if (mw2->wl->part[PART_PREFIX].len == 0) {
-    try_combine_name(sc, mw1, mw2);
-    try_combine_v_renyou_a(sc, mw1, mw2);
-    try_combine_v_renyou_noun(sc, mw1, mw2);
-    try_combine_noun_noun_postfix(sc, mw1, mw2);
-    try_combine_10_1(sc, mw1, mw2);
+  if (mw2->wl && mw2->wl->part[PART_PREFIX].len > 0) {
+    return;
+  }
+  
+  try_combine_name(sc, mw1, mw2);
+  try_combine_v_renyou_a(sc, mw1, mw2);
+  try_combine_v_renyou_noun(sc, mw1, mw2);
+  try_combine_noun_noun_postfix(sc, mw1, mw2);
+  try_combine_number(sc, mw1, mw2);
+}
+
+static void
+combine_metaword(struct splitter_context *sc, struct meta_word *mw)
+{
+  struct meta_word *mw_left;
+  struct word_split_info_cache *info = sc->word_split_info;
+  int i;
+
+  /* 付属語だけの文節とは結合しない */  
+  if (anthy_seg_class_is_depword(mw->seg_class)) return;
+
+  for (i = mw->from - 1; i >= 0; i--) {
+    for (mw_left = info->cnode[i].mw; mw_left; mw_left = mw_left->next) {
+      if (mw_left->from + mw_left->len == mw->from) {
+	/* 結合できるかチェック */
+	try_combine_metaword(sc, mw_left, mw);
+      }
+    }
   }
 }
 
-
 static void
-combine_metaword(struct splitter_context *sc)
+combine_metaword_all(struct splitter_context *sc)
 {
   int i;
 
   struct word_split_info_cache *info = sc->word_split_info;
   /* metawordの左端によるループ */
-  for (i = 0; i < sc->char_count; i++){
-    struct meta_word *mw, *mw2;
+  for (i = sc->char_count - 1; i >= 0; i--){
+    struct meta_word *mw;
     /* 各metawordのループ */
     for (mw = info->cnode[i].mw;
 	 mw; mw = mw->next) {
-      /* metawordが右端に到達していなければ */
-      if (mw->len + i < sc->char_count) {
-	/* そのmetawordの右metawordのやつひとつと */
-	for (mw2 = info->cnode[mw->len+i].mw; 
-	     mw2; mw2 = mw2->next) {
-	  /* 付属語だけの文節とは結合しない */
-	  if (!anthy_seg_class_is_depword(mw2->seg_class)) {
-	    /* 結合できるかチェック */
-	    try_combine_metaword(sc, mw, mw2);
-	  }
-	}
-      }
+      combine_metaword(sc, mw);
     }
   }
 }
@@ -523,9 +619,10 @@ make_ochaire_metaword(struct splitter_context *sc,
   mw->type = MW_OCHAIRE;
   mw->from = from + s;
   mw->len = seg_len;
+  mw->score = OCHAIRE_SCORE;
   xs = anthy_get_nth_xstr((count - 1) * 2 + 2);
-  mw->cand_hint.str = xs->str;
-  mw->cand_hint.len = xs->len;
+  mw->cand_hint.str = malloc(sizeof(xchar)*xs->len);
+  anthy_xstrcpy(&mw->cand_hint, xs);
   anthy_commit_meta_word(sc, mw);
   mw_len += seg_len;
   /* それ以外の文節でmetawordを構成 */
@@ -539,9 +636,10 @@ make_ochaire_metaword(struct splitter_context *sc,
     n->mw1 = mw;
     n->from = from + s;
     n->len = seg_len;
+    n->score = OCHAIRE_SCORE;
     xs = anthy_get_nth_xstr(j * 2 + 2);
-    n->cand_hint.str = xs->str;
-    n->cand_hint.len = xs->len;
+    n->cand_hint.str = malloc(sizeof(xchar)*xs->len);
+    anthy_xstrcpy(&n->cand_hint, xs);
     anthy_commit_meta_word(sc, n);
     mw = n;
     mw_len += seg_len;
@@ -587,21 +685,23 @@ make_metaword_with_depchar(struct splitter_context *sc,
 {
   int j;
   int destroy_seg_class = 0;
+  int from = mw ? mw->from : 0;
+  int len = mw ? mw->len : 0;
 
   /* metawordの直後の文字の種類を調べる */
-  int type = anthy_get_xchar_type(*sc->ce[mw->from + mw->len].c);
+  int type = anthy_get_xchar_type(*sc->ce[from + len].c);
   if (!(type & XCT_SYMBOL) &&
       !(type & XCT_PART)) {
     return;
   }
 
   /* 同じ種類の文字でなければくっつけるのをうちきり */
-  for (j = 0; mw->from + mw->len + j < sc->char_count; j++) {
-    int p = mw->from + mw->len + j;
+  for (j = 0; from + len + j < sc->char_count; j++) {
+    int p = from + len + j;
     if ((anthy_get_xchar_type(*sc->ce[p].c) != type)) {
       break;
     }
-    if (*sc->ce[p].c != *sc->ce[p - 1].c) {
+    if (0 < p && p + 1 < sc->char_count && *sc->ce[p].c != *sc->ce[p + 1].c) {
       destroy_seg_class = 1;
     }
   }
@@ -612,18 +712,24 @@ make_metaword_with_depchar(struct splitter_context *sc,
   if (j > 0) {
     struct meta_word *n;
     n = alloc_metaword(sc);
-    n->type = MW_WRAP;
-    n->mw1 = mw;
-    n->from = mw->from;
-    n->len = mw->len + j;
-    n->weak_len = mw->weak_len + j;
-    n->score = mw->score;
-    n->nr_parts = mw->nr_parts;
-    if (destroy_seg_class) {
-      n->seg_class = SEG_DOKURITSUGO;
-      n->score /= 10;
+    n->from = from;
+    n->len = len + j;
+    if (mw) {
+      n->type = MW_WRAP;
+      n->mw1 = mw;
+      n->score = mw->score;
+      n->nr_parts = mw->nr_parts;
+      n->weak_len = mw->weak_len + j;
+      if (destroy_seg_class) {
+	n->seg_class = SEG_DOKURITSUGO;
+	n->score /= 10;
+      } else {
+	n->seg_class = mw->seg_class;
+      }
     } else {
-      n->seg_class = mw->seg_class;
+      n->type = MW_SINGLE;
+      n->score = 1;
+      n->seg_class = SEG_DOKURITSUGO;
     }
     anthy_commit_meta_word(sc, n);
   }
@@ -643,6 +749,7 @@ make_metaword_with_depchar_all(struct splitter_context *sc)
       make_metaword_with_depchar(sc, mw);
     }
   }
+  make_metaword_with_depchar(sc, NULL);
 }
 
 static int
@@ -693,13 +800,62 @@ bias_to_single_char_metaword(struct splitter_context *sc)
 }
 
 void
+anthy_mark_border_by_metaword(struct splitter_context* sc,
+			      struct meta_word* mw)
+{
+  struct word_split_info_cache* info = sc->word_split_info;
+  if (!mw) return;
+
+  switch (mw->type) {
+  case MW_DUMMY:
+    /* BREAK THROUGH */
+  case MW_SINGLE:
+    /* BREAK THROUGH */
+  case MW_COMPOUND_PART: 
+    info->seg_border[mw->from] = 1;    
+    break;
+  case MW_COMPOUND_LEAF:
+    info->seg_border[mw->from] = 1;    
+    info->best_mw[mw->from] = mw;
+    break;
+  case MW_COMPOUND_HEAD:
+    /* BREAK THROUGH */
+  case MW_COMPOUND:
+    /* BREAK THROUGH */
+  case MW_NAMEPAIR:
+    /* BREAK THROUGH */
+  case MW_NUMBER:
+    info->best_mw[mw->mw1->from] = mw->mw1;
+    anthy_mark_border_by_metaword(sc, mw->mw1);
+    anthy_mark_border_by_metaword(sc, mw->mw2);
+    break;
+  case MW_V_RENYOU_A:
+    /* BREAK THROUGH */
+  case MW_V_RENYOU_NOUN:
+    /* BREAK THROUGH */
+  case MW_NOUN_NOUN_PREFIX:
+    info->seg_border[mw->from] = 1;    
+    break;
+  case MW_WRAP:
+    anthy_mark_border_by_metaword(sc, mw->mw1);
+    break;
+  case MW_OCHAIRE:
+    info->seg_border[mw->from] = 1;
+    anthy_mark_border_by_metaword(sc, mw->mw1);
+    break;
+  default:
+    break;
+  }
+}
+
+void
 anthy_make_metaword_all(struct splitter_context *sc)
 {
   /* まず、word_listいっこのmetawordを作る */
   make_metaword_from_word_list(sc);
 
   /* metawordを結合する */
-  combine_metaword(sc);
+  combine_metaword_all(sc);
 
   /* 拡大された文節を処理する */
   make_expanded_metaword_all(sc);

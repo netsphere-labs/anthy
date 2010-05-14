@@ -3,7 +3,7 @@
  *
  * Funded by IPA未踏ソフトウェア創造事業 2002 1/1
  *
- * Copyright (C) 2000-2004 TABATA Yusuke
+ * Copyright (C) 2000-2005 TABATA Yusuke
  * Copyright (C) 2001-2002 TAKAI Kousuke
  */
 /*
@@ -62,7 +62,6 @@
 static const char *output_fn = DEFAULT_FN;
 
 static const char *progname;
-static const char *ucfile;
 static FILE *yomi_entry_index_out, *yomi_entry_out;
 static FILE *page_out, *page_index_out;
 static FILE *uc_out;
@@ -331,6 +330,19 @@ parse_wtype(char *wtbuf, char *cur)
   return freq;
 }
 
+/* 複合語の要素の長さは 1,2,3, ... 9,a,b,c */
+static int
+get_element_len(xchar xc)
+{
+  if (xc > '0' && xc <= '9') {
+    return xc - '0';
+  }
+  if (xc >= 'a' && xc <= 'z') {
+    return xc - 'a' + 10;
+  }
+  return 0;
+}
+
 /** 複合候補の形式チェック */
 static int
 check_compound_candidate(xstr *index, const char *cur)
@@ -339,7 +351,7 @@ check_compound_candidate(xstr *index, const char *cur)
   int i, total = 0;
   for (i = 0; i < xs->len - 1; i++) {
     if (xs->str[i] == '_') {
-      total += xs->str[i+1] - '0';
+      total += get_element_len(xs->str[i+1]);
     }
   }
   anthy_free_xstr(xs);
@@ -431,12 +443,12 @@ compare_word_entry(const void *p1, const void *p2)
 }
 
 /** いらない単語を消す */
-static void
-normalize_entry(struct yomi_entry *ye)
+static int
+normalize_word_entry(struct yomi_entry *ye)
 {
-  int i;
+  int i, nr_dup = 0;
   if (!ye) {
-    return ;
+    return 0;
   }
   /* 単語を並べる */
   qsort(ye->entries, ye->nr_entries,
@@ -446,12 +458,14 @@ normalize_entry(struct yomi_entry *ye)
   for (i = 0; i < ye->nr_entries; i++) {
     if (check_same_word(ye, i)) {
       ye->entries[i].freq = 0;
+      nr_dup ++;
     }
   }
   /* 再びソート */
   qsort(ye->entries, ye->nr_entries,
 	sizeof(struct word_entry),
 	compare_word_entry);
+  return ye->nr_entries - nr_dup;
 }
 
 /** 一つの読みに対する単語の内容を出力する */
@@ -471,7 +485,7 @@ output_yomi_entry(struct yomi_entry *ye)
     if (!we->freq) {
       continue;
     }
-    if (i) {
+    if (i > 0) {
       /* 二つ目以降は空白から始まる */
       count += fprintf(yomi_entry_out, " ");
     }
@@ -498,8 +512,8 @@ output_yomi_entry(struct yomi_entry *ye)
 
 /*その読みに対応するyomi_entryを返す
 **/
-static struct yomi_entry *
-find_yomi_entry(struct yomi_entry_list *yl, xstr *index)
+struct yomi_entry *
+find_yomi_entry(struct yomi_entry_list *yl, xstr *index, int create)
 {
   struct yomi_entry *ye;
   int hash = index_hash(index);
@@ -510,6 +524,9 @@ find_yomi_entry(struct yomi_entry_list *yl, xstr *index)
     if (!anthy_xstrcmp(ye->index_xstr, index)) {
       return ye;
     }
+  }
+  if (!create) {
+    return NULL;
   }
 
   /* 無いので確保 */
@@ -560,43 +577,143 @@ mk_yomi_hash(FILE *yomi_hash_out, struct yomi_entry_list *yl)
   for (i = 0; i < YOMI_HASH_ARRAY_SIZE; i++) {
     hash_array[i] = 0;
   }
-  for (i = 0; i < yl->nr_entries; i++) {
+  for (i = 0; i < yl->nr_valid_entries; i++) {
     ye = yl->ye_array[i];
     mark_hash_array(hash_array, ye->index_xstr);
   }
   fwrite(hash_array, YOMI_HASH_ARRAY_SIZE, 1, yomi_hash_out);
   printf("generated yomi hash bitmap (%d collisions/%d entries)\n",
-	 yomi_hash_collision, yl->nr_entries);
+	 yomi_hash_collision, yl->nr_valid_entries);
 	 
+}
+
+static struct adjust_command *
+parse_modify_freq_command(const char *buf)
+{
+  char *line = alloca(strlen(buf) + 1);
+  char *yomi, *wt, *word, *type_str;
+  struct adjust_command *cmd;
+  int type = 0;
+  strcpy(line, buf);
+  yomi = strtok(line, " ");
+  wt = strtok(NULL, " ");
+  word = strtok(NULL, " ");
+  type_str = strtok(NULL, " ");
+  if (!yomi || !wt || !word || !type_str) {
+    return NULL;
+  }
+  if (!strcmp(type_str, "up")) {
+    type = ADJUST_FREQ_UP;
+  }
+  if (!strcmp(type_str, "down")) {
+    type = ADJUST_FREQ_DOWN;
+  }
+  if (!strcmp(type_str, "kill")) {
+    type = ADJUST_FREQ_KILL;
+  }
+  if (!type) {
+    return NULL;
+  }
+  cmd = malloc(sizeof(struct adjust_command));
+  cmd->type = type;
+  cmd->yomi = anthy_cstr_to_xstr(yomi, 0);
+  cmd->wt = strdup(wt);
+  cmd->word = strdup(word);
+  return cmd;
+}
+
+static void
+parse_adjust_command(const char *buf, struct adjust_command *ac_list)
+{
+  struct adjust_command *cmd = NULL;
+  if (!strncmp("\\modify_freq ", buf, 13)) {
+    cmd = parse_modify_freq_command(&buf[13]);
+  }
+  if (cmd) {
+    cmd->next = ac_list->next;
+    ac_list->next = cmd;
+  }
 }
 
 /** 辞書を一行ずつ読み込んでリストを作る
  * このコマンドのコア */
 static void
-parse_word_dict(FILE *fin, struct yomi_entry_list *yl)
+parse_dict_file(FILE *fin, struct yomi_entry_list *yl,
+		struct adjust_command *ac_list)
 {
-  xstr *cur;
+  xstr *index_xs;
   char buf[MAX_LINE_LEN];
-  char *ent, *index;
+  char *ent, *index_str;
   struct yomi_entry *ye = NULL;
 
-  while(read_line(fin, buf)) {
-    index = get_index_from_line(buf);
-    if (!index) {
+  /* １行ずつ処理 */
+  while (read_line(fin, buf)) {
+    if (buf[0] == '\\') {
+      parse_adjust_command(buf, ac_list);
+      continue ;
+    }
+    index_str = get_index_from_line(buf);
+    if (!index_str) {
       break;
     }
     ent = get_entry_from_line(buf);
-    cur = anthy_file_dic_str_to_xstr(index);
+    index_xs = anthy_file_dic_str_to_xstr(index_str);
 
     /* 読みが30文字を越える場合は無視 */
-    if (cur->len < 31) {
-      ye = find_yomi_entry(yl, cur);
+    if (index_xs->len < 31) {
+      ye = find_yomi_entry(yl, index_xs, 1);
       push_back_word_entry_line(ye, ent);
     }
 
     free(ent);
-    free(index);
-    anthy_free_xstr(cur);
+    free(index_str);
+    anthy_free_xstr(index_xs);
+  }
+}
+
+static struct word_entry *
+find_word_entry(struct yomi_entry_list *yl, xstr *yomi,
+		char *wt, char *word)
+{
+    struct yomi_entry *ye = find_yomi_entry(yl, yomi, 0);
+    int i;
+    if (!ye) {
+      return NULL;
+    }
+    for (i = 0; i < ye->nr_entries; i++) {
+      struct word_entry *we = &ye->entries[i];
+      if (!strcmp(we->wt, wt) &&
+	  !strcmp(we->word, word)) {
+	return we;
+      }
+    }
+    return NULL;
+}
+		
+/* 頻度調整のコマンドを適用する */
+static void
+apply_adjust_command(struct yomi_entry_list *yl,
+		     struct adjust_command *ac_list)
+{
+  struct adjust_command *cmd;
+  for (cmd = ac_list->next; cmd; cmd = cmd->next) {
+    struct word_entry *we = find_word_entry(yl, cmd->yomi,
+					    cmd->wt, cmd->word);
+    if (!we) {
+      continue;
+    }
+    if (cmd->type == ADJUST_FREQ_UP) {
+      we->freq *= 4;
+    }
+    if (cmd->type == ADJUST_FREQ_DOWN) {
+      we->freq /= 4;
+      if (we->freq == 0) {
+	we->freq = 1;
+      }
+    }
+    if (cmd->type == ADJUST_FREQ_KILL) {
+      we->freq = 0;
+    }
   }
 }
 
@@ -615,13 +732,25 @@ sort_word_dict(struct yomi_entry_list *yl)
 {
   int i;
   struct yomi_entry *ye;
+  yl->nr_valid_entries = 0;
+  /* 単語を持つ読みだけを yl->ye_arrayに詰め直す */
   yl->ye_array = malloc(sizeof(struct yomi_entry *) * yl->nr_entries);
   for (i = 0, ye = yl->head; i < yl->nr_entries; i++, ye = ye->next) {
-    yl->ye_array[i] = ye;
+    if (ye->nr_entries > 0) {
+      yl->ye_array[yl->nr_valid_entries] = ye;
+      yl->nr_valid_entries ++;
+    }
   }
-  qsort(yl->ye_array, yl->nr_entries,
+  /* ソートする */
+  qsort(yl->ye_array, yl->nr_valid_entries,
 	sizeof(struct yomi_entry *),
 	compare_yomi_entry);
+  /**/
+  yl->nr_words = 0;
+  for (i = 0; i < yl->nr_valid_entries; i++) {
+    struct yomi_entry *ye = yl->ye_array[i];
+    yl->nr_words += normalize_word_entry(ye);
+  }
 }
 
 /** 単語辞書を出力する
@@ -639,19 +768,19 @@ output_word_dict(struct yomi_entry_list *yl)
   write_nl(page_index_out, page_index);
 
   /* 各読みに対するループ */
-  for (i = 0; i < yl->nr_entries; i++) {
+  for (i = 0; i < yl->nr_valid_entries; i++) {
     ye = yl->ye_array[i];
     /* 新しいページの開始 */
-    if ((i % WORDS_PER_PAGE) == 0 && i) {
+    if ((i % WORDS_PER_PAGE) == 0 && (i != 0)) {
       page_index ++;
       prev = NULL;
       begin_new_page(page_index);
     }
 
+    /* 読みに対応する情報を出力する */
     page_index += output_diff(prev, ye->index_xstr);
     output_entry_index(entry_index);
     ye->offset = entry_index;
-    normalize_entry(ye);
     entry_index += output_yomi_entry(ye);
     /***/
     prev = ye->index_xstr;
@@ -661,14 +790,17 @@ output_word_dict(struct yomi_entry_list *yl)
   entry_index += output_yomi_entry(ye);
   write_nl(yomi_entry_index_out, entry_index);
   write_nl(page_index_out, 0);
-  printf("Total %d words (%d pages).\n",
-	 yl->nr_entries,
-	 yl->nr_entries / WORDS_PER_PAGE + 1);
+
+  /**/
+  printf("Total %d indexes, %d words, (%d pages).\n",
+	 yl->nr_valid_entries,
+	 yl->nr_words,
+	 yl->nr_valid_entries / WORDS_PER_PAGE + 1);
 }
 
 /** ファイルのサイズを取得する */
 static int
-get_size(FILE *fp)
+get_file_size(FILE *fp)
 {
   if (!fp) {
     return 0;
@@ -721,7 +853,7 @@ generate_header(FILE *fp)
   off = buf[0];
   for (i = 2, fs = file_array; fs->fpp; fs ++, i++) {
     buf[i] = off;
-    off += get_size(*(fs->fpp));
+    off += get_file_size(*(fs->fpp));
   }
 
   /* ファイルへ出力する */
@@ -781,21 +913,16 @@ write_out_versatile_hash(struct versatile_hash *vh)
   free(vh->buf);
 }
 
-int
-main(int argc, char **argv)
+static void
+init(void)
 {
-  struct yomi_entry_list yl;
-  struct versatile_hash vh;
-  struct uc_dict *ud;
-  int i, res;
-
+  int res;
   res = anthy_init_xstr();
   if (res == -1) {
     fprintf (stderr, "failed to init dic lib\n");
     exit(1);
   }
 
-  progname = argv[0];
 #ifdef USE_UCS4
   euc_to_utf8 = iconv_open("UTF-8", "EUC-JP");
   if (euc_to_utf8 == (iconv_t) -1) {
@@ -803,7 +930,77 @@ main(int argc, char **argv)
     exit(1);
   }
 #endif
+}
 
+/* コマンドラインオプションの解釈 */
+#define OPT_NONE 0
+#define OPT_HELP 1
+#define OPT_OUTFN 2
+#define OPT_DICFN 3
+#define OPT_UCFN 4
+
+struct cmd_arg {
+  int type;
+  char *fn;
+  struct cmd_arg *next;
+};
+
+static void
+link_cmd_arg(struct cmd_arg *head, int type, const char *fn)
+{
+  struct cmd_arg *arg = malloc(sizeof(struct cmd_arg));
+  arg->type = type;
+  arg->fn = strdup(fn);
+  arg->next = head->next;
+  head->next = arg;
+}
+
+static void
+parse_args(struct cmd_arg *arg_list, int argc, char **argv)
+{
+  int i;
+  char *cur;
+
+  progname = argv[0];
+
+  arg_list->next = NULL;
+  arg_list->type = OPT_NONE;
+
+  for (i = 1; i < argc; i++) {
+    cur = argv[i];
+    if (!strcmp(cur, "--help")) {
+      arg_list->type = OPT_HELP;
+    }
+    if (i + 1 < argc) {
+      if (!strcmp(cur, "-o")) {
+	link_cmd_arg(arg_list, OPT_OUTFN, argv[i+1]);
+	i++;
+	continue;
+      }
+      if (!strcmp(cur, "-uc")) {
+	link_cmd_arg(arg_list, OPT_UCFN, argv[i+1]);
+	i++;
+	continue;
+      }
+    }
+    link_cmd_arg(arg_list, OPT_DICFN, argv[i]);
+  }
+}
+
+/**/
+int
+main(int argc, char **argv)
+{
+  struct yomi_entry_list yl;
+  struct versatile_hash vh;
+  struct adjust_command ac_list;
+  struct uc_dict *ud;
+  struct cmd_arg arg_list;
+  struct cmd_arg *arg;
+  int i;
+
+  init();
+  parse_args(&arg_list, argc, argv);
 
   /* 単語辞書を作る */
   yl.head = NULL;
@@ -811,31 +1008,30 @@ main(int argc, char **argv)
   for (i = 0; i < YOMI_HASH; i++) {
     yl.hash[i] = NULL;
   }
-  /* 引数で指定されたファイルを読み込む */
-  for (i = 1; i < argc; i++) {
-    FILE *fp;
-    if (!strcmp(argv[i], "--help")) {
-      print_usage();
+  ac_list.next = NULL;
+
+  if (arg_list.type == OPT_HELP) {
+    print_usage();
+  }
+
+  for (arg = arg_list.next; arg; arg = arg->next) {
+    if (arg->type == OPT_OUTFN) {
+      output_fn = arg->fn;
     }
-    if (i + 1 < argc) {
-      if (!strcmp(argv[i], "-o")) {
-	output_fn = argv[i + 1];
-	i++;
-	continue;
-      } else if (!strcmp(argv[i], "-uc")) {
-	ucfile = argv[i + 1];
-	printf("uc = %s\n", ucfile);
-	i++;
-	continue;
+    if (arg->type == OPT_DICFN) {
+      FILE *fp;
+      /* ファイル名が指定されたので読み込む */
+      fp = fopen(arg->fn, "r");
+      if (fp) {
+	printf("file = %s\n", arg->fn);
+	parse_dict_file(fp, &yl, &ac_list);
       }
     }
-    /* ファイル名が指定されたので読み込む */
-    fp = fopen(argv[i], "r");
-    if (fp) {
-      parse_word_dict(fp, &yl);
-    }
   }
-  /* 並び替える */
+
+  apply_adjust_command(&yl, &ac_list);
+
+  /* 読みで並び替える */
   sort_word_dict(&yl);
 
   /* 単語辞書を出力する */
@@ -846,10 +1042,16 @@ main(int argc, char **argv)
   mk_yomi_hash(yomi_hash_out, &yl);
 
   /* 用例を読み込む */
-  ud = read_uc_file(ucfile, yl.head);
+  ud = create_uc_dict(&yl);
+  for (arg = arg_list.next; arg; arg = arg->next) {
+    if (arg->type == OPT_UCFN) {
+      read_uc_file(ud, arg->fn);
+      printf("uc = %s\n", arg->fn);
+    }
+  }
 
   /* 用例辞書を作る */
-  make_ucdic(uc_out, ud);
+  make_ucdict(uc_out, ud);
 
   /* 汎用ハッシュを作る */
   setup_versatile_hash(&vh);

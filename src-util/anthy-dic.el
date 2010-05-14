@@ -36,10 +36,13 @@
 			      anthy-dic-util-command "--append"))
     (if proc
 	(progn
-	  (cond ((coding-system-p 'euc-japan)
-		 (set-process-coding-system proc 'euc-japan 'euc-japan))
-		((coding-system-p '*euc-japan*)
-		 (set-process-coding-system proc '*euc-japan* '*euc-japan*)))
+	  (if anthy-xemacs
+	      (if (coding-system-p (find-coding-system 'euc-japan))
+		  (set-process-coding-system proc 'euc-japan 'euc-japan))
+	    (cond ((coding-system-p 'euc-japan)
+		   (set-process-coding-system proc 'euc-japan 'euc-japan))
+		  ((coding-system-p '*euc-japan*)
+		   (set-process-coding-system proc '*euc-japan* '*euc-japan*))))
 	  (process-send-string proc
 			       (concat yomi " " (int-to-string freq) " " word "\n"))
 	  (process-send-string proc
@@ -64,7 +67,16 @@
     (setq res (cons `("格助詞接続" ,kaku) res))
     res))
 
-(defun anthy-dic-get-special-noun-category (word))
+(defun anthy-dic-get-special-noun-category (word)
+  (let 
+      ((res '())
+       (cat (string-to-int
+	     (read-from-minibuffer "1:人名 2:地名: "))))
+    (cond ((= cat 1)
+	   (setq res '(("品詞" "人名"))))
+	  ((= cat 2)
+	   (setq res '(("品詞" "地名")))))
+    res))
 
 (defun anthy-dic-get-adjective-category (word)
   '(("品詞" "形容詞")))

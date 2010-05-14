@@ -7,9 +7,9 @@
  * 仮名漢字変換エンジンAnthy(アンシー)
  *
  * Funded by IPA未踏ソフトウェア創造事業 2001 9/22
- * Copyright (C) 2000-2004 TABATA Yusuke, UGAWA Tomoharu
- * Copyright (C) 2004 YOSHIDA Yuichi
- * Copyright (C) 2000-2004 KMC(Kyoto University Micro Computer Club)
+ * Copyright (C) 2000-2005 TABATA Yusuke, UGAWA Tomoharu
+ * Copyright (C) 2004-2005 YOSHIDA Yuichi
+ * Copyright (C) 2000-2005 KMC(Kyoto University Micro Computer Club)
  * Copyright (C) 2001-2002 TAKAI Kosuke, Nobuoka Takahiro
  *
  */
@@ -69,7 +69,7 @@ anthy_init(void)
     return 0;
   }
 
-  /* 各コンポーネントを順に初期化する */
+  /* 各サブシステムを順に初期化する */
   if (anthy_init_dic()) {
     anthy_log(0, "Failed to open dictionary.\n");
     return -1;

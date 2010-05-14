@@ -176,7 +176,7 @@ parse_wtype_str(struct wt_stat *ws)
     freq_part ++;
     ws->freq = atoi(freq_part) * FREQ_RATIO;
   } else {
-    ws->freq = 1;
+    ws->freq = FREQ_RATIO - 2;
   }
 
   wt_name = anthy_type_to_wtype(buf, &ws->wt);
@@ -243,7 +243,7 @@ add_compound_ent(struct seq_ent *seq, struct wt_stat *ws)
   strncpy(buf, &ws->line[ws->offset + 1], len - 1);
   buf[len - 1] = 0;
   xs = anthy_cstr_to_xstr(buf, 0);
-  anthy_mem_dic_push_back_compound_ent(seq, xs, ws->wt);
+  anthy_mem_dic_push_back_compound_ent(seq, xs, ws->wt, ws->freq);
 
   ws->offset += len;
 }

@@ -130,20 +130,6 @@ get_nth_segment_len(struct anthy_context *c, int sindex)
   return l;
 }
 
-static void
-push_compound_metaword(struct seg_ent *se, struct meta_word* mw)
-{
-  int i;
-  ++se->nr_metaword;
-  /* metawordを配列に取り込む */
-  se->mw_array = realloc(se->mw_array,
-			 sizeof(struct meta_word*) * se->nr_metaword);
-  for (i = 0; i < se->nr_metaword - 1; i++) {
-    se->mw_array[i + 1] = se->mw_array[i];
-  }
-  se->mw_array[0] = mw;
-}
-
 /** metawordの配列を作る */
 static void
 make_metaword_array(struct anthy_context *ac,
@@ -175,7 +161,7 @@ make_metaword_array(struct anthy_context *ac,
 }
 
 static struct seg_ent*
-create_segment(struct anthy_context *ac, int from, int len)
+create_segment(struct anthy_context *ac, int from, int len, struct meta_word* best_mw)
 {
   struct seg_ent* s;
   s = (struct seg_ent *)malloc(sizeof(struct seg_ent));
@@ -186,6 +172,7 @@ create_segment(struct anthy_context *ac, int from, int len)
   s->nr_cands = 0;
   s->cands = NULL;
   s->best_seg_class = ac->split_info.ce[from].best_seg_class;
+  s->best_mw = best_mw;
   make_metaword_array(ac, s);
   return s;
 }
@@ -220,28 +207,9 @@ create_segment_list(struct anthy_context *ac, int from, int to)
   for (i = from; i < to; i++) {
     if (ac->split_info.ce[i].seg_border) {
       int len = get_nth_segment_len(ac, n);
-      int compound_num = 0;
-      s = create_segment(ac, i, len);
+      s = create_segment(ac, i, len, ac->split_info.ce[i].best_mw);
 
-      /* 
-	 最初の変換の時は、連文節単語を見付けたら単文節に切り出していく
-	 再変換時は何もしない
-       */
-      if (s->mw_array && s->mw_array[0]->type == MW_COMPOUND_HEAD) {
-	struct meta_word* mw = s->mw_array[0];
-	release_segment(s);
-	for (; mw && (mw->type == MW_COMPOUND_HEAD || mw->type == MW_COMPOUND); mw = mw->mw2) {
-	  ac->split_info.ce[mw->mw1->from + mw->mw1->len].seg_border = 1;
-	  s = create_segment(ac, mw->mw1->from, mw->mw1->len);
-	  push_compound_metaword(s, mw->mw1);
-	  push_back_segment(ac, s);
-	  ++compound_num;
-	}
-	n += compound_num - 1;
-	i += len - 1;
-      } else {
-	push_back_segment(ac, s);
-      }
+      push_back_segment(ac, s);
       n++;
     }
   }
@@ -414,6 +382,9 @@ anthy_do_resize_segment(struct anthy_context *ac,
     ac->split_info.ce[i].seg_border = 0;
   }
   ac->split_info.ce[index+len+resize].seg_border = 1;
+  for (i = index; i < ac->str.len; i++) {
+    ac->split_info.ce[i].best_mw = NULL;
+  }
 
   /* 解の候補を作成 */
   make_candidates(ac, index, index+len+resize);

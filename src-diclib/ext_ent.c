@@ -205,12 +205,12 @@ gen_separated_num(long long num, xstr *dest, int full)
     width ++;
   }
   /* 点の数 */
-  dot_count = width / 3;
+  dot_count = (width - 1) / 3;
   /* 格納するのに必要な文字列を用意する */
   dest->len = dot_count + width;
   dest->str = malloc(sizeof(xchar)*dest->len);
 
-  /**/
+  /* 右の桁から順に決めていく */
   for (i = 0, pos = dest->len - 1; i < width; i++, pos --) {
     int n = num % 10;
     /* カンマを追加 */
@@ -223,8 +223,10 @@ gen_separated_num(long long num, xstr *dest, int full)
       pos --;
     }
     if (full) {
+      /* 全角数字 */
       dest->str[pos] = narrow_wide_tab[n];
     } else {
+      /* ASCII数字 */
       dest->str[pos] = 48 + n;
     }
     num /= 10;
@@ -295,18 +297,23 @@ anthy_get_ext_seq_ent_indep(struct seq_ent *se)
   return 0;
 }
 
+/* 活用形を得る */
 int
 anthy_get_ext_seq_ent_ct(struct seq_ent *se, int pos, int ct)
 {
   if (anthy_get_ext_seq_ent_pos(se, pos) && ct == CT_NONE) {
+    /* 品詞が合っていてかつ無活用の場合 
+       (ext_entは活用しない) */
     return 10;
   }
   return 0;
 }
 
+/* 品詞を取得する */
 int
 anthy_get_ext_seq_ent_pos(struct seq_ent *se, int pos)
 {
+  /* ext_entは名詞のみ */
   if (se == &num_ent && pos == POS_NOUN) {
     return 10;
   }
@@ -324,6 +331,7 @@ anthy_get_ext_seq_ent_from_xstr(xstr *x)
 {
   int t = anthy_get_xstr_type(x);
 
+  /* 数字のみで構成されていれば num_ent */
   if (t & (XCT_NUM | XCT_WIDENUM)) {
     return &num_ent;
   }
@@ -361,6 +369,7 @@ anthy_get_ext_seq_ent_wtype(struct seq_ent *se, wtype_t w)
 {
   if (se == &num_ent) {
     if (anthy_wtypecmp(w, wt_num)) {
+      /* 数字の場合 */
       return 10;
     }
     return 0;
@@ -368,6 +377,7 @@ anthy_get_ext_seq_ent_wtype(struct seq_ent *se, wtype_t w)
   if (anthy_wtype_get_pos(w) == POS_NOUN &&
       anthy_wtype_get_cos(w) == COS_NONE &&
       anthy_wtype_get_scos(w) == SCOS_NONE) {
+    /* 名詞、副品詞なし、副々品詞無しにマッチ */
     return 10;
   }
   return 0;

@@ -17,46 +17,22 @@
 #include <splitter.h>
 #include "wordborder.h"
 
-/* 文節境界の制約を充足しない文節を除去する */
-static void
-seg_constraint_check_all(struct splitter_context *sc,
-			 int from, int to,
-			 int border)
-{
-  int i;
-  for (i = from; i < to; i++) {
-    struct word_list *wl;
-    for (wl = sc->word_split_info->cnode[i].wl;
-	 wl; wl = wl->next) {
-      if (i < border && border < i + wl->len) {
-	wl->can_use = ng;
-	continue;
-      } 
-      if (from != border) {
-	if (i == from && i + wl->len != border) {
-	  wl->can_use = ng;
-	  continue;
-	}
-      }
-      wl->can_use = ok;
-    }
-  }
-}
-
 static int
 border_check(struct meta_word* mw,
 		 int from,
 		 int border)
 {
-  if (from != border) {
-    if (mw->from == from && mw->from + mw->len != border) {
+  if (mw->from < border) {
+    /* 先頭の文節の中から始まるmwは文節区切りにぴったりあっていないとダメ */
+    if (mw->from == from && mw->from + mw->len == border) {
+      return 1;
+    } else {
       return 0;
     }
+  } else {
+    /* 後ろの文節は無条件に使用可能 */
+    return 1;
   }
-  if (from < mw->from && mw->from < border && border <= mw->from + mw->len) {
-    return 0;
-  }
-  return 1;
 }
 
 /*
@@ -68,32 +44,12 @@ metaword_constraint_check(struct splitter_context *sc,
 			  int from, 
 			  int border)
 {
-  if (mw->can_use != unchecked) {
-    return ;
-  }
+  if (!mw) return;
+  if (mw->can_use != unchecked) return;
+
   switch(anthy_metaword_type_tab[mw->type].check){
-  case MW_CHECK_WL_STR:
-    if (!mw->wl) {
-      if (border_check(mw, from, border)) {
-	mw->can_use = ok;	
-      } else {
-	mw->can_use = ng;
-      }
-      return;
-    }
-    /* break無し */
-  case MW_CHECK_WL_SINGLE:
-    {
-      if (!mw->wl || mw->wl->can_use == ok) {
-	mw->can_use = ok;
-      } else {
-	mw->can_use = ng;
-      }
-    }
-    break;
-  case MW_CHECK_WL_WRAP:
-    metaword_constraint_check(sc, mw->mw1, from, border);
-    mw->can_use = mw->mw1->can_use;
+  case MW_CHECK_SINGLE:
+    mw->can_use = border_check(mw, from, border) ? ok : ng;
     break;
   case MW_CHECK_BORDER:
     if (mw->mw1->from + mw->mw1->len == border) {
@@ -103,10 +59,36 @@ metaword_constraint_check(struct splitter_context *sc,
     }
     /* break無し */
   case MW_CHECK_PAIR:
+    {
+      struct meta_word* mw1 = mw->mw1;
+      struct meta_word* mw2 = mw->mw2;
+      metaword_constraint_check(sc, mw1, from, border);
+      metaword_constraint_check(sc, mw2, from, border);
+
+      if ((!mw1 || mw1->can_use == ok) && (!mw2 || mw2->can_use == ok)) {
+	mw->can_use = ok;
+      } else {
+	mw->can_use = ng;
+      }
+    }
+    break;
+  case MW_CHECK_WRAP:
     metaword_constraint_check(sc, mw->mw1, from, border);
-    metaword_constraint_check(sc, mw->mw2, from, border);
-    if (mw->mw1->can_use == ok && mw->mw2->can_use == ok) {
+    mw->can_use = mw->mw1->can_use;
+    break;
+  case MW_CHECK_NUMBER:
+    {
+      struct meta_word* itr = mw;
       mw->can_use = ok;
+      
+      /* 個々の文節の一つでも文節区切りをまたがっていれば、この複合語は使えない */
+      for (; itr && itr->type == MW_NUMBER; itr = itr->mw2) {
+	struct meta_word* mw1 = itr->mw1;
+	if (!border_check(mw1, from, border)) {
+	  mw->can_use = ng;
+	  break;
+	}
+      }
     }
     break;
   case MW_CHECK_COMPOUND:
@@ -114,6 +96,7 @@ metaword_constraint_check(struct splitter_context *sc,
       struct meta_word* itr = mw;
       mw->can_use = ok;
       
+      /* 個々の文節の一つでも文節区切りをまたがっていれば、この複合語は使えない */
       for (; itr && (itr->type == MW_COMPOUND_HEAD || itr->type == MW_COMPOUND); itr = itr->mw2) {
 	struct meta_word* mw1 = itr->mw1;
 	if (!border_check(mw1, from, border)) {
@@ -145,7 +128,7 @@ metaword_constraint_check(struct splitter_context *sc,
 }
 
 /*
- * word_listの情報を基にmetawordが使用できるかチェックする
+ * 全てのmetawordについて使用できるかどうかをチェックする
  */
 static void
 metaword_constraint_check_all(struct splitter_context *sc,
@@ -181,7 +164,6 @@ void
 anthy_eval_border(struct splitter_context *sc, int from, int from2, int to)
 {
   /* 文節候補のうち使えるもののみ選択 */
-  seg_constraint_check_all(sc, from, to, from2);
   metaword_constraint_check_all(sc, from, to, from2);
 
   /* extentを評価する */

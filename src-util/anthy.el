@@ -45,6 +45,7 @@
 
 (defvar anthy-default-enable-enum-candidate-p t
   "これを設定すると次候補を数回押した際に候補の一覧から選択するモードになります．")
+
 (defvar anthy-personality ""
   "パーソナリティ")
 
@@ -59,6 +60,7 @@
 (defconst anthy-working-buffer " *anthy*")
 (defvar anthy-agent-process nil
   "anthy-agentのプロセス")
+(defvar anthy-use-hankaku-kana t)
 ;;
 (defvar anthy-agent-command-list '("anthy-agent")
   "anthy-agentのPATH名")
@@ -145,7 +147,9 @@
   '(("hiragana" . " あ")
     ("katakana" . " ア")
     ("alphabet" . " A")
-    ("walphabet" . " Ａ"))
+    ("walphabet" . " Ａ")
+    ("hankaku_kana" . " ｱ")
+    )
   "モード名とモードラインの文字列の対応表")
 
 ;; 最後に割り当てたcontext id
@@ -633,6 +637,13 @@
     (("hankaku_kana" . 17) . "hiragana")
     ))
 
+(defun anthy-find-rkmap-keybind (ch)
+  (let ((res
+	 (assoc (cons anthy-current-rkmap ch) anthy-rkmap-keybind)))
+    (if (and res (string-equal (cdr res) "hankaku_kana"))
+	(if anthy-use-hankaku-kana res nil)
+      res)))
+
 (defun anthy-handle-normal-key (chenc)
   (let* ((repl
 	  (if chenc (anthy-send-recv-command 
@@ -663,11 +674,10 @@
 	       anthy-enum-candidate-list))
     (anthy-insert-select-candidate ch))
    ;; キーマップを変更するコマンドを処理する
-   ((and (assoc (cons anthy-current-rkmap ch) anthy-rkmap-keybind)
+   ((and (anthy-find-rkmap-keybind ch)
 	 (string-equal anthy-preedit ""))
-    (let ((mapname (cdr (assoc (cons anthy-current-rkmap ch)
-			       anthy-rkmap-keybind))))
-      (let ((repl (anthy-send-recv-command 
+    (let ((mapname (cdr (anthy-find-rkmap-keybind ch))))
+      (let ((repl (anthy-send-recv-command
 		   (concat " MAP_SELECT " mapname "\n"))))
 	(if (eq repl 'OK)
 	    (progn

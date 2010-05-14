@@ -14,7 +14,7 @@
 #define VERSATILE_HASH_SIZE (128*1024)
 
 /* 1ページ内にいくつの単語を入れるか */
-#define WORDS_PER_PAGE 128
+#define WORDS_PER_PAGE 256
 
 /** 辞書ファイル 
  * 辞書ライブラリ用

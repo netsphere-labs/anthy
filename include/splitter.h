@@ -24,6 +24,7 @@ struct splitter_context {
     int initial_seg_len;/* 最初の文節分割の際にここから始まった文節が
 			   あればその長さ */
     enum seg_class best_seg_class;
+    struct meta_word* best_mw; /* 一番優先して使いたいmetaword */
   }*ce;
 };
 
@@ -54,8 +55,8 @@ enum metaword_type {
   MW_V_RENYOU_A,
   /* 動詞の連用形 + 名詞 */
   MW_V_RENYOU_NOUN,
-  /* 何十何 */
-  MW_NUM_XX,
+  /* 数字 */
+  MW_NUMBER,
   /**/
   MW_NOUN_NOUN_PREFIX,
   MW_OCHAIRE,
