@@ -251,8 +251,8 @@ get_line(void)
       return ;
     }
   }
-  if (!g_ps.nr_token) {
-    return ;
+  if (g_ps.nr_token < 1) {
+    goto again;
   }
   if (!strcmp(g_ps.tokens[0], "\\include")) {
     proc_include();
@@ -275,11 +275,13 @@ void
 anthy_free_line(void)
 {
   int i;
-  for (i = 0; i < g_ps.nr_token; i++) {
-    free(g_ps.tokens[i]);
+  if (g_ps.tokens) {        /* 不正なメモリアクセスの防止 */
+    for (i = 0; i < g_ps.nr_token; i++) {
+      free(g_ps.tokens[i]);
+    }
+    free(g_ps.tokens);
+    g_ps.tokens = 0;
   }
-  free(g_ps.tokens);
-  g_ps.tokens = 0;
   g_ps.nr_token = 0;
 }
 
@@ -294,6 +296,8 @@ anthy_open_file(const char *fn)
   g_ps.cur_fpp = 0;
   g_ps.fp = g_ps.fp_stack[0];
   g_ps.line_num = 0;
+  g_ps.nr_token = 0;        /* 初期化忘れの修正 */
+  g_ps.tokens = NULL;       /* 初期化忘れの修正 */
   return 0;
 }
 
@@ -303,6 +307,7 @@ anthy_close_file(void)
   if (g_ps.fp != stdin) {
     fclose(g_ps.fp);
   }
+  anthy_free_line();        /* 後始末忘れの防止 */
 }
 
 int

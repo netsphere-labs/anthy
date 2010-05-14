@@ -1,3 +1,71 @@
+2009-02-09  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* configure.ac:
+	bump to 9100h.
+
+2009-02-08  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* src-worddic/dic/util.c
+	updated. [Anthy-dev 3674]
+	* mkworddic/extra.t, alt-cannadic/g_fname.t,
+	  alt-cannadic/gtankan.ctd:
+	fixed. Thanks to Oizumi-san.
+
+2009-02-07  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/compound.t, name.t
+	updated. Thanks to Kato-san and MATSUU-san.
+	[Anthy-dev 3667, 3670]
+	* src-util/anthy-azik.el
+	updated. Thanks to KUNIGA-san.
+	[Anthy-dev 3671]
+
+2009-01-29  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* configure.ac:
+	bump to 9100g.
+
+2009-01-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* alt-cannadic/extra, sample
+	added.
+
+2009-01-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/compound.t, mkworddic/udict:
+	updated. Thanks to Iida-san.
+
+2009-01-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* src-util/input.c, src-worddic/record.c:
+	fixed illegal memory access.Thanks to G-HAL san.
+	[Anthy-dev 3657]
+
+2009-01-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* alt-cannadic/g_fname.t:
+	removed UTF-8 BOMB. Thanks to TANAKA-san [Anthy-dev 3656]
+
+2009-01-23  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* src-diclib/ruleparser.c,
+	  src-diclib/xchar.c,
+	  src-diclib/xstr.c,
+	  src-ordering/candsort.c,
+	  src-ordering/candswap.c,
+	  src-ordering/infosort.c,
+	  src-ordering/relation.c,
+	  src-splitter/compose.c,
+	  src-util/input.c,
+	  src-util/rkmap.h,
+	  src-worddic/ext_ent.c,
+	  src-worddic/record.c,
+	  src-worddic/word_dic.c:
+	too many fixes. Thanks to G-HAL-san [Anthy-dev 3651, 3652]	
+	* mkworddic/compound.t, alt-cannadic/g_fname.t.diff:
+	updated. Thanks to Iida-san.
+
+2008-11-29  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* configure.ac:
+	bump to 9100f.
+
+2008-11-29  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* *
+	applied too many patches. thanks to:
+	Iida-san, Irie-san, Oizumi-san, Tabata-san,
+	G-HAL-san, IWAI-san, TAKADA-san.
+
 2008-01-29  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
 	* configure.ac:
 	bump to 9100e.

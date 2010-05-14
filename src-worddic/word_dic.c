@@ -379,7 +379,9 @@ int
 anthy_get_nth_dic_ent_str(seq_ent_t se, xstr *orig,
 			  int n, xstr *x)
 {
-  if (!se) {
+  if (!se || (n < 0)) { /* INDEPPAIR学習による交換先が見つからなかった時に不正なメモリアクセスをするバグの修正（通称「いちおく」の件） */
+    x->str = NULL;      /* 不正なメモリアクセスやメモリの多重解放をするバグの修正 */
+    x->len = 0;
     return -1;
   }
   if (n >= se->nr_dic_ents) {

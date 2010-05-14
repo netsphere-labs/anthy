@@ -23,7 +23,12 @@ static struct xchar_ent {
   struct xchar_ent *next;/* hash chain */
 } xchar_tab[] =
 {
-  {0x309b, XCT_CLOSE, 0}, /* ” */
+  {0xFF40, XCT_OPEN , 0}, /* ｀, 追加 */
+  {0x2032, XCT_CLOSE, 0}, /* ′, 追加 */
+  {0x2018, XCT_OPEN , 0}, /* ‘, 追加 */
+  {0x2019, XCT_CLOSE, 0}, /* ’, 追加 */
+  {0x201C, XCT_OPEN , 0}, /* “, 追加 */
+  {0x201D, XCT_CLOSE, 0}, /* ”, 文字コードが間違っていると思われるので修正 */
   {0xff08, XCT_OPEN, 0}, /* （　*/
   {0xff09, XCT_CLOSE, 0}, /* ） */
   {0x3014, XCT_OPEN, 0},  /* 〔 */
