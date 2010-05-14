@@ -1,3 +1,48 @@
+2007-09-18  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* configure.ac:
+	bump to 9100c.
+
+2007-09-18  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/dict.args.in:
+	correct path of gtankan.ctd.
+	Thanks to Konosuke Watanabe. [anthy-dev 3568]
+
+2007-09-16  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* configure.ac:
+	bump to 9100b.
+
+2007-09-16  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/dict.args.in:
+	use gtankan.ctd.
+	Thanks to UTUMI Hirosi. [anthy-dev 3559]
+
+2007-09-16  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* alt-cannadic/Makefile.am:
+	removed gtankan-okuri.ctd.
+	*  alt-cannadic/Makefile.in:
+	DITTO.
+	Thanks to UTUMI Hirosi. [anthy-dev 3559]
+
+2007-09-16  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/name.t:
+	updated.
+	Thanks to UTUMI Hirosi. [anthy-dev 3559]
+
+2007-09-16  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/compound.t:
+	updated.
+	Thanks to Jun Oizumi. [anthy-dev 3566]
+
+2007-09-16  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* calctrans/corpus.?.txt:
+	updated.
+	Thanks to Yusuke TABATA.
+
+2007-09-06  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* src-worddic/priv_dic.c:
+	旧い形式で登録された単語がないと未知語を使わない問題の修正
+	Thanks to Yusuke TABATA.
+
 2005-11-01  YOSHIDA Yuichi <oxy@kmc.gr.jp>
 	* ntohl, htonlをラッパで抽象化した
 	Thanks to Etsushi Katoさん [anthy-dev 2587]
