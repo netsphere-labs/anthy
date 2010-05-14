@@ -6,6 +6,7 @@
 #include <dic.h>
 #include <alloc.h>
 #include <segclass.h>
+#include <depgraph.h>
 
 struct splitter_context;
 
@@ -162,7 +163,8 @@ void anthy_scan_node(struct splitter_context *sc,
 int anthy_get_node_id_by_name(const char *name);
 int anthy_init_depword_tab(void);
 void anthy_release_depword_tab(void);
-
+int anthy_get_nr_dep_rule(void);
+void anthy_get_nth_dep_rule(int, struct wordseq_rule *);
 
 /* defined in wordlist.c */
 void anthy_commit_word_list(struct splitter_context *, struct word_list *wl);

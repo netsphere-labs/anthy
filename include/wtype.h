@@ -32,10 +32,11 @@
 #define POS_SUC 12
 #define POS_TANKANJI 13
 #define POS_N2T 14
-#define POS_NUMBER 15
-#define POS_INVAL 16
-#define POS_OPEN 17
-#define POS_CLOSE 18
+#define POS_D2KY 15
+#define POS_NUMBER 16
+#define POS_INVAL 17
+#define POS_OPEN 18
+#define POS_CLOSE 19
 
 /* 活用形 Conjugate Type */
 #define CT_NONE 0
@@ -187,8 +188,11 @@ struct wtype{
 
 typedef struct wtype wtype_t;
 
-/** anthy_wtypecmp(名詞、人名)は真、逆は偽 */
-int anthy_wtypecmp(wtype_t haystack, wtype_t needle);
+/** anthy_wtype_include(名詞、人名)は真、逆は偽 */
+int anthy_wtype_include(wtype_t haystack, wtype_t needle);
+
+/* 二つの品詞が完全に一致するかどうかを見る */
+int anthy_wtype_equal(wtype_t lhs, wtype_t rhs);
 
 void anthy_print_wtype(wtype_t w);
 /* 辞書ファイル中の名前から品詞を得る(関数名が悪い) */

@@ -29,7 +29,7 @@ struct metaword_type_tab_ anthy_metaword_type_tab[] = {
   {MW_WRAP,"wrap",0,MW_STATUS_WRAPPED,MW_CHECK_WRAP},
   {MW_COMPOUND_HEAD,"compound_head",0,MW_STATUS_NONE,MW_CHECK_COMPOUND},
   {MW_COMPOUND,"compound",0,MW_STATUS_NONE,MW_CHECK_NONE},
-  {MW_COMPOUND_LEAF,"compound_lead",0,MW_STATUS_COMPOUND,MW_CHECK_NONE},
+  {MW_COMPOUND_LEAF,"compound_leaf",0,MW_STATUS_COMPOUND,MW_CHECK_NONE},
   {MW_COMPOUND_PART,"compound_part",0,MW_STATUS_COMPOUND_PART,MW_CHECK_SINGLE},
   {MW_NAMEPAIR,"namepair",0,MW_STATUS_COMBINED,MW_CHECK_PAIR},
   {MW_V_RENYOU_A,"v_renyou_a",100,MW_STATUS_COMBINED,MW_CHECK_BORDER},
@@ -71,10 +71,10 @@ anthy_do_print_metaword(struct splitter_context *sc,
   for (i = 0; i < indent; i++) {
     printf(" ");
   }
-  printf("*meta word type=%s(%d-%d)%d:score=%d:seg_class=%d:can_use=%d*\n",
+  printf("*meta word type=%s(%d-%d)%d:score=%d:seg_class=%s:can_use=%d*\n",
 	 anthy_metaword_type_tab[mw->type].name,
-	 mw->from, mw->len, mw->mw_count, mw->score, mw->seg_class,
-	 mw->can_use);
+	 mw->from, mw->len, mw->mw_count, mw->score,
+	 anthy_seg_class_name(mw->seg_class), mw->can_use);
   if (mw->wl) {
     anthy_print_word_list(sc, mw->wl);
   }
@@ -343,7 +343,7 @@ try_combine_v_renyou_a(struct splitter_context *sc,
 
   if (mw->wl->head_pos == POS_V &&
       mw->wl->tail_ct == CT_RENYOU &&
-      anthy_wtype_get_pos(w2) == POS_A) {
+      anthy_wtype_get_pos(w2) == POS_D2KY) {
     /* 形容詞ではあるので次のチェック */
     if (anthy_get_seq_ent_wtype_freq(mw2->wl->part[PART_CORE].seq, 
 				     anthy_wtype_a_tail_of_v_renyou)) {
@@ -429,6 +429,7 @@ try_combine_number(struct splitter_context *sc,
   int recursive = wl2 ? 0 : 1; /* combinedなmwを結合する場合1 */
 
   /* 左mwは数詞 */
+
   if (anthy_wtype_get_pos(wl1->part[PART_CORE].wt) != POS_NUMBER) return;  
   if (recursive) {
     /* 右mwは数字を結合したmw */
@@ -438,7 +439,6 @@ try_combine_number(struct splitter_context *sc,
     /* 右mwは数詞 */
     if (anthy_wtype_get_pos(wl2->part[PART_CORE].wt) != POS_NUMBER) return;    
   }
-
   /* 左mwの後ろに文字が付いていなければ */
   if (wl1->part[PART_POSTFIX].len == 0 &&
       wl1->part[PART_DEPWORD].len == 0) {

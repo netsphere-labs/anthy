@@ -58,5 +58,6 @@ enum seg_class {
 };
 
 int anthy_seg_class_is_depword(enum seg_class sc);
+const char* anthy_seg_class_name(enum seg_class sc);
 
 #endif

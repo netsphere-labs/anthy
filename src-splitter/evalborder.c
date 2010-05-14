@@ -52,19 +52,26 @@ metaword_constraint_check(struct splitter_context *sc,
     mw->can_use = border_check(mw, from, border) ? ok : ng;
     break;
   case MW_CHECK_BORDER:
-    if (mw->mw1->from + mw->mw1->len == border) {
-      /* ちょうど境目にマークが入ってる */
-      mw->can_use = ng;
-      break;
+    {
+      struct meta_word* mw1 = mw->mw1;
+      struct meta_word* mw2 = mw->mw2;
+
+      if (mw1&&mw2&&mw1->from + mw1->len == border) {
+	/* ちょうど境目にマークが入ってる */
+	mw->can_use = ng;
+	break;
+      }
     }
     /* break無し */
   case MW_CHECK_PAIR:
     {
       struct meta_word* mw1 = mw->mw1;
       struct meta_word* mw2 = mw->mw2;
-      metaword_constraint_check(sc, mw1, from, border);
-      metaword_constraint_check(sc, mw2, from, border);
-
+      if (mw1)
+	metaword_constraint_check(sc, mw1, from, mw1->from + mw1->len);
+      if (mw2)
+	metaword_constraint_check(sc, mw2, mw2->from, border);
+      
       if ((!mw1 || mw1->can_use == ok) && (!mw2 || mw2->can_use == ok)) {
 	mw->can_use = ok;
       } else {

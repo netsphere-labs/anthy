@@ -302,7 +302,7 @@ anthy_init_splitter(void)
     return -1;
   }
   /**/
-  anthy_init_wtype_by_name("名詞", &anthy_wtype_noun);
+  anthy_init_wtype_by_name("名詞35", &anthy_wtype_noun);
   anthy_init_wtype_by_name("人名", &anthy_wtype_name_noun);
   anthy_init_wtype_by_name("数詞", &anthy_wtype_num_noun);
   anthy_init_wtype_by_name("形容詞化接尾語", &anthy_wtype_a_tail_of_v_renyou);

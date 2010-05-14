@@ -1,10 +1,6 @@
 /*
  * 文節の最小単位であるwordlistを構成する
  *
- * init_word_seq_tab()
- *   付属語テーブル中のノードへのポインタの初期化
- * release_word_seq_tab()
- *   付属語テーブルの解放
  * anthy_make_word_list_all() 
  * 文節の形式を満たす部分文字列を列挙する
  *  いくかの経路で列挙されたword_listは
@@ -22,6 +18,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <netinet/in.h>
 
 #include <alloc.h>
 #include <record.h>
@@ -36,20 +33,6 @@
 int anthy_score_per_freq = 55;
 int anthy_score_per_depword = 950;
 int anthy_score_per_len = 2;
-
-static allocator wordseq_rule_ator;
-
-/** 自立語の品詞とその後に続く付属語のグラフ中のノードの対応 */
-struct wordseq_rule {
-  wtype_t wt; /* 自立語の品詞 */
-  int ratio; /* 候補のスコアに対する倍率 */
-  const char *wt_name; /* 品詞名(デバッグ用) */
-  int node_id; /* この自立語の後ろに続く付属語グラフ中のノードのid */
-  struct wordseq_rule *next;
-};
-
-/* 単語接続ルール */
-static struct wordseq_rule *gRules;
 
 /* デバッグ用 */
 void
@@ -86,7 +69,7 @@ anthy_print_word_list(struct splitter_context *sc,
   if (wl->core_wt_name) {
     wn = wl->core_wt_name;
   }
-  printf(" %s %d %d %d\n", wn, wl->score, wl->part[PART_DEPWORD].ratio, wl->seg_class);
+  printf(" %s %d %d %s\n", wn, wl->score, wl->part[PART_DEPWORD].ratio, anthy_seg_class_name(wl->seg_class));
 }
 
 /** word_listを評価する */
@@ -135,14 +118,14 @@ word_list_same(struct word_list *wl1, struct word_list *wl2)
       wl1->score != wl2->score ||
       wl1->from != wl2->from ||
       wl1->len != wl2->len ||
-      anthy_wtype_get_pos(wl1->part[PART_CORE].wt) != anthy_wtype_get_pos(wl2->part[PART_CORE].wt) ||
+      !anthy_wtype_equal(wl1->part[PART_CORE].wt, wl2->part[PART_CORE].wt) ||
       wl1->head_pos != wl2->head_pos) {
     return 0;
   }
   if (wl1->part[PART_DEPWORD].dc != wl2->part[PART_DEPWORD].dc) {
     return 0;
-   }
-   return 1;
+  }
+  return 1;
  }
 
 
@@ -172,6 +155,7 @@ anthy_commit_word_list(struct splitter_context *sc,
   /* wordlistのリストに追加 */
   wl->next = sc->word_split_info->cnode[wl->from].wl;
   sc->word_split_info->cnode[wl->from].wl = wl;
+
   /* デバッグプリント */
   if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_WL) {
     anthy_print_word_list(sc, wl);
@@ -197,21 +181,24 @@ make_following_word_list(struct splitter_context *sc,
   xs.len = sc->char_count - tmpl->from - tmpl->len;
   tmpl->part[PART_DEPWORD].from =
     tmpl->part[PART_POSTFIX].from + tmpl->part[PART_POSTFIX].len;
-  
+
   if (tmpl->node_id >= 0) {
     /* 普通のword_list */
     anthy_scan_node(sc, tmpl, &xs, tmpl->node_id);
   } else {
     /* 自立語がないword_list */
-    struct wordseq_rule *r;
+    struct wordseq_rule rule;
     struct word_list new_tmpl;
+    int i;
+    int nr_rule = anthy_get_nr_dep_rule();
     new_tmpl = *tmpl;
-    /* 名詞の後に続くルールに対して */
-    for (r = gRules; r; r = r->next) {
-      if (anthy_wtype_get_pos(r->wt) == POS_NOUN) {
-	new_tmpl.part[PART_CORE].wt = r->wt;
-	new_tmpl.core_wt_name = r->wt_name;
-	new_tmpl.node_id = r->node_id;
+    /* 名詞35の後に続くルールに対して */
+    for (i = 0; i < nr_rule; ++i) {
+      anthy_get_nth_dep_rule(i, &rule);
+      if (anthy_wtype_get_pos(rule.wt) == POS_NOUN
+	  && anthy_wtype_get_scos(rule.wt) == SCOS_T35) {
+	new_tmpl.part[PART_CORE].wt = rule.wt;
+	new_tmpl.node_id = rule.node_id;
 	new_tmpl.head_pos = anthy_wtype_get_pos(new_tmpl.part[PART_CORE].wt);
 	anthy_scan_node(sc, &new_tmpl, &xs, new_tmpl.node_id);
       }
@@ -246,10 +233,10 @@ make_suc_words(struct splitter_context *sc,
   
 
   /* まず、接尾辞が付く自立語かチェックする */
-  if (anthy_wtypecmp(anthy_wtype_num_noun, core_wt)) {
+  if (anthy_wtype_include(anthy_wtype_num_noun, core_wt)) {
     core_is_num = 1;
   }
-  if (anthy_wtypecmp(anthy_wtype_name_noun, core_wt)) {
+  if (anthy_wtype_include(anthy_wtype_name_noun, core_wt)) {
     core_is_name = 1;
   }
   if (anthy_wtype_get_sv(core_wt)) {
@@ -317,7 +304,7 @@ make_pre_words(struct splitter_context *sc,
   int i;
   wtype_t core_wt = tmpl->part[PART_CORE].wt;
   /* 自立語は数詞か？ */
-  if (!anthy_wtypecmp(anthy_wtype_num_noun, core_wt)) {
+  if (!anthy_wtype_include(anthy_wtype_num_noun, core_wt)) {
     return ;
   }
   /* 接頭辞を列挙する */
@@ -386,19 +373,22 @@ make_word_list(struct splitter_context *sc,
 	       int is_compound)
 {
   struct word_list tmpl;
-  struct wordseq_rule *r;
+  struct wordseq_rule rule;
+  int nr_rule = anthy_get_nr_dep_rule();
+  int i;
 
   /* テンプレートの初期化 */
   setup_word_list(&tmpl, from, len, is_compound);
   tmpl.part[PART_CORE].seq = se;
 
   /* 各ルールにマッチするか比較 */
-  for (r = gRules; r; r = r->next) {
+  for (i = 0; i < nr_rule; ++i) {
     int freq;
+    anthy_get_nth_dep_rule(i, &rule);
     if (!is_compound) {
-      freq = anthy_get_seq_ent_wtype_freq(se, r->wt);
+      freq = anthy_get_seq_ent_wtype_freq(se, rule.wt);
     } else {
-      freq = anthy_get_seq_ent_wtype_compound_freq(se, r->wt);
+      freq = anthy_get_seq_ent_wtype_compound_freq(se, rule.wt);
     }
     if (freq) {
       /* 自立語の品詞はそのルールにあっている */
@@ -408,22 +398,23 @@ make_word_list(struct splitter_context *sc,
 	xs.str = sc->ce[tmpl.part[PART_CORE].from].c;
 	xs.len = tmpl.part[PART_CORE].len;
 	anthy_putxstr(&xs);
-	printf(" name=%s freq=%d node_id=%d\n", r->wt_name, freq, r->node_id);
+	printf(" freq=%d node_id=%d\n",
+	       freq, rule.node_id);
       }
       /* 遷移したルールの情報を転記する */
-      tmpl.part[PART_CORE].wt = r->wt;
-      tmpl.part[PART_CORE].ratio = r->ratio;
+      tmpl.part[PART_CORE].wt = rule.wt;
+      tmpl.part[PART_CORE].ratio = rule.ratio;
       tmpl.part[PART_CORE].freq = freq;
-      tmpl.core_wt_name = r->wt_name;
-      tmpl.node_id = r->node_id;
+      tmpl.node_id = rule.node_id;
       tmpl.head_pos = anthy_wtype_get_pos(tmpl.part[PART_CORE].wt);
+
       /**/
       tmpl.part[PART_POSTFIX].from =
 	tmpl.part[PART_CORE].from +
 	tmpl.part[PART_CORE].len;
       /**/
-      if (anthy_wtype_get_pos(r->wt) == POS_NOUN ||
-	  anthy_wtype_get_pos(r->wt) == POS_NUMBER) {
+      if (anthy_wtype_get_pos(rule.wt) == POS_NOUN ||
+	  anthy_wtype_get_pos(rule.wt) == POS_NUMBER) {
 	/* 接頭辞、接尾辞は名詞、数詞にしか付かないことにしている */
 	make_pre_words(sc, &tmpl);
 	make_suc_words(sc, &tmpl);
@@ -441,6 +432,7 @@ make_dummy_head(struct splitter_context *sc)
   setup_word_list(&tmpl, 0, 0, 0);
   tmpl.part[PART_CORE].seq = 0;
   tmpl.part[PART_CORE].wt = anthy_wtype_noun;
+
   tmpl.score = 0;
   tmpl.head_pos = anthy_wtype_get_pos(tmpl.part[PART_CORE].wt);
   make_suc_words(sc, &tmpl);
@@ -539,13 +531,12 @@ anthy_make_word_list_all(struct splitter_context *sc)
     /* 自立語の無いword_list */
   for (i = 0; i < sc->char_count; i++) {
     struct word_list tmpl;
+    setup_word_list(&tmpl, i, 0, 0);
     if (i == 0) {
-      setup_word_list(&tmpl, i, 0, 0);
       make_following_word_list(sc, &tmpl);
     } else {
       int type = anthy_get_xchar_type(*sc->ce[i - 1].c);
       if (type & XCT_CLOSE || type & XCT_SYMBOL) {
-	setup_word_list(&tmpl, i, 0, 0);
 	make_following_word_list(sc, &tmpl);
       }
     }
@@ -557,70 +548,10 @@ anthy_make_word_list_all(struct splitter_context *sc)
   anthy_free_allocator(de_ator);
 }
 
-static void
-parse_line(char **tokens, int nr)
-{
-  struct wordseq_rule *r;
-  int tmp;
-  if (nr < 2) {
-    printf("Syntex error in indepword defs"
-	   " :%d.\n", anthy_get_line_number());
-    return ;
-  }
-  /* 行の先頭には品詞の名前が入っている */
-  r = anthy_smalloc(wordseq_rule_ator);
-  r->wt_name = anthy_name_intern(tokens[0]);
-  anthy_init_wtype_by_name(tokens[0], &r->wt);
-
-  /* 比率 */
-  tmp = atoi(tokens[1]);
-  if (tmp == 0) {
-    tmp = 1;
-  }
-  r->ratio = RATIO_BASE - tmp*(RATIO_BASE/64);
-
-  /* その次にはノード名が入っている */
-  r->node_id = anthy_get_node_id_by_name(tokens[2]);
-
-  /* ルールを追加 */
-  r->next = gRules;
-  gRules = r;
-}
-
-/** 付属語グラフを読み込む */
-static int 
-init_word_seq_tab(void)
-{
-  const char *fn;
-  char **tokens;
-  int nr;
-
-  wordseq_rule_ator = anthy_create_allocator(sizeof(struct wordseq_rule),
-					     NULL);
-
-  fn = anthy_conf_get_str("INDEPWORD");
-  if (!fn){
-    printf("independent word dict unspecified.\n");
-    return -1;
-  }
-  if (anthy_open_file(fn) == -1) {
-    printf("Failed to open indep word dict (%s).\n", fn);
-    return -1;
-  }
-  /* ファイルを一行ずつ読む */
-  gRules = NULL;
-  while (!anthy_read_line(&tokens, &nr)) {
-    parse_line(tokens, nr);
-    anthy_free_line();
-  }
-  anthy_close_file();
-
-  return 0;
-}
 
 
 int
 anthy_init_wordlist(void)
 {
-  return init_word_seq_tab();
+  return 0;
 }

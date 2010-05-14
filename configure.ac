@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src-main/main.c)
 
-AM_INIT_AUTOMAKE(anthy, 6700)
+AM_INIT_AUTOMAKE(anthy, 6724)
 AM_CONFIG_HEADER(config.h)
 
 dnl Checks for programs.
@@ -54,7 +54,5 @@ if test "$result/$with_cannadic" = "not found/."; then
 fi
 CANNADIC_SRCDIR=$with_cannadic
 AC_SUBST(CANNADIC_SRCDIR)dnl
-SRCDIR=$srcdir
-AC_SUBST(SRCDIR)
 
-AC_OUTPUT(Makefile src-diclib/Makefile src-splitter/Makefile src-ordering/Makefile src-main/Makefile src-util/Makefile include/Makefile depgraph/Makefile mkanthydic/Makefile cannadic/Makefile test/Makefile test/test.sh doc/Makefile anthy-conf anthy-test-conf anthy.spec anthy.pc)
+AC_OUTPUT(Makefile src-diclib/Makefile src-splitter/Makefile src-ordering/Makefile src-main/Makefile src-util/Makefile include/Makefile depgraph/Makefile mkanthydic/Makefile mkanthydic/dict.args cannadic/Makefile test/Makefile test/test.sh doc/Makefile anthy-conf anthy-test-conf anthy.spec anthy.pc)

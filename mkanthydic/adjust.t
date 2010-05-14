@@ -92,3 +92,4 @@
 \modify_freq おもしろみ #T35 おもしろみ down
 \modify_freq さんぱつ #T30 散髪 up
 \modify_freq こうし #T35 講師 up
+\modify_freq もの #N2T35 物 kill

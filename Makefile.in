@@ -145,7 +145,6 @@ PATH_SEPARATOR = @PATH_SEPARATOR@
 RANLIB = @RANLIB@
 SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
-SRCDIR = src-diclib src-splitter src-ordering src-main src-util
 STRIP = @STRIP@
 VERSION = @VERSION@
 ac_ct_AR = @ac_ct_AR@
@@ -194,6 +193,7 @@ sysconfdir = @sysconfdir@
 target_alias = @target_alias@
 AUTOMAKE_OPTIONS = dejagnu
 EXTRA_DIST = README.en DIARY anthy-conf.in anthy-test-conf.in anthy.spec.in anthy.pc.in Doxyfile
+SRCDIR = src-diclib src-splitter src-ordering src-main src-util
 SUBDIRS = $(SRCDIR) include depgraph mkanthydic doc test cannadic
 sysconf_DATA = anthy-conf
 pkgconfigdir = $(libdir)/pkgconfig
@@ -469,7 +469,7 @@ distclean-DEJAGNU:
 distdir: $(DISTFILES)
 	$(am__remove_distdir)
 	mkdir $(distdir)
-	$(mkdir_p) $(distdir)/. $(distdir)/test
+	$(mkdir_p) $(distdir)/. $(distdir)/mkanthydic $(distdir)/test
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \

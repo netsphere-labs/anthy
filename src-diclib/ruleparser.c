@@ -52,8 +52,9 @@ open_file_in_confdir(const char *fn)
     return stdin;
   }
 
-  if (fn[0] == '/') {
-    /* 絶対パスなのでそのままfopen */
+  if (fn[0] == '/' ||
+      (fn[0] == '.' && fn[1] == '/')) {
+    /* 絶対パスもしくはカレントディレクトリなのでそのままfopen */
     return fopen(fn, "r");
   }
 

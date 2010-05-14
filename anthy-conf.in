@@ -3,5 +3,6 @@ ANTHYDIR @prefix@/share/anthy/
 DIC_FILE @prefix@/share/anthy/anthy.dic
 INDEPWORD indepword.txt
 DEPWORD master.depword
+DEPGRAPH @prefix@/share/anthy/anthy.dep
 #ZIPDICT_EUC /var/lib/canna/dic/canna/zipcode.ctd
 WORDS_FILE /usr/share/dict/words
