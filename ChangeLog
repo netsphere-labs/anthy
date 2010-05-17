@@ -1,5 +1,10 @@
 2010-05-17  NIIBE Yutaka  <gniibe@fsij.org>
 
+    	* src-worddic/dic_util.c (do_search,anthy_dic_search_words_file):
+    	  Removed.
+    	* anthy/dicutil.h, doc/DICLIB: Follow the change.
+    	* anthy-test-conf.in, anthy-conf.in: Removed WORDS_FILE.
+
 	* Makefile.am, configure.ac, autogen.sh: Use m4 subdirectory.
 
 	* autogen.sh: New file.

@@ -100,8 +100,12 @@ YOSHIDA Yuichi: wrote
 
 NIIBE Yutaka: wrote
 	src-util/egg.c
+	doc/protocol.txt
     modified
 	src-diclib/alloc.c
+	src-worddic/dic_util.c
+	anthy/dicutil.h
+	doc/DICLIB
 
 HANAOKA Toshiyuki: wrote
 	calctrans/calctrans.c
