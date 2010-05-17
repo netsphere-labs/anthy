@@ -1,4 +1,6 @@
 AUTOMAKE_OPTIONS =
+ACLOCAL_AMFLAGS='-I m4'
+
 EXTRA_DIST = README.en DIARY anthy-conf.in anthy-test-conf.in anthy.spec.in anthy.pc.in Doxyfile
 
 SRCDIR = src-diclib src-worddic src-splitter src-ordering src-main src-util

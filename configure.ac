@@ -3,6 +3,7 @@ AC_INIT(src-main/main.c)
 
 AM_INIT_AUTOMAKE(anthy, 9100h)
 AM_CONFIG_HEADER(config.h)
+AC_CONFIG_MACRO_DIR([m4])
 
 dnl Checks for programs.
 AC_PROG_CC
