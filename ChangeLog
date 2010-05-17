@@ -1,5 +1,9 @@
 2010-05-17  NIIBE Yutaka  <gniibe@fsij.org>
 
+    	* src-worddic/ext_ent.c (MAX_LINE_LEN): New.
+    	(parse_zipcode_line, search_zipcode_dict): Use it.
+    	See [Anthy-dev 3706].  Thanks to G-HAL.
+
     	* mkworddic/extra.t: Fix entry for "Abunai Hashi".
     	* mkworddic/extra.t, mkworddic/compound.t: Fix double spaces.
 	See [Anthy-dev 3701].  Thanks to G-HAL.
