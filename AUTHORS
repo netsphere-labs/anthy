@@ -125,4 +125,9 @@ Yukihiro Matsumoto: wrote
 Norio Suzuki: modified
 	src-util/anthy.el
 
+G-HAL: modified
+	src-worddic/ext_ent.c
+	mkworddic/compound.t
+	mkworddic/extra.t
+
 Files under alt-cannadic/ are works of alt-cannadic project.
