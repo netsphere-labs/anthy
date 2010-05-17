@@ -103,6 +103,8 @@ NIIBE Yutaka: wrote
 	doc/protocol.txt
     modified
 	src-diclib/alloc.c
+	src-splitter/lattice.c
+	src-worddic/ext_ent.c
 	src-worddic/dic_util.c
 	anthy/dicutil.h
 	doc/DICLIB
@@ -126,6 +128,7 @@ Norio Suzuki: modified
 	src-util/anthy.el
 
 G-HAL: modified
+	src-splitter/lattice.c
 	src-worddic/ext_ent.c
 	mkworddic/compound.t
 	mkworddic/extra.t
