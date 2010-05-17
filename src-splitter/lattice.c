@@ -295,7 +295,6 @@ cmp_node(struct lattice_node *lhs, struct lattice_node *rhs)
 {
   struct lattice_node *lhs_before = lhs;
   struct lattice_node *rhs_before = rhs;
-  int ret;
 
   if (lhs && !rhs) return 1;
   if (!lhs && rhs) return -1;
@@ -311,9 +310,9 @@ cmp_node(struct lattice_node *lhs, struct lattice_node *rhs)
 	return -1;
 
       /* Give negative preference to COMPOUND_PART */
-      if (lhs->mw->type != COMPOUND_PART && rhs->mw->type == COMPOUND_PART)
+      if (lhs->mw->type != MW_COMPOUND_PART && rhs->mw->type == MW_COMPOUND_PART)
 	return 1;
-      else if (lhs->mw->type == MW_COMPOUND_PART && rhs->mw->type != COMPOUND_PART)
+      else if (lhs->mw->type == MW_COMPOUND_PART && rhs->mw->type != MW_COMPOUND_PART)
 	return -1;
     } else {
       break;
