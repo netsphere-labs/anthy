@@ -1,5 +1,7 @@
 2010-05-17  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* mkworddic/Makefile.am (DIC_FILES): Added utf8.t.
+
     	* src-worddic/ext_ent.c (MAX_LINE_LEN): New.
     	(parse_zipcode_line, search_zipcode_dict): Use it.
     	See [Anthy-dev 3706].  Thanks to G-HAL.

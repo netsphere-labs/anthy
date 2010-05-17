@@ -22,6 +22,7 @@ DIC_FILES = @top_srcdir@/alt-cannadic/gcanna.ctd \
 	    @top_srcdir@/mkworddic/adjust.t \
 	    @top_srcdir@/mkworddic/compound.t \
 	    @top_srcdir@/mkworddic/extra.t \
+	    @top_srcdir@/mkworddic/utf8.t \
 	    @top_srcdir@/alt-cannadic/g_fname.t \
 	    @top_srcdir@/mkworddic/udict
 
