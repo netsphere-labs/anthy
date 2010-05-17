@@ -1,5 +1,9 @@
 2010-05-17  NIIBE Yutaka  <gniibe@fsij.org>
 
+    	* mkworddic/compound.t: Modified words for "TYUI KYU".
+    	See [Anthy-dev 3697], parts of proposal integrated.
+    	Thanks to G-HAL.
+
     	* src-splitter/lattice.c (cmp_node_by_type): Removed.
     	(cmp_node_by_type_to_type): Removed.
     	(cmp_node): Handle the case of lhs->mw->type == MW_COMPOUND_PART,
