@@ -1,5 +1,10 @@
 2010-05-17  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* doc/DIARY: Moved this historical file from top directory.
+
+	* AUTHORS: New.
+	* THANKS: Moved old AUTHORS to this file.
+
 	* Remove all generated files from repository.
 	Makefile.in, aclocal.m4, config.guess, config.sub, configure, compile,
 	depcomp, install-sh, ltmain.sh, missing, elisp-comp, mkinstalldirs,
@@ -12,7 +17,7 @@
 	* alt-cannadic/Makefile.orig: Removed.
 
 	* ChangeLog: New.
-	* ChangeLog.2009: Move old ChangeLog to this file.
+	* ChangeLog.2009: Moved old ChangeLog to this file.
 
 	* New development starts.
 	  See ChangeLog.2009 for old development.
