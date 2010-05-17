@@ -1,13 +1,16 @@
 2010-05-17  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* autogen.sh: New file.
+
 	* doc/DIARY: Moved this historical file from top directory.
 
 	* AUTHORS: New.
 	* THANKS: Moved old AUTHORS to this file.
 
 	* Remove all generated files from repository.
-	Makefile.in, aclocal.m4, config.guess, config.sub, configure, compile,
-	depcomp, install-sh, ltmain.sh, missing, elisp-comp, mkinstalldirs,
+	Makefile.in, aclocal.m4, config.h.in, config.guess, config.sub,
+	configure, compile, depcomp, install-sh, ltmain.sh, missing,
+	elisp-comp, mkinstalldirs, alt-cannadic/Makefile.in,
 	anthy/Makefile.in, calctrans/Makefile.in, depgraph/Makefile.in,
 	doc/Makefile.in, mkanthydic/Makefile.in, mkworddic/Makefile.in,
 	src-diclib/Makefile.in, src-main/Makefile.in, src-ordering/Makefile.in,
