@@ -1,5 +1,9 @@
 2010-05-17  NIIBE Yutaka  <gniibe@fsij.org>
 
+    	* mkworddic/extra.t: Fix entry for "Abunai Hashi".
+    	* mkworddic/extra.t, mkworddic/compound.t: Fix double spaces.
+	See [Anthy-dev 3701].  Thanks to G-HAL.
+
     	* mkworddic/compound.t: Modified words for "TYUI KYU".
     	See [Anthy-dev 3697], parts of proposal integrated.
     	Thanks to G-HAL.
