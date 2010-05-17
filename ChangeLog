@@ -1,5 +1,7 @@
 2010-05-17  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* Makefile.am, configure.ac, autogen.sh: Use m4 subdirectory.
+
 	* autogen.sh: New file.
 
 	* doc/DIARY: Moved this historical file from top directory.
