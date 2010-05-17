@@ -1,5 +1,11 @@
 2010-05-17  NIIBE Yutaka  <gniibe@fsij.org>
 
+    	* src-splitter/lattice.c (cmp_node_by_type): Removed.
+    	(cmp_node_by_type_to_type): Removed.
+    	(cmp_node): Handle the case of lhs->mw->type == MW_COMPOUND_PART,
+    	but rhs->mw->type != MW_COMPOUND_HEAD nor MW_COMPOUND_PART.
+    	See [Anthy-dev 3703].  Thanks to G-HAL.
+
     	* src-worddic/dic_util.c (do_search,anthy_dic_search_words_file):
     	  Removed.
     	* anthy/dicutil.h, doc/DICLIB: Follow the change.
