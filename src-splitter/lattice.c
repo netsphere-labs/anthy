@@ -282,32 +282,6 @@ release_lattice_info(struct lattice_info* info)
   free(info);
 }
 
-static int
-cmp_node_by_type(struct lattice_node *lhs, struct lattice_node *rhs,
-		 enum metaword_type type)
-{
-  if (lhs->mw->type == type && rhs->mw->type != type) {
-    return 1;
-  } else if (lhs->mw->type != type && rhs->mw->type == type) {
-    return -1;
-  } else {
-    return 0;
-  }
-}
-
-static int
-cmp_node_by_type_to_type(struct lattice_node *lhs, struct lattice_node *rhs,
-			 enum metaword_type type1, enum metaword_type type2)
-{
-  if (lhs->mw->type == type1 && rhs->mw->type == type2) {
-    return 1;
-  } else if (lhs->mw->type == type2 && rhs->mw->type == type1) {
-    return -1;
-  } else {
-    return 0;
-  } 
-}
-
 /*
  * ノードを比較する
  *
@@ -321,7 +295,6 @@ cmp_node(struct lattice_node *lhs, struct lattice_node *rhs)
 {
   struct lattice_node *lhs_before = lhs;
   struct lattice_node *rhs_before = rhs;
-  int ret;
 
   if (lhs && !rhs) return 1;
   if (!lhs && rhs) return -1;
@@ -330,13 +303,17 @@ cmp_node(struct lattice_node *lhs, struct lattice_node *rhs)
   while (lhs_before && rhs_before) {
     if (lhs_before->mw && rhs_before->mw &&
 	lhs_before->mw->from + lhs_before->mw->len == rhs_before->mw->from + rhs_before->mw->len) {
-      /* 学習から作られたノードかどうかを見る */
-      ret = cmp_node_by_type(lhs_before, rhs_before, MW_OCHAIRE);
-      if (ret != 0) return ret;
+      /* Give preference to OCHAIRE */
+      if (lhs->mw->type == MW_OCHAIRE && rhs->mw->type != MW_OCHAIRE)
+	return 1;
+      else if (lhs->mw->type != MW_OCHAIRE && rhs->mw->type == MW_OCHAIRE)
+	return -1;
 
-      /* COMPOUND_PARTよりはCOMPOUND_HEADを優先 */
-      ret = cmp_node_by_type_to_type(lhs_before, rhs_before, MW_COMPOUND_HEAD, MW_COMPOUND_PART);
-      if (ret != 0) return ret;
+      /* Give negative preference to COMPOUND_PART */
+      if (lhs->mw->type != MW_COMPOUND_PART && rhs->mw->type == MW_COMPOUND_PART)
+	return 1;
+      else if (lhs->mw->type == MW_COMPOUND_PART && rhs->mw->type != MW_COMPOUND_PART)
+	return -1;
     } else {
       break;
     }

@@ -11,8 +11,6 @@
  * Copyright (C) 2004-2006 YOSHIDA Yuichi
  * Copyright (C) 2000-2003 UGAWA Tomoharu
  *
- * $Id: wordlist.c,v 1.50 2002/11/17 14:45:47 yusuke Exp $
- *
  */
 
 #include <stdlib.h>
