@@ -1,5 +1,7 @@
 2010-05-18  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* COPYING: New file, GNU GPL 3, as LGPL3 refers it.
+
 	* INSTALL, THANKS, NEWS: New.
 
 	* README.2007.ja: Follow the change of paths.  Fixed some
