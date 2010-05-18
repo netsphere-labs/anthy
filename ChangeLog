@@ -1,5 +1,11 @@
 2010-05-18  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* mkworddic/mkdic.c (mk_yomi_hash): Free hash_array.
+	Closes: sf.jp ticket #20964.  Thanks to syama.
+
+	* src-util/anthy.el (anthy-accept-timeout): Support Emacs 23 or
+	later too.  Closes: sf.jp ticket #11263.  Thanks to Kasuga.
+
 	* src-util/Makefile.am (ELCFILES): Removed.
 	* src-util/anthy.el (anthy-erase-preedit): Use mapc instead of mapcar.
 	(anthy-buffer-undo-list): New deflocalvar.

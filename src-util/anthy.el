@@ -56,7 +56,7 @@
  "変換時の文節の区切りに使われる文字列")
 
 (defvar anthy-accept-timeout 50)
-(if (string-match "^22\." emacs-version)
+(if (string-match "^2[23456789]\." emacs-version)
     (setq anthy-accept-timeout 1))
 
 (defconst anthy-working-buffer " *anthy*")

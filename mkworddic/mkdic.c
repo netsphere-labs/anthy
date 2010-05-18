@@ -574,7 +574,7 @@ mk_yomi_hash(FILE *yomi_hash_out, struct yomi_entry_list *yl)
   fwrite(hash_array, YOMI_HASH_ARRAY_SIZE, 1, yomi_hash_out);
   printf("generated yomi hash bitmap (%d collisions/%d entries)\n",
 	 yomi_hash_collision, yl->nr_valid_entries);
-	 
+  free (hash_array);
 }
 
 static struct adjust_command *

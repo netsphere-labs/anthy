@@ -112,6 +112,7 @@ NIIBE Yutaka: wrote
 	src-util/anthy-azik.el
 	src-util/anthy-conf.el
 	src-util/anthy-kyuri.el
+	mkworddic/mkdic.c
 
 HANAOKA Toshiyuki: wrote
 	calctrans/calctrans.c
