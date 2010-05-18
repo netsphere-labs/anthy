@@ -1,7 +1,11 @@
 2010-05-18  NIIBE Yutaka  <gniibe@fsij.org>
 
 	* configure.ac: Version 9200.
+
 	* Makefile.am (ACLOCAL_AMFLAGS): Unquoted.
+	(EXTRA_DIST): Removed README.en, DIARY.
+	Added COPYING.LIB2_1 README.2007.ja THANKS.2007.ja NEWS.2007.ja
+	INSTALL.2006.ja ChangeLog.2001-2009.
 	* anthy-conf.in: Added datarootdir.
 	* calctrans/corpus_info: Updated.
 	* calctrans/weak_words: Updated.
