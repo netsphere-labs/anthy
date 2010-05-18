@@ -1,6 +1,5 @@
 /*
  * ログの出力
- * $Id: logger.c,v 1.8 2002/05/14 13:24:47 yusuke Exp $
  */
 #include <stdio.h>
 #include <stdarg.h>

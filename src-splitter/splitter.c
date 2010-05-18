@@ -14,7 +14,6 @@
  * Copyright (C) 2000-2004 TABATA Yusuke
  * Copyright (C) 2000-2001 UGAWA Tomoharu
  *
- * $Id: splitter.c,v 1.48 2002/11/18 11:39:18 yusuke Exp $
  */
 /*
   This library is free software; you can redistribute it and/or

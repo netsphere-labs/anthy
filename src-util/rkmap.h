@@ -1,7 +1,6 @@
 /*
  * roma kana converter rule structure
  *
- * $Id: rkmap.h,v 1.6 2002/11/05 15:38:58 yusuke Exp $
  */
 
 static const struct rk_rule rk_rule_alphabet[] = 

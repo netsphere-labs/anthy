@@ -1,5 +1,16 @@
 2010-05-18  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* ChangeLog, mkworddic/Makefile.am, src-diclib/alloc.c,
+	src-diclib/logger.c, src-main/Makefile.am, src-main/context.c,
+	src-ordering/candsort.c, src-splitter/Makefile.am,
+	src-splitter/compose.c, src-splitter/splitter.c,
+	src-splitter/wordlist.c, src-util/Makefile.am, src-util/input.c,
+	src-util/rkconv.c, src-util/rkmap.h, src-worddic/Makefile.am:
+	Removed Id keyword of RCS/CVS.
+
+	* mkworddic/base.t, mkworddic/name.t, mkworddic/tankanji.t: Removed.
+	* mkworddic/Makefile.am (EXTRA_DICS): Follow the removal.
+
 	* COPYING: New file, GNU GPL 3, as LGPL3 refers it.
 
 	* INSTALL, THANKS, NEWS: New.

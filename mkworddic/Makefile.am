@@ -1,8 +1,6 @@
-## $Id: Makefile.am,v 1.10 2002/11/05 15:38:58 yusuke Exp $
-
 # Files
 noinst_SCRIPTS =
-EXTRA_DICS = base.t extra.t compound.t name.t adjust.t utf8.t tankanji.t
+EXTRA_DICS = extra.t compound.t adjust.t utf8.t
 ZIPCODE_DICT = zipcode.t
 CANNADIC_DIST = gcanna.ctd gcannaf.ctd
 INCLUDES = -I$(top_srcdir)/

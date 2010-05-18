@@ -2,8 +2,6 @@
  * 構造体アロケータ
  * Funded by IPA未踏ソフトウェア創造事業 2001 8/15
  *
- * $Id: alloc.c,v 1.12 2002/05/15 11:21:10 yusuke Exp $
- *
  * Copyright (C) 2005 YOSHIDA Yuichi
  * Copyright (C) 2000-2005 TABATA Yusuke, UGAWA Tomoharu
  * Copyright (C) 2002, 2005 NIIBE Yutaka
