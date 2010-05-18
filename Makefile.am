@@ -1,5 +1,5 @@
 AUTOMAKE_OPTIONS =
-ACLOCAL_AMFLAGS='-I m4'
+ACLOCAL_AMFLAGS=-I m4
 
 EXTRA_DIST = README.en DIARY anthy-conf.in anthy-test-conf.in anthy.spec.in anthy.pc.in Doxyfile
 

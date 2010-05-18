@@ -136,4 +136,5 @@ G-HAL: modified
 	mkworddic/compound.t
 	mkworddic/extra.t
 
-Files under alt-cannadic/ are works of alt-cannadic project.
+All files under alt-cannadic/ and dictionary files under mkworddic/
+are works of alt-cannadic project.

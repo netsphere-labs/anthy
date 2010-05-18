@@ -2,15 +2,17 @@ Anthy NEWS - User visible changes
 
 * Major changes in Anthy 9200
 
-  Released ????, by ???? ????
+  Released 2010-05-??, by NIIBE Yutaka
 
-** Package are more GNU-ish now.
+** Package are more GNU-ish now, and non-Japanese can read documentation.
 
 ** Clarify that Anthy is now distributed under the GNU Lesser General
    Public License version 3 or later (LGPLv3+).
 
-** It gives preference to combined word such as "Jikengo",
-   "Suiminbusoku", "Kensakushori", and "Nihongohenkan".
+** On conversion, it gives preference to combined words such as "Jiken-go",
+   "Suimin-busoku", "Kensaku-shori", and "Nihongo-henkan".
+
+** anthy.el on Emacs23 works faster (closes: sf.jp ticket #11263).
 
 Local Variables:
 mode: outline

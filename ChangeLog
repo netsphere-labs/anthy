@@ -1,5 +1,13 @@
 2010-05-18  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* configure.ac: Version 9200.
+	* Makefile.am (ACLOCAL_AMFLAGS): Unquoted.
+	* anthy-conf.in: Added datarootdir.
+	* calctrans/corpus_info: Updated.
+	* calctrans/weak_words: Updated.
+
+	* calctrans/calctrans.c: Fix typo in comment.
+
 	* mkworddic/mkdic.c (mk_yomi_hash): Free hash_array.
 	Closes: sf.jp ticket #20964.  Thanks to syama.
 

@@ -1,5 +1,6 @@
 #
 prefix @prefix@
+datarootdir @datarootdir@
 datadir @datadir@
 ANTHYDIR @datadir@/anthy/
 DIC_FILE @datadir@/anthy/anthy.dic
