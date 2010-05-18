@@ -4,8 +4,6 @@
  * 理解するためには，構文解析について書かれたテキストで
  * SLR(1)について調べるよろし．
  *
- * $Id: rkconv.c,v 1.16 2002/11/16 03:35:21 yusuke Exp $
- *
  * Copyright (C) 2001-2002 UGAWA Tomoharu
  *
  */

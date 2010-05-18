@@ -14,7 +14,6 @@
  * Copyright (C) 2004-2005 YOSHIDA Yuichi
  * Copyright (C) 2002 UGAWA Tomoharu
  *
- * $Id: compose.c,v 1.25 2005/08/19 04:20:25 oxy Exp $
  */
 /*
   This library is free software; you can redistribute it and/or

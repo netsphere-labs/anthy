@@ -1,5 +1,3 @@
-## $Id: Makefile.am,v 1.10 2002/08/08 07:20:45 gniibe Exp $
-
 SUBDIRS =
 
 # Files
@@ -8,7 +6,6 @@ ELISP_FILES = anthy.el anthy-dic.el anthy-conf.el leim-list.el \
  anthy-isearch.el anthy-azik.el anthy-kyuri.el
 EXTRA_DIST = $(ELISP_FILES) typetab dic-tool-usage.txt anthy.i
 bin_PROGRAMS = anthy-dic-tool anthy-agent anthy-morphological-analyzer
-ELCFILES = anthy.elc anthy-dic.elc anthy-azik.elc anthy-conf.elc anthy-isearch.elc anthy-kyuri.elc leim-list.elc
 if ELISP
 lisp_LISP = $(ELISP_FILES)
 endif

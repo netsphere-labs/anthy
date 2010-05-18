@@ -56,7 +56,7 @@
  "変換時の文節の区切りに使われる文字列")
 
 (defvar anthy-accept-timeout 50)
-(if (string-match "^22\." emacs-version)
+(if (string-match "^2[23456789]\." emacs-version)
     (setq anthy-accept-timeout 1))
 
 (defconst anthy-working-buffer " *anthy*")
@@ -160,12 +160,11 @@
 (defvar anthy-last-context-id 1)
 
 ;; From skk-macs.el From viper-util.el.  Welcome!
-(defmacro anthy-deflocalvar (var default-value &optional documentation)
-  (` (progn
-       (defvar (, var) (, default-value)
-	 (, (format "%s\n\(buffer local\)" documentation)))
-       (make-variable-buffer-local '(, var))
-       )))
+(defmacro anthy-deflocalvar (var default-value &rest documentation)
+  `(progn
+     (defvar ,var ,default-value ,@documentation)
+     (make-variable-buffer-local ',var))
+  )
 
 ;; buffer local variables
 (anthy-deflocalvar anthy-context-id nil "コンテキストのid")
@@ -194,6 +193,7 @@
 ; 入力状態
 (anthy-deflocalvar anthy-current-rkmap "hiragana")
 ; undo
+(anthy-deflocalvar anthy-buffer-undo-list nil)
 (anthy-deflocalvar anthy-buffer-undo-list-saved nil)
 
 ;;
@@ -243,7 +243,7 @@
 	(delete-region start (+ start len))
 	(goto-char start)))
   (setq anthy-preedit "")
-  (mapcar 'delete-overlay anthy-preedit-overlays)
+  (mapc 'delete-overlay anthy-preedit-overlays)
   (setq anthy-preedit-overlays nil))
 
 (defun anthy-select-face-by-attr (attr)

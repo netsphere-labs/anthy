@@ -62,11 +62,20 @@ pushback_place_name(struct zipcode_line *zl, char *pn)
   zl->nr++;
 }
 
+/*
+ * This comment is written by NIIBE Yutaka -- 2010-05-17
+ * 
+ * XXX: The implementation of search_zipcode_dict is quite bad.
+ * XXX: Every call of search_zipcode_dict opens/parse the file, amazing...
+ *
+ */
+#define MAX_LINE_LEN 2048	/* XXX: Please kill this limit too */
+
 /* 郵便番号辞書をパースしてスペース区切りを検出する */
 static void
 parse_zipcode_line(struct zipcode_line *zl, char *ln)
 {
-  char buf[1000];
+  char buf[MAX_LINE_LEN];
   int i = 0;
   while (*ln) {
     buf[i] = *ln;
@@ -95,7 +104,7 @@ static void
 search_zipcode_dict(struct zipcode_line *zl, xstr* xs)
 {
   FILE *fp;
-  char buf[1000];
+  char buf[MAX_LINE_LEN];
   int len;
   xstr *temp;
   char *index;
@@ -113,7 +122,7 @@ search_zipcode_dict(struct zipcode_line *zl, xstr* xs)
   len = strlen(index);
 
   /* 全部grepする */
-  while (fgets(buf, 1000, fp)) {
+  while (fgets(buf, MAX_LINE_LEN, fp)) {
     /* 3文字の郵便番号が7文字の郵便番号の頭にマッチしないように */
     if (!strncmp(buf, index, len) && buf[len] == ' ') {
       /* 改行を消す */
