@@ -53,13 +53,13 @@ cannadicをメンテナンスされているすぎもと氏に感謝します。
 
 README		このファイル
 INSTALL		インストールのやりかた
-DIARY		開発日記(?)
 COPYING		本ソフトウェアの再配布や改変の条件について書いてあります
 AUTHORS		開発者や協力者のみなさまです
 ChangeLog	重要な変更があれば書きます
 NEWS		ユーザにわかるニュースがあれば書いていきます
 alt-cannadic/	alt-cannadicの配布物を同梱しています
 doc/		ドキュメント類
+doc/DIARY	開発日記(?)
 calctrans/      文節クラスの接続行列を計算するコード
 depgraph/	付属語グラフ
 anthy/		各モジュールで共有されるヘッダや
