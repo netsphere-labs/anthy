@@ -1,0 +1,80 @@
+Anthy -- Japanese Kana-Kanji Conversion Engine Library
+							-*- text -*-
+
+What's Anthy?
+=============
+
+Anthy is a library for Japanese Kana-Kanji conversion, targeted for
+Japanese text input.
+
+See following page for Anthy development:
+	http://wiki.debian.org/Teams/DebianAnthy
+	http://git.debian.org/?p=collab-maint/anthy.git;a=summary
+
+
+What's New?
+===========
+
+See the file NEWS for information on new features and other
+user-visible changes in recent versions of Anthy.
+
+
+Installation
+============
+
+The file INSTALL says how to build and install Anhty on your system.
+
+
+Licensing
+=========
+
+Anthy library is released under the terms of the GNU Lesser General
+Public Licence 3 (or later), i.e., LGPLv3+.  See the file COPYING.LIB
+and COPYING for detail.
+
+Since most of source files are released under the terms of LGPLv2 (or
+later), you might use parts of code under LGPLv2.  See COPYING.LIB2_1
+for detail.
+
+Dictionary files under alt-cannadic/ and mkworddic/ are taken from
+"Alternative Cannadic" Project (alt-cannadic), which is released under
+the terms of GPLv2.  See alt-cannadic/COPYING for detail.
+
+For more licensing information in general, see
+<http://www.gnu.org/licenses/gpl-faq.html>
+
+
+History
+=======
+
+Anthy project was hosted at SourceForge.JP.
+
+	http://anthy.sourceforge.jp/
+	http://anthy.sourceforge.jp/cgi-bin/hiki/hiki.cgi
+
+Since February 2009, development at there stopped, and requests to join
+mailing list has been ignored.
+
+In May 2010, NIIBE Yutaka <gniibe@fsij.org> arranged Git repository at
+alioth.debian.org, put some of released versions of Anthy and Debian
+packaging code into the repository, and took over the development
+lead.
+
+
+Authors & Credits
+=================
+
+See AUTHORS and THANKS.
+
+-- 
+This file is part of Anthy.
+
+Anthy is free software: you can redistribute it and/or modify it under
+the terms of the GNU Lesser General Public License as published by the
+Free Software Foundation, either version 3 of the License, or (at your
+option) any later version.
+
+Anthy is distributed in the hope that it will be useful, but WITHOUT
+ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+for more details.
