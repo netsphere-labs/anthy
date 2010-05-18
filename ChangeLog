@@ -1,5 +1,16 @@
 2010-05-18  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* src-util/Makefile.am (ELCFILES): Removed.
+	* src-util/anthy.el (anthy-erase-preedit): Use mapc instead of mapcar.
+	(anthy-buffer-undo-list): New deflocalvar.
+	(anthy-deflocalvar): New implementation killing old-style quasi-quote.
+	* src-util/anthy-kyuri.el (anthy-kyuri): Use mapc instead of mapcar.
+	(anthy-kyuri-mode-hiragana-map): Define	as defvar.
+	* src-util/anthy-conf.el (anthy-load-hiragana-map)
+	(anthy-kana-map-mode): Use mapc instead of mapcar.
+	* src-util/anthy-azik.el: Require anthy.
+	(anthy-azik-mode): Use mapc instead of mapcar.
+
 	* ChangeLog, mkworddic/Makefile.am, src-diclib/alloc.c,
 	src-diclib/logger.c, src-main/Makefile.am, src-main/context.c,
 	src-ordering/candsort.c, src-splitter/Makefile.am,

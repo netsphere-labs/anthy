@@ -108,6 +108,10 @@ NIIBE Yutaka: wrote
 	src-worddic/dic_util.c
 	anthy/dicutil.h
 	doc/DICLIB
+	src-util/anthy.el
+	src-util/anthy-azik.el
+	src-util/anthy-conf.el
+	src-util/anthy-kyuri.el
 
 HANAOKA Toshiyuki: wrote
 	calctrans/calctrans.c
@@ -128,8 +132,6 @@ Norio Suzuki: modified
 	src-util/anthy.el
 
 G-HAL: modified
-	src-splitter/lattice.c
-	src-worddic/ext_ent.c
 	mkworddic/compound.t
 	mkworddic/extra.t
 
