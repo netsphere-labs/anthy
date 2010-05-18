@@ -2,7 +2,7 @@ AUTOMAKE_OPTIONS =
 ACLOCAL_AMFLAGS=-I m4
 
 EXTRA_DIST = COPYING.LIB2_1 \
-	README.2007.ja THANKS.2007.ja NEWS.2007.ja INSTALL.2006.ja 
+	README.2007.ja THANKS.2007.ja NEWS.2007.ja INSTALL.2006.ja \
 	ChangeLog.2001-2009 \
 	anthy-conf.in anthy-test-conf.in anthy.spec.in anthy.pc.in Doxyfile
 

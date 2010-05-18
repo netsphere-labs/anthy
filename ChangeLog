@@ -2,6 +2,7 @@
 
 	* configure.ac: Version 9200.
 
+	* Makefile.am (EXTRA_DIST): Added missing \.
 	* alt-cannadic/Makefile.am (EXTRA_DIST): Removed Makefile.orig.
 	* doc/Makefile.am (EXTRA_DIST): Added DIARY.
 	* Makefile.am (ACLOCAL_AMFLAGS): Unquoted.
