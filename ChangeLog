@@ -1,3 +1,23 @@
+2010-05-18  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* INSTALL, THANKS, NEWS: New.
+
+	* README.2007.ja: Follow the change of paths.  Fixed some
+	information.
+
+	* COPYING.LIB: New file, GNU LGPL 3.
+	* COPYING.LIB2_1: New file, GNU LGPL 2.1.
+
+	* COPYING: Removed.
+	* README: New file, Incorporating text header of COPYING.
+
+	* THANKS.2007.ja: Moved from THANKS.
+	* NEWS.2007.ja: Moved from NEWS.
+	* INSTALL.2006.ja: Moved from INSTALL.
+	* README.2007.ja: Moved from README.
+
+	* ChangeLog.2001-2009: Moved from ChangeLog.2009
+
 2010-05-17  NIIBE Yutaka  <gniibe@fsij.org>
 
 	* mkworddic/Makefile.am (DIC_FILES): Added utf8.t.

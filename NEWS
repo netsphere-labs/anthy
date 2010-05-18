@@ -1,0 +1,17 @@
+Anthy NEWS - User visible changes
+
+* Major changes in Anthy 9200
+
+  Released ????, by ???? ????
+
+** Package are more GNU-ish now.
+
+** Clarify that Anthy is now distributed under the GNU Lesser General
+   Public License version 3 or later (LGPLv3+).
+
+** It gives preference to combined word such as "Jikengo",
+   "Suiminbusoku", "Kensakushori", and "Nihongohenkan".
+
+Local Variables:
+mode: outline
+End:

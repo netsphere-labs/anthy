@@ -1,0 +1,27 @@
+Build and Installation of Anthy
+							-*- text -*-
+
+From source tar ball
+--------------------
+
+As with other packages, you just have to do
+
+  $ .configure
+  $ make
+  $ make install
+
+(Before doing install you might need to become root.)
+
+
+
+From Git repository
+-------------------
+
+Libtool, Automake, Autoconf are required.
+
+  $ ./autogen.sh
+  $ .configure
+  $ make
+  $ make install
+
+-- 
