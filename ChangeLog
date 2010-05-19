@@ -1,5 +1,8 @@
 2010-05-19  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* mkanthydic/Makefile.am (anthy.dic): Added dependency on
+	../calctrans/anthy.weak_words.
+
 	* mkworddic/compound.t: Incorporated fixes by Masanari Iida.
 	See [Anthy-dev 3708].
 

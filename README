@@ -25,6 +25,45 @@ Installation
 The file INSTALL says how to build and install Anhty on your system.
 
 
+Anthy Dictionary (anthy.dic)
+============================
+
+Here is a figure to explain how Anthy Dictionary (anthy.dic) is
+generated.
+
+   depgraph/*.depword
+   depgraph/conjugate.table
+    ---[depgraph/mkdepgraph]---> anthy.dep (1)
+
+   mkworddic/{extra.t,compound.t,adjust.t,utf8.t,udict},
+   alt-cannadic/{gcanna.ctd,gcannf.ctd,gtankan.ctd,g_fname.t}
+    ---[mkworddic/mkworddic]---> anthy.wdic (2)
+
+   "initial anthy.dic"
+   calctrans/corpus.?.txt
+    ---[calctrans/{proccorpus,calctrans}]---> corpus_info (3-1)
+    					      weak_words  (3-2)
+
+      calctrans/{corpus_info,weak_words} (3-1,3-2)
+       ---[calctrans/calctrans]---> anthy.cand_info (3)
+       				    anthy.trans_info (4)
+				    anthy.corpus_array (5)
+				    anthy.corpus_bucket (6)
+      				    anthy.weak_words (7)
+
+         (1) depgraph/anthy.dep
+         (2) mkworddic/anthy.wdic
+         (3) calctrans/anthy.cand_info
+         (4) calctrans/anthy.trans_info
+         (5) calctrans/anthy.corpus_array
+         (6) calctrans/anthy.corpus_bucket
+         (7) calctrans/anthy.weak_words
+          ---[mkanthydic/mkfiledic]--->anthy.dic
+
+Note that we need "initial anthy.dic" to generate anthy.dic,
+that's because proccorpus uses Anthy Dictionary.
+
+
 Licensing
 =========
 

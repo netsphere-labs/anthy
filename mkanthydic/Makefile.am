@@ -7,7 +7,7 @@ noinst_PROGRAMS = mkfiledic
 mkfiledic_SOURCES = mkfiledic.c
 mkfiledic_LDADD = ../src-diclib/libdiclib.la
 
-anthy.dic : mkfiledic ../mkworddic/anthy.wdic ../depgraph/anthy.dep ../calctrans/anthy.cand_info ../calctrans/anthy.trans_info ../calctrans/anthy.corpus_array ../calctrans/anthy.corpus_bucket
+anthy.dic : mkfiledic ../mkworddic/anthy.wdic ../depgraph/anthy.dep ../calctrans/anthy.cand_info ../calctrans/anthy.trans_info ../calctrans/anthy.corpus_array ../calctrans/anthy.corpus_bucket ../calctrans/anthy.weak_words
 	./mkfiledic
 
 
