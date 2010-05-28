@@ -143,9 +143,16 @@ copy_file(FILE *in, FILE *out)
   rewind(in);
   while ((nread = fread (buf, 1, sizeof buf, in)) > 0) {
     if (fwrite (buf, 1, nread, out) < nread) {
+      fprintf (stderr, "failed to write\n");
       exit (1);
     }
   }
+
+  if (feof (in))
+    return;
+
+  fprintf (stderr, "failed to read\n");
+  exit (1);
 }
 
 static void
@@ -159,9 +166,9 @@ write_contents(FILE* fp, const char *prefix,
 
     in_fp = fopen(fn, "r");
     if (in_fp == NULL) {
-      printf("failed to open %s\n", fn);
-      free(fn);
-      break;
+      fprintf (stderr, "failed to open %s\n", fn);
+      free (fn);
+      exit (1);
     }
     printf("  copying %s (%s)\n", fn, entries[i].key);
     free(fn);

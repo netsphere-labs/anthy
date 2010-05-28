@@ -27,7 +27,7 @@
 #include <anthy/corpus.h>
 
 #define MAX_NR_VAL 8
-#define BUCKET_SIZE 8192
+#define BUCKET_SIZE 32768
 #define MAX_COLLISION 8
 
 /* word in source */
@@ -100,6 +100,7 @@ corpus_new(void)
   c->array = NULL;
   c->nr_values = 0;
   c->elms = NULL;
+  c->nr_buckets = 0;
   c->buckets = NULL;
   c->bucket_collision = 0;
   return c;

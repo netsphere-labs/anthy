@@ -15,14 +15,27 @@ See following page for Anthy development:
 What's New?
 ===========
 
-See the file NEWS for information on new features and other
-user-visible changes in recent versions of Anthy.
+See the file NEWS for new features and other user-visible changes in
+recent versions of Anthy.
 
 
 Installation
 ============
 
 The file INSTALL says how to build and install Anhty on your system.
+
+
+Configuration 
+=============
+
+System administrator is expected to set up following three variables
+in anthy-conf.in (usually it's under /etc/anthy directory).
+
+    Variable name  Example                         # Comment
+    ----------------------------------------------------------------
+    ANTHYDIR       /usr/share/anthy                # Directory 
+    DIC_FILE       /usr/share/anthy/anthy.dic      # Dictionary file
+    ZIPDICT_EUC    /usr/share/anthy/dic/zipcode.t  # Zipcode file
 
 
 Anthy Dictionary (anthy.dic)
@@ -60,8 +73,8 @@ generated.
          (7) calctrans/anthy.weak_words
           ---[mkanthydic/mkfiledic]--->anthy.dic
 
-Note that we need "initial anthy.dic" to generate anthy.dic,
-that's because proccorpus uses Anthy Dictionary.
+Note that we need "initial anthy.dic" to generate anthy.dic, that's
+because 'proccorpus' uses Anthy Dictionary to parse text input.
 
 
 Licensing
@@ -91,19 +104,27 @@ Anthy project was hosted at SourceForge.JP.
 	http://anthy.sourceforge.jp/
 	http://anthy.sourceforge.jp/cgi-bin/hiki/hiki.cgi
 
-Since February 2009, development at there stopped, and requests to join
-mailing list has been ignored.
+Since February 2009, development at there stopped.  Bug fixes and
+feature requests was just floating around.
 
 In May 2010, NIIBE Yutaka <gniibe@fsij.org> arranged Git repository at
-alioth.debian.org, put some of released versions of Anthy and Debian
+git.debian.org, put some of released versions of Anthy and Debian
 packaging code into the repository, and took over the development
-lead.
+lead.  At alioth.debian.org, pkg-anthy project was created for Anthy
+development and Debian packaging for Anthy and related packages.
 
 
 Authors & Credits
 =================
 
 See AUTHORS and THANKS.
+
+Original Authors were TABATA Yusuke, UGAWA Tomoharu, and guys at Kyoto
+University Micro Computer Club.  YOSHIDA Yuichi added some features.
+The project got fund from IPA Japan (NIIBE Yutaka was project manager
+in 2001 and Fumitoshi UKAI was project manager in 2003).  In the GSoC
+2006 program with FSIJ, HANAOKA Toshiyuki and Higashiyama Masahiko
+contributed some enhancements, under TABATA Yusuke's mentorship.
 
 -- 
 This file is part of Anthy.

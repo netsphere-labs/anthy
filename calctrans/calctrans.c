@@ -269,7 +269,8 @@ read_file(struct input_info *m, char *fn)
   FILE *ifp;
   ifp = fopen(fn, "r");
   if (!ifp) {
-    return ;
+    fprintf(stderr, "failed to open (%s)\n", fn);
+    exit (1);
   }
   do_read_file(m, ifp);
   fclose(ifp);
@@ -392,7 +393,7 @@ convert_file(FILE *ifp)
       ofp = fopen(fn, "w");
       if (!ofp) {
 	fprintf(stderr, "failed to open (%s)\n", fn);
-	abort();
+	exit (1);
       }
       write_nl(ofp, w);
       write_nl(ofp, n);
@@ -418,7 +419,7 @@ convert_data(int nr_fn, char **fns)
     ifp = fopen(fns[i], "r");
     if (!ifp) {
       fprintf(stderr, "failed to open (%s)\n", fns[i]);
-      continue;
+      exit (1);
     }
     convert_file(ifp);
     fclose(ifp);
@@ -638,7 +639,7 @@ extract_word(int nr_fn, char **fns, FILE *ofp)
     ifp = fopen(fns[i], "r");
     if (!ifp) {
       fprintf(stderr, "failed to open (%s)\n", fns[i]);
-      continue;
+      exit (1);
     }
     extract_word_from_file(ifp, &sp);
     fclose(ifp);
@@ -690,6 +691,7 @@ main(int argc, char **argv)
       ofp = fopen(argv[i+1], "w");
       if (!ofp) {
 	fprintf(stderr, "failed to open (%s)\n", argv[i+1]);
+	exit (1);
       }
       i ++;
     } else if (!strcmp(arg, "-c") ||

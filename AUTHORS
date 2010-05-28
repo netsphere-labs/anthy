@@ -112,6 +112,8 @@ NIIBE Yutaka: wrote
 	anthy/ruleparser.h
 	anthy/splitter.h
 	anthy/wtype.h
+	calctrans/calctrans.c
+	calctrans/corpus.c
 	depgraph/mkdepgraph.c
 	doc/DICLIB
 	mkworddic/mkdic.c

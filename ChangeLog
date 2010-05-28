@@ -1,3 +1,21 @@
+2010-05-28  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* calctrans/corpus.5.txt: Added some text from text.exp.
+
+2010-05-20  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* test/test.exp: Sort it out.
+
+	* calctrans/corpus_info, weak_words: Removed from repository.
+
+	* calctrans/corpus.c (corpus_new): Initialize nr_buckets.
+
+	* calctrans/calctrans.c (main): Call exit when error.
+	(convert_file, convert_data, extract_word): Ditto.
+	(read_file): Not to ignore error but to exit.
+
+	* src-worddic/record.c (save_a_row): Fixed typo.
+
 2010-05-19  NIIBE Yutaka  <gniibe@fsij.org>
 
 	* mkanthydic/Makefile.am (anthy.dic): Added dependency on
