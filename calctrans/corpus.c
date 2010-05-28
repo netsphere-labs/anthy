@@ -27,7 +27,7 @@
 #include <anthy/corpus.h>
 
 #define MAX_NR_VAL 8
-#define BUCKET_SIZE 32768
+#define BUCKET_SIZE 8192
 #define MAX_COLLISION 8
 
 /* word in source */

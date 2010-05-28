@@ -1,12 +1,27 @@
 2010-05-28  NIIBE Yutaka  <gniibe@fsij.org>
 
-	* calctrans/corpus.5.txt: Added some text from text.exp.
+	Dictionary bootstrap support.
+	* configure.ac (AC_OUTPUT): Added initial-dic/Makefile.
+	* Makefile.am (update_params,update_params0,update_params2):
+	Removed.
+	(SUBDIRS): Added initial-dic.
+	* initial-dic/Makefile.am: New.
+	* initial-dic/mkfiledic0.c: New file.
+	* src-ordering/relation.c (anthy_reorder_candidates_by_relation):
+	Only call reorder_by_corpus when we have corpus_info in dictionary.
+	* mkanthydic/mkfiledic.c: Changes for mkfiledic0, initial dic.
+	* calctrans/Makefile.am (update_params,update_params0,update_params2):
+	Removed.
+	(corpus_info, weak_words, parsed_data, calctrans_outputs): Added.
+	* calctrans/proccorpus.c (main): Use initial-anthy.dic.
+	* calctrans/corpus_info, weak_words: Removed from repository and
+	distribution.
+
+	* calctrans/corpus.5.txt: Added some text from test.exp.
 
 2010-05-20  NIIBE Yutaka  <gniibe@fsij.org>
 
 	* test/test.exp: Sort it out.
-
-	* calctrans/corpus_info, weak_words: Removed from repository.
 
 	* calctrans/corpus.c (corpus_new): Initialize nr_buckets.
 

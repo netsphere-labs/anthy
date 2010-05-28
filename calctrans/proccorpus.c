@@ -163,7 +163,7 @@ main(int argc, char **argv)
   }
 
   anthy_conf_override("CONFFILE", "../anthy-conf");
-  anthy_conf_override("DIC_FILE", "../mkanthydic/anthy.dic");
+  anthy_conf_override("DIC_FILE", "../initial-dic/initial-anthy.dic");
   anthy_init();
   anthy_set_personality("");
   ac = anthy_create_context();

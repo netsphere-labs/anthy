@@ -26,7 +26,7 @@ AC_OUTPUT(Makefile
  src-splitter/Makefile src-ordering/Makefile
  src-main/Makefile src-util/Makefile
  anthy/Makefile
- depgraph/Makefile mkanthydic/Makefile mkworddic/Makefile
+ depgraph/Makefile initial-dic/Makefile mkanthydic/Makefile mkworddic/Makefile
  mkworddic/dict.args test/Makefile
  alt-cannadic/Makefile
  doc/Makefile calctrans/Makefile

@@ -102,6 +102,7 @@ YOSHIDA Yuichi: wrote
 NIIBE Yutaka: wrote
 	src-util/egg.c
 	doc/protocol.txt
+	initial-dic/mkfiledic0.c
     modified
 	anthy/anthy.h
 	anthy/conf.h
@@ -114,8 +115,10 @@ NIIBE Yutaka: wrote
 	anthy/wtype.h
 	calctrans/calctrans.c
 	calctrans/corpus.c
+	calctrans/proccorpus.c
 	depgraph/mkdepgraph.c
 	doc/DICLIB
+	mkanthydic/mkfiledic.c
 	mkworddic/mkdic.c
 	src-diclib/alloc.c
 	src-diclib/file_dic.c

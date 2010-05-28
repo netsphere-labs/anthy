@@ -44,7 +44,9 @@
 #include <anthy/diclib.h>
 
 #define SECTION_ALIGNMENT 64
+#ifndef DIC_NAME
 #define DIC_NAME "anthy.dic"
+#endif
 
 struct header_entry {
   const char* key;
@@ -210,11 +212,13 @@ main(int argc, char* argv[])
   struct header_entry entries[] = {
     {"word_dic", "/mkworddic/anthy.wdic"},
     {"dep_dic", "/depgraph/anthy.dep"},
+#if !defined(INITIAL_ANTHY_DIC)
     {"trans_info", "/calctrans/anthy.trans_info"},
     {"cand_info", "/calctrans/anthy.cand_info"},
     {"weak_words", "/calctrans/anthy.weak_words"},
     {"corpus_bucket", "/calctrans/anthy.corpus_bucket"},
     {"corpus_array", "/calctrans/anthy.corpus_array"},
+#endif
   };
 
   for (i = 1; i < argc; i++) {
