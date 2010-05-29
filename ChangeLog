@@ -1,3 +1,9 @@
+2010-05-29  Masanari Iida  <standby24x7@gmail.com>
+
+	* alt-cannadic/gcanna.ctd (Onkyougaku): Fixed.
+
+	* alt-cannadic/g_fname.t (Abekoubou): Fixed.
+
 2010-05-28  NIIBE Yutaka  <gniibe@fsij.org>
 
 	Dictionary bootstrap support.
