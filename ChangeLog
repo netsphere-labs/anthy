@@ -1,3 +1,7 @@
+2010-06-02  Masanari Iida  <standby24x7@gmail.com>
+
+	* mkworddic/compound.t: Fix yomi.
+
 2010-05-29  Masanari Iida  <standby24x7@gmail.com>
 
 	* alt-cannadic/gcanna.ctd (Onkyougaku): Fixed.
