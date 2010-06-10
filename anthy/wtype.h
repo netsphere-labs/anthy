@@ -18,24 +18,41 @@
 
 /*品詞 Part Of Speech */
 #define POS_NONE 0
+ /* 名詞 */
 #define POS_NOUN 1
+ /* 助詞(不使用?) */
 #define POS_PRT 2
 #define POS_XV 3
+ /* 動詞 */
 #define POS_V 4
+ /* 形容詞 */
 #define POS_A 5
+ /* 形容動詞 */
 #define POS_AJV 6
+ /* 副詞 */
 #define POS_AV 7
+ /* 連体詞 */
 #define POS_ME 8
+ /* 接続詞 */
 #define POS_CONJ 9
+ /* (不明) */
 #define POS_IJ 10
+ /* 接頭辞 */
 #define POS_PRE 11
+ /* 接尾辞 */
 #define POS_SUC 12
+ /* 単漢字 */
 #define POS_TANKANJI 13
+ /* 名詞に付く名詞化接尾辞 */
 #define POS_N2T 14
+ /* 動詞連用形に付く形容詞化接尾辞 */
 #define POS_D2KY 15
+ /* 数詞 */
 #define POS_NUMBER 16
 #define POS_INVAL 17
+ /* 開き括弧 */
 #define POS_OPEN 18
+ /* 閉じ括弧 */
 #define POS_CLOSE 19
 
 /* 活用形 Conjugate Type */
@@ -46,46 +63,91 @@
 #define CT_RENTAI 4
 #define CT_KATEI 5
 #define CT_MEIREI 6
+ /* 語幹 */
 #define CT_HEAD 7
+ /* 動詞連用形名詞化 */
 #define CT_MEISIKA 8
 
-/* 活用クラス Conjugate Class */
+/* 動詞の活用クラス Conjugate Class */
 #define CC_NONE 0
+ /* カ行五段 */
 #define CC_K5 1
+ /* カ行五段(行く) */
 #define CC_C5 2
+ /* ガ行五段 */
 #define CC_G5 3
+ /* サ行五段 */
 #define CC_S5 4
+ /* タ行五段 */
 #define CC_T5 5
+ /* ナ行五段 */
 #define CC_N5 6
+ /* マ行五段 */
 #define CC_M5 7
+ /* バ行五段 */
 #define CC_B5 8
+ /* ラ行五段 */
 #define CC_R5 9
+ /* ラ行五段(いらっしゃる) */
 #define CC_L5 10
+ /* ワ行五段 */
 #define CC_W5 11
+ /* ワ行五段(乞う) */
 #define CC_U5 12
+ /* 上下一段 */
 #define CC_KS1 13
+ /* ラ変 */
 #define CC_RV 14
+ /* カ変 */
 #define CC_KV 15
+ /* サ変(「する」以外) */
 #define CC_SV 16
+ /* ザ変 */
 #define CC_ZV 17
-#define CC_A 18
-#define CC_A_U 19
-#define CC_AJV 20
-#define CC_SRV 21
+ /* サ変(する) */
+#define CC_SRV 18
+ /* カ変と「する」は、活用形の形で辞書に登録されており、かつ、
+  * 同じ活用形に複数の読みがあるものがある。それらを区別して
+  * 扱うために「その2」を作る。
+  * (「副品詞」や「FLAGS」等では区別できなかった) by vagus */
+ /* サ変(する) その2  add by vagus */
+#define CC_SRV2 19
+ /* カ変 その2  add by vagus */
+#define CC_KV2 20
+ /* 形容動詞 */
+#define CC_AJV 21
+ /* 形容詞ク活用  add by vagus */
+#define CC_A_KU 22
+ /* 形容詞シク活用  add by vagus */
+#define CC_A_SIKU 23
+ /* 形容詞ウ音便 */
+#define CC_A_U 24
+ /* 形容詞エ音便  add by vagus */
+#define CC_A_E 25
+ /* 形容詞イ音便  add by vagus */
+#define CC_A_I 26
+ /* 形容詞「いい」 add by vagus */
+#define CC_A_ii 27
+ /* 形容詞「ない」 add by vagus */
+#define CC_A_nai 28
+ /* 形容詞「よい」 add by vagus */
+#define CC_A_yoi 29
+ /* 連語「非ず」 add by vagus */
+#define CC_RZ 30
 
 /* 副品詞 Class Of Speech */
 #define COS_NONE 0
-/* 地名 */
+ /* 地名 */
 #define COS_CN 1
-/* 数詞 */
+ /* 数詞 */
 #define COS_NN 2
-/* 人名 */
+ /* 人名 */
 #define COS_JN 3
-/* 団体名 */
+ /* 団体名 */
 #define COS_KK 4
-/* 一般接頭辞・接尾辞 */
+ /* 一般接頭辞・接尾辞 */
 #define COS_SUFFIX 5
-/* サ変の接尾辞 */
+ /* サ変の接尾辞 */
 #define COS_SVSUFFIX 6
 /**/
 
@@ -94,34 +156,42 @@
 #define SCOS_FAMNAME 1
 #define SCOS_FSTNAME 2
 #define SCOS_T0 10
+#define SCOS_T1 11
 #define SCOS_T2 12
 #define SCOS_T3 13
 #define SCOS_T4 14
 #define SCOS_T5 15
+#define SCOS_T6 16
 #define SCOS_T7 17
 #define SCOS_T8 18
 #define SCOS_T9 19
 #define SCOS_T10 20
+#define SCOS_T11 21
 #define SCOS_T12 22
 #define SCOS_T13 23
 #define SCOS_T14 24
 #define SCOS_T15 25
+#define SCOS_T16 26
 #define SCOS_T17 27
 #define SCOS_T18 28
 #define SCOS_T19 29
 #define SCOS_T20 30
+#define SCOS_T21 31
 #define SCOS_T22 32
 #define SCOS_T23 33
 #define SCOS_T24 34
 #define SCOS_T25 35
+#define SCOS_T26 36
 #define SCOS_T27 37
 #define SCOS_T28 38
 #define SCOS_T29 39
 #define SCOS_T30 40
+#define SCOS_T31 41
 #define SCOS_T32 42
 #define SCOS_T33 43
 #define SCOS_T34 44
 #define SCOS_T35 45
+#define SCOS_T36 46
 #define SCOS_T37 47
 #define SCOS_T38 48
 #define SCOS_T39 49
@@ -142,6 +212,7 @@
 #define SCOS_F13 73
 #define SCOS_F14 74
 #define SCOS_A0 80
+ /* 形容詞化接尾語 */
 #define SCOS_A1 81
 #define SCOS_N1 90
 #define SCOS_N10 91
@@ -151,13 +222,13 @@
 
 /* FLAGS */
 #define WF_NONE 0
-/* この動詞は連体詞が名詞化する */
+ /* この動詞は連用形が名詞化する */
 #define WF_MEISI 1
-/* サ変名詞 */
+ /* サ変名詞 */
 #define WF_SV 2
-/* 自立語、文節のコアとなる */
+ /* 自立語、文節のコアとなる */
 #define WF_INDEP 4
-/* 形容動詞 */
+ /* 形容動詞 */
 #define WF_AJV 8
 
 /* wtype_t中のオフセット */
