@@ -1,5 +1,10 @@
 2010-07-01  Jun Oizumi <vagus.xyz@gmail.com>
 
+	* mkworddic/adjust.t, mkworddic/extra.t, mkworddic/compound.t:
+	Updated.
+
+2010-07-01  Jun Oizumi <vagus.xyz@gmail.com>
+
 	Update of alt-cannadic.  See alt-cannadic/Changes.txt.
 
 	* alt-cannadic/extra/x-conv2self-std.t: New.

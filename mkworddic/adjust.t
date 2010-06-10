@@ -17,6 +17,7 @@
 \modify_freq このせ #JN 小野瀬 kill
 \modify_freq のい #CN 野井 kill
 \modify_freq あのお #CN 穴生 kill
+\modify_freq あのお #CN 穴太 kill
 \modify_freq のみず #JN 野水 kill
 \modify_freq きょうか #JN 京香 down
 
