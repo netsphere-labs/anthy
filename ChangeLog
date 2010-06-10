@@ -1,3 +1,29 @@
+2010-07-01  Jun Oizumi <vagus.xyz@gmail.com>
+
+	Update of alt-cannadic.  See alt-cannadic/Changes.txt.
+
+	* alt-cannadic/extra/x-conv2self-std.t: New.
+	* alt-cannadic/extra/gt-kuten-34.t: New.
+	* alt-cannadic/extra/gt-kuten-std.t: New.
+
+	* alt-cannadic/How-to-use.txt: Removed.
+	* alt-cannadic/sample/dict.args.in.euc: Removed.
+	* alt-cannadic/sample/dict.args.in.utf8: Removed.
+
+	* alt-cannadic/Changes.txt: Updated.
+	* alt-cannadic/Makefile.am: Updated.
+	* alt-cannadic/README_euc.txt: Updated.
+	* alt-cannadic/extra/README: Updated.
+	* alt-cannadic/extra/g-jiritu-34.t: Updated.
+	* alt-cannadic/extra/gc-fullname-34.t: Updated.
+	* alt-cannadic/extra/gt-tankanji_hikanji-34.t: Updated.
+	* alt-cannadic/extra/gt-tankanji_kanji-34.t: Updated.
+	* alt-cannadic/gcannaf.ctd: Updated.
+	* alt-cannadic/gtankan.ctd: Updated.
+	* mkworddic/dict.args.in: Updated.
+	* alt-cannadic/g_fname.t: Updated.
+	* alt-cannadic/gcanna.ctd: Updated.
+
 2010-07-01  NIIBE Yutaka  <gniibe@fsij.org>
 
 	* depgraph/v.depword (@DoushiRenyoukeiD, @DoushiRenyoukei5):
