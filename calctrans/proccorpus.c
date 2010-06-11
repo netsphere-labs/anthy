@@ -152,18 +152,19 @@ main(int argc, char **argv)
   struct conv_res *cr;
   anthy_context_t ac;
   int i;
+  const char *dic = "anthy.dic";
 
   db = create_db();
-  for (i = 1; i < argc; i++) {
-    if (!strcmp("-v", argv[i])) {
+  for (i = 1; i < argc; i++)
+    if (!strcmp("-d", argv[i]) && (i+1) < argc)
+      dic = argv[++i];
+    else if (!strcmp("-v", argv[i]))
       verbose = 1;
-    } else {
+    else
       read_db(db, argv[i]);
-    }
-  }
 
   anthy_conf_override("CONFFILE", "../anthy-conf");
-  anthy_conf_override("DIC_FILE", "../initial-dic/initial-anthy.dic");
+  anthy_conf_override("DIC_FILE", dic);
   anthy_init();
   anthy_set_personality("");
   ac = anthy_create_context();

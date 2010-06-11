@@ -1,5 +1,27 @@
 2010-06-11  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* Makefile.am (SUBDIRS): Removed initial-dic.
+
+	* initial-dic: Removed.
+
+	* mkanthydic/mkfiledic.c (get_file_name): Remove duplicated /.
+	(usage): New.
+	(main): New option "-i" for initial anthy.dic.
+	New option "-o" to specify output dictionary file.
+
+	* mkanthydic/Makefile.am: Build anthy.dic here.
+	Run proccorpus and calctrans from here.
+
+	* calctrans/Makefile.am (EXTRA_DIST): Removed.
+
+	* corpus: New directory.
+	* corpus/corpus.0.txt: Moved from calctrans/.
+	* corpus/corpus.1.txt: Likewise.
+	* corpus/corpus.2.txt: Likewise.
+	* corpus/corpus.3.txt: Likewise.
+	* corpus/corpus.4.txt: Likewise.
+	* corpus/corpus.5.txt: Likewise.
+
 	* alt-cannadic/g_fname.t (WatanabeKazuhiro): Removed trailing
 	space.
 
