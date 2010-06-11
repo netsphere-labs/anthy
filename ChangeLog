@@ -1,6 +1,7 @@
 2010-06-11  NIIBE Yutaka  <gniibe@fsij.org>
 
 	* Makefile.am (SUBDIRS): Removed initial-dic.
+	(EXTRA_DIST): Added corpus/corpus.?.txt.
 
 	* initial-dic: Removed.
 
