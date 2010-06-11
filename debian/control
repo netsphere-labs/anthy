@@ -2,7 +2,7 @@ Source: anthy
 Section: utils
 Priority: optional
 Maintainer: NOKUBI Takatsugu <knok@daionet.gr.jp>
-Uploaders: Hideki Yamane <henrich@debian.org>
+Uploaders: Hideki Yamane <henrich@debian.org>, NIIBE Yutaka <gniibe@fsij.org>
 Build-Depends: debhelper (>= 7.0.50~), autotools-dev, debconf (>= 0.5), po-debconf, automake
 Standards-Version: 3.8.4
 
