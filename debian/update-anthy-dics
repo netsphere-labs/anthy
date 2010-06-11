@@ -1,0 +1,95 @@
+#!/bin/sh
+
+DICDIR=/var/lib/anthy
+METADICDIR=/usr/share/anthy/dic
+CANNADIC='gcanna.ctd gcannaf.ctd gtankan.ctd'
+EXTRADIC="$METADICDIR/*.t"
+
+DEPGRAPHDIR=/var/lib/anthy/depgraph
+WORDDICDIR=/var/lib/anthy/mkworddic
+CALCTRANSDIR=/var/lib/anthy/calctrans
+
+CONFIG='/etc/anthy/diclist'
+DICTCONFIG='/etc/anthy/dict.args'
+TMPDICTCONFIG='/tmp/dict.args.XXXXXX'
+
+OLDDIR=`pwd`
+cd $METADICDIR
+
+TMPDICTCONFIG=$(mktemp $TMPDICTCONFIG)
+if [ $? != 0 ]; then
+	echo "mktemp failed, aborting" 1>&2
+	exit 1
+fi
+
+echo "set_input_encoding eucjp" >> $TMPDICTCONFIG
+for file in $CANNADIC; do
+	case $file in
+	*.ctd)
+		if test -f $file; then
+			echo "read $METADICDIR/$file" >> $TMPDICTCONFIG
+		fi
+		;;
+	esac
+done
+
+echo "read $METADICDIR/adjust.t" >> $TMPDICTCONFIG
+echo "read $METADICDIR/name.t" >> $TMPDICTCONFIG
+echo "read $METADICDIR/compound.t" >> $TMPDICTCONFIG
+echo "read $METADICDIR/extra.t" >> $TMPDICTCONFIG
+echo "read $METADICDIR/tankanji.t" >> $TMPDICTCONFIG
+
+addondics=$(sort -u $CONFIG| tr '\n' ' '| sed 's/\ $//')
+
+for file in $addondics; do
+	if test -f $file; then
+		echo "read $METADICDIR/$file" >> $TMPDICTCONFIG
+	fi
+done
+
+echo "build_reverse_dict" >> $TMPDICTCONFIG
+echo "read_uc $METADICDIR/udict" >> $TMPDICTCONFIG
+echo "set_dict_encoding utf8" >> $TMPDICTCONFIG
+echo "write anthy.wdic" >> $TMPDICTCONFIG
+echo "done" >> $TMPDICTCONFIG
+
+echo -n 'Updating anthy.dic...'
+
+rm -rf $WORDDICDIR; mkdir $WORDDICDIR
+rm -rf $DEPGRAPHDIR; mkdir $DEPGRAPHDIR
+rm -f $CALCTRANSDIR
+
+cp /etc/anthy/anthy-conf /var/lib/anthy
+
+if test -f $DICDIR/anthy.dic; then
+	rm -f $DICDIR/anthy.dic
+fi
+
+if test -f $WORDDICDIR/anthy.wdic; then
+	rm -f $WORDDICDIR/anthy.wdic
+fi
+
+mv $TMPDICTCONFIG $DICTCONFIG
+
+cd $WORDDICDIR
+/usr/bin/mkworddic -f $DICTCONFIG > /dev/null 2>&1
+
+cd $DEPGRAPHDIR
+for i in /usr/share/anthy/depgraph/*.depword; do
+	ln -s $i $DEPGRAPHDIR/`basename $i`
+done
+ln -sf /usr/share/anthy/depgraph/indepword.txt $DEPGRAPHDIR
+
+ln -sf /usr/share/anthy/depgraph/conjugate.table $DEPGRAPHDIR
+/usr/bin/mkdepgraph 
+
+ln -sf /usr/share/anthy/calctrans $CALCTRANSDIR
+
+cd $DICDIR
+/usr/bin/mkfiledic -p ./
+
+rm -f /var/lib/anthy/anthy-conf
+
+cd $OLDDIR
+
+echo 'done.'

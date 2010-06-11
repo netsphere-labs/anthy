@@ -1,0 +1,43 @@
+# Galician translation of anthy's debconf templates
+# This file is distributed under the same license as the anthy package.
+# Jacobo Tarrio <jtarrio@debian.org>, 2007, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: anthy\n"
+"Report-Msgid-Bugs-To: anthy@packages.debian.org\n"
+"POT-Creation-Date: 2008-02-12 15:54+0900\n"
+"PO-Revision-Date: 2008-02-14 20:52+0000\n"
+"Last-Translator: Jacobo Tarrio <jtarrio@debian.org>\n"
+"Language-Team: Galician <proxecto@trasno.net>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:2001
+msgid "Extra dictionaries to use:"
+msgstr "Dicionarios adicionais a empregar:"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:2001
+msgid ""
+"The anthy package can use add-on dictionaries in addition to the system "
+"dictionary. The following are currently available:"
+msgstr ""
+"O paquete anthy pode empregar outros dicionarios ademáis do dicionario do "
+"sistema. Están dispoñibles os seguintes dicionarios:"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:2001
+msgid ""
+" - base.t : Anthy-specific words which are compatible with cannadic;\n"
+" - extra.t: Anthy-specific words which are not compatible with cannadic;\n"
+" - 2ch.t  : Slang used in 2ch, the web's biggest Japanese discussion forum."
+msgstr ""
+" - base.t : Palabras específicas de anthy compatibles con cannadic;\n"
+" - extra.t: Palabras específicas de anthy non compatibles con cannadic;\n"
+" - 2ch.t  : Dialectos empregados en 2ch, o maior foro en web do Xapón."

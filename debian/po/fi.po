@@ -1,0 +1,42 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: anthy\n"
+"Report-Msgid-Bugs-To: anthy@packages.debian.org\n"
+"POT-Creation-Date: 2008-02-14 07:30+0100\n"
+"PO-Revision-Date: 2008-02-20 23:51+0200\n"
+"Last-Translator: Esko Arajärvi <edu@iki.fi>\n"
+"Language-Team: Finnish <debian-l10n-finnish@lists.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Finnish\n"
+"X-Poedit-Country: FINLAND\n"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:2001
+msgid "Extra dictionaries to use:"
+msgstr "Käytettävät lisäsanakirjat:"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:2001
+msgid ""
+"The anthy package can use add-on dictionaries in addition to the system "
+"dictionary. The following are currently available:"
+msgstr ""
+"Paketti anthy voi käyttää järjestelmäsanakirjan lisäksi lisäsanakirjoja. "
+"Seuraavat ovat tällä hetkellä saatavilla:"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:2001
+msgid ""
+" - base.t : Anthy-specific words which are compatible with cannadic;\n"
+" - extra.t: Anthy-specific words which are not compatible with cannadic;\n"
+" - 2ch.t  : Slang used in 2ch, the web's biggest Japanese discussion forum."
+msgstr ""
+" - base.t : Anthy-sanat, jotka ovat yhteensopivia cannadicin kanssa\n"
+" - extra.t: Anthy-sanat, jotka eivät ole yhteensopivia cannadicin kanssa\n"
+" - 2ch.t  : Slangi, jota käytetään verkon suurimmalla japanilaisella\n"
+"            keskustelufoorumilla 2ch:lla"
