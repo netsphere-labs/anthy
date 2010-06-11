@@ -1,0 +1,44 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 20-g-hal-bugfix.dpatch by Ikuya Awashiro <ikuya@fruitsbasket.info>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+diff -urNad anthy-9100h~/src-splitter/lattice.c anthy-9100h/src-splitter/lattice.c
+--- anthy-9100h~/src-splitter/lattice.c	2009-12-05 13:42:43.000000000 +0000
++++ anthy-9100h/src-splitter/lattice.c	2009-12-05 13:48:58.000000000 +0000
+@@ -325,6 +325,11 @@
+   }
+ }
+ 
++#if 0
++/* 現状の cmp_node() およびその呼出側の実装にて
++ * cmp_node_by_type_to_type() の実装方法での比較を行うと、
++ * 優先順位の循環が生じるのでまずい。
++ */
+ static int
+ cmp_node_by_type_to_type(struct lattice_node *lhs, struct lattice_node *rhs,
+ 			 enum metaword_type type1, enum metaword_type type2)
+@@ -337,6 +342,7 @@
+     return 0;
+   } 
+ }
++#endif
+ 
+ /*
+  * ノードを比較する
+@@ -364,10 +370,9 @@
+       ret = cmp_node_by_type(lhs_before, rhs_before, MW_OCHAIRE);
+       if (ret != 0) return ret;
+ 
+-      /* COMPOUND_PARTよりはCOMPOUND_HEADを優先 */
+-      ret = cmp_node_by_type_to_type(lhs_before, rhs_before,
+-				     MW_COMPOUND_HEAD, MW_COMPOUND_PART);
+-      if (ret != 0) return ret;
++      /* COMPOUND_PARTではない候補を優先 */
++      ret = cmp_node_by_type(lhs_before, rhs_before, MW_COMPOUND_PART);
++      if (ret != 0) return - ret;
+     } else {
+       break;
+     }

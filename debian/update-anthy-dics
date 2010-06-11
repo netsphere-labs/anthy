@@ -36,8 +36,9 @@ done
 echo "read $METADICDIR/adjust.t" >> $TMPDICTCONFIG
 echo "read $METADICDIR/name.t" >> $TMPDICTCONFIG
 echo "read $METADICDIR/compound.t" >> $TMPDICTCONFIG
-echo "read $METADICDIR/extra.t" >> $TMPDICTCONFIG
+#echo "read $METADICDIR/extra.t" >> $TMPDICTCONFIG
 #echo "read $METADICDIR/tankanji.t" >> $TMPDICTCONFIG
+echo "read $METADICDIR/g_fname.t" >> $TMPDICTCONFIG
 
 addondics=$(sort -u $CONFIG| tr '\n' ' '| sed 's/\ $//')
 
@@ -49,7 +50,7 @@ done
 
 echo "set_input_encoding utf8" >> $TMPDICTCONFIG
 echo "read $METADICDIR/utf8.t" >> $TMPDICTCONFIG
-echo "read $METADICDIR/g_fname.t" >> $TMPDICTCONFIG
+#echo "read $METADICDIR/g_fname.t" >> $TMPDICTCONFIG
 echo "read $METADICDIR/g-jiritu-34.t" >> $TMPDICTCONFIG
 echo "read $METADICDIR/gc-fullname-34.t" >> $TMPDICTCONFIG
 echo "read $METADICDIR/gf-fuzoku-34.t" >> $TMPDICTCONFIG

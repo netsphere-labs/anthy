@@ -102,6 +102,7 @@ install: build
 	install -d $(CURDIR)/debian/tmp/$(DEPWORDDIR)
 	install -d $(CURDIR)/debian/tmp/$(MATRIXDIR)
 	install -d $(CURDIR)/debian/tmp/$(CALCTRANSDIR)
+	install -d $(CURDIR)/debian/tmp/$(DICDIR)
 	install -m 644 alt-cannadic/gcanna.ctd \
 			$(CURDIR)/debian/tmp/$(METADICDIR)/gcanna.ctd
 	install -m 644 alt-cannadic/gcannaf.ctd \
@@ -143,10 +144,10 @@ install: build
 			$(CURDIR)/debian/tmp/$(METADICDIR)/udict
 
 	cd $(CURDIR)
-	for i in anthy.cand_info anthy.trans_info \
-		anthy.corpus_array anthy.corpus_bucket anthy.weak_words; do \
-		install -m 644 $(CURDIR)/calctrans/$$i \
-			$(CURDIR)/debian/tmp/usr/share/anthy/calctrans/$$i; \
+	for i in anthy.trans_info anthy.seg_info anthy.cand_info \
+		anthy.yomi_info anthy.seg_len_info anthy.corpus_bucket anthy.corpus_array ; do \
+		install -m 644 $(CURDIR)/mkanthydic/$$i \
+			$(CURDIR)/debian/tmp/$(DICDIR)/$$i; \
 	done
 
 binary-indep: build-indep install

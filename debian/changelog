@@ -1,3 +1,69 @@
+anthy (9100h-0ubuntu3~ja3) lucid; urgency=low
+
+  * try again.
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Tue, 13 Apr 2010 13:41:08 +0000
+
+anthy (9100h-0ubuntu3~ja1) lucid; urgency=low
+
+  * build for Lucid.
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Mon, 12 Apr 2010 15:18:08 +0000
+
+anthy (9100h-0ubuntu2~ppa9) karmic; urgency=low
+
+  * debian/patches/20-g-hal-bugfix.dpatch: added.
+    Thanks to G-HAL [Anthy-dev 3703]
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Sat, 05 Dec 2009 13:57:25 +0000
+
+anthy (9100h-0ubuntu2~ppa8) karmic; urgency=low
+
+  * debian/patches/19-new-corpus.dpatch: added. based on 15-new-corpus.dpatch.
+    http://sourceforge.jp/projects/anthy/lists/archive/dev/2009-February/003687.html
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Fri, 27 Nov 2009 16:52:38 +0000
+
+anthy (9100h-0ubuntu2~ppa7) karmic; urgency=low
+
+  * debian/patches/16-alt-cannadic-20090921.dpatch: updated.
+    Delete some files.
+  * debian/patches/18-anthy-dimension-tweak-orig.dpatch: added.
+  * debian/rules: updated.
+  * debian/anthy.files: updated.
+  * debian/patches/00list: removed 15-new-corpus.
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Fri, 27 Nov 2009 16:02:49 +0000
+
+anthy (9100h-0ubuntu2~ppa6) karmic; urgency=low
+
+  * debian/patches/16-alt-cannadic-20090921.dpatch: added.
+    http://sourceforge.jp/projects/alt-cannadic/releases/?package_id=6129
+  * debian/update-anthy-dics: updated for g_fname.t.
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Fri, 27 Nov 2009 14:01:04 +0000
+
+anthy (9100h-0ubuntu2~ppa5) karmic; urgency=low
+
+  * debian/patches/15-new-corpus.dpatch: added.
+    http://sourceforge.jp/projects/anthy/lists/archive/dev/2009-February/003687.html
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Fri, 27 Nov 2009 02:38:29 +0000
+
+anthy (9100h-0ubuntu2~ppa4) karmic; urgency=low
+
+  * debian/patches/11-rc2.dpatch: regenerated.
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Thu, 26 Nov 2009 06:23:04 +0000
+
+anthy (9100h-0ubuntu2~ppa3) karmic; urgency=low
+
+  * debian/patches/14-increase.dpatch: added.
+    taken from http://www.fenix.ne.jp/~G-HAL/soft/nosettle/anthy-9100.patch.bz2
+  * debian/update-anthy-dic: stopped to read extra.t twice.
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Thu, 26 Nov 2009 05:29:36 +0000
+
 anthy (9100h-0ubuntu2~ppa2) karmic; urgency=low
 
   * debian/patches/13-fixtypo.dpatch: added.

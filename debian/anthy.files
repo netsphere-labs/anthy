@@ -16,3 +16,4 @@ usr/share/anthy/dic/*.t
 usr/share/anthy/dic/*.ctd
 usr/share/anthy/dic/udict
 etc/anthy/anthy-conf
+var/lib/anthy/*
