@@ -1,0 +1,644 @@
+anthy (9100h-0ubuntu2~ppa2) karmic; urgency=low
+
+  * debian/patches/13-fixtypo.dpatch: added.
+    Thanks to G-HAL-san and Iida-san.
+    https://bugzilla.redhat.com/show_bug.cgi?id=519769
+    [Anthy-dev] 3697 and 3701
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Sat, 17 Oct 2009 08:22:15 +0000
+
+anthy (9100h-0ubuntu2~ppa1) jaunty; urgency=low
+
+  * version bumped finally.
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Mon, 20 Apr 2009 15:56:27 +0000
+
+anthy (9100h-0ubuntu1~ppa2) jaunty; urgency=low
+
+  * version bumped. 
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Mon, 20 Apr 2009 15:09:40 +0000
+
+anthy (9100h-0ubuntu1~ppa1) jaunty; urgency=low
+
+  * version bumped. 
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Tue, 17 Mar 2009 13:48:14 +0000
+
+anthy (9100h-0ubuntu0~ppa4) jaunty; urgency=low
+
+  * debian/patches/12-remove-space.dpatch: added. 
+  * debian/patches/00list: added 12-remove-space.dpatch
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Sun, 08 Feb 2009 12:03:36 +0000
+
+anthy (9100h-0ubuntu0~ppa3) jaunty; urgency=low
+
+  * debian/patches/11-rc2.dpatch: added. 
+  * debian/patches/00list: added 11-rc2.dpatch. 
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Sat, 07 Feb 2009 17:23:56 +0000
+
+anthy (9100h-0ubuntu0~ppa2) jaunty; urgency=low
+
+  * debian/patches/10-remove-t.dpatch: added. 
+  * debian/patches/00list: added 10-remove-t.dpatch. 
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Sat, 07 Feb 2009 13:55:02 +0000
+
+anthy (9100h-0ubuntu0~ppa1) jaunty; urgency=low
+
+  * New upstream release
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Sat, 07 Feb 2009 13:02:40 +0000
+
+anthy (9100g-0ubuntu0~ppa1) jaunty; urgency=low
+
+  * New upstream release
+  * debian/rules: set to use UTF-8 dictionaries.
+  * debian/update-anthy-dics: DITTO.
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Thu, 29 Jan 2009 16:43:55 +0000
+
+anthy (9100f-0ubuntu1) intrepid-experimental; urgency=low
+
+  * New upstream release
+  * debian/patches/00list: removed 05_fix_vu_dpatch.dpatch.
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Mon, 03 Nov 2008 02:53:24 +0000
+
+anthy (9100e-0ubuntu3) hardy-experimental; urgency=low
+
+  * debian/patches/05_fix_vu_dpatch.dpatch: added.
+    Thanks to Yusuke TABATA.
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Tue, 24 Jun 2008 13:47:48 +0000
+
+anthy (9100e-0ubuntu2) hardy; urgency=low
+
+  * build for hardy.
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Sun, 13 Apr 2008 09:10:52 +0000
+
+anthy (9100e-0ubuntu1) gutsy-experimental; urgency=low
+
+  * New upstream release
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Mon, 28 Jan 2008 13:04:36 +0000
+
+anthy (9100d-0ubuntu2) gutsy-experimental; urgency=low
+
+  * build for gutsy.
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Sat, 24 Nov 2007 10:10:53 +0000
+
+anthy (9100d-0ubuntu1) feisty; urgency=low
+
+  * New upstream release
+  * debian/rules, debian/update-anthy-dic: modified.
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Sun, 28 Oct 2007 01:44:05 +0900
+
+anthy (9100b-0ubuntu1) feisty-experimental; urgency=low
+
+  * New upstream release
+  * debian/patches/05_improve_anthy_dic_learning:
+    - alredy included by upstream. removed.
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Sun, 16 Sep 2007 22:12:37 +0900
+
+anthy (9100-3ubuntu1) feisty-experimental; urgency=low
+
+  * debian/control: set maintainer to me.
+  * debian/update-anthy-dics: more fixes.
+
+ -- Ikuya Awashiro <ikuya@fruitsbasket.info>  Sun, 16 Sep 2007 22:02:59 +0900
+
+anthy (9100-3) unstable; urgency=low
+
+  * QA upload.
+  * Package is orphaned (#435842); set maintainer to Debian QA Group.
+  * debian/po/nl.po: Add translation from Bart Cornelis.  Closes: #413882.
+  * debian/rules: Don't ignore errors from `$(MAKE) clean'.
+  * debian/rules: Drop dh_undocumented.
+  * debian/control: Use ${binary:Version} to be binNMU-safe.
+
+ -- Matej Vela <vela@debian.org>  Fri, 03 Aug 2007 21:04:38 +0200
+
+anthy (9100-2) unstable; urgency=low
+
+  * QA upload.
+  * Fix update-anthy-dics. (closes: Bug#433022)
+  * debian/patches/04_improve_anthy_dic_learning
+    - A patch for improving dictionary learning.
+
+ -- Debian QA Group <packages@qa.debian.org>  Sat, 04 Aug 2007 00:00:02 +0900
+
+anthy (9100-1) unstable; urgency=low
+
+  * New upstream release (closes: Bug#431640)
+
+ -- Masahito Omote <omote@debian.org>  Sun, 08 Jul 2007 03:58:03 +0900
+
+anthy (8607-1.1) unstable; urgency=low
+
+  * Non-maintainer upload to fix pending l10n issues.
+  * Debconf translations:
+    - German. Closes: #408017
+    - Galician. Closes: #412646
+    - Portuguese. Closes: #413582
+    - Fuzzies fixed in Swedish and Czech
+    - All PO files converted to UTF-8 (Japanese was UTF-8 already)
+
+ -- Christian Perrier <bubulle@debian.org>  Tue,  6 Mar 2007 07:10:42 +0100
+
+anthy (8607-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Wed, 14 Feb 2007 01:04:36 +0900
+
+anthy (7900-3.1) unstable; urgency=low
+
+  * Non-maintainer upload to fix l10n issues
+  * Debconf translation updates:
+    - German. Closes: #398868
+    - French. Closes: #400824
+    - Russian. Closes: #404413
+    - Japanese. Closes: #407347
+
+ -- Christian Perrier <bubulle@debian.org>  Sat, 20 Jan 2007 18:19:27 +0100
+
+anthy (7900-3) unstable; urgency=low
+
+  * Acknowledge the NMU fix.
+    - NMUs about debconf translations only are always welcome.
+  * Fix the change of debconf templates in description of extra.t.
+
+ -- Masahito Omote <omote@debian.org>  Sat, 25 Nov 2006 00:34:48 +0900
+
+anthy (7900-2.1) unstable; urgency=low
+
+  * Non-maintainer upload to fix longstanding l10n issues
+  * Debconf translations:
+    - French added. Closes: #395144
+    - Czech added. Closes: #396051
+    - Swedish added. Closes: #331006
+    - Russian added. Sent during the call for updates of the NMU campaign
+  * Avoid a double negation in debconf templates. Closes: #295945
+  * Lintian fixes:
+    - rewrite the debconf template to make it compliant with the 
+      Developer's Reference recommendations
+    - unmark Choices for translation as it only contains a variable
+    - Remove the useless debian/anthy.conffiles which only lists a file 
+      in /etc
+
+ -- Christian Perrier <bubulle@debian.org>  Wed, 15 Nov 2006 07:57:08 +0100
+
+anthy (7900-2) unstable; urgency=low
+
+  * Standards-Version: 3.7.2.2
+  * debian/compat: set 5. Bump Depends: debhelper >> 5.
+  * update-anthy-dic: Fix matrix path, remove unused files, and code cleanup.
+    (closes: Bug#361500, Bug#391748)
+  * Transit to po-debconf and fix typo in anthy.templates. (closes: Bug#295803)
+  * Fix undefined non-weak symbols in libanthy.so and libanthyinput.so.
+    (closes: Bug#392528)
+
+ -- Masahito Omote <omote@debian.org>  Thu, 19 Oct 2006 23:50:00 +0900
+
+anthy (7900-1) unstable; urgency=low
+
+  * New upstream release
+  * Correct extract path of 2ch.t. (closes: Bug#361184)
+  * Correct use of mktemp in update-anthy-dics. (closes: Bug#330341)
+  * Fix typo in debian/anthy-el.README.Debian. (closes: Bug#376263).
+
+ -- Masahito Omote <omote@debian.org>  Sat,  7 Oct 2006 21:37:03 +0900
+
+anthy (7500-1) unstable; urgency=low
+
+  * New upstream release
+  * update-anthy-config: Sync with the upstream creation process.
+  * Standards-Version: 3.6.2.2
+
+ -- Masahito Omote <omote@debian.org>  Fri,  7 Apr 2006 14:40:16 +0900
+
+anthy (6724-1) unstable; urgency=low
+
+  * New upstream release which adds variant for 'ChaSen'. (closes: Bug#319491)
+  * Fix FTBFS of not installing anthy-kyuri.el. (closes: Bug#317075)
+  * postrm: Add cleanup /var/lib/anthy on purge. (closes: Bug#319723)
+  * update-anthy-config: Sync with the upstream creation process.
+
+ -- Masahito Omote <omote@debian.org>  Thu, 28 Jul 2005 22:00:49 +0900
+
+anthy (6700-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Fri,  1 Jul 2005 02:31:23 +0900
+
+anthy (6300d-2) unstable; urgency=high
+
+  * Fix typo in control and add ${misc:Depends}. (closes: Bug#307981)
+
+ -- Masahito Omote <omote@debian.org>  Thu, 19 May 2005 07:18:20 +0900
+
+anthy (6300d-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Thu, 17 Mar 2005 10:46:02 +0900
+
+anthy (6024-1) unstable; urgency=low
+
+  * New upstream release
+  * Update latest 2ch.t dictionary. Thanks to AWASHIRO Ikuya <ikuya@oooug.jp>.
+
+ -- Masahito Omote <omote@debian.org>  Sun,  2 Jan 2005 22:16:02 +0900
+
+anthy (5924-2) unstable; urgency=low
+
+  * Fix FTBFS on building arch indep package. (closes: Bug#287182)
+
+ -- Masahito Omote <omote@debian.org>  Sun, 26 Dec 2004 04:20:46 +0900
+
+anthy (5924-1) unstable; urgency=low
+
+  * New upstream release
+  * debian/anthy-el.files: Add anthy-azik.el.
+  * debian/libanthy-dev.files: Add pkgconfig/anthy.pc.
+
+ -- Masahito Omote <omote@debian.org>  Fri, 24 Dec 2004 03:44:18 +0900
+
+anthy (5822-3) unstable; urgency=high
+
+  * I decided to change the creation of anthy.dic in next upstream release.
+    So debconf template have a possibility to become obsolete. So, I parsuade
+    DDTP translators not to send translated patches.
+  * debian/anthy.config:
+    - Stop assuming all files in package are extracted.
+    - Fix error in preconfigure. (closes: Bug#278103)
+  * debian/update-anthy-dics: remove bashnisms. (closes: Bug#278131)
+  * debian/templates: Fix typo.
+
+ -- Masahito Omote <omote@debian.org>  Sun, 24 Oct 2004 10:53:28 +0900
+
+anthy (5822-2) unstable; urgency=low
+
+  * I forgot to close BTS. (closes: Bug#271152)
+  * debian/rules: Due to my mistake, I contained mkanthydic wrapper created
+    by libtool.
+
+ -- Masahito Omote <omote@debian.org>  Sun, 24 Oct 2004 10:46:26 +0900
+
+anthy (5822-1) unstable; urgency=low
+
+  * New upstream release
+  * Merge anthy-cannadic and anthy-cannadic-2ch to anthy. From this version,
+    Anthy's dictionary is generated in postinst process. You can select what
+    dicionary you use by debconf.
+  * anthy.postinst, anthy.postrm, anthy.config, anthy.templates: Use debconf
+    for selecting what dictionary you use.
+  * update-anthy-dics: Utilily for generating Anthy's dictionary.
+  * This change fixes FTBFS which is caused by generation of Anthy's
+    dictionary. (closes: Bug#271152)
+  * 03_change_anthy_dic_path.dpatch: Patch for changing path to
+    /var/lib/anthy.
+
+ -- Masahito Omote <omote@debian.org>  Sun, 24 Oct 2004 08:41:21 +0900
+
+anthy (5414-4) unstable; urgency=low
+
+  * Move anthy-cannadic-2ch creation process to install-indep section.
+
+ -- Masahito Omote <omote@debian.org>  Fri, 25 Jun 2004 04:18:18 +0900
+
+anthy (5414-3) unstable; urgency=low
+
+  * Oops, I forgot to add '-' in some of debian/rules section.
+
+ -- Masahito Omote <omote@debian.org>  Tue, 22 Jun 2004 02:51:31 +0900
+
+anthy (5414-2) unstable; urgency=low
+
+  * Fix FTBFS on some archs.
+
+ -- Masahito Omote <omote@debian.org>  Fri, 18 Jun 2004 18:43:15 +0900
+
+anthy (5414-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Fri, 18 Jun 2004 17:51:53 +0900
+
+anthy (5229-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Mon,  3 May 2004 02:07:18 +0900
+
+anthy (5100b-2) unstable; urgency=low
+
+  * Set CFLAGS="-O1" because of FTBFS on s390.
+
+ -- Masahito Omote <omote@debian.org>  Thu,  1 Apr 2004 03:08:51 +0900
+
+anthy (5100b-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Tue, 30 Mar 2004 05:18:34 +0900
+
+anthy (5100-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Sun, 29 Feb 2004 00:32:50 +0900
+
+anthy (5003-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Thu,  5 Feb 2004 07:11:12 +0900
+
+anthy (4925-1) unstable; urgency=low
+
+  * New upstream release
+  * debian/control: Remove Depends: emacs20.
+
+ -- Masahito Omote <omote@debian.org>  Sun,  1 Feb 2004 10:58:13 +0900
+
+anthy (4922-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Sat, 24 Jan 2004 02:35:44 +0900
+
+anthy (4901-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Thu,  1 Jan 2004 19:13:46 +0900
+
+anthy (4819-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Sat, 20 Dec 2003 23:03:50 +0900
+
+anthy (4809-1) unstable; urgency=low
+
+  * New upstream release
+  * Use dpatch.
+
+ -- Masahito Omote <omote@debian.org>  Thu, 11 Dec 2003 19:34:05 +0900
+
+anthy (4700-1) unstable; urgency=low
+
+  * New upstream release
+  * Standards-Version: 3.6.1.0
+  * debian/compat: set 4. Remove DH_COMPAT in debian/rules at the same time.
+
+ -- Masahito Omote <omote@debian.org>  Sun,  2 Nov 2003 01:16:16 +0900
+
+anthy (4519-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Sat, 20 Sep 2003 02:15:10 +0900
+
+anthy (4429-1) unstable; urgency=low
+
+  * New upstream release
+  * anthy: Depends anthy-cannadic | anthy-cannadic-2ch, instad of Suggests.
+
+ -- Masahito Omote <omote@debian.org>  Sat, 30 Aug 2003 16:41:54 +0900
+
+anthy (4421-2) unstable; urgency=low
+
+  * anthy-cannadic(-2ch): change architechture all from any.
+
+ -- Masahito Omote <omote@debian.org>  Sat, 23 Aug 2003 23:57:12 +0900
+
+anthy (4421-1) unstable; urgency=low
+
+  * New upstream release
+  * Split dictionary from anthy. Please install anthy-cannadic or
+    anthy-cannadic-2ch.
+
+ -- Masahito Omote <omote@debian.org>  Fri, 22 Aug 2003 17:05:17 +0900
+
+anthy (4410-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Wed, 13 Aug 2003 06:09:56 +0900
+
+anthy (4331-1) unstable; urgency=low
+
+  * New upstream release
+  * Update latest 2ch.t dictionary.
+  * Bump Standards-Version to 3.6.0
+
+ -- Masahito Omote <omote@debian.org>  Fri,  1 Aug 2003 01:23:42 +0900
+
+anthy (4300-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Tue,  1 Jul 2003 17:04:23 +0900
+
+anthy (4202-1) unstable; urgency=low
+
+  * New upstream release
+  * Bump Standards-Version to 3.5.10
+  * libanthy-dev: move section to libdevel.
+
+ -- Masahito Omote <omote@debian.org>  Mon,  2 Jun 2003 20:11:08 +0900
+
+anthy (3900-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Mon,  3 Mar 2003 19:46:35 +0900
+
+anthy (3821-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Sun, 23 Feb 2003 00:09:29 +0900
+
+anthy (3803-1) unstable; urgency=low
+
+  * New upstream release
+  * debian/copyright: Add dictionary's copyrights.
+  * debian/rules:
+    - split build/binary rules into -indep and -arch. (closes: Bug#179397)
+    - upgrade DH_COMPAT=4.
+  * debian/control: Depends debhelper(> 4.0.0)
+  * debian/anthy-el.emacsen-install: Compilation log will be redirect to file.
+
+ -- Masahito Omote <omote@debian.org>  Wed,  5 Feb 2003 21:36:47 +0900
+
+anthy (3715-2) unstable; urgency=high
+
+  * Oops, I foget containing some conversion rule files.
+  * debian/rules: cleanup
+  * debian/control: fix short description.
+
+ -- Masahito Omote <omote@debian.org>  Mon, 20 Jan 2003 21:34:40 +0900
+
+anthy (3715-1) unstable; urgency=low
+
+  * New upstream release
+  * Standards-Version: 3.5.8.0
+
+ -- Masahito Omote <omote@debian.org>  Fri, 17 Jan 2003 01:33:54 +0900
+
+anthy (3500c-1) unstable; urgency=low
+
+  * New upstream release
+    - Fixed memory leak bug.
+
+ -- Masahito Omote <omote@debian.org>  Tue, 26 Nov 2002 20:41:48 +0900
+
+anthy (3500b-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Thu,  7 Nov 2002 12:51:03 +0900
+
+anthy (3500-1) unstable; urgency=low
+
+  * New upstream release
+  * Add Build-Depends: automake1.4, autoconf2.13. 
+
+ -- Masahito Omote <omote@debian.org>  Sat,  2 Nov 2002 02:19:42 +0900
+
+anthy (3403-3) unstable; urgency=low
+
+  * Add Build-Depends: autotools-dev
+
+ -- Masahito Omote <omote@debian.org>  Sun, 13 Oct 2002 04:51:13 +0900
+
+anthy (3403-2) unstable; urgency=low
+
+  * Oops, I fogot to close ITP. (closes: Bug#163165)
+  * debian/rules: fix to work configure propely. (closes: Bug#164420)
+
+ -- Masahito Omote <omote@debian.org>  Sat, 12 Oct 2002 20:09:19 +0900
+
+anthy (3403-1) unstable; urgency=low
+
+  * New upstream release
+  * Initial Debian release.
+  * dic-tool-usage.txt: move to /usr/share/anthy. 
+
+ -- Masahito Omote <omote@debian.org>  Sun,  6 Oct 2002 19:22:31 +0900
+
+anthy (3322-2) unstable; urgency=low
+
+  * I gave up modifing leim-list.el to fix bug which is not registerd
+    japanese-anthy in emacs20 and xemacs21. So I decided to use 50anthy-el.el
+    to fix it.
+  * anthy-el.README.Debian:
+    - (load "anthy"),(load-library "/usr/../anthy/leim-list.el") are no longer
+      needed.
+    - I fogot to fix maintainer's address.
+
+ -- Masahito Omote <omote@debian.org>  Sun, 29 Sep 2002 00:39:02 +0900
+
+anthy (3322-1) unstable; urgency=low
+
+  * New upstream release
+  * debian/control: upgrade Standards-Version: 3.5.7.0.
+  * debian/control: more comprehensive in Description.
+  * move developer documents from anthy to libanthy-dev.
+  * control,copyright: change maintainer field.
+  * copyright: make more comprehensive.
+
+ -- Masahito Omote <omote@debian.org>  Fri, 27 Sep 2002 18:24:38 +0900
+
+anthy (3200-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Thu,  1 Aug 2002 11:50:06 +0900
+
+anthy (3114b-1) unstable; urgency=low
+
+  * New upstream release
+
+ -- Masahito Omote <omote@debian.org>  Fri, 19 Jul 2002 17:10:36 +0900
+
+anthy (2814-2) unstable; urgency=low
+
+  * Oops, anthy-el was not work well because of not containing leim-list.el.
+
+ -- Masahito Omote <omote@utyuuzin.net>  Sat, 20 Apr 2002 00:09:28 +0900
+
+anthy (2814-1) unstable; urgency=low
+
+  * New upstream release
+  * debian/copyright: change upstream URI.
+  * Change maintainer's mail address.
+
+ -- Masahito Omote <omote@utyuuzin.net>  Thu, 18 Apr 2002 04:40:05 +0900
+
+anthy (2427-2) unstable; urgency=low
+
+  * src-main/Makefile.am: Fix not installed libanthy.so.*.
+                          (reported by Tomohiro KUBOTA)
+  * src-util/Makefile.am: build against libanthydic.so.
+  * debian/control: wording.
+
+ -- Masahito Omote <omote@sapmed.ac.jp>  Tue,  8 Jan 2002 18:55:01 +0900
+
+anthy (2427-1) unstable; urgency=low
+
+  * New upstream release.
+  * debian/README.Debian -> debian/anthy.README.Debian
+    - remove obsolete comments.
+  * debian/copyright: change upstream URI.
+  * anthy-conf.in: translate Japanese comment into English to recognize
+                   conffiles properly in dpkg process.
+  * debian/rules: remove conftest in clean process. Default make distclean
+                  cannot remove conftest.
+
+ -- Masahito Omote <omote@sapmed.ac.jp>  Tue,  1 Jan 2002 15:53:05 +0900
+
+anthy (2307-2) unstable; urgency=low
+
+  * src-util/Makefile.am: Not to build anthy.elc.
+
+ -- Masahito Omote <omote@sapmed.ac.jp>  Fri,  9 Nov 2001 19:22:35 +0900
+
+anthy (2307-1) unstable; urgency=low
+
+  * New upstream release.
+  * Makefile.in: return to upstream.
+  * debian/control: remove Suggests anthy-cannadic.
+  * debian/rules: fix to install properly.
+
+ -- Masahito Omote <omote@sapmed.ac.jp>  Thu,  8 Nov 2001 19:04:40 +0900
+
+anthy (2218-3) unstable; urgency=low
+
+  * Suggests anthy-cannadic.
+
+ -- Masahito Omote <omote@sapmed.ac.jp>  Sat, 27 Oct 2001 13:48:04 +0900
+
+anthy (2218-2) unstable; urgency=low
+
+  * Add include/wtype.h include/xstr.h to libanthy-dev
+  * Modify Makefile.in not to occur errors in dpkg-source
+
+ -- Masahito Omote <omote@sapmed.ac.jp>  Fri, 26 Oct 2001 01:19:37 +0900
+
+anthy (2218-1) unstable; urgency=low
+
+  * Initial Release.
+
+ -- Masahito Omote <omote@sapmed.ac.jp>  Sat, 20 Oct 2001 00:38:29 +0900

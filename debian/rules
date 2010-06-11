@@ -1,0 +1,202 @@
+#!/usr/bin/make -f
+# Sample debian/rules that uses debhelper.
+# GNU copyright 1997 to 1999 by Joey Hess.
+
+# Uncomment this to turn on verbose mode.
+# export DH_VERBOSE=1
+
+include /usr/share/dpatch/dpatch.make
+
+DEB_HOST_GNU_TYPE  ?= $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE ?= $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+
+ifneq (,$(findstring debug,$(DEB_BUILD_OPTIONS)))
+	CFLAGS += -g
+endif
+ifeq (,$(findstring nostrip,$(DEB_BUILD_OPTIONS)))
+	INSTALL_PROGRAM += -s
+endif
+
+version=0
+
+METADICDIR=usr/share/anthy/dic
+DEPWORDDIR=usr/share/anthy/depgraph
+MATRIXDIR=usr/share/anthy/matrix
+CALCTRANSDIR=usr/share/anthy/calctrans
+
+DICDIR=var/lib/anthy
+ELISPDIR=usr/share/emacs/site-lisp/anthy
+
+configure: configure-stamp
+configure-stamp: patch-stamp
+	dh_testdir
+
+	-test -r /usr/share/misc/config.sub && \
+		cp -f /usr/share/misc/config.sub config.sub
+	-test -r /usr/share/misc/config.guess && \
+		cp -f /usr/share/misc/config.guess config.guess
+	./configure $(confflags) \
+		--prefix=/usr --mandir=\$${prefix}/share/man \
+		--infodir=\$${prefix}/share/info --sysconfdir=/etc/anthy \
+
+	touch configure-stamp
+
+build: build-arch build-indep
+
+build-arch: build-arch-stamp
+build-arch-stamp: configure-stamp
+	dh_testdir
+
+	$(MAKE) sysconfdir=/etc/anthy ELCFILES=""
+
+	touch build-arch-stamp
+
+build-indep: build-indep-stamp
+build-indep-stamp: configure-stamp
+	touch build-indep-stamp
+
+clean: unpatch
+	dh_testdir
+	dh_testroot
+	rm -f build-arch-stamp build-indep-stamp configure-stamp
+	debconf-updatepo
+
+	[ ! -f Makefile ] || $(MAKE) distclean
+
+	-rm -f conftest* src-util/*.elc config.log
+	dh_clean
+
+install: build
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_installdirs
+
+	-$(MAKE) install prefix=$(CURDIR)/debian/tmp/usr \
+		sysconfdir=$(CURDIR)/debian/tmp/etc/anthy \
+		lispdir=$(CURDIR)/debian/tmp/usr/share/emacs/site-lisp/anthy \
+		ELCFILES=""
+
+	install -d $(CURDIR)/debian/tmp/etc/anthy
+	install -d $(CURDIR)/debian/tmp/usr/sbin
+
+#	-mv debian/tmp/usr/share/anthy/anthy-conf debian/tmp/etc/anthy
+	sed -i -e 's/zipcode.t/dic\/zipcode.t/g' debian/tmp/etc/anthy/anthy-conf
+	install -m 644 anthy/xstr.h \
+		$(CURDIR)/debian/tmp/usr/include/anthy/xstr.h
+	install -m 644 anthy/wtype.h \
+		$(CURDIR)/debian/tmp/usr/include/anthy/wtype.h
+
+	install -m 755 mkanthydic/mkfiledic \
+		$(CURDIR)/debian/tmp/usr/bin/mkfiledic
+	install -m 755 mkworddic/.libs/mkworddic \
+		$(CURDIR)/debian/tmp/usr/bin/mkworddic
+	install -m 755 depgraph/.libs/mkdepgraph \
+		$(CURDIR)/debian/tmp/usr/bin/mkdepgraph
+	
+	install -m 755 debian/update-anthy-dics \
+		$(CURDIR)/debian/tmp/usr/sbin/update-anthy-dics
+
+	rm -rf $(CURDIR)/debian/tmp/$(MATRIXDIR)
+	install -d $(CURDIR)/debian/tmp/$(METADICDIR)
+	install -d $(CURDIR)/debian/tmp/$(DEPWORDDIR)
+	install -d $(CURDIR)/debian/tmp/$(MATRIXDIR)
+	install -d $(CURDIR)/debian/tmp/$(CALCTRANSDIR)
+	install -m 644 alt-cannadic/gcanna.ctd \
+			$(CURDIR)/debian/tmp/$(METADICDIR)/gcanna.ctd
+	install -m 644 alt-cannadic/gcannaf.ctd \
+			$(CURDIR)/debian/tmp/$(METADICDIR)/gcannaf.ctd
+	install -m 644 alt-cannadic/gtankan.ctd \
+			$(CURDIR)/debian/tmp/$(METADICDIR)/gtankan.ctd
+	install -m 644 alt-cannadic/g_fname.t \
+			$(CURDIR)/debian/tmp/$(METADICDIR)/g_fname.t
+	install -m 644 alt-cannadic/extra/gc-fullname-34.t \
+			$(CURDIR)/debian/tmp/$(METADICDIR)/gc-fullname-34.t
+	install -m 644 alt-cannadic/extra/gt-tankanji_hikanji-34.t \
+			$(CURDIR)/debian/tmp/$(METADICDIR)/gt-tankanji_hikanji-34.t
+	install -m 644 alt-cannadic/extra/gt-tankanji_kanji-34.t \
+			$(CURDIR)/debian/tmp/$(METADICDIR)/gt-tankanji_kanji-34.t
+	install -m 644 alt-cannadic/extra/g-jiritu-34.t \
+			$(CURDIR)/debian/tmp/$(METADICDIR)/g-jiritu-34.t
+	install -m 644 alt-cannadic/extra/gf-fuzoku-34.t \
+			$(CURDIR)/debian/tmp/$(METADICDIR)/gf-fuzoku-34.t
+	install -m 644 alt-cannadic/extra/gt-tankanji_hikanji-uni.t \
+			$(CURDIR)/debian/tmp/$(METADICDIR)/gt-tankanji_okuri-std.t
+
+	cd $(CURDIR)/mkworddic; \
+		for i in *.t; do \
+			install -m 644 $$i $(CURDIR)/debian/tmp/$(METADICDIR); \
+		done;
+	cd $(CURDIR)
+
+	cd $(CURDIR)/depgraph; \
+		for i in *.depword; do \
+			install -m 644 $$i $(CURDIR)/debian/tmp/$(DEPWORDDIR); \
+		done;
+	cd $(CURDIR)/depgraph; \
+		install -m 644 conjugate.table $(CURDIR)/debian/tmp/$(DEPWORDDIR)
+	cd $(CURDIR)/depgraph; \
+		install -m 644 indepword.txt $(CURDIR)/debian/tmp/$(DEPWORDDIR)
+
+	cd $(CURDIR)
+	install -m 644 mkworddic/udict \
+			$(CURDIR)/debian/tmp/$(METADICDIR)/udict
+
+	cd $(CURDIR)
+	for i in anthy.cand_info anthy.trans_info \
+		anthy.corpus_array anthy.corpus_bucket anthy.weak_words; do \
+		install -m 644 $(CURDIR)/calctrans/$$i \
+			$(CURDIR)/debian/tmp/usr/share/anthy/calctrans/$$i; \
+	done
+
+binary-indep: build-indep install
+	dh_testdir -i
+	dh_testroot -i
+
+	install -d $(CURDIR)/debian/tmp/$(ELISPDIR)
+
+	for i in anthy-conf anthy-dic anthy anthy-isearch \
+		 anthy-kyuri anthy-azik; do \
+		install -m 644 $(CURDIR)/src-util/$$i.el \
+			$(CURDIR)/debian/tmp/$(ELISPDIR)/$$i.el; \
+	done
+
+	dh_movefiles -i
+	dh_installdocs -i
+	dh_installexamples -i
+	dh_installemacsen -i
+	dh_installchangelogs -i ChangeLog
+	dh_link -i
+	dh_strip -i
+	dh_compress -i
+	dh_fixperms -i
+#	dh_makeshlibs -i
+	dh_installdeb -i
+#	dh_shlibdeps -l`pwd`/debian/libanthy$(version)/usr/lib
+	dh_gencontrol -i
+	dh_md5sums -i
+	dh_builddeb -i
+binary-arch: build-arch install
+	dh_testdir -a
+	dh_testroot -a
+	dh_movefiles -a
+	dh_installdebconf -a
+	dh_installdocs -a
+	dh_installexamples -a
+#	dh_installmenu -a
+#	dh_installemacsen
+	dh_installman -a
+	dh_installinfo -a
+	dh_installchangelogs -a ChangeLog
+	dh_link -a
+	dh_strip -a
+	dh_compress -a
+	dh_fixperms -a
+	dh_makeshlibs -a -V
+	dh_installdeb -a
+	dh_shlibdeps -a -L libanthy0 -l`pwd`/debian/libanthy$(version)/usr/lib
+	dh_gencontrol -a
+	dh_md5sums -a
+	dh_builddeb -a
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary install install-indep install-arch configure patch unpatch

@@ -1,0 +1,19 @@
+This package was debianized by Masahito Omote <omote@debian.org> on
+Sat, 20 Oct 2001 00:38:29 +0900.
+
+Upstream URI: http://anthy.sourceforge.jp/
+	      http://sourceforge.jp/projects/anthy/
+
+Upstream Author: Yusuke Tabata <yusuke@kmc.gr.jp> and Project Heke.
+
+Copyright: All of this package (of course dictionary) can redistribute under
+           the term of GPL found on Debian systems in file
+           /usr/share/common-licenses/GPL.
+
+Anthy uses cannadic and 2ch dictionary. Cannadic can be distribute under GPL.
+2ch.t is a public domain.
+
+For more infomation about these 2 dictionaries, see
+
+	  http://omaemona.sourceforge.net/packages/Canna/ (mkanthydic/2ch.t)
+	  http://cannadic.oucrc.org/ (cannadic/*)

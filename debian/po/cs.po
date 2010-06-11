@@ -1,0 +1,44 @@
+# Czech translation of anthy debconf templates.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the anthy package.
+# Miroslav Kure <kurem@debian.cz>, 2006.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: anthy\n"
+"Report-Msgid-Bugs-To: omote@debian.org\n"
+"POT-Creation-Date: 2006-11-25 00:36+0900\n"
+"PO-Revision-Date: 2006-11-22 19:40+0100\n"
+"Last-Translator: Miroslav Kure <kurem@debian.cz>\n"
+"Language-Team: Czech <debian-l10n-czech@lists.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:1001
+msgid "Add-on dictionaries to use:"
+msgstr "Dodatečné slovníky, které chcete použít:"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:1001
+msgid ""
+"The anthy package can use add-on dictionaries to the system dictionary. the "
+"following dictionaries are currently available:"
+msgstr ""
+"Balík anthy může k systémovému slovníku přidat další slovníky. Nyní jsou "
+"dostupné tyto slovníky:"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:1001
+msgid ""
+" base.t: Anthy specific words which are compatible with cannadic.\n"
+" extra.t: Anthy specific words which are not compatible with cannadic.\n"
+" 2ch.t: Dialects used in 2ch, the biggest Japanese web discussion group."
+msgstr ""
+" base.t: Slova specifická pro Anthy kompatibilní s cannadic.\n"
+" extra.t: Slova specifická pro Anthy kompatibilní s cannadic.\n"
+" 2ch.t: Dialekty používané v 2ch, největší japonské diskusní skupině."

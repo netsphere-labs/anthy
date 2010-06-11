@@ -1,0 +1,41 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: anthy\n"
+"Report-Msgid-Bugs-To: omote@debian.org\n"
+"POT-Creation-Date: 2006-11-25 00:36+0900\n"
+"PO-Revision-Date: 2007-02-25 12:35+0100\n"
+"Last-Translator: Bart Cornelis <cobaco@skolelinux.no>\n"
+"Language-Team: debian-l10n-dutch <debian-l10n-dutch@lists.debian.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:1001
+msgid "Add-on dictionaries to use:"
+msgstr "Te gebruiken aanvullende woordenboeken:"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:1001
+msgid "The anthy package can use add-on dictionaries to the system dictionary. the following dictionaries are currently available:"
+msgstr "Het anthy-pakket naast eht systeemwoordenboek ook aanvullende woordenboeken gebruiken, de volgende woordenboeken zijn momenteel beschikbaar:"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:1001
+msgid ""
+" base.t: Anthy specific words which are compatible with cannadic.\n"
+" extra.t: Anthy specific words which are not compatible with cannadic.\n"
+" 2ch.t: Dialects used in 2ch, the biggest Japanese web discussion group."
+msgstr ""
+" base.t: Anthy-specifieke woorden die compatibel zijn met cannadic.\n"
+" extra.t: Anthy-specifieke woorden die niet compatibel zijn met cannadic.\n"
+" 2ch.t: in 2ch (de grootste Japanese web-discussiegroep) gebruikte dialecten."
+
