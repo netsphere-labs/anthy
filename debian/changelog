@@ -1,3 +1,10 @@
+anthy (9100h-0ubuntu2) lucid; urgency=low
+
+  * rebuild rest of main for armel armv7/thumb2 optimization;
+    UbuntuSpec:mobile-lucid-arm-gcc-v7-thumb2
+
+ -- Alexander Sack <asac@ubuntu.com>  Fri, 05 Mar 2010 03:09:47 +0100
+
 anthy (9100h-0ubuntu1) jaunty; urgency=low
 
   * New upstream release (LP: #329425)
