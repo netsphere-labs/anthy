@@ -1,3 +1,13 @@
+2010-06-11  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* alt-cannadic/g_fname.t (WatanabeKazuhiro): Removed trailing
+	space.
+
+	* mkworddic/compound.t (KansuiKinzoku): Removed.
+	(MondaiTsuikyuu): Removed an entry and added two.
+	(YusouKido): Removed.
+	(YumakuIjo): Fixed.
+
 2010-06-02  Masanari Iida  <standby24x7@gmail.com>
 
 	* mkworddic/compound.t: Fix yomi.
