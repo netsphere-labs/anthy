@@ -1,0 +1,76 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 14_increase.dpatch by Ikuya Awashiro <ikuya@fruitsbasket.info>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+diff -urNad anthy-9100h~/src-ordering/candhistory.c anthy-9100h/src-ordering/candhistory.c
+--- anthy-9100h~/src-ordering/candhistory.c	2007-06-02 07:45:54.000000000 +0000
++++ anthy-9100h/src-ordering/candhistory.c	2009-11-26 05:25:02.000000000 +0000
+@@ -15,7 +15,7 @@
+ #include "sorter.h"
+ 
+ #define HISTORY_DEPTH 8
+-#define MAX_HISTORY_ENTRY 200
++#define MAX_HISTORY_ENTRY 35840	/* original: 200, 候補履歴 CAND_HISTORY, SUFFIX_HISTORY の学習数の上限 */
+ 
+ /** 文節のコミットを履歴に追加する */
+ static void
+diff -urNad anthy-9100h~/src-ordering/candswap.c anthy-9100h/src-ordering/candswap.c
+--- anthy-9100h~/src-ordering/candswap.c	2009-01-23 03:31:31.000000000 +0000
++++ anthy-9100h/src-ordering/candswap.c	2009-11-26 05:25:02.000000000 +0000
+@@ -17,7 +17,7 @@
+ #include <anthy/splitter.h>
+ #include "sorter.h"
+ 
+-#define MAX_INDEP_PAIR_ENTRY 100
++#define MAX_INDEP_PAIR_ENTRY 4096	/* original: 100, 自立語候補 INDEPPAIR の学習数の上限 */
+ 
+ /* 候補の自立語部を学習する */
+ static void
+diff -urNad anthy-9100h~/src-ordering/commit.c anthy-9100h/src-ordering/commit.c
+--- anthy-9100h~/src-ordering/commit.c	2007-03-01 13:35:27.000000000 +0000
++++ anthy-9100h/src-ordering/commit.c	2009-11-26 05:25:02.000000000 +0000
+@@ -13,11 +13,11 @@
+ #include <anthy/segment.h>
+ #include "sorter.h"
+ 
+-#define MAX_OCHAIRE_ENTRY_COUNT 100
+-#define MAX_OCHAIRE_LEN 32
+-#define MAX_PREDICTION_ENTRY 100
++#define MAX_OCHAIRE_ENTRY_COUNT 103424	/* original: 100, お茶入れ学習 OCHAIRE の学習数の上限 */
++#define MAX_OCHAIRE_LEN 32		/* お茶入れ学習 OCHAIRE の１件当たり項目数の上限 */
++#define MAX_PREDICTION_ENTRY 49152	/* original: 100, PREDICTION の学習数の上限 */
+ 
+-#define MAX_UNKNOWN_WORD 100
++#define MAX_UNKNOWN_WORD 2048	/* original: 100, 未知語 UNKNOWN_WORD の学習数の上限 */
+ 
+ /* 交換された候補を探す */
+ static void
+diff -urNad anthy-9100h~/src-splitter/splitter.c anthy-9100h/src-splitter/splitter.c
+--- anthy-9100h~/src-splitter/splitter.c	2007-04-25 16:16:21.000000000 +0000
++++ anthy-9100h/src-splitter/splitter.c	2009-11-26 05:25:02.000000000 +0000
+@@ -40,7 +40,7 @@
+ #include <anthy/logger.h>
+ #include "wordborder.h"
+ 
+-#define MAX_EXPAND_PAIR_ENTRY_COUNT 1000
++#define MAX_EXPAND_PAIR_ENTRY_COUNT 1024	/* original: 1000, 文節区切り EXPANDPAIR の学習数の上限 */
+ 
+ static int splitter_debug_flags;
+ 
+diff -urNad anthy-9100h~/src-worddic/record.c anthy-9100h/src-worddic/record.c
+--- anthy-9100h~/src-worddic/record.c	2009-01-27 12:11:21.000000000 +0000
++++ anthy-9100h/src-worddic/record.c	2009-11-26 05:25:02.000000000 +0000
+@@ -152,8 +152,8 @@
+   time_t journal_timestamp; /* 差分ファイルのタイムスタンプ */
+ };
+ 
+-/* 差分が100KB越えたら基本ファイルへマージ */
+-#define FILE2_LIMIT 102400
++/* 差分が200KB越えたら基本ファイルへマージ */
++#define FILE2_LIMIT 204800	/* original: 102400, last-record2_default の大きさがこれを越えたら、フラッシュして last-record1_default へマージ */
+ 
+ 
+ /*

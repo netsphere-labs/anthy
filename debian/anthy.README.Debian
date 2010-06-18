@@ -1,0 +1,19 @@
+Anthy for Debian
+----------------
+* Introduction
+Anthy is Japanese input method made by Heke Project.
+If you want to use user customized dictionary, see dic-tool-usage.txt.
+
+Developer documents are moved to libanthy-dev since 3322-1.
+
+Documantations for this package are Japanese only.
+
+* Messages for po translators
+If you make new po translations and you are DD, you can NMU without my
+permission(BTS about po translations are needed of course). If you cannot,
+please consult translation team and ask them for NMU upload. Basically, I do
+not upload updated package just for po translations. Translations are merged in
+new upstream upload. This is why it takes long time for creating dictionaries
+in anthy.postinst. This process makes end-users tired.
+
+ -- Masahito Omote <omote@debian.org>, Jul, 8 Oct 2007 03:38:29 +0900

@@ -1,0 +1,31 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 12-remove-space.dpatch by  <ikuya@hiromi>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+diff -urNad anthy-9100h~/alt-cannadic/g_fname.t anthy-9100h/alt-cannadic/g_fname.t
+--- anthy-9100h~/alt-cannadic/g_fname.t	2009-01-27 20:59:48.000000000 +0900
++++ anthy-9100h/alt-cannadic/g_fname.t	2009-02-08 20:55:10.000000000 +0900
+@@ -2088,7 +2088,7 @@
+ ã‚ã‹ã‚„ã¾ã¨ã¿ã•ã¶ã‚ã† #JN #_4è‹¥å±±_6å¯Œä¸‰éƒ
+ ã‚ãã„ãˆã¿ #JN*100 #_3å’Œä¹…äº•_2æ˜ è¦‹
+ ã‚ãŸãªã¹ã‹ã–ã‚“ #JN*10 #_4æ¸¡è¾º_3å´‹å±±
+-ã‚ãŸãªã¹ã‹ãšã²ã‚ #JN #_4æ¸¡è¾º_4å’Œåš 
++ã‚ãŸãªã¹ã‹ãšã²ã‚ #JN #_4æ¸¡è¾º_4å’Œåš
+ ã‚ãŸãªã¹ã‹ã¤ã¿ #JN*100 #_4æ¸¡è¾º_3é¦™æ´¥ç¾
+ ã‚ãŸãªã¹ã‘ã‚“ #JN*150 #_4æ¸¡è¾º_2è¬™
+ ã‚ãŸãªã¹ã•ã ãŠ #JN*100 #_4æ¸¡è¾º_3è²å¤«
+diff -urNad anthy-9100h~/alt-cannadic/gtankan.ctd anthy-9100h/alt-cannadic/gtankan.ctd
+--- anthy-9100h~/alt-cannadic/gtankan.ctd	2009-01-23 11:42:20.000000000 +0900
++++ anthy-9100h/alt-cannadic/gtankan.ctd	2009-02-08 20:55:10.000000000 +0900
+@@ -197,7 +197,7 @@
+ ¤¢¤« #KJ*7 Èì #KJ*5 å¬
+ ¤¢¤«¤®¤ì #KJ*5 æó
+ ¤¢¤«¤Ä¤Á #KJ*5 ìà
+-¤¢¤­ #KJ*13 ÌÀ #KJ*7 °¬ #KJ*5 ¡¡ #KJ*5 ãÔ
++¤¢¤­ #KJ*13 ÌÀ #KJ*7 °¬ #KJ*5 #KJ*5 ãÔ
+ ¤¢¤­¤¾¤é #KJ*5 Úá
+ ¤¢¤¯ #KJ*11 °® #KJ*7 °¯ ¸´ #KJ*5 ÔÁ Öê Ø¨ óù
+ ¤¢¤´ #KJ*5 ç¨ ğ÷ ğû

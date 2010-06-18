@@ -1,0 +1,29 @@
+#! /bin/sh /usr/share/dpatch/dpatch-run
+## 04_fix_undefined_symbol.dpatch by Masahito Omote <omote@debian.org>
+##
+## All lines beginning with `## DP:' are a description of the patch.
+## DP: No description.
+
+@DPATCH@
+diff -urNad anthy-7900~/src-main/Makefile.am anthy-7900/src-main/Makefile.am
+--- anthy-7900~/src-main/Makefile.am	2006-05-13 18:29:05.000000000 +0900
++++ anthy-7900/src-main/Makefile.am	2006-10-19 23:38:11.877013882 +0900
+@@ -4,7 +4,7 @@
+ 
+ lib_LTLIBRARIES = libanthy.la
+ 
+-libanthy_la_LIBADD = ../src-splitter/libsplit.la ../src-ordering/libordering.la -lm
++libanthy_la_LIBADD = ../src-splitter/libsplit.la ../src-ordering/libordering.la -lm ../src-diclib/libdiclib.la ../src-worddic/libanthydic.la
+ libanthy_la_LDFLAGS = -version-info 1:0:1
+ 
+ libanthy_la_SOURCES = \
+diff -urNad anthy-7900~/src-util/Makefile.am anthy-7900/src-util/Makefile.am
+--- anthy-7900~/src-util/Makefile.am	2006-06-02 00:10:55.000000000 +0900
++++ anthy-7900/src-util/Makefile.am	2006-10-19 23:38:38.526635199 +0900
+@@ -22,5 +22,6 @@
+ lib_LTLIBRARIES = libanthyinput.la
+ libanthyinput_la_SOURCES = input.c rkconv.c rkhelper.c\
+  rkconv.h rkmap.h rkhelper.h
++libanthyinput_la_LIBADD = ../src-main/libanthy.la ../src-worddic/libanthydic.la
+ 
+ pkgdata_DATA = typetab dic-tool-usage.txt
