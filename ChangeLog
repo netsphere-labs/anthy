@@ -1,3 +1,7 @@
+2010-06-21  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* mkworddic/compound.t (IjouTaishou): Fix.
+
 2010-06-11  NIIBE Yutaka  <gniibe@fsij.org>
 
 	* Makefile.am (SUBDIRS): Removed initial-dic.
