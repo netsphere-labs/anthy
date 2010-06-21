@@ -1,5 +1,7 @@
 2010-06-21  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* configure.ac (AC_OUTPUT): Removed initial-dic/Makefile.
+
 	* mkworddic/compound.t (IjouTaishou): Fix.
 
 2010-06-11  NIIBE Yutaka  <gniibe@fsij.org>
