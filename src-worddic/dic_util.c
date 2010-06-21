@@ -2,14 +2,14 @@
  * 個人辞書管理用の関数群
  *
  * 互換性の都合で
- *  utf8の辞書はtextdict
+ *  utf8の辞書はtextdic
  *  eucjpの辞書はtexttrie
  *  およびrecordを使ってて混乱しまくり
- * textdictへ移行する
+ * textdicへ移行する
  *
  * 開発予定
  *
- *  新規登録はtextdictに対して行うようにする <- todo
+ *  新規登録はtextdicに対して行うようにする <- todo
  *  texttrieの単語は移行するようにする
  *  record関係は消す
  *
@@ -42,7 +42,7 @@
 #include <anthy/conf.h>
 #include <anthy/dic.h>
 #include <anthy/texttrie.h>
-#include <anthy/textdict.h>
+#include <anthy/textdic.h>
 #include <anthy/dicutil.h>
 
 #include "dic_main.h"
@@ -64,14 +64,14 @@ static int gIsInit;
 static int dic_util_encoding;
 
 extern struct text_trie *anthy_private_tt_dic;
-extern struct textdict *anthy_private_text_dic;
+extern const char *anthy_private_text_dic;
 /* 現在選択されている読み */
 static struct iterate_contex {
   /**/
   int in_tt;
   /* texttrie */
   char key_buf[MAX_KEY_LEN+32];
-  /* textdictの検索用 */
+  /* textdicの検索用 */
   int dicfile_offset;
   char *current_index;
   char *current_line;
@@ -196,13 +196,13 @@ anthy_priv_dic_delete(void)
 {
   delete_prefix(encoding_prefix(ANTHY_EUC_JP_ENCODING));
   /**/
-  while (!anthy_textdict_delete_line(anthy_private_text_dic, 0)) {
+  while (!anthy_textdic_delete_line(anthy_private_text_dic, 0)) {
     /**/
   }
 }
 
 static int
-scan_one_word_cb(void *p, int next_offset, const char *key, const char *n)
+scan_one_word_cb(void *p, long next_offset, const char *key, const char *n)
 {
   (void)p;
   set_current_line(key, n);
@@ -211,13 +211,13 @@ scan_one_word_cb(void *p, int next_offset, const char *key, const char *n)
 }
 
 static int
-select_first_entry_in_textdict(void)
+select_first_entry_in_textdic(void)
 {
   word_iterator.dicfile_offset = 0;
   set_current_line(NULL, NULL);
-  anthy_textdict_scan(anthy_private_text_dic,
-		      word_iterator.dicfile_offset, NULL,
-		      scan_one_word_cb);
+  anthy_textdic_scan(anthy_private_text_dic,
+		     word_iterator.dicfile_offset, NULL,
+		     scan_one_word_cb);
   if (word_iterator.current_line) {
     word_iterator.in_tt = 0;
     return 0;
@@ -231,7 +231,7 @@ int
 anthy_priv_dic_select_first_entry(void)
 {
   if (dic_util_encoding == ANTHY_UTF8_ENCODING) {
-    return select_first_entry_in_textdict();
+    return select_first_entry_in_textdic();
   }
   if (anthy_private_tt_dic) {
     sprintf(word_iterator.key_buf, "%s", encoding_prefix(dic_util_encoding));
@@ -241,8 +241,8 @@ anthy_priv_dic_select_first_entry(void)
       return 0;
     }
   }
-  /* 単語が無いのでtextdictに移動を試みる */
-  return select_first_entry_in_textdict();
+  /* 単語が無いのでtextdicに移動を試みる */
+  return select_first_entry_in_textdic();
 }
 
 /** (API) 現在選択されている単語の次の単語を選択する */
@@ -251,9 +251,9 @@ anthy_priv_dic_select_next_entry(void)
 {
   if (!word_iterator.in_tt) {
     set_current_line(NULL, NULL);
-    anthy_textdict_scan(anthy_private_text_dic, word_iterator.dicfile_offset,
-			NULL,
-			scan_one_word_cb);
+    anthy_textdic_scan(anthy_private_text_dic, word_iterator.dicfile_offset,
+		       NULL,
+		       scan_one_word_cb);
     if (word_iterator.current_line) {
       return 0;
     }
@@ -262,8 +262,8 @@ anthy_priv_dic_select_next_entry(void)
   if (find_next_key(encoding_prefix(dic_util_encoding))) {
     return 0;
   }
-  /* 単語が無いのでtextdictに移動を試みる */
-  return select_first_entry_in_textdict();
+  /* 単語が無いのでtextdicに移動を試みる */
+  return select_first_entry_in_textdic();
 }
 
 /** 未実装 */
@@ -371,7 +371,7 @@ anthy_priv_dic_get_word(char *buf, int len)
 }
 
 static int
-find_cb(void *p, int next_offset, const char *key, const char *n)
+find_cb(void *p, long next_offset, const char *key, const char *n)
 {
   struct scan_context *sc = p;
   struct word_line res;
@@ -390,7 +390,7 @@ find_cb(void *p, int next_offset, const char *key, const char *n)
 }
 
 static int
-order_cb(void *p, int next_offset, const char *key, const char *n)
+order_cb(void *p, long next_offset, const char *key, const char *n)
 {
   struct scan_context *sc = p;
   (void)n;
@@ -404,9 +404,9 @@ order_cb(void *p, int next_offset, const char *key, const char *n)
 
 /* 引数はutf8 */
 static int
-do_add_word_to_textdict(struct textdict *td, int offset,
-			const char *yomi, const char *word,
-			const char *wt_name, int freq)
+do_add_word_to_textdic(const char *td, int offset,
+		       const char *yomi, const char *word,
+		       const char *wt_name, int freq)
 {
   char *buf = malloc(strlen(yomi) + strlen(word) + strlen(wt_name) + 20);
   int rv;
@@ -414,7 +414,7 @@ do_add_word_to_textdict(struct textdict *td, int offset,
     return -1;
   }
   sprintf(buf, "%s %s*%d %s\n", yomi, wt_name, freq, word);
-  rv = anthy_textdict_insert_line(td, offset, buf);
+  rv = anthy_textdic_insert_line(td, offset, buf);
   free(buf);
   return rv;
 }
@@ -471,8 +471,8 @@ find_same_word(char *idx_buf, const char *yomi,
 }
 
 static int
-add_word_to_textdict(const char *yomi, const char *word,
-		     const char *wt_name, int freq)
+add_word_to_textdic(const char *yomi, const char *word,
+		    const char *wt_name, int freq)
 {
   struct scan_context sc;
   int rv;
@@ -502,10 +502,10 @@ add_word_to_textdict(const char *yomi, const char *word,
   /**/
   sc.offset = 0;
   sc.found_word = 0;
-  anthy_textdict_scan(anthy_private_text_dic, 0, &sc,
-		      find_cb);
+  anthy_textdic_scan(anthy_private_text_dic, 0, &sc,
+		     find_cb);
   if (sc.found_word == 1) {
-    anthy_textdict_delete_line(anthy_private_text_dic, sc.offset);
+    anthy_textdic_delete_line(anthy_private_text_dic, sc.offset);
   }
   if (freq == 0) {
     return ANTHY_DIC_UTIL_OK;
@@ -513,11 +513,11 @@ add_word_to_textdict(const char *yomi, const char *word,
   /* 追加する場所を探す */
   sc.offset = 0;
   sc.found_word = 0;
-  anthy_textdict_scan(anthy_private_text_dic, 0, &sc,
-		      order_cb);
+  anthy_textdic_scan(anthy_private_text_dic, 0, &sc,
+		     order_cb);
   /* 追加する */
-  rv = do_add_word_to_textdict(anthy_private_text_dic, sc.offset,
-			       yomi, word, wt_name, freq);
+  rv = do_add_word_to_textdic(anthy_private_text_dic, sc.offset,
+			      yomi, word, wt_name, freq);
   if (!rv) {
     return ANTHY_DIC_UTIL_OK;
   }
@@ -532,12 +532,12 @@ anthy_priv_dic_add_entry(const char *yomi, const char *word,
 			 const char *wt_name, int freq)
 {
   if (dic_util_encoding == ANTHY_UTF8_ENCODING) {
-    return add_word_to_textdict(yomi, word, wt_name, freq);
+    return add_word_to_textdic(yomi, word, wt_name, freq);
   } else {
     int rv;
     char *yomi_utf8 = anthy_conv_euc_to_utf8(yomi);
     char *word_utf8 = anthy_conv_euc_to_utf8(word);
-    rv = add_word_to_textdict(yomi_utf8, word_utf8, wt_name, freq);
+    rv = add_word_to_textdic(yomi_utf8, word_utf8, wt_name, freq);
     free(yomi_utf8);
     free(word_utf8);
     return rv;
