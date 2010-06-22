@@ -363,7 +363,6 @@ anthy_forget_unused_unknown_word(xstr *xs)
   v = anthy_xstr_to_cstr(xs, ANTHY_UTF8_ENCODING);
   sprintf(key_buf, " U%s 0", v);
   free(v);
-  anthy_trie_delete(anthy_private_tt_dic, key_buf);
 
   /* recordに記録された物を消す */
   if (anthy_select_section("UNKNOWN_WORD", 0)) {
