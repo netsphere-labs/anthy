@@ -1245,7 +1245,7 @@ commit_add_row(struct record_stat* rst,
   FILE* fp;
   int i;
 
-  if (rs->is_anon)
+  if (rst->is_anon)
     return ;
 
   fp = fopen(rst->journal_fn, "a");
