@@ -972,12 +972,12 @@ check_base_record_uptodate(struct record_stat *rst)
 {
   struct stat st;
   if (rst->is_anon) {
-    return 1;
+    return 0;
   }
   anthy_check_user_dir();
   if (stat(rst->base_fn, &st) < 0) {
     return 0;
-  } else if (st.st_mtime != rst->base_timestamp) {
+  } else if (st.st_mtime == rst->base_timestamp) {
     return 0;
   }
   return 1;
@@ -1244,6 +1244,9 @@ commit_add_row(struct record_stat* rst,
 {
   FILE* fp;
   int i;
+
+  if (rst->is_anon)
+    return ;
 
   fp = fopen(rst->journal_fn, "a");
   if (fp == NULL) {
@@ -1530,7 +1533,7 @@ sync_add(struct record_stat* rst, struct record_section* rsc,
 	 struct trie_node* node)
 {
   lock_record(rst);
-  if (check_base_record_uptodate(rst)) {
+  if (!check_base_record_uptodate(rst)) {
     node->dirty |= PROTECT;
     /* 差分ファイルだけ読む */
     read_journal_record(rst);
