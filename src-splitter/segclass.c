@@ -5,19 +5,24 @@
 #include <anthy/segclass.h>
 #include "wordborder.h"
 
-static struct {
-  const char *name;
-  const char *sym;
-} seg_class_tab[] = {
-  {"Ê¸Æ¬", "H"}, {"Ê¸Ëö", "T"}, {"Ê¸Àá", "B"},
-  {"ÀÜÂ³¸ì", "C"}, {"Ì¾»ì+³Ê½õ»ì", "Nk"}, {"Ì¾»ì+½ªÃ¼", "Ne"},
-  {"Æ°»ì+ÉÕÂ°¸ì", "Vf"}, {"Æ°»ì+½ªÃ¼", "Ve"}, {"·ÁÍÆ»ì", "A"},
-  {"·ÁÍÆÆ°»ì", "AJV"},
-  {"Ï¢ÍÑ½¤¾þ", "YM"}, {"Ï¢ÂÎ½¤¾þ", "TM"},
-  {"Ì¾»ì", "N"}, {"Ì¾»ì+ÉÕÂ°¸ì", "Nf"}, {"Ì¾»ì+Ï¢ÍÑ", "Ny"},
-  {"Æ°»ì+Ï¢ÍÑ", "Vy"},
-  {"Æ°»ì+Ï¢ÂÎ", "Vt"},
-  {NULL, NULL}
+const char *seg_class_tab[] = {
+  "H"		/* Head of sentence: Buntou */
+  "T"		/* Tail of sentence: Bunmatsu */
+  "B"		/* Segment: Bunsetsu */
+  "C"		/* Setsuzokugo */
+  "Nk"		/* Meishi+Kakujoshi */
+  "Ne"		/* Meishi+Shuutan */
+  "Vf"		/* Doushi+Fuzokugo */
+  "Ve"		/* Doushi+Shuutan */
+  "A"		/* Keiyoushi */
+  "AJV"		/* Keiyoudoushi */
+  "YM"		/* RenyouShuushoku */
+  "TM"		/* RentaiShuushoku */
+  "N"		/* Meishi */
+  "Nf"		/* Meishi+Fuzokugo */
+  "Ny"		/* Meishi+Renyou */
+  "Vy"		/* Doushi+Renyou */
+  "Vt"		/* Doushi+Rentai */
 };
 
 void
@@ -107,24 +112,7 @@ anthy_set_seg_class(struct word_list* wl)
   wl->seg_class = seg_class;
 }
 
-const char* anthy_seg_class_name(enum seg_class sc)
-{
-  return seg_class_tab[sc].name;
-}
-
 const char* anthy_seg_class_sym(enum seg_class sc)
 {
-  return seg_class_tab[sc].sym;
-}
-
-enum seg_class
-anthy_seg_class_by_name(const char *name)
-{
-  int i;
-  for (i = 0; seg_class_tab[i].name; i++) {
-    if (!strcmp(seg_class_tab[i].name, name)) {
-      return i;
-    }
-  }
-  return SEG_BUNSETSU;
+  return seg_class_tab[sc];
 }
