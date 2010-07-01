@@ -2,7 +2,7 @@
 noinst_SCRIPTS =
 EXTRA_DICS = extra.t compound.t adjust.t utf8.t
 ZIPCODE_DICT = zipcode.t
-CANNADIC_DIST = gcanna.ctd gcannaf.ctd
+CANNADIC_DIST = gcanna.t gcannaf.ctd
 INCLUDES = -I$(top_srcdir)/
 # HOKUTODIC_DIST = hokuto.t
 # You can get it from
@@ -14,7 +14,7 @@ EXTRA_DIST = \
  udict dict.args.in
 
 # Files, to build dictionay, not to pack sources.
-DIC_FILES = @top_srcdir@/alt-cannadic/gcanna.ctd \
+DIC_FILES = @top_srcdir@/alt-cannadic/gcanna.t \
 	    @top_srcdir@/alt-cannadic/gcannaf.ctd \
 	    @top_srcdir@/alt-cannadic/gtankan.ctd \
 	    @top_srcdir@/mkworddic/adjust.t \

@@ -37,6 +37,9 @@ UTF-8 にして extra に入れているのは、
 
 * g-jiritu-34.t (A)
    - 自立語辞書
+* g-keiyousi_ie-std.t (A)
+   - 形容詞イ音便・エ音便辞書(「さみ(寒)ー」「切ねえ」等)
+     ※利用には alt-depgraph が必要です
 * gc-fullname-34.t (A)
    - 人名フルネーム辞書
 * gf-fuzoku-34.t (A)
