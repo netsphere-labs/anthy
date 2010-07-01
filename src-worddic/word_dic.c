@@ -33,7 +33,7 @@
 #include <anthy/logger.h>
 #include <anthy/xchar.h>
 #include <anthy/feature_set.h>
-#include <anthy/textdict.h>
+#include <anthy/textdic.h>
 
 #include <anthy/diclib.h>
 
@@ -255,7 +255,7 @@ load_word(xstr *xs, const char *n, int is_reverse)
 }
 
 static int
-gang_scan(void *p, int offset, const char *key, const char *n)
+gang_scan(void *p, long offset, const char *key, const char *n)
 {
   struct gang_scan_context *gsc = p;
   struct gang_elm *elm;
@@ -284,13 +284,13 @@ gang_scan(void *p, int offset, const char *key, const char *n)
 }
 
 static void
-scan_dict(struct textdict *td, int nr, struct gang_elm **array)
+scan_dict(const char *td, int nr, struct gang_elm **array)
 {
   struct gang_scan_context gsc;
   gsc.nr = nr;
   gsc.array = array;
   gsc.nth = 0;
-  anthy_textdict_scan(td, 0, &gsc, gang_scan);
+  anthy_textdic_scan(td, 0, &gsc, gang_scan);
 }
 
 struct scan_arg {
@@ -299,10 +299,10 @@ struct scan_arg {
 };
 
 static void
-request_scan(struct textdict *td, void *arg)
+request_scan(const char *tdname, void *arg)
 {
   struct scan_arg *sarg = (struct scan_arg *)arg;
-  scan_dict(td, sarg->nr, sarg->array);
+  scan_dict(tdname, sarg->nr, sarg->array);
 }
 
 static void

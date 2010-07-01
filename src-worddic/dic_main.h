@@ -86,8 +86,6 @@ struct word_line {
   const char *word;
 };
 int anthy_parse_word_line(const char *line, struct word_line *res);
-struct textdict;
-void anthy_ask_scan(void (*request_scan)(struct textdict *, void *),
-		    void *arg);
+void anthy_ask_scan(void (*request_scan)(const char *, void *), void *arg);
 
 #endif
