@@ -1,3 +1,51 @@
+2010-07-01  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* depgraph/v.depword (@DoushiRenyoukeiD, @DoushiRenyoukei5):
+	Remove space before EOL.
+
+	* depgraph/fix.depword (@Te, @Ni): Remove extra space.
+	(@No): Remove space before EOL.
+
+	* depgraph/conjugate.depword (@Iru, @Nai): Remove space before EOL.
+
+2010-06-22  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* src-worddic/record.c (check_base_record_uptodate): Return 0 when
+	is_anon is valid.
+	Correct condition when it's up-to-date.
+	(commit_add_row): Don't write when is_anon is valid.
+	(sync_add): Correct condition.
+
+2010-06-22  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* src-worddic/priv_dic.c (anthy_forget_unused_unknown_word):
+	Don't call anthy_trie_delete.
+
+2010-06-21  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* anthy/textdic.h: New file.
+	* anthy/textdict.h: Removed.
+	* src-worddic/textdic.c: New file.
+	* src-worddic/textdict.c: Removed.
+	* anthy/Makefile.am (noinst_HEADERS): Added textdic.h.
+	Removed textdict.h.
+	* src-worddic/Makefile.am (libanthydic_la_SOURCES): Added textdic.c.
+	Removed textdict.c.
+	* src-worddic/dic_main.h (anthy_ask_scan): Follow new API of textdic.
+	* src-worddic/dic_util.c (anthy_private_text_dic): Follow new API
+	of textdic.
+	(anthy_priv_dic_delete, scan_one_word_cb)
+	(select_first_entry_in_textdic, anthy_priv_dic_select_next_entry)
+	(do_add_word_to_textdict): Likewise.
+	(select_first_entry_in_textdic, add_word_to_textdic): Renamed.
+	* src-worddic/priv_dic.c (anthy_private_text_dic)
+	(anthy_imported_text_dic, anthy_ask_scan, anthy_init_private_dic)
+	(anthy_release_private_dic): Follow new API of textdic.
+	(open_textdic): Removed.
+	(textdicname): New.
+	* src-worddic/word_dic.c (gang_scan, scan_dict, request_scan):
+	Follow new API of textdic.
+
 2010-06-21  NIIBE Yutaka  <gniibe@fsij.org>
 
 	* configure.ac (AC_OUTPUT): Removed initial-dic/Makefile.
