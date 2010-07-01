@@ -1,3 +1,85 @@
+2010-07-01  Jun Oizumi  <vagus.xyz@gmail.com>
+
+	Cherry pick changes done in alt-depgraph branch (by gniibe).
+	Same as alt-depgraph-new branch.
+
+	[Anthy-dev 3751] alt-depgraph_add_pos.patch
+
+	* anthy/wtype.h: Added/formatted comments.
+	  (CC_A): Removed.
+	  (CC_A_U, CC_AJV, CC_SRV): Renumbered.
+	  (CC_SRV2, CC_KV2, CC_A_KU, CC_A_SIKU, CC_A_E, CC_A_I,
+	  CC_A_ii, CC_A_nai, CC_A_yoi, CC_RZ): New.
+	  (SCOS_T1, SCOS_T6, SCOS_T11, SCOS_T16, SCOS_T21, SCOS_T26,
+	  SCOS_T31, SCOS_T36): New.
+
+	* src-worddic/ptab.h (Meisi1 SCOS_T1): New.
+	  (Meisi6 SCOS_T6): New.
+	  (Meisi11 SCOS_T11): New.
+	  (Meisi16 SCOS_T16): New.
+	  (Meisi21 SCOS_T21): New.
+	  (Meisi26 SCOS_T26): New.
+	  (Meisi31 SCOS_T31): New.
+	  (Meisi36 SCOS_T36): New.
+	  (MeisikaSetsubigo): Use COS_SUFFIX (was: COS_NONE).
+	  (MeishiSetsubiji): Use WF_INDEP (was: WF_NONE).
+	  (JinmeiSettouji,ChimeiSettouji,ChimeiSetsubiji,SahenSetsubiji):
+	  Likewise.
+	  (RengoArazuGokan): New.
+	  (KahenKatsuyouDoushiKateikei2): New.
+	  (SuruMizenkeiSE): Use CC_SRV2 (was: CC_SRV).
+	  (SuruShuushikeiSURU): New.
+	  (SuruShuushikeiSURE): New.
+	  (SuruShuushikeiSURYA): New.
+	  (SuruShuushikeiSEYO): Use CC_SRV2 (was: CC_SRV).
+	  (KeiyoushikaSetsubigo): Use CT_HEAD (was: CT_NONE).
+	  (Keiyoushi): Use SCOS_NONE (was: SCOS_A0).
+	  (KeiyoushiKUgokan,KeiyoushiGokanE-onbin,KeiyoushiGokani-onbin,
+	  KeiyoushiU-onbin,Keiyoushi-II-gokan,Keiyoushi-NAI-gokan,
+	  Keiyoushi-YOI-gokan.): New.
+	  (KeiyoushiGokan): Removed.
+	  (KeiyoushiDoushikaSetsubigo): New.
+	  (Rentaishi): Use WF_INDEP (was: WF_NONE).
+
+	* src-worddic/wtab.h (#kki, #kko, #kxoi, #kxure, #kxuru,
+          #kxuru2, #kxya, #sxi, #sxe, #sxi2, #sxuru, #sxure, #sxiro,
+          #sxeyo, #sxya): New.
+	  (#DNKY): Use COS_SUFFIX, CC_A_KU (was: COS_NONE, CC_A).
+	  (#yasui): Likewise.
+	  (#D2T16): Use POS_NOUN, COS_SUFFIX, WF_INDEP|WF_AJV (was:
+	  POS_INVAL, COS_NONE, WF_INDEP).
+	  (#DT2T35): Use SCOS_T40 (was: SCOS_NONE).
+	  (#KY): Use CC_A_KU (was: CC_A).
+	  (#KYE, #KYI): New.
+	  (#KYT): Use CC_A_KU (was: CC_A).
+	  (#KYU): Use SCOS_A0 (was: SCOS_NONE).
+	  (#KYii): New.
+	  (#KYme,#KYmi,#KYmime): Use CC_A_KU (was: CC_A).
+	  (#KYn): New.
+	  (#KYna): Use CC_A_KU (was: CC_A).
+	  (#KYs, #KYy): New.
+	  (#N2KYT): Use CC_A_KU (was: CC_A).
+	  (#N2T10): Use POS_NOUN, COS_SUFFIX, WF_INDEP|WF_AJV|WF_SV
+	            (was: POS_INVAL, COS_NONE, WF_INDEP).
+	  (#N2T16,#N2T17): Use POS_AJV, COS_SUFFIX, WF_INDEP|WF_AJV
+	  	    (was: POS_INVAL, COS_NONE, WF_INDEP).
+	  (#N2T30): Use COS_SUFFIX, WF_INDEP|WF_SV
+	  	    (was: COS_NONE, WF_INDEP).
+	  (#ND2KY): Use CC_A_KU (was: CC_A).
+	  (#SUC): Use POS_SUC (was: POS_NOUN).
+	  (#T00,#T01,#T02,#T03,#T04): Added WF_AJV with |.
+	  (#T04): Use SCOS_T4 (was: SCOS_NONE).
+	  (#T05): Use CC_NONE (was: CC_AJV).
+	  (#T06,#T07,#T08,#T09,#T10,#T11,#T12,#T13,#T14,#T15,#T16,#T17,#T18,#T19):
+	  Added WF_AJV with |.
+	  (#T21): Use SCOS_T21 (was: SCOS_T20).
+	  (#T26): Use SCOS_T26 (was: SCOS_T25).
+	  (#T31): Use SCOS_T31 (was: SCOS_T30).
+	  (#T36): Use SCOS_T36 (was: SCOS_T35).
+	  (#kxi,#kxo,#kxoi,#kxure,#kxuru,#kxya,#sxi,#sxe,#sxi2,#sxiro,#sxeyo):
+	  Removed.
+	  (#arazu): New.
+
 2010-07-01  Jun Oizumi <vagus.xyz@gmail.com>
 
 	Cherry pick changes done in alt-depgraph-new branch (by gniibe).
