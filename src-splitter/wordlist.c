@@ -33,6 +33,16 @@
 
 static void *weak_word_array;
 
+static wtype_t anthy_wtype_noun;
+static wtype_t anthy_wtype_name_noun;
+#if 0
+static wtype_t anthy_wtype_prefix;
+#endif
+static wtype_t anthy_wtype_num_prefix;
+static wtype_t anthy_wtype_num_postfix;
+static wtype_t anthy_wtype_name_postfix;
+static wtype_t anthy_wtype_sv_postfix;
+
 /* デバッグ用 */
 void
 anthy_print_word_list(struct splitter_context *sc,
@@ -322,11 +332,14 @@ make_pre_words(struct splitter_context *sc,
 	make_following_word_list(sc, &new_tmpl);
 	/* 数の場合は接尾辞もくっつける */
 	make_suc_words(sc, &new_tmpl);
-      }/* else if (anthy_get_seq_ent_wtype_freq(pre, anthy_wtype_prefix)) {
+      }
+#if 0
+      else if (anthy_get_seq_ent_wtype_freq(pre, anthy_wtype_prefix)) {
 	new_tmpl = *tmpl;
 	push_part_front(&new_tmpl, i, pre, anthy_wtype_prefix);
 	make_following_word_list(sc, &new_tmpl);
-	}*/
+      }
+#endif
     }
   }
 }
@@ -579,4 +592,35 @@ anthy_make_word_list_all(struct splitter_context *sc)
   make_dummy_head(sc);
 
   anthy_free_allocator(de_ator);
+}
+
+int
+anthy_init_wordlist (void)
+{
+  /* {"名詞35",POS_NOUN,COS_NONE,SCOS_T35,CC_NONE,CT_NONE,WF_INDEP} */
+  anthy_type_to_wtype ("#T", &anthy_wtype_noun);
+
+  /* {"人名",POS_NOUN,COS_JN,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP} */
+  anthy_type_to_wtype ("#JN", &anthy_wtype_name_noun);
+#if 0
+  /* {"名詞接頭辞",POS_PRE,COS_NONE,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP} */
+  anthy_type_to_wtype ("#PRE", &anthy_wtype_prefix);
+#endif
+  /* {"数接頭辞",POS_PRE,COS_NN,SCOS_NONE,CC_NONE,CT_NONE,WF_NONE} */
+  anthy_type_to_wtype ("#NNPRE", &anthy_wtype_num_prefix);
+
+  /* {"数接尾辞",POS_SUC,COS_NN,SCOS_NONE,CC_NONE,CT_NONE,WF_NONE} */
+  /* {"#JS",POS_SUC,COS_NN,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP}    # "助数詞" */
+  anthy_type_to_wtype ("#JS", &anthy_wtype_num_postfix);
+
+  /* {"人名接尾辞",POS_SUC,COS_JN,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP} */
+  anthy_type_to_wtype ("JNSUC", &anthy_wtype_name_postfix);
+
+  /* {"サ変接尾辞",POS_SUC,COS_SVSUFFIX,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP} */
+  anthy_type_to_wtype ("#SVSUC", &anthy_wtype_sv_postfix);
+
+  /* {"数詞",POS_NUMBER,COS_NN,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP} */
+  anthy_type_to_wtype ("#NN", &anthy_wtype_num_noun); /* exported for ext_ent.c */
+
+  return 0;
 }

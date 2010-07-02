@@ -1,5 +1,36 @@
 2010-07-02  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* src-worddic/ext_ent.c (wt_num): Removed.
+	(anthy_init_ext_ent): Remove initialization of wt_num.
+	(anthy_get_nth_dic_ent_wtype_of_ext_ent)
+	(anthy_get_ext_seq_ent_wtype): Use anthy_wtype_num_noun instead of wt_num.
+
+	* src-main/main.c (anthy_init): Call anthy_init_wordlist.
+
+	* src-splitter/wordborder.h: Removed variable declarations of anthy_wtype_*.
+
+	* src-splitter/wordlist.c (anthy_wtype_noun)
+	(anthy_wtype_name_noun, anthy_wtype_prefix)
+	(anthy_wtype_num_prefix, anthy_wtype_num_postfix)
+	(anthy_wtype_name_postfix, anthy_wtype_sv_postfix): Moved from
+	splitter.c, and make them static.
+	(anthy_init_wordlist): New function.  Moved calls of
+	anthy_init_wtype_by_name from splitter.c, and change the calls to
+	anthy_type_to_wtype.
+
+	* src-worddic/wtype.c (anthy_wtype_a_tail_of_v_renyou)
+	(anthy_wtype_num_noun): Moved from splitter.c.
+	(anthy_init_wtypes): Initialize anthy_wtype_a_tail_of_v_renyou and
+	anthy_wtype_num_noun by anthy_type_to_wtype.
+
+	* anthy/wtype.h (anthy_init_wordlist, anthy_wtype_num_noun)
+	(anthy_wtype_a_tail_of_v_renyou): Added declarations.
+
+	* src-splitter/splitter.c (anthy_wtype_noun_tail)
+	(anthy_wtype_v_renyou, anthy_wtype_n1, anthy_wtype_n10): Removed unused variables.
+
+2010-07-02  NIIBE Yutaka  <gniibe@fsij.org>
+
 	* src-worddic/ptab.h (KeiyoushiGokan): Added back again.
 
 2010-07-01  Jun Oizumi  <vagus.xyz@gmail.com>
