@@ -80,7 +80,7 @@ anthy_init_wtypes(void)
 
   /* {"形容詞化接尾語",POS_D2KY,COS_NONE,SCOS_A1,CC_NONE,CT_HEAD,WF_INDEP} */
   /* {"#D2KY",POS_D2KY,COS_SUFFIX,SCOS_A1,CC_A_KU,CT_HEAD,WF_INDEP} # "形容詞化接尾語(しづらい,がたい)" */
-  anthy_type_to_wtype ("D2KY", &anthy_wtype_a_tail_of_v_renyou); /* exported for metaword.c */
+  anthy_type_to_wtype ("#D2KY", &anthy_wtype_a_tail_of_v_renyou); /* exported for metaword.c */
 }
 
 /*

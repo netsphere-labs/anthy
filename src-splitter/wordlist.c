@@ -614,7 +614,7 @@ anthy_init_wordlist (void)
   anthy_type_to_wtype ("#JS", &anthy_wtype_num_postfix);
 
   /* {"人名接尾辞",POS_SUC,COS_JN,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP} */
-  anthy_type_to_wtype ("JNSUC", &anthy_wtype_name_postfix);
+  anthy_type_to_wtype ("#JNSUC", &anthy_wtype_name_postfix);
 
   /* {"サ変接尾辞",POS_SUC,COS_SVSUFFIX,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP} */
   anthy_type_to_wtype ("#SVSUC", &anthy_wtype_sv_postfix);
