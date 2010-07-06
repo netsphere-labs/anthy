@@ -1,11 +1,9 @@
 # Files 
-DEPWORDS = master.depword noun.depword v.depword \
- av.depword a.depword\
- ajv.depword noun-variant.depword \
- fix.depword conjugate.depword \
- conjugate.table
+DEPWORDS = conjugate.table conjugate.depword fix.depword noun.depword \
+	   noun-variant.depword av.depword v.depword \
+	   a.depword  ajv.depword master.depword
 INCLUDES = -I$(top_srcdir)/ -DSRCDIR=\"$(srcdir)\"
-CLEANFILES = anthy.dep
+CLEANFILES = anthy.dep all.depword
 EXTRA_DIST = indepword.txt $(DEPWORDS)
 
 # Generate the dictionary
@@ -13,7 +11,10 @@ noinst_PROGRAMS = mkdepgraph
 mkdepgraph_SOURCES = mkdepgraph.c
 mkdepgraph_LDADD =  ../src-main/libanthy.la ../src-worddic/libanthydic.la
 
-anthy.dep : mkdepgraph $(DEPWORDS)
+anthy.dep : mkdepgraph all.depword indepword.txt
 	./mkdepgraph
 
-noinst_DATA = anthy.dep
+all.depword: $(DEPWORDS)
+	cat $(DEPWORDS) | sed -n /^[^#]/p > $@
+
+noinst_DATA = anthy.dep all.depword

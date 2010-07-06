@@ -1,3 +1,21 @@
+2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* depgraph/Makefile.am (DEPWORDS): Change order (as same as
+        read order in master.depword).
+	(CLEANFILES): Added all.depword.
+	(all.depword): Added a rule to generate.
+
+	* depgraph/master.depword: Comment out all include.
+
+	* depgraph/mkdepgraph.c (parse_dep): Call fprintf instead of
+          anthy_log.
+	(check_nodes): Likewise.
+	(get_tokens): New.
+	(init_depword_tab): Simply use fopen/fgets/fclose.
+	(init_indep_word_seq_tab): Likewise.
+	(parse_indep): Error check when realloc fails.
+	(main): Don't use anthy/conf.
+
 2010-07-05  NIIBE Yutaka  <gniibe@fsij.org>
 
 	* src-worddic/ext_ent.c (wt_num): Removed.
