@@ -1,3 +1,7 @@
+2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* src-worddic/textdic.c (anthy_textdic_scan): Added missing break.
+
 2010-07-02  NIIBE Yutaka  <gniibe@fsij.org>
 
 	* src-worddic/ptab.h (KeiyoushiGokan): Added back again.
