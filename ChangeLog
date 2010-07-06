@@ -1,4 +1,7 @@
-2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
+2010-07-05  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* depgraph/indepword.txt (FukushiGokan): Removed.
+	* depgraph/av.depword (FukushiGokan): Ditto.
 
 	* src-worddic/textdic.c (anthy_textdic_scan): Added missing break.
 
