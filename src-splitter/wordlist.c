@@ -401,7 +401,7 @@ make_word_list(struct splitter_context *sc,
     int freq;
     anthy_get_nth_dep_rule(i, &rule);
     if (!is_compound) {
-      freq = anthy_get_seq_ent_wtype_freq(se, rule.wt);
+      freq = anthy_get_seq_ent_wtype_freq0 (se, rule.wt);
     } else {
       freq = anthy_get_seq_ent_wtype_compound_freq(se, rule.wt);
     }

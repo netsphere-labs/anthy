@@ -541,7 +541,7 @@ int
 anthy_get_ext_seq_ent_wtype(struct seq_ent *se, wtype_t w)
 {
   if (se == &num_ent) {
-    if (anthy_wtype_include(w, anthy_wtype_num_noun)) {
+    if (anthy_wtype_include(anthy_wtype_num_noun, w)) {
       /* 数字の場合 */
       return 10;
     }

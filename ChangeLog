@@ -1,5 +1,29 @@
 2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* anthy/dic.h (anthy_get_seq_ent_wtype_freq0): New.
+
+	* depgraph/indepword-wt.txt: New file.
+
+	* depgraph/Makefile.am: Use indepword-wt.txt.
+
+	* depgraph/mkdepgraph.c (INDEPWORD_INPUT_FILENAME): Use
+	indepword-wt.txt.
+	(parse_indep): Support #XX type description.
+	(init_indep_word_seq_tab): # is not comment any more.
+
+	* src-splitter/compose.c (enum_candidates): Use anthy_wtype_equal.
+
+	* src-splitter/wordlist.c (make_word_list): Use
+	anthy_get_seq_ent_wtype_freq0.
+
+	* src-worddic/ext_ent.c (anthy_get_ext_seq_ent_wtype): Bug fix.
+	Swap arg1 and arg2.
+
+	* src-worddic/word_dic.c (anthy_get_seq_ent_wtype_freq0): New.
+	(anthy_get_seq_ent_wtype_compound_freq): Use anthy_wtype_equal.
+
+2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
+
 	* depgraph/Makefile.am (DEPWORDS): Change order (as same as
         read order in master.depword).
 	(CLEANFILES): Added all.depword.

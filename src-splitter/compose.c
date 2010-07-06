@@ -153,8 +153,7 @@ enum_candidates(struct seg_ent *seg,
     }
     anthy_get_nth_dic_ent_wtype(ce->elm[n].se, &ce->elm[n].str, i, &wt);
 
-    ce->elm[n].wt = anthy_get_wtype_with_ct(ce->elm[n].wt, CT_NONE);
-    if (anthy_wtype_include(ce->elm[n].wt, wt)) {
+    if (anthy_wtype_equal (ce->elm[n].wt, wt)) {
       xstr word, yomi;
 
       yomi.len = ce->elm[n].str.len;
