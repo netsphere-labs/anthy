@@ -65,7 +65,7 @@ anthy_print_word_list(struct splitter_context *sc,
 		  wl->part[PART_POSTFIX].len].c;
   anthy_putxstr(&xs);
   anthy_print_wtype(wl->part[PART_CORE].wt);
-  printf(" %s%s\n", anthy_seg_class_name(wl->seg_class),
+  printf(" %s%s\n", anthy_seg_class_sym(wl->seg_class),
 	 (wl->is_compound ? ",compound" : ""));
 }
 

@@ -1,5 +1,15 @@
 2010-07-05  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* src-splitter/wordlist.c (anthy_print_word_list): Use
+	anthy_seg_class_sym (was: anthy_seg_class_name).
+	* src-splitter/metaword.c (anthy_do_print_metaword): Ditto.
+	* src-splitter/lattice.c (calc_probability): Ditto.
+
+	* src-splitter/segclass.c (anthy_seg_class_by_name): Removed.
+	(anthy_seg_class_name): Removed.
+	(seg_class_tab): It's now just a string table.
+	* anthy/segclass.h: Follow the change.
+
 	* depgraph/indepword.txt (FukushiGokan): Removed.
 	* depgraph/av.depword (FukushiGokan): Ditto.
 

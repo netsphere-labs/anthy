@@ -193,7 +193,7 @@ calc_probability(int cc, struct feature_list *fl)
 
   if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_LN) {
     anthy_feature_list_print(fl);
-    printf(" cc=%d(%s), P=%f\n", cc, anthy_seg_class_name(cc), prob);
+    printf(" cc=%d(%s), P=%f\n", cc, anthy_seg_class_sym(cc), prob);
   }
   return prob;
 }
