@@ -1,5 +1,9 @@
 2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* src-splitter/segclass.c (seg_class_tab): Added missing colons.
+
+2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
+
 	* anthy/dic.h (anthy_get_seq_ent_wtype_freq0): New.
 
 	* depgraph/indepword-wt.txt: New file.

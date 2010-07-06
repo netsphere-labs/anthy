@@ -6,23 +6,23 @@
 #include "wordborder.h"
 
 const char *seg_class_tab[] = {
-  "H"		/* Head of sentence: Buntou */
-  "T"		/* Tail of sentence: Bunmatsu */
-  "B"		/* Segment: Bunsetsu */
-  "C"		/* Setsuzokugo */
-  "Nk"		/* Meishi+Kakujoshi */
-  "Ne"		/* Meishi+Shuutan */
-  "Vf"		/* Doushi+Fuzokugo */
-  "Ve"		/* Doushi+Shuutan */
-  "A"		/* Keiyoushi */
-  "AJV"		/* Keiyoudoushi */
-  "YM"		/* RenyouShuushoku */
-  "TM"		/* RentaiShuushoku */
-  "N"		/* Meishi */
-  "Nf"		/* Meishi+Fuzokugo */
-  "Ny"		/* Meishi+Renyou */
-  "Vy"		/* Doushi+Renyou */
-  "Vt"		/* Doushi+Rentai */
+  "H",		/* Head of sentence: Buntou */
+  "T",		/* Tail of sentence: Bunmatsu */
+  "B",		/* Segment: Bunsetsu */
+  "C",		/* Setsuzokugo */
+  "Nk",		/* Meishi+Kakujoshi */
+  "Ne",		/* Meishi+Shuutan */
+  "Vf",		/* Doushi+Fuzokugo */
+  "Ve",		/* Doushi+Shuutan */
+  "A",		/* Keiyoushi */
+  "AJV",	/* Keiyoudoushi */
+  "YM",		/* RenyouShuushoku */
+  "TM",		/* RentaiShuushoku */
+  "N",		/* Meishi */
+  "Nf",		/* Meishi+Fuzokugo */
+  "Ny",		/* Meishi+Renyou */
+  "Vy",		/* Doushi+Renyou */
+  "Vt",		/* Doushi+Rentai */
 };
 
 void
