@@ -69,6 +69,8 @@ anthy_textdic_scan (const char *name, long offset, void *data,
 	      if (column1 == NULL && buf[i] != ' ')
 		column1 = &buf[i];
 	  }
+	else
+	  break;
 
       offset += i;
       if (column1 == NULL)
