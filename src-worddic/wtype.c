@@ -27,6 +27,9 @@
 
 wtype_t anthy_wt_none, anthy_wt_all;
 
+wtype_t anthy_wtype_num_noun;
+wtype_t anthy_wtype_a_tail_of_v_renyou;
+
 struct wttable {
   const char *name;
   int pos;
@@ -71,6 +74,13 @@ anthy_init_wtypes(void)
 
   anthy_wt_none = anthy_wt_all;
   anthy_wt_none.pos = POS_INVAL;
+
+  /* {"数詞",POS_NUMBER,COS_NN,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP} */
+  anthy_type_to_wtype ("#NN", &anthy_wtype_num_noun); /* exported for ext_ent.c */
+
+  /* {"形容詞化接尾語",POS_D2KY,COS_NONE,SCOS_A1,CC_NONE,CT_HEAD,WF_INDEP} */
+  /* {"#D2KY",POS_D2KY,COS_SUFFIX,SCOS_A1,CC_A_KU,CT_HEAD,WF_INDEP} # "形容詞化接尾語(しづらい,がたい)" */
+  anthy_type_to_wtype ("#D2KY", &anthy_wtype_a_tail_of_v_renyou); /* exported for metaword.c */
 }
 
 /*

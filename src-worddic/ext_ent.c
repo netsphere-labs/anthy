@@ -36,8 +36,6 @@
 static struct seq_ent unkseq_ent;/*未知文字列たとえば英文字列とか*/
 static struct seq_ent num_ent;/*数字など*/
 static struct seq_ent sep_ent;/*セパレータなど。*/
-/* ext entryのwtype*/
-static wtype_t wt_num;
 
 static xchar narrow_wide_tab[]= {WIDE_0, WIDE_1, WIDE_2,
 				 WIDE_3, WIDE_4, WIDE_5,
@@ -520,7 +518,7 @@ anthy_get_nth_dic_ent_wtype_of_ext_ent(xstr *xs, int nth,
   (void)nth;
   type = anthy_get_xstr_type(xs);
   if (type & (XCT_NUM | XCT_WIDENUM)) {
-    *wt = wt_num;
+    *wt = anthy_wtype_num_noun;
     return 0;
   }
   if (type & XCT_KATA) {
@@ -543,7 +541,7 @@ int
 anthy_get_ext_seq_ent_wtype(struct seq_ent *se, wtype_t w)
 {
   if (se == &num_ent) {
-    if (anthy_wtype_include(w, wt_num)) {
+    if (anthy_wtype_include(w, anthy_wtype_num_noun)) {
       /* 数字の場合 */
       return 10;
     }
@@ -568,6 +566,4 @@ anthy_init_ext_ent(void)
   num_ent.nr_dic_ents = 0;
   sep_ent.seq_type = 0;
   sep_ent.nr_dic_ents = 0;
-  /**/
-  wt_num = anthy_init_wtype_by_name("数詞");
 }

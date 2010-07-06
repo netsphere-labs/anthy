@@ -300,4 +300,9 @@ void anthy_init_wtypes(void);
 extern wtype_t anthy_wt_all;/* すべてにマッチする自立語 */
 extern wtype_t anthy_wt_none;/* 品詞無しPOS_INVAL */
 
+extern wtype_t anthy_wtype_num_noun;
+extern wtype_t anthy_wtype_a_tail_of_v_renyou;
+
+/* In src-splitter/wordlist.c */
+int anthy_init_wordlist (void);
 #endif
