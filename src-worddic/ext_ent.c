@@ -543,7 +543,7 @@ int
 anthy_get_ext_seq_ent_wtype(struct seq_ent *se, wtype_t w)
 {
   if (se == &num_ent) {
-    if (anthy_wtype_include(w, wt_num)) {
+    if (anthy_wtype_include(wt_num, w)) {
       /* 数字の場合 */
       return 10;
     }

@@ -256,7 +256,7 @@ get_tokens (char *buf, char **tokens, int n)
 #define MAX_TOKEN 256
 #define BUFSIZE 1024
 #define DEPWORD_INPUT_FILENAME "all.depword"
-#define INDEPWORD_INPUT_FILENAME "indepword.txt"
+#define INDEPWORD_INPUT_FILENAME "indepword-wt.txt"
 
 static void
 init_depword_tab(void)
@@ -305,25 +305,64 @@ init_depword_tab(void)
 static void
 parse_indep (char **tokens, int nr, int lineno)
 {
-  if (nr < 2) {
-    fprintf(stderr, "%d: Syntex error in indepword defs.\n", lineno);
-    return;
-  }
+  int node;
+  wtype_t wt;
+  int i;
 
-  gRules = (struct wordseq_rule*)realloc (gRules, sizeof(struct wordseq_rule)*(nrRules+1));
+  if (anthy_type_to_wtype (tokens[0], &wt) == NULL)
+    {
+      fprintf (stderr, "%d: no such WT\n", lineno);
+      return;
+    }
+
+  for (i = 0; i < nrRules; i++)
+    if (anthy_wtype_equal (gRules[i].wt, wt))
+      return;
+
+  gRules = (struct wordseq_rule *)realloc (gRules, sizeof (struct wordseq_rule)*(nrRules+1));
   if (gRules == NULL)
     {
       fprintf (stderr, "%d: malloc failed.\n", lineno);
       exit (1);
     }
 
-  /* 行の先頭には品詞の名前が入っている */
-  gRules[nrRules].wt = anthy_init_wtype_by_name(tokens[0]);
+  if (nr == 2)
+    node = get_node_id_by_name (tokens[1]);
+  else if (nr >= 3)
+    {
+      int i;
+      struct dep_branch *db;
+      struct dep_node *dn;
+      xstr *strs[1];
 
-  /* その次にはノード名が入っている */
-  gRules[nrRules].node_id = get_node_id_by_name(tokens[1]);
+      node = get_node_id_by_name (tokens[0]); /* New node */
+      dn = &gNodes[node];
+      strs[0] = anthy_cstr_to_xstr ("", ANTHY_EUC_JP_ENCODING);
+      db = find_branch (dn, strs, 1);
 
-  nrRules ++;
+      db->transition = (struct dep_transition *)realloc (db->transition,
+							 sizeof (struct dep_transition)*
+							 (db->nr_transitions + nr - 1));
+
+      for (i = 1; i < nr; i++)
+	{
+	  struct dep_transition *tr;
+
+	  tr = &db->transition[db->nr_transitions];
+	  parse_transition (tokens[i], tr);
+	  db->nr_transitions++;
+	}
+    }
+  else
+    {
+      if (nr != 1)
+	fprintf (stderr, "%d: syntax error (ignored).\n", lineno);
+      return;
+    }
+
+  gRules[nrRules].wt = wt;
+  gRules[nrRules].node_id = node;
+  nrRules++;
 }
 
 /** 自立語からの遷移表 */
@@ -350,8 +389,6 @@ init_indep_word_seq_tab (void)
 	goto error;
 
       *p = '\0';
-      if (buf[0] == '#')
-	continue;
 
       lineno++;
       nr = get_tokens (buf, tokens, MAX_TOKEN);
