@@ -1,5 +1,16 @@
 2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* anthy/wtype.h (CT_MEISIKA): Removed.
+	(anthy_wtype_get_meisi): Removed.
+
+	* src-worddic/word_lookup.c (add_dic_ent): No need to add
+          entries with CT_MEISIKA.
+
+	* src-worddic/wtype.c (pos_name_tab)
+	(anthy_init_wtype_by_name,anthy_wtype_get_meisi): Removed.
+
+2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
+
 	* anthy-conf.in (INDEPWORD, DEPWORD): Removed.
 	* anthy-test-conf.in: Likwise.
 	* test/prediction.c: Likewise.

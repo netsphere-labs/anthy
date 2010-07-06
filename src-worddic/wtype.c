@@ -40,11 +40,6 @@ struct wttable {
   int flags;
 };
 
-/* 品詞の日本語の名前を品詞に変換するテーブル */
-static struct wttable pos_name_tab[]= {
-#include "ptab.h"
-};
-
 /* 辞書中の品詞の名前を品詞に変換するテーブル */
 static struct wttable wt_name_tab[]= {
 #include "wtab.h"
@@ -102,20 +97,6 @@ anthy_type_to_wtype(const char *s, wtype_t *t)
   }
   *t = anthy_get_wtype(w->pos, w->cos, w->scos, w->cc, w->ct, w->flags);
   return w->name;
-}
-
-wtype_t
-anthy_init_wtype_by_name(const char *name)
-{
-  struct wttable *p;
-  p = find_wttab(pos_name_tab, name);
-
-  if (p) {
-    return anthy_get_wtype(p->pos, p->cos, p->scos, p->cc, p->ct, p->flags);
-  }
-
-  printf("Failed to find wtype(%s).\n", name);
-  return anthy_wt_all;
 }
 
 /* 二つの品詞が完全に一致しているかどうか */
@@ -203,12 +184,6 @@ int
 anthy_wtype_get_indep(wtype_t t)
 {
   return t.wf & WF_INDEP;
-}
-
-int
-anthy_wtype_get_meisi(wtype_t w)
-{
-  return w.wf & WF_MEISI;
 }
 
 int
