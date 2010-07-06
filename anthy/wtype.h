@@ -65,8 +65,6 @@
 #define CT_MEIREI 6
  /* 語幹 */
 #define CT_HEAD 7
- /* 動詞連用形名詞化 */
-#define CT_MEISIKA 8
 
 /* 動詞の活用クラス Conjugate Class */
 #define CC_NONE 0
@@ -282,7 +280,6 @@ int anthy_wtype_get_wf(wtype_t w);
 /* フラグの取得 */
 int anthy_wtype_get_indep(wtype_t w);
 int anthy_wtype_get_sv(wtype_t w);
-int anthy_wtype_get_meisi(wtype_t w);
 int anthy_wtype_get_ajv(wtype_t w);
 
 wtype_t anthy_get_wtype(int pos, int cos, int scos, int cc, int ct, int wf);
