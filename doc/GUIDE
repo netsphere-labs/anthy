@@ -32,4 +32,4 @@ chmod 6が行われますが、これは不注意な設定に対する
 ** 共通の設定 **
 anthy-confに変数名、内容を記述します
 anthy-confは典型的には /usr/local/etc/ にインストールされます
-変数名には ANTHYDIR, DIC_FILE, INDEPWORD, DEPWORD, (ZIPDICT_EUC)
+変数名には ANTHYDIR, DIC_FILE, (ZIPDICT_EUC)

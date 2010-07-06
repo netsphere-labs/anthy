@@ -1,5 +1,12 @@
 2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* anthy-conf.in (INDEPWORD, DEPWORD): Removed.
+	* anthy-test-conf.in: Likwise.
+	* test/prediction.c: Likewise.
+	* doc/GUIDE: Remove explanation of them.
+
+2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
+
 	* src-splitter/segclass.c (seg_class_tab): Added missing colons.
 
 2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
