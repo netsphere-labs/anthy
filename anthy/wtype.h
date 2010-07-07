@@ -258,9 +258,6 @@ struct wtype{
 
 typedef struct wtype wtype_t;
 
-/** anthy_wtype_include(名詞、人名)は真、逆は偽 */
-int anthy_wtype_include(wtype_t haystack, wtype_t needle);
-
 /* 二つの品詞が完全に一致するかどうかを見る */
 int anthy_wtype_equal(wtype_t lhs, wtype_t rhs);
 
@@ -280,23 +277,15 @@ int anthy_wtype_get_wf(wtype_t w);
 /* フラグの取得 */
 int anthy_wtype_get_indep(wtype_t w);
 int anthy_wtype_get_sv(wtype_t w);
-int anthy_wtype_get_ajv(wtype_t w);
 
 wtype_t anthy_get_wtype(int pos, int cos, int scos, int cc, int ct, int wf);
-wtype_t anthy_get_wtype_with_ct(wtype_t base, int ct);
-
-void anthy_wtype_set_pos(wtype_t *w, int pos);
-void anthy_wtype_set_cc(wtype_t *w, int cc);
-void anthy_wtype_set_ct(wtype_t *w, int ct);
-void anthy_wtype_set_cos(wtype_t *w, int cs);
-void anthy_wtype_set_scos(wtype_t *w, int scos);
-void anthy_wtype_set_dep(wtype_t *w, int isDep);
 
 void anthy_init_wtypes(void);
 
 extern wtype_t anthy_wt_all;/* すべてにマッチする自立語 */
 extern wtype_t anthy_wt_none;/* 品詞無しPOS_INVAL */
 
+extern wtype_t anthy_wtype_noun;
 extern wtype_t anthy_wtype_num_noun;
 extern wtype_t anthy_wtype_a_tail_of_v_renyou;
 

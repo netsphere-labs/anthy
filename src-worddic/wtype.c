@@ -27,7 +27,7 @@
 
 wtype_t anthy_wt_none, anthy_wt_all;
 
-wtype_t anthy_wtype_num_noun;
+wtype_t anthy_wtype_noun, anthy_wtype_num_noun;
 wtype_t anthy_wtype_a_tail_of_v_renyou;
 
 struct wttable {
@@ -69,6 +69,9 @@ anthy_init_wtypes(void)
 
   anthy_wt_none = anthy_wt_all;
   anthy_wt_none.pos = POS_INVAL;
+
+  /* {"名詞35",POS_NOUN,COS_NONE,SCOS_T35,CC_NONE,CT_NONE,WF_INDEP} */
+  anthy_type_to_wtype ("#T", &anthy_wtype_noun);
 
   /* {"数詞",POS_NUMBER,COS_NN,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP} */
   anthy_type_to_wtype ("#NN", &anthy_wtype_num_noun); /* exported for ext_ent.c */
@@ -115,34 +118,6 @@ anthy_wtype_equal(wtype_t lhs, wtype_t rhs)
   }
 }
 
-
-/* n は hs の一部かどうか？ */
-int
-anthy_wtype_include(wtype_t hs, wtype_t n)
-{
-  /*printf("POS %d,%d\n", hs.type[WT_POS], n.type[WT_POS]);*/
-  if (hs.pos != POS_NONE &&
-      hs.pos != n.pos) {
-    return 0;
-  }
-  if (hs.cc != CC_NONE &&
-      hs.cc != n.cc) {
-    return 0;
-  }
-  if (hs.ct != CT_NONE &&
-      hs.ct != n.ct) {
-    return 0;
-  }
-  if (hs.cos != COS_NONE &&
-      hs.cos != n.cos) {
-    return 0;
-  }
-  if (hs.scos != SCOS_NONE &&
-      hs.scos != n.scos) {
-    return 0;
-  }
-  return 1;
-}
 
 int
 anthy_wtype_get_cc(wtype_t t)
@@ -192,52 +167,6 @@ anthy_wtype_get_sv(wtype_t w)
   return w.wf & WF_SV;
 }
 
-int
-anthy_wtype_get_ajv(wtype_t w)
-{
-  return w.wf & WF_AJV;
-}
-
-void
-anthy_wtype_set_cc(wtype_t *w, int cc)
-{
-  w->cc = cc;
-}
-
-void
-anthy_wtype_set_ct(wtype_t *w, int ct)
-{
-  w->ct = ct;
-}
-
-void
-anthy_wtype_set_pos(wtype_t *w, int pos)
-{
-  w->pos = pos;
-}
-
-void
-anthy_wtype_set_cos(wtype_t *w, int cs)
-{
-  w->cos = cs;
-}
-
-void
-anthy_wtype_set_scos(wtype_t *w, int sc)
-{
-  w->scos = sc;
-}
-
-void
-anthy_wtype_set_dep(wtype_t *w, int isDep)
-{
-  if (isDep) {
-    w->wf &= (~WF_INDEP);
-  }else{
-    w->wf |= WF_INDEP;
-  }
-}
-
 void
 anthy_print_wtype(wtype_t w)
 {
@@ -248,17 +177,6 @@ anthy_print_wtype(wtype_t w)
 	 anthy_wtype_get_cc(w),
 	 anthy_wtype_get_ct(w),
 	 anthy_wtype_get_wf(w));
-}
-
-wtype_t
-anthy_get_wtype_with_ct(wtype_t base, int ct)
-{
-  wtype_t w;
-
-  w = base;
-  w.ct = ct;
-
-  return w;
 }
 
 wtype_t

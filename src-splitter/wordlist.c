@@ -33,7 +33,6 @@
 
 static void *weak_word_array;
 
-static wtype_t anthy_wtype_noun;
 static wtype_t anthy_wtype_name_noun;
 #if 0
 static wtype_t anthy_wtype_prefix;
@@ -241,10 +240,11 @@ make_suc_words(struct splitter_context *sc,
   int core_is_sv_noun = 0;
 
   /* まず、接尾辞が付く自立語かチェックする */
-  if (anthy_wtype_include(anthy_wtype_num_noun, core_wt)) {
+  if (anthy_wtype_get_pos (core_wt) == POS_NUMBER) {
     core_is_num = 1;
   }
-  if (anthy_wtype_include(anthy_wtype_name_noun, core_wt)) {
+  if (anthy_wtype_get_pos (core_wt) == POS_NOUN &&
+      anthy_wtype_get_cos (core_wt) == COS_JN) {
     core_is_name = 1;
   }
   if (anthy_wtype_get_sv(core_wt)) {
@@ -268,19 +268,19 @@ make_suc_words(struct splitter_context *sc,
       /* 右側の文字列は付属語なので、自立語の品詞にあわせてチェック */
       struct word_list new_tmpl;
       if (core_is_num &&
-	  anthy_get_seq_ent_wtype_freq(suc, anthy_wtype_num_postfix)) {
+	  anthy_get_seq_ent_wtype_freq (suc, anthy_wtype_num_postfix)) {
 	new_tmpl = *tmpl;
 	push_part_back(&new_tmpl, i, suc, anthy_wtype_num_postfix);
 	make_following_word_list(sc, &new_tmpl);
       }
       if (core_is_name &&
-	  anthy_get_seq_ent_wtype_freq(suc, anthy_wtype_name_postfix)) {
+	  anthy_get_seq_ent_wtype_freq (suc, anthy_wtype_name_postfix)) {
 	new_tmpl = *tmpl;
 	push_part_back(&new_tmpl, i, suc, anthy_wtype_name_postfix);
 	make_following_word_list(sc, &new_tmpl);
       }
       if (core_is_sv_noun &&
-	  anthy_get_seq_ent_wtype_freq(suc, anthy_wtype_sv_postfix)) {
+	  anthy_get_seq_ent_wtype_freq (suc, anthy_wtype_sv_postfix)) {
 	new_tmpl = *tmpl;
 	push_part_back(&new_tmpl, i, suc, anthy_wtype_sv_postfix);
 	make_following_word_list(sc, &new_tmpl);
@@ -310,7 +310,7 @@ make_pre_words(struct splitter_context *sc,
   wtype_t core_wt = tmpl->part[PART_CORE].wt;
   int core_is_num = 0;
   /* 自立語は数詞か？ */
-  if (anthy_wtype_include(anthy_wtype_num_noun, core_wt)) {
+  if (anthy_wtype_get_pos (core_wt) == POS_NUMBER) {
     core_is_num = 1;
   }
   /* 接頭辞を列挙する */
@@ -326,7 +326,7 @@ make_pre_words(struct splitter_context *sc,
     if (anthy_get_seq_ent_pos(pre, POS_PRE)) {
       struct word_list new_tmpl;
       if (core_is_num &&
-	  anthy_get_seq_ent_wtype_freq(pre, anthy_wtype_num_prefix)) {
+	  anthy_get_seq_ent_wtype_freq (pre, anthy_wtype_num_prefix)) {
 	new_tmpl = *tmpl;
 	push_part_front(&new_tmpl, i, pre, anthy_wtype_num_prefix);
 	make_following_word_list(sc, &new_tmpl);
@@ -334,7 +334,7 @@ make_pre_words(struct splitter_context *sc,
 	make_suc_words(sc, &new_tmpl);
       }
 #if 0
-      else if (anthy_get_seq_ent_wtype_freq(pre, anthy_wtype_prefix)) {
+      else if (anthy_get_seq_ent_wtype_freq (pre, anthy_wtype_prefix)) {
 	new_tmpl = *tmpl;
 	push_part_front(&new_tmpl, i, pre, anthy_wtype_prefix);
 	make_following_word_list(sc, &new_tmpl);
@@ -401,9 +401,9 @@ make_word_list(struct splitter_context *sc,
     int freq;
     anthy_get_nth_dep_rule(i, &rule);
     if (!is_compound) {
-      freq = anthy_get_seq_ent_wtype_freq0 (se, rule.wt);
+      freq = anthy_get_seq_ent_wtype_freq (se, rule.wt);
     } else {
-      freq = anthy_get_seq_ent_wtype_compound_freq(se, rule.wt);
+      freq = anthy_get_seq_ent_wtype_compound_freq (se, rule.wt);
     }
 
     if (freq) {
@@ -597,9 +597,6 @@ anthy_make_word_list_all(struct splitter_context *sc)
 int
 anthy_init_wordlist (void)
 {
-  /* {"名詞35",POS_NOUN,COS_NONE,SCOS_T35,CC_NONE,CT_NONE,WF_INDEP} */
-  anthy_type_to_wtype ("#T", &anthy_wtype_noun);
-
   /* {"人名",POS_NOUN,COS_JN,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP} */
   anthy_type_to_wtype ("#JN", &anthy_wtype_name_noun);
 #if 0
@@ -618,9 +615,6 @@ anthy_init_wordlist (void)
 
   /* {"サ変接尾辞",POS_SUC,COS_SVSUFFIX,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP} */
   anthy_type_to_wtype ("#SVSUC", &anthy_wtype_sv_postfix);
-
-  /* {"数詞",POS_NUMBER,COS_NN,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP} */
-  anthy_type_to_wtype ("#NN", &anthy_wtype_num_noun); /* exported for ext_ent.c */
 
   return 0;
 }

@@ -39,7 +39,6 @@ int anthy_get_nth_dic_ent_wtype(seq_ent_t, xstr *, int nth, wtype_t *w);
 int anthy_get_seq_ent_pos(seq_ent_t, int pos);
 int anthy_get_seq_ent_ct(seq_ent_t, int pos, int ct);
 int anthy_get_seq_ent_wtype_freq(seq_ent_t, wtype_t);
-int anthy_get_seq_ent_wtype_freq0(seq_ent_t, wtype_t);
 int anthy_get_seq_ent_indep(seq_ent_t se);
 /* Ê£¹ç¸ì */
 compound_ent_t anthy_get_nth_compound_ent(seq_ent_t se, int nth);

@@ -522,8 +522,7 @@ anthy_get_nth_dic_ent_wtype_of_ext_ent(xstr *xs, int nth,
     return 0;
   }
   if (type & XCT_KATA) {
-    *wt = anthy_get_wtype(POS_NOUN, COS_NONE, SCOS_NONE, CC_NONE,
-			  CT_NONE, WF_INDEP);
+    *wt = anthy_wtype_noun;
     return 0;
   }
   return -1;
@@ -541,7 +540,7 @@ int
 anthy_get_ext_seq_ent_wtype(struct seq_ent *se, wtype_t w)
 {
   if (se == &num_ent) {
-    if (anthy_wtype_include(anthy_wtype_num_noun, w)) {
+    if (anthy_wtype_get_pos (w) == POS_NUMBER) {
       /* 数字の場合 */
       return 10;
     }

@@ -1,3 +1,38 @@
+2010-07-07  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* src-worddic/wtype.c (anthy_wtype_noun): Moved here (was:
+	wordlist.c).
+	(anthy_init_wtypes): Initialize anthy_wtype_noun.
+	(anthy_wtype_include, anthy_wtype_get_ajv, anthy_wtype_set_cc)
+	(anthy_wtype_set_ct, anthy_wtype_set_pos, anthy_wtype_set_cos)
+	(anthy_wtype_set_scos, anthy_wtype_set_dep)
+	(anthy_get_wtype_with_ct): Removed.
+
+	* src-worddic/word_dic.c (anthy_get_seq_ent_wtype_freq0): Removed
+	(anthy_get_seq_ent_wtype_freq): Now works as
+	anthy_get_seq_ent_wtype_freq0 (call anthy_wtype_equal instead of
+	anthy_wtype_include).
+
+	* src-worddic/ext_ent.c (anthy_get_nth_dic_ent_wtype_of_ext_ent):
+	Use anthy_wtype_noun (instead of calling anthy_get_type).
+	(anthy_get_ext_seq_ent_wtype): Just compare if it's POS_NUMBER.
+
+	* src-splitter/wordlist.c (make_suc_words): Just compare if it's
+	POS_NUMBER or POS_NOUN (no need to use anthy_wtype_include).
+	(make_pre_words): Likewise.
+	(make_word_list): Call anthy_get_seq_ent_wtype_freq (which
+	is now behave anthy_get_seq_ent_wtype_freq0).
+	(anthy_init_wordlist): Remove initialization of anthy_wtype_noun
+	and anthy_wtype_num_noun.
+
+	* anthy/wtype.h (anthy_wtype_include, anthy_wtype_get_ajv)
+	(anthy_get_wtype_with_ct, anthy_wtype_set_pos, anthy_wtype_set_cc)
+	(anthy_wtype_set_ct, anthy_wtype_set_cos, anthy_wtype_set_scos)
+	(anthy_wtype_set_dep): Removed.
+	(anthy_wtype_noun): Added (exported).
+
+	* anthy/dic.h (anthy_get_seq_ent_wtype_compound_freq0): Removed.
+
 2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
 
 	* anthy/wtype.h (CT_MEISIKA): Removed.

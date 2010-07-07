@@ -491,33 +491,7 @@ anthy_get_seq_ent_ct(seq_ent_t se, int pos, int ct)
  * wtの品詞を持つ単語の中で最大の頻度を持つものを返す
  */
 int
-anthy_get_seq_ent_wtype_freq(seq_ent_t seq, wtype_t wt)
-{
-  int i, f;
-
-  if (!seq) {
-    return 0;
-  }
-  /**/
-  if (seq->nr_dic_ents == 0) {
-    return anthy_get_ext_seq_ent_wtype(seq, wt);
-  }
-
-  f = 0;
-  /* 単語 */
-  for (i = 0; i < seq->nr_dic_ents; i++) {
-    if (seq->dic_ents[i]->order == 0 &&
-	anthy_wtype_include(wt, seq->dic_ents[i]->type)) {
-      if (f < seq->dic_ents[i]->freq) {
-	f = seq->dic_ents[i]->freq;
-      }
-    }
-  }
-  return f;
-}
-
-int
-anthy_get_seq_ent_wtype_freq0(seq_ent_t seq, wtype_t wt)
+anthy_get_seq_ent_wtype_freq (seq_ent_t seq, wtype_t wt)
 {
   int i, f;
 
