@@ -45,6 +45,26 @@ static struct wttable wt_name_tab[]= {
 #include "wtab.h"
 };
 
+static wtype_t
+anthy_get_wtype (int pos, int cos, int scos, int cc, int ct, int wf)
+{
+  union {
+    unsigned int u;
+    wtype_t wt;
+  } w;
+
+  w.u = 0;
+
+  w.wt.pos = pos;
+  w.wt.cos = cos;
+  w.wt.scos = scos;
+  w.wt.cc = cc;
+  w.wt.ct = ct;
+  w.wt.wf = wf;
+
+  return w.wt;
+}
+
 static struct wttable *
 find_wttab(struct wttable *array, const char *name)
 {
@@ -60,15 +80,11 @@ find_wttab(struct wttable *array, const char *name)
 void
 anthy_init_wtypes(void)
 {
-  anthy_wt_all.pos = POS_NONE;
-  anthy_wt_all.cc = CC_NONE;
-  anthy_wt_all.ct = CT_NONE;
-  anthy_wt_all.cos = COS_NONE;
-  anthy_wt_all.scos = SCOS_NONE;
-  anthy_wt_all.wf = WF_NONE;
+  anthy_wt_all = anthy_get_wtype (POS_NONE, COS_NONE, SCOS_NONE,
+				  CC_NONE, CT_NONE, WF_NONE);
 
-  anthy_wt_none = anthy_wt_all;
-  anthy_wt_none.pos = POS_INVAL;
+  anthy_wt_none = anthy_get_wtype (POS_INVAL, COS_NONE, SCOS_NONE,
+				   CC_NONE, CT_NONE, WF_NONE);
 
   /* {"Ì¾»ì35",POS_NOUN,COS_NONE,SCOS_T35,CC_NONE,CT_NONE,WF_INDEP} */
   anthy_type_to_wtype ("#T", &anthy_wtype_noun);
@@ -106,16 +122,15 @@ anthy_type_to_wtype(const char *s, wtype_t *t)
 int
 anthy_wtype_equal(wtype_t lhs, wtype_t rhs)
 {
-  if (lhs.pos == rhs.pos &&
-      lhs.cos == rhs.cos &&
-      lhs.scos == rhs.scos &&
-      lhs.cc == rhs.cc &&
-      lhs.ct == rhs.ct &&
-      lhs.wf == rhs.wf) {
-    return 1;
-  } else {
-    return 0;
-  }
+  union {
+    unsigned int u;
+    wtype_t wt;
+  } l, r;
+
+  l.wt = lhs;
+  r.wt = rhs;
+
+  return (l.u == r.u);
 }
 
 
@@ -177,19 +192,4 @@ anthy_print_wtype(wtype_t w)
 	 anthy_wtype_get_cc(w),
 	 anthy_wtype_get_ct(w),
 	 anthy_wtype_get_wf(w));
-}
-
-wtype_t
-anthy_get_wtype(int pos, int cos, int scos, int cc, int ct, int wf)
-{
-  wtype_t w;
-
-  w.pos = pos;
-  w.cos = cos;
-  w.scos = scos;
-  w.cc = cc;
-  w.ct = ct;
-  w.wf = wf;
-
-  return w;
 }

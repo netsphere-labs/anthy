@@ -37,8 +37,14 @@ static struct dep_node* gNodes;
 static char** gNodeNames;
 static int nrNodes;
 
+struct rule {
+  wtype_t wt;
+  const char *wtype_name;
+  int node_id;
+};
+
 /* 単語接続ルール */
-static struct wordseq_rule *gRules;
+static struct rule *gRules;
 static int nrRules;
 
 static int 
@@ -319,7 +325,7 @@ parse_indep (char **tokens, int nr, int lineno)
     if (anthy_wtype_equal (gRules[i].wt, wt))
       return;
 
-  gRules = (struct wordseq_rule *)realloc (gRules, sizeof (struct wordseq_rule)*(nrRules+1));
+  gRules = (struct rule *)realloc (gRules, sizeof (struct rule)*(nrRules+1));
   if (gRules == NULL)
     {
       fprintf (stderr, "%d: malloc failed.\n", lineno);
@@ -361,6 +367,7 @@ parse_indep (char **tokens, int nr, int lineno)
     }
 
   gRules[nrRules].wt = wt;
+  gRules[nrRules].wtype_name = strdup (tokens[0]);
   gRules[nrRules].node_id = node;
   nrRules++;
 }
@@ -464,16 +471,22 @@ write_node(FILE* fp, struct dep_node* node)
 }
 
 static void
-write_wtype(FILE *fp, wtype_t wt)
+write_wtype (FILE *fp, const char *name)
 {
-  fputc(anthy_wtype_get_pos(wt), fp);
-  fputc(anthy_wtype_get_cos(wt), fp);
-  fputc(anthy_wtype_get_scos(wt), fp);
-  fputc(anthy_wtype_get_cc(wt), fp);
-  fputc(anthy_wtype_get_ct(wt), fp);
-  fputc(anthy_wtype_get_wf(wt), fp);
-  fputc(0, fp);
-  fputc(0, fp);
+  int i;
+  int len = strlen (name);
+
+  if (len >= 8)
+    {
+      fprintf (stderr, "WT name too long (%s).\n", name);
+      exit (1);
+    }
+
+  for (i = 0; i < len; i++)
+    fputc (name[i], fp);
+
+  for (; i < 8; i++)
+    fputc('\0', fp);
 }
 
 static void
@@ -486,7 +499,7 @@ write_file(const char* file_name)
   /* 各ルール */
   write_nl(fp, nrRules);
   for (i = 0; i < nrRules; ++i) {
-    write_wtype(fp, gRules[i].wt);
+    write_wtype(fp, gRules[i].wtype_name);
     write_nl(fp, gRules[i].node_id);
   }
 

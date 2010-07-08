@@ -278,8 +278,6 @@ int anthy_wtype_get_wf(wtype_t w);
 int anthy_wtype_get_indep(wtype_t w);
 int anthy_wtype_get_sv(wtype_t w);
 
-wtype_t anthy_get_wtype(int pos, int cos, int scos, int cc, int ct, int wf);
-
 void anthy_init_wtypes(void);
 
 extern wtype_t anthy_wt_all;/* すべてにマッチする自立語 */

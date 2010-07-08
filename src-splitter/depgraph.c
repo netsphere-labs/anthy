@@ -294,8 +294,7 @@ anthy_get_nth_dep_rule(int index, struct wordseq_rule *rule)
 {
   /* ファイル上の情報からデータを取り出す */
   struct ondisk_wordseq_rule *r = &ddic.rules[index];
-  rule->wt = anthy_get_wtype(r->wt[0], r->wt[1], r->wt[2],
-			     r->wt[3], r->wt[4], r->wt[5]);
+  anthy_type_to_wtype (r->wt, &rule->wt);
   rule->node_id = anthy_dic_ntohl(r->node_id);
 }
 

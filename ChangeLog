@@ -1,3 +1,21 @@
+2010-07-08  NIIBE Yutaka  <gniibe@fsij.org>
+
+	***DICTIONARY FORMAT CHANGE***
+
+	* src-worddic/wtype.c (anthy_get_wtype): Make it internal, and
+	make sure unused bits are cleared with 0.
+	(anthy_init_wtypes): Use anthy_get_wtype for initialization of
+	anthy_wt_all and anthy_wt_none.
+	(anthy_wtype_equal): We can jusc compare by unsigned int.
+
+	* src-splitter/depgraph.c (anthy_get_nth_dep_rule): rule->wt is now
+	name of wt.  Call anthy_type_to_wtype.
+
+	* depgraph/mkdepgraph.c (parse_indep, write_wtype, write_file):
+	Write the name of wt (was: binary value of wt) to anthy.dep.
+
+	* anthy/wtype.h (anthy_get_wtype): Removed (make it static).
+
 2010-07-07  NIIBE Yutaka  <gniibe@fsij.org>
 
 	* src-worddic/wtype.c (anthy_wtype_noun): Moved here (was:
