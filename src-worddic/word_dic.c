@@ -365,14 +365,13 @@ anthy_gang_load_dic(xstr *sentence, int is_reverse)
 int
 anthy_get_nr_dic_ents(seq_ent_t se, xstr *xs)
 {
-  struct seq_ent *s = se;
-  if (!s) {
+  if (!se) {
     return 0;
   }
   if (!xs) {
-    return s->nr_dic_ents;
+    return se->nr_dic_ents;
   }
-  return s->nr_dic_ents + anthy_get_nr_dic_ents_of_ext_ent(se, xs);
+  return se->nr_dic_ents + anthy_get_nr_dic_ents_of_ext_ent(se, xs);
 }
 
 int
@@ -396,49 +395,36 @@ anthy_get_nth_dic_ent_str(seq_ent_t se, xstr *orig,
 int
 anthy_get_nth_dic_ent_is_compound(seq_ent_t se, int nth)
 {
-  if (!se) {
+  if (!se || nth >= se->nr_dic_ents)
     return 0;
-  }
-  if (nth >= se->nr_dic_ents) {
-    return 0;
-  }
+
   return se->dic_ents[nth]->is_compound;
 }
 
+#define MAGIC_FREQ 100
 int
 anthy_get_nth_dic_ent_freq(seq_ent_t se, int nth)
 {
-  struct seq_ent *s = se;
-  if (!s) {
+  if (!se)
     return 0;
-  }
-  if (!s->dic_ents) {
-    return anthy_get_nth_dic_ent_freq_of_ext_ent(se, nth);
-  }
-  if (s->nr_dic_ents <= nth) {
-    return anthy_get_nth_dic_ent_freq_of_ext_ent(se, nth - se->nr_dic_ents);
-  }
-  return s->dic_ents[nth]->freq;
+  else if (!se->dic_ents || nth >= se->nr_dic_ents)
+    return MAGIC_FREQ;
+
+  return se->dic_ents[nth]->freq;
 }
 
 int
-anthy_get_nth_dic_ent_wtype(seq_ent_t se, xstr *xs,
-			    int n, wtype_t *w)
+anthy_get_nth_dic_ent_wtype (seq_ent_t se, xstr *xs, int n, wtype_t *w)
 {
-  struct seq_ent *s = se;
-  if (!s) {
+  if (!se) {
     *w = anthy_wt_none;
     return -1;
   }
-  if (s->nr_dic_ents <= n) {
-    int r;
-    r = anthy_get_nth_dic_ent_wtype_of_ext_ent(xs, n - s->nr_dic_ents, w);
-    if (r == -1) {
-      *w = anthy_wt_none;
-    }
-    return r;
-  }
-  *w =  s->dic_ents[n]->type;
+
+  if (n >= se->nr_dic_ents)
+    return anthy_get_nth_dic_ent_wtype_of_ext_ent(xs, w);
+
+  *w = se->dic_ents[n]->type;
   return 0;
 }
 
@@ -446,39 +432,15 @@ int
 anthy_get_seq_ent_pos(seq_ent_t se, int pos)
 {
   int i, v=0;
-  struct seq_ent *s = se;
-  if (!s) {
+  if (!se) {
     return 0;
   }
-  if (s->nr_dic_ents == 0) {
+  if (se->nr_dic_ents == 0) {
     return anthy_get_ext_seq_ent_pos(se, pos);
   }
-  for (i = 0; i < s->nr_dic_ents; i++) {
-    if (anthy_wtype_get_pos(s->dic_ents[i]->type) == pos) {
-      v += s->dic_ents[i]->freq;
-      if (v == 0) {
-	v = 1;
-      }
-    }
-  }
-  return v;
-}
-
-int
-anthy_get_seq_ent_ct(seq_ent_t se, int pos, int ct)
-{
-  int i, v=0;
-  struct seq_ent *s = se;
-  if (!s) {
-    return 0;
-  }
-  if (s->nr_dic_ents == 0) {
-    return anthy_get_ext_seq_ent_ct(s, pos, ct);
-  }
-  for (i = 0; i < s->nr_dic_ents; i++) {
-    if (anthy_wtype_get_pos(s->dic_ents[i]->type)== pos &&
-	anthy_wtype_get_ct(s->dic_ents[i]->type)==ct) {
-      v += s->dic_ents[i]->freq;
+  for (i = 0; i < se->nr_dic_ents; i++) {
+    if (anthy_wtype_get_pos(se->dic_ents[i]->type) == pos) {
+      v += se->dic_ents[i]->freq;
       if (v == 0) {
 	v = 1;
       }
@@ -523,19 +485,18 @@ int
 anthy_get_seq_ent_wtype_compound_freq(seq_ent_t se, wtype_t wt)
 {
   int i,f;
-  struct seq_ent *s = se;
-  if (!s) {
+  if (!se) {
     return 0;
   }
   /**/
   f = 0;
-  for (i = 0; i < s->nr_dic_ents; i++) {
+  for (i = 0; i < se->nr_dic_ents; i++) {
     if (!anthy_get_nth_dic_ent_is_compound(se, i)) {
       continue;
     }
-    if (anthy_wtype_equal (wt, s->dic_ents[i]->type)) {
-      if (f < s->dic_ents[i]->freq) {
-	f = s->dic_ents[i]->freq;
+    if (anthy_wtype_equal (wt, se->dic_ents[i]->type)) {
+      if (f < se->dic_ents[i]->freq) {
+	f = se->dic_ents[i]->freq;
       }
     }
   }
@@ -546,15 +507,14 @@ int
 anthy_get_seq_ent_indep(seq_ent_t se)
 {
   int i;
-  struct seq_ent *s = se;
-  if (!s) {
+  if (!se) {
     return 0;
   }
-  if (s->nr_dic_ents == 0) {
-    return anthy_get_ext_seq_ent_indep(s);
+  if (se->nr_dic_ents == 0) {
+    return anthy_get_ext_seq_ent_indep(se);
   }
-  for (i = 0; i < s->nr_dic_ents; i++) {
-    if (anthy_wtype_get_indep(s->dic_ents[i]->type)) {
+  for (i = 0; i < se->nr_dic_ents; i++) {
+    if (anthy_wtype_get_indep(se->dic_ents[i]->type)) {
       return 1;
     }
   }

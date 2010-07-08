@@ -511,29 +511,20 @@ anthy_get_ext_seq_ent_from_xstr(xstr *x, int is_reverse)
 }
 
 int
-anthy_get_nth_dic_ent_wtype_of_ext_ent(xstr *xs, int nth,
-				       wtype_t *wt)
+anthy_get_nth_dic_ent_wtype_of_ext_ent (xstr *xs, wtype_t *wt)
 {
-  int type;
-  (void)nth;
-  type = anthy_get_xstr_type(xs);
+  int type = anthy_get_xstr_type(xs);
+
   if (type & (XCT_NUM | XCT_WIDENUM)) {
     *wt = anthy_wtype_num_noun;
     return 0;
-  }
-  if (type & XCT_KATA) {
+  } else if (type & XCT_KATA) {
     *wt = anthy_wtype_noun;
     return 0;
   }
-  return -1;
-}
 
-int
-anthy_get_nth_dic_ent_freq_of_ext_ent(struct seq_ent *se, int nth)
-{
-  (void)se;
-  (void)nth;
-  return 100;
+  *wt = anthy_wt_none;
+  return -1;
 }
 
 int
