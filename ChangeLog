@@ -1,5 +1,13 @@
 2010-07-08  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* anthy/depgraph.h (dep_transition): Removed unused member POS.
+
+	* depgraph/mkdepgraph.c (parse_transition): Don't set the member
+	POS, as it's unused.
+	(write_transition): Don't write out unused field POS.
+
+2010-07-08  NIIBE Yutaka  <gniibe@fsij.org>
+
 	* src-worddic/word_dic.c (anthy_get_nr_dic_ents)
 	(anthy_get_seq_ent_pos, anthy_get_seq_ent_wtype_compound_freq)
 	(anthy_get_seq_ent_indep): Remove useless variable S for access

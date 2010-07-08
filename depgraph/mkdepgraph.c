@@ -112,7 +112,6 @@ static void
 parse_transition(char *token, struct dep_transition *tr)
 {
   int ct = CT_NONE;
-  int pos = POS_NONE;
   enum dep_class dc = DEP_NONE;
   char *str = token;
   tr->head_pos = POS_NONE;
@@ -169,7 +168,6 @@ parse_transition(char *token, struct dep_transition *tr)
   /* @から後はノードの名前 */
   tr->next_node = get_node_id_by_name(token);
   /**/
-  tr->pos = pos;
   tr->ct = ct;
   tr->dc = dc;
 }
@@ -424,7 +422,6 @@ static void
 write_transition(FILE* fp, struct dep_transition* transition)
 {
   write_nl(fp, transition->next_node); 
-  write_nl(fp, transition->pos); 
   write_nl(fp, transition->ct); 
   write_nl(fp, transition->dc); 
   write_nl(fp, transition->head_pos); 

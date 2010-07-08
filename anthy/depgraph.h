@@ -8,8 +8,7 @@
 struct dep_transition {
   /** 遷移先のノードの番号 0の場合は終端 */
   int next_node;
-  /** 品詞 */
-  int pos;
+
   /** 活用形 */
   int ct;
   /* 付属語クラス */
