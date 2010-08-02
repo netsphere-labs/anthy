@@ -221,8 +221,6 @@ int
 anthy_priv_dic_get_freq(void)
 {
   struct word_line res;
-  char *v;
-
   anthy_parse_word_line(word_iterator.current_line, &res);
   return res.freq;
 }
@@ -232,7 +230,6 @@ char *
 anthy_priv_dic_get_wtype(char *buf, int len)
 {
   struct word_line res;
-  char *v;
   anthy_parse_word_line(word_iterator.current_line, &res);
   if (len - 1 < (int)strlen(res.wt)) {
     return NULL;
