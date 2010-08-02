@@ -223,7 +223,7 @@ scan_misc_dic(struct gang_elm **array, int nr, int is_reverse)
     xstr *xs = &array[i]->xs;
     struct seq_ent *seq;
     seq = anthy_cache_get_seq_ent(xs, is_reverse);
-    /* 個人辞書からの取得(texttrie(旧形式)と未知語辞書) */
+    /* 個人辞書からの取得(未知語辞書) */
     if (seq) {
       anthy_copy_words_from_private_dic(seq, xs, is_reverse);
       anthy_validate_seq_ent(seq, xs, is_reverse);
