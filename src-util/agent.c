@@ -1114,7 +1114,7 @@ parse_args(int argc, char **argv)
     anthy_conf_override("ANTHYDIR", dir);
   }
   if (dic) {
-    anthy_conf_override("SDIC", dic);
+    anthy_conf_override("DIC_FILE", dic);
   }
 }
 

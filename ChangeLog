@@ -1,3 +1,8 @@
+2010-08-02  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* src-util/agent.c (parse_args): Fix confvar name to "DIC_FILE"
+	(was: "SDIC").
+
 2010-07-08  NIIBE Yutaka  <gniibe@fsij.org>
 
 	* anthy/depgraph.h (dep_transition): Removed unused member POS.
