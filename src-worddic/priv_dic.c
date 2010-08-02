@@ -139,12 +139,6 @@ anthy_priv_dic_unlock(void)
   }
 }
 
-void
-anthy_priv_dic_update(void)
-{
-  return ;
-}
-
 /* seq_entに追加する */
 static void
 add_to_seq_ent(const char *line, int encoding, struct seq_ent *seq)

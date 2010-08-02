@@ -655,7 +655,6 @@ void
 anthy_lock_dic(void)
 {
   anthy_priv_dic_lock();
-  anthy_priv_dic_update();
 }
 
 /* フロントエンドから呼ばれる */
