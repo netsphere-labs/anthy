@@ -54,8 +54,6 @@ static int dic_util_encoding;
 extern const char *anthy_private_text_dic;
 /* 現在選択されている読み */
 static struct iterate_contex {
-  /**/
-  char key_buf[MAX_KEY_LEN+32];
   /* textdicの検索用 */
   int dicfile_offset;
   char *current_index;
@@ -102,8 +100,6 @@ anthy_dic_util_init(void)
   anthy_dic_set_personality("default");
   gIsInit = 1;
   dic_util_encoding = ANTHY_EUC_JP_ENCODING;
-  /**/
-  word_iterator.key_buf[0] = 0;
 }
 
 /** 辞書ライブラリを解放する */
