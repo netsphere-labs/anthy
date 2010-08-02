@@ -1302,7 +1302,7 @@ read_session(struct record_stat *rst)
 {
   char **tokens;
   int nr;
-  int in_section = 0;
+  struct record_section* rsc = NULL;
   while (!anthy_read_line(&tokens, &nr)) {
     xstr *xs;
     int i;
@@ -1311,11 +1311,10 @@ read_session(struct record_stat *rst)
 
     if (!strcmp(tokens[0], "---") && nr > 1) {
       /* セクションの切れ目 */
-      in_section = 1;
-      rst->cur_section = do_select_section(rst, tokens[1], 1);
+      rsc = do_select_section(rst, tokens[1], 1);
       goto end;
     }
-    if (!in_section || nr < 2) {
+    if (!rsc || nr < 2) {
       /* セクションが始まってない or 行が不完全 */
       goto end;
     }
@@ -1327,12 +1326,11 @@ read_session(struct record_stat *rst)
     }
     /* 次にindex */
     xs = anthy_cstr_to_xstr(&tokens[0][1], rst->encoding);
-    node = do_select_row(rst->cur_section, xs, 1, dirty);
+    node = do_select_row(rsc, xs, 1, dirty);
     anthy_free_xstr(xs);
     if (!node) {
       goto end;
     }
-    rst->cur_row = node;
     /**/
     for (i = 1; i < nr; i++) {
       if (tokens[i][0] == '"') {
@@ -1341,13 +1339,13 @@ read_session(struct record_stat *rst)
 	str[strlen(str) - 1] = 0;
 	xs = anthy_cstr_to_xstr(str, rst->encoding);
 	free(str);
-	do_set_nth_xstr(rst->cur_row, i-1, xs, &rst->xstrs);
+	do_set_nth_xstr(node, i-1, xs, &rst->xstrs);
 	anthy_free_xstr(xs);
       }else if (tokens[i][0] == '*') {
 	/* EMPTY entry */
-	get_nth_val_ent(rst->cur_row, i-1, 1);
+	get_nth_val_ent(node, i-1, 1);
       } else {
-	do_set_nth_value(rst->cur_row, i-1, atoi(tokens[i]));
+	do_set_nth_value(node, i-1, atoi(tokens[i]));
       }
     }
   end:

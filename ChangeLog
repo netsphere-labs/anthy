@@ -1,5 +1,8 @@
 2010-08-02  NIIBE Yutaka  <gniibe@fsij.org>
 
+	* src-worddic/record.c (read_session): Don't change
+	rst->cur_session, rst->cur_row.
+
 	* src-util/agent.c (parse_args): Fix confvar name to "DIC_FILE"
 	(was: "SDIC").
 
