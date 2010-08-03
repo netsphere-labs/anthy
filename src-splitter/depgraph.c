@@ -29,7 +29,6 @@
 #include <anthy/conf.h>
 #include <anthy/ruleparser.h>
 #include <anthy/xstr.h>
-#include <anthy/filemap.h>
 #include <anthy/logger.h>
 #include <anthy/segclass.h>
 #include <anthy/splitter.h>

@@ -7,7 +7,6 @@ TABATA Yusuke: wrote
        	mkworddic/writewords.c
        	src-diclib/alloc.c
        	src-diclib/conf.c
-       	src-diclib/filemap.c
        	src-diclib/ruleparser.c
        	src-diclib/xchar.c
        	src-diclib/xstr.c
