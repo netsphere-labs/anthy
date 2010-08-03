@@ -1,3 +1,58 @@
+2010-08-03  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* anthy/Makefile.am (noinst_HEADERS): Removed filemap.h.
+	* anthy/filemap.h: Removed.
+
+	* src-diclib/Makefile.am (libdiclib_la_SOURCES): Removed
+          filemap.c.
+	* src-diclib/filemap.c: Removed.
+	* src-diclib/file_dic.c (struct file_dic): Directly have PTR
+          ans SIZE.
+	(anthy_mmap): Moved here (was: filemap.c).
+	(anthy_quit_file_dic): Call munmap directly.
+
+	* src-splitter/depgraph.c: Delete #include <anthy/filemap.h>.
+
+2010-08-02  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* anthy/texttrie.h: Removed.
+	* anthy/Makefile.am (noinst_HEADERS): Remove texttrie.h.
+
+	* src-worddic/Makefile.am (libanthydic_la_SOURCES): Remove
+          texttrie.c.
+
+	* src-worddic/dic_util.c (anthy_private_tt_dic, find_next_key)
+        (delete_prefix, encoding_prefix, find_same_word): Removed.
+	(struct iterate_contex): Removed in_tt and key_buf.
+
+	(anthy_dic_util_init, select_first_entry_in_textdic): Don't
+	access to in_tt field.
+	(anthy_priv_dic_delete): Don't call delete_prefix.
+	(anthy_priv_dic_select_first_entry): Just call
+	select_first_entry_in_textdic.
+	(anthy_priv_dic_select_next_entry): Don't call find_next_key.
+	(anthy_priv_dic_get_index): Don't access in_tt and key_buf.
+	(anthy_priv_dic_get_freq): Just call anthy_parse_word_line.
+	(anthy_priv_dic_get_wtype, anthy_priv_dic_get_word): Don't
+	call anthy_trie_find.
+	(add_word_to_textdic): Don't call anthy_trie_delete.
+
+	* src-worddic/priv_dic.c (anthy_private_tt_dic, open_tt_dic)
+     	(copy_words_from_tt): Removed.
+	(anthy_priv_dic_update): Don't call anthy_trie_update_mapping.
+	(anthy_copy_words_from_private_dic): Don't call copy_words_from_tt.
+	(anthy_init_private_dic): Dont' call open_tt_dic and anthy_trie_close.
+	(anthy_release_private_dic): Don't call anthy_trie_close.
+
+	* src-worddic/texttrie.c: Removed.
+
+	* src-worddic/word_dic.c: Comment fix.
+
+	* src-worddic/dic_main.h (anthy_priv_dic_update): Removed.
+	* src-worddic/priv_dic.c: Likewise.
+	* src-worddic/word_dic.c (anthy_lock_dic): Don't call
+	  anthy_priv_dic_update.
+
 2010-08-02  NIIBE Yutaka  <gniibe@fsij.org>
 
 	* src-worddic/record.c (read_session): Don't change

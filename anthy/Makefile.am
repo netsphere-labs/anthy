@@ -3,7 +3,6 @@ noinst_HEADERS = xstr.h xchar.h dic.h wtype.h\
  conf.h record.h alloc.h\
  ruleparser.h splitter.h \
  segment.h ordering.h \
- filemap.h \
  logger.h segclass.h \
  depgraph.h \
  textdic.h matrix.h \
