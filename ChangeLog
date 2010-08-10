@@ -1,3 +1,8 @@
+2010-08-10  NIIBE Yutaka  <gniibe@fsij.org>
+
+	* src-splitter/metaword.c (anthy_commit_meta_word): Make it static.
+	* src-splitter/wordborder.h: Removed the declaration.
+
 2010-08-03  NIIBE Yutaka  <gniibe@fsij.org>
 
 	* anthy/Makefile.am (noinst_HEADERS): Removed filemap.h.

@@ -44,9 +44,8 @@ static void
 combine_metaword(struct splitter_context *sc, struct meta_word *mw);
 
 /* コンテキスト中にmetawordを追加する */
-void
-anthy_commit_meta_word(struct splitter_context *sc,
-		       struct meta_word *mw)
+static void
+anthy_commit_meta_word(struct splitter_context *sc, struct meta_word *mw)
 {
   struct word_split_info_cache *info = sc->word_split_info;
   /* 同じ開始点を持つノードのリスト */

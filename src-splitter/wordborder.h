@@ -175,7 +175,6 @@ void anthy_print_word_list(struct splitter_context *, struct word_list *);
 void anthy_make_word_list_all(struct splitter_context *);
 
 /* defined in metaword.c */
-void anthy_commit_meta_word(struct splitter_context *, struct meta_word *mw);
 void anthy_make_metaword_all(struct splitter_context *);
 void anthy_print_metaword(struct splitter_context *, struct meta_word *);
 
