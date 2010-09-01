@@ -79,12 +79,15 @@ void anthy_release_private_dic(void);
 void anthy_check_user_dir(void);
 void anthy_priv_dic_lock(void);
 void anthy_priv_dic_unlock(void);
+void anthy_priv_dic_update(void);
 struct word_line {
   char wt[10];
   int freq;
   const char *word;
 };
 int anthy_parse_word_line(const char *line, struct word_line *res);
-void anthy_ask_scan(void (*request_scan)(const char *, void *), void *arg);
+struct textdict;
+void anthy_ask_scan(void (*request_scan)(struct textdict *, void *),
+		    void *arg);
 
 #endif

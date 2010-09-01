@@ -33,7 +33,7 @@
 #include <anthy/logger.h>
 #include <anthy/xchar.h>
 #include <anthy/feature_set.h>
-#include <anthy/textdic.h>
+#include <anthy/textdict.h>
 
 #include <anthy/diclib.h>
 
@@ -223,7 +223,7 @@ scan_misc_dic(struct gang_elm **array, int nr, int is_reverse)
     xstr *xs = &array[i]->xs;
     struct seq_ent *seq;
     seq = anthy_cache_get_seq_ent(xs, is_reverse);
-    /* 個人辞書からの取得(未知語辞書) */
+    /* 個人辞書からの取得(texttrie(旧形式)と未知語辞書) */
     if (seq) {
       anthy_copy_words_from_private_dic(seq, xs, is_reverse);
       anthy_validate_seq_ent(seq, xs, is_reverse);
@@ -255,7 +255,7 @@ load_word(xstr *xs, const char *n, int is_reverse)
 }
 
 static int
-gang_scan(void *p, long offset, const char *key, const char *n)
+gang_scan(void *p, int offset, const char *key, const char *n)
 {
   struct gang_scan_context *gsc = p;
   struct gang_elm *elm;
@@ -284,13 +284,13 @@ gang_scan(void *p, long offset, const char *key, const char *n)
 }
 
 static void
-scan_dict(const char *td, int nr, struct gang_elm **array)
+scan_dict(struct textdict *td, int nr, struct gang_elm **array)
 {
   struct gang_scan_context gsc;
   gsc.nr = nr;
   gsc.array = array;
   gsc.nth = 0;
-  anthy_textdic_scan(td, 0, &gsc, gang_scan);
+  anthy_textdict_scan(td, 0, &gsc, gang_scan);
 }
 
 struct scan_arg {
@@ -299,10 +299,10 @@ struct scan_arg {
 };
 
 static void
-request_scan(const char *tdname, void *arg)
+request_scan(struct textdict *td, void *arg)
 {
   struct scan_arg *sarg = (struct scan_arg *)arg;
-  scan_dict(tdname, sarg->nr, sarg->array);
+  scan_dict(td, sarg->nr, sarg->array);
 }
 
 static void
@@ -365,13 +365,14 @@ anthy_gang_load_dic(xstr *sentence, int is_reverse)
 int
 anthy_get_nr_dic_ents(seq_ent_t se, xstr *xs)
 {
-  if (!se) {
+  struct seq_ent *s = se;
+  if (!s) {
     return 0;
   }
   if (!xs) {
-    return se->nr_dic_ents;
+    return s->nr_dic_ents;
   }
-  return se->nr_dic_ents + anthy_get_nr_dic_ents_of_ext_ent(se, xs);
+  return s->nr_dic_ents + anthy_get_nr_dic_ents_of_ext_ent(se, xs);
 }
 
 int
@@ -395,36 +396,49 @@ anthy_get_nth_dic_ent_str(seq_ent_t se, xstr *orig,
 int
 anthy_get_nth_dic_ent_is_compound(seq_ent_t se, int nth)
 {
-  if (!se || nth >= se->nr_dic_ents)
+  if (!se) {
     return 0;
-
+  }
+  if (nth >= se->nr_dic_ents) {
+    return 0;
+  }
   return se->dic_ents[nth]->is_compound;
 }
 
-#define MAGIC_FREQ 100
 int
 anthy_get_nth_dic_ent_freq(seq_ent_t se, int nth)
 {
-  if (!se)
+  struct seq_ent *s = se;
+  if (!s) {
     return 0;
-  else if (!se->dic_ents || nth >= se->nr_dic_ents)
-    return MAGIC_FREQ;
-
-  return se->dic_ents[nth]->freq;
+  }
+  if (!s->dic_ents) {
+    return anthy_get_nth_dic_ent_freq_of_ext_ent(se, nth);
+  }
+  if (s->nr_dic_ents <= nth) {
+    return anthy_get_nth_dic_ent_freq_of_ext_ent(se, nth - se->nr_dic_ents);
+  }
+  return s->dic_ents[nth]->freq;
 }
 
 int
-anthy_get_nth_dic_ent_wtype (seq_ent_t se, xstr *xs, int n, wtype_t *w)
+anthy_get_nth_dic_ent_wtype(seq_ent_t se, xstr *xs,
+			    int n, wtype_t *w)
 {
-  if (!se) {
+  struct seq_ent *s = se;
+  if (!s) {
     *w = anthy_wt_none;
     return -1;
   }
-
-  if (n >= se->nr_dic_ents)
-    return anthy_get_nth_dic_ent_wtype_of_ext_ent(xs, w);
-
-  *w = se->dic_ents[n]->type;
+  if (s->nr_dic_ents <= n) {
+    int r;
+    r = anthy_get_nth_dic_ent_wtype_of_ext_ent(xs, n - s->nr_dic_ents, w);
+    if (r == -1) {
+      *w = anthy_wt_none;
+    }
+    return r;
+  }
+  *w =  s->dic_ents[n]->type;
   return 0;
 }
 
@@ -432,15 +446,39 @@ int
 anthy_get_seq_ent_pos(seq_ent_t se, int pos)
 {
   int i, v=0;
-  if (!se) {
+  struct seq_ent *s = se;
+  if (!s) {
     return 0;
   }
-  if (se->nr_dic_ents == 0) {
+  if (s->nr_dic_ents == 0) {
     return anthy_get_ext_seq_ent_pos(se, pos);
   }
-  for (i = 0; i < se->nr_dic_ents; i++) {
-    if (anthy_wtype_get_pos(se->dic_ents[i]->type) == pos) {
-      v += se->dic_ents[i]->freq;
+  for (i = 0; i < s->nr_dic_ents; i++) {
+    if (anthy_wtype_get_pos(s->dic_ents[i]->type) == pos) {
+      v += s->dic_ents[i]->freq;
+      if (v == 0) {
+	v = 1;
+      }
+    }
+  }
+  return v;
+}
+
+int
+anthy_get_seq_ent_ct(seq_ent_t se, int pos, int ct)
+{
+  int i, v=0;
+  struct seq_ent *s = se;
+  if (!s) {
+    return 0;
+  }
+  if (s->nr_dic_ents == 0) {
+    return anthy_get_ext_seq_ent_ct(s, pos, ct);
+  }
+  for (i = 0; i < s->nr_dic_ents; i++) {
+    if (anthy_wtype_get_pos(s->dic_ents[i]->type)== pos &&
+	anthy_wtype_get_ct(s->dic_ents[i]->type)==ct) {
+      v += s->dic_ents[i]->freq;
       if (v == 0) {
 	v = 1;
       }
@@ -453,7 +491,7 @@ anthy_get_seq_ent_pos(seq_ent_t se, int pos)
  * wtの品詞を持つ単語の中で最大の頻度を持つものを返す
  */
 int
-anthy_get_seq_ent_wtype_freq (seq_ent_t seq, wtype_t wt)
+anthy_get_seq_ent_wtype_freq(seq_ent_t seq, wtype_t wt)
 {
   int i, f;
 
@@ -469,7 +507,7 @@ anthy_get_seq_ent_wtype_freq (seq_ent_t seq, wtype_t wt)
   /* 単語 */
   for (i = 0; i < seq->nr_dic_ents; i++) {
     if (seq->dic_ents[i]->order == 0 &&
-	anthy_wtype_equal (wt, seq->dic_ents[i]->type)) {
+	anthy_wtype_include(wt, seq->dic_ents[i]->type)) {
       if (f < seq->dic_ents[i]->freq) {
 	f = seq->dic_ents[i]->freq;
       }
@@ -485,18 +523,19 @@ int
 anthy_get_seq_ent_wtype_compound_freq(seq_ent_t se, wtype_t wt)
 {
   int i,f;
-  if (!se) {
+  struct seq_ent *s = se;
+  if (!s) {
     return 0;
   }
   /**/
   f = 0;
-  for (i = 0; i < se->nr_dic_ents; i++) {
+  for (i = 0; i < s->nr_dic_ents; i++) {
     if (!anthy_get_nth_dic_ent_is_compound(se, i)) {
       continue;
     }
-    if (anthy_wtype_equal (wt, se->dic_ents[i]->type)) {
-      if (f < se->dic_ents[i]->freq) {
-	f = se->dic_ents[i]->freq;
+    if (anthy_wtype_include(wt, s->dic_ents[i]->type)) {
+      if (f < s->dic_ents[i]->freq) {
+	f = s->dic_ents[i]->freq;
       }
     }
   }
@@ -507,14 +546,15 @@ int
 anthy_get_seq_ent_indep(seq_ent_t se)
 {
   int i;
-  if (!se) {
+  struct seq_ent *s = se;
+  if (!s) {
     return 0;
   }
-  if (se->nr_dic_ents == 0) {
-    return anthy_get_ext_seq_ent_indep(se);
+  if (s->nr_dic_ents == 0) {
+    return anthy_get_ext_seq_ent_indep(s);
   }
-  for (i = 0; i < se->nr_dic_ents; i++) {
-    if (anthy_wtype_get_indep(se->dic_ents[i]->type)) {
+  for (i = 0; i < s->nr_dic_ents; i++) {
+    if (anthy_wtype_get_indep(s->dic_ents[i]->type)) {
       return 1;
     }
   }
@@ -655,6 +695,7 @@ void
 anthy_lock_dic(void)
 {
   anthy_priv_dic_lock();
+  anthy_priv_dic_update();
 }
 
 /* フロントエンドから呼ばれる */

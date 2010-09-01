@@ -14,6 +14,7 @@
  * Copyright (C) 2004-2005 YOSHIDA Yuichi
  * Copyright (C) 2002 UGAWA Tomoharu
  *
+ * $Id: compose.c,v 1.25 2005/08/19 04:20:25 oxy Exp $
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -153,7 +154,8 @@ enum_candidates(struct seg_ent *seg,
     }
     anthy_get_nth_dic_ent_wtype(ce->elm[n].se, &ce->elm[n].str, i, &wt);
 
-    if (anthy_wtype_equal (ce->elm[n].wt, wt)) {
+    ce->elm[n].wt = anthy_get_wtype_with_ct(ce->elm[n].wt, CT_NONE);
+    if (anthy_wtype_include(ce->elm[n].wt, wt)) {
       xstr word, yomi;
 
       yomi.len = ce->elm[n].str.len;

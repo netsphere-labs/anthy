@@ -275,6 +275,11 @@ add_dic_ent(struct seq_ent *seq, struct wt_stat *ws,
   freq = normalize_freq(ws);
 
   anthy_mem_dic_push_back_dic_ent(seq, 0, xs, w, ws->wt_name, freq, 0);
+  if (anthy_wtype_get_meisi(w)) {
+    /* 連用形が名詞化するやつは名詞化したものも追加 */
+    w = anthy_get_wtype_with_ct(w, CT_MEISIKA);
+    anthy_mem_dic_push_back_dic_ent(seq, 0, xs, w, ws->wt_name, freq, 0);
+  }
   anthy_free_xstr(xs);
   return char_count;
 }

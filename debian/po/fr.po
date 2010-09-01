@@ -1,0 +1,47 @@
+# Translation of anthy debconf templates to French
+# Copyright (C) 2008 Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>
+# This file is distributed under the same license as the anthy package.
+#
+# Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>, 2008
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: anthy_7900-2\n"
+"Report-Msgid-Bugs-To: anthy@packages.debian.org\n"
+"POT-Creation-Date: 2008-02-12 15:54+0900\n"
+"PO-Revision-Date: 2008-02-14 01:52+0100\n"
+"Last-Translator: Cyril Brulebois <cyril.brulebois@enst-bretagne.fr>\n"
+"Language-Team: French <debian-l10n-french@lists.debian.org>\n"
+"Language: fr\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:2001
+msgid "Extra dictionaries to use:"
+msgstr "Dictionnaires supplémentaires à utiliser :"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:2001
+msgid ""
+"The anthy package can use add-on dictionaries in addition to the system "
+"dictionary. The following are currently available:"
+msgstr ""
+"Le paquet anthy peut ajouter des dictionnaires supplémentaires en plus du "
+"dictionnaire système. Les dictionnaires suivants sont disponibles :"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:2001
+msgid ""
+" - base.t : Anthy-specific words which are compatible with cannadic;\n"
+" - extra.t: Anthy-specific words which are not compatible with cannadic;\n"
+" - 2ch.t  : Slang used in 2ch, the web's biggest Japanese discussion forum."
+msgstr ""
+" - base.t  : Mots spécifiques à anthy, compatibles avec cannadic ;\n"
+" - extra.t : Mots spécifiques à anthy, incompatibles avec cannadic ;\n"
+" - 2ch.t   : Jargon utilisé sur 2ch, le plus grand groupe de\n"
+"           discussions japonais sur le web."

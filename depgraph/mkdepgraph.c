@@ -27,24 +27,28 @@
 #include <string.h>
 #include <stdlib.h>
 
+#include <anthy/alloc.h>
+#include <anthy/conf.h>
+#include <anthy/ruleparser.h>
 #include <anthy/xstr.h>
+#include <anthy/logger.h>
 #include <anthy/splitter.h>
 #include <anthy/anthy.h>
 #include <anthy/depgraph.h>
 #include <anthy/diclib.h>
 
+#ifndef SRCDIR
+#define SRCDIR "."
+#endif
+
+static int verbose;
+
 static struct dep_node* gNodes;
 static char** gNodeNames;
 static int nrNodes;
 
-struct rule {
-  wtype_t wt;
-  const char *wtype_name;
-  int node_id;
-};
-
 /* 単語接続ルール */
-static struct rule *gRules;
+static struct wordseq_rule *gRules;
 static int nrRules;
 
 static int 
@@ -112,6 +116,7 @@ static void
 parse_transition(char *token, struct dep_transition *tr)
 {
   int ct = CT_NONE;
+  int pos = POS_NONE;
   enum dep_class dc = DEP_NONE;
   char *str = token;
   tr->head_pos = POS_NONE;
@@ -168,6 +173,7 @@ parse_transition(char *token, struct dep_transition *tr)
   /* @から後はノードの名前 */
   tr->next_node = get_node_id_by_name(token);
   /**/
+  tr->pos = pos;
   tr->ct = ct;
   tr->dc = dc;
 }
@@ -204,9 +210,8 @@ parse_dep(char **tokens, int nr)
   /* 遷移条件がない時は警告を出して、空の遷移条件を追加する */
   if (nr_strs == 0) {
     char *s;
-
-    fprintf (stderr, "node %s has a branch without any transition condition.\n",
-	     tokens[0]);
+    anthy_log(0, "node %s has a branch without any transition condition.\n",
+	      tokens[0]);
     s = strdup("");
     strs[0] = anthy_cstr_to_xstr(s, ANTHY_EUC_JP_ENCODING);
     nr_strs = 1;
@@ -233,179 +238,91 @@ check_nodes(void)
   int i;
   for (i = 1; i < nrNodes; i++) {
     if (gNodes[i].nr_branch == 0) {
-      fprintf (stderr, "node %s has no branch.\n", gNodeNames[i]);
+      anthy_log(0, "node %s has no branch.\n", gNodeNames);
     }
   }
 }
 
+
 static int
-get_tokens (char *buf, char **tokens, int n)
-{
-  int i;
-  char *p = buf;
-
-  for (i = 0; i < n; i++)
-    {
-      tokens[i] = p;
-      p = strchr (p, ' ');
-      if (p == NULL)
-	return i + 1;
-
-      *p++ = '\0';
-    }
-
-  return -1;
-}
-
-#define MAX_TOKEN 256
-#define BUFSIZE 1024
-#define DEPWORD_INPUT_FILENAME "all.depword"
-#define INDEPWORD_INPUT_FILENAME "indepword-wt.txt"
-
-static void
 init_depword_tab(void)
 {
-  FILE *fp;
-  char buf[BUFSIZE];
-  int lineno = 0;
+  const char *fn;
+  char **tokens;
+  int nr;
 
-  get_node_id_by_name ("@");
+  /* id 0 を空ノードに割当てる */
+  get_node_id_by_name("@");
 
-  if ((fp = fopen (DEPWORD_INPUT_FILENAME, "r")) == NULL)
-    {
-      fprintf (stderr, "Failed to open (%s).\n", DEPWORD_INPUT_FILENAME);
-      exit (1);
-    }
-
-  while (fgets (buf, BUFSIZE, fp) != NULL)
-    {
-      char *tokens[MAX_TOKEN];
-      int nr;
-      char *p;
-
-      if ((p = strchr (buf, '\n')) == NULL)
-	goto error;
-
-      *p = '\0';
-
-      lineno++;
-      nr = get_tokens (buf, tokens, MAX_TOKEN);
-      if (nr < 0)
-	{
-	error:
-	  fprintf (stderr, "Too long line (%d): ignored\n", lineno);
-	  continue;
-	}
-
-      parse_dep (tokens, nr);
-    }
-
-  fclose (fp);
-
-  check_nodes ();
+  /**/
+  fn = anthy_conf_get_str("DEPWORD");
+  if (!fn) {
+    anthy_log(0, "Dependent word dictionary is unspecified.\n");
+    return -1;
+  }
+  if (anthy_open_file(fn) == -1) {
+    anthy_log(0, "Failed to open dep word dict (%s).\n", fn);
+    return -1;
+  }
+  /* 一行ずつ付属語グラフを読む */
+  while (!anthy_read_line(&tokens, &nr)) {
+    parse_dep(tokens, nr);
+    anthy_free_line();
+  }
+  anthy_close_file();
+  check_nodes();
+  return 0;
 }
 
 
 static void
-parse_indep (char **tokens, int nr, int lineno)
+parse_indep(char **tokens, int nr)
 {
-  int node;
-  wtype_t wt;
-  int i;
+  if (nr < 2) {
+    printf("Syntex error in indepword defs"
+	   " :%d.\n", anthy_get_line_number());
+    return ;
+  }
+  gRules = realloc(gRules, sizeof(struct wordseq_rule)*(nrRules+1));
 
-  if (anthy_type_to_wtype (tokens[0], &wt) == NULL)
-    {
-      fprintf (stderr, "%d: no such WT\n", lineno);
-      return;
-    }
+  /* 行の先頭には品詞の名前が入っている */
+  gRules[nrRules].wt = anthy_init_wtype_by_name(tokens[0]);
 
-  for (i = 0; i < nrRules; i++)
-    if (anthy_wtype_equal (gRules[i].wt, wt))
-      return;
+  /* その次にはノード名が入っている */
+  gRules[nrRules].node_id = get_node_id_by_name(tokens[1]);
 
-  gRules = (struct rule *)realloc (gRules, sizeof (struct rule)*(nrRules+1));
-  if (gRules == NULL)
-    {
-      fprintf (stderr, "%d: malloc failed.\n", lineno);
-      exit (1);
-    }
+  if (verbose) {
+    printf("%d (%s)\n", nrRules, tokens[0]);
+  }
 
-  if (nr == 2)
-    node = get_node_id_by_name (tokens[1]);
-  else if (nr >= 3)
-    {
-      int i;
-      struct dep_branch *db;
-      struct dep_node *dn;
-      xstr *strs[1];
-
-      node = get_node_id_by_name (tokens[0]); /* New node */
-      dn = &gNodes[node];
-      strs[0] = anthy_cstr_to_xstr ("", ANTHY_EUC_JP_ENCODING);
-      db = find_branch (dn, strs, 1);
-
-      db->transition = (struct dep_transition *)realloc (db->transition,
-							 sizeof (struct dep_transition)*
-							 (db->nr_transitions + nr - 1));
-
-      for (i = 1; i < nr; i++)
-	{
-	  struct dep_transition *tr;
-
-	  tr = &db->transition[db->nr_transitions];
-	  parse_transition (tokens[i], tr);
-	  db->nr_transitions++;
-	}
-    }
-  else
-    {
-      if (nr != 1)
-	fprintf (stderr, "%d: syntax error (ignored).\n", lineno);
-      return;
-    }
-
-  gRules[nrRules].wt = wt;
-  gRules[nrRules].wtype_name = strdup (tokens[0]);
-  gRules[nrRules].node_id = node;
-  nrRules++;
+  nrRules ++;
 }
 
 /** 自立語からの遷移表 */
-static void
-init_indep_word_seq_tab (void)
+static int 
+init_indep_word_seq_tab(void)
 {
-  FILE *fp;
-  char buf[BUFSIZE];
-  int lineno = 0;
+  const char *fn;
+  char **tokens;
+  int nr;
 
-  if ((fp = fopen (INDEPWORD_INPUT_FILENAME, "r")) == NULL)
-    {
-      fprintf (stderr, "Failed to open (%s).\n", INDEPWORD_INPUT_FILENAME);
-      exit (1);
-    }
+  fn = anthy_conf_get_str("INDEPWORD");
+  if (!fn){
+    printf("independent word dict unspecified.\n");
+    return -1;
+  }
+  if (anthy_open_file(fn) == -1) {
+    printf("Failed to open indep word dict (%s).\n", fn);
+    return -1;
+  }
+  /* ファイルを一行ずつ読む */
+  while (!anthy_read_line(&tokens, &nr)) {
+    parse_indep(tokens, nr);
+    anthy_free_line();
+  }
+  anthy_close_file();
 
-  while (fgets (buf, BUFSIZE, fp) != NULL)
-    {
-      char *tokens[MAX_TOKEN];
-      int nr;
-      char *p;
-
-      if ((p = strchr (buf, '\n')) == NULL)
-	goto error;
-
-      *p = '\0';
-
-      lineno++;
-      nr = get_tokens (buf, tokens, MAX_TOKEN);
-      if (nr < 0)
-	{
-	error:
-	  fprintf (stderr, "Too long line (%d): ignored\n", lineno);
-	  continue;
-	}
-
-      parse_indep (tokens, nr, lineno);
-    }
+  return 0;
 }
 
 /*  
@@ -422,6 +339,7 @@ static void
 write_transition(FILE* fp, struct dep_transition* transition)
 {
   write_nl(fp, transition->next_node); 
+  write_nl(fp, transition->pos); 
   write_nl(fp, transition->ct); 
   write_nl(fp, transition->dc); 
   write_nl(fp, transition->head_pos); 
@@ -468,22 +386,16 @@ write_node(FILE* fp, struct dep_node* node)
 }
 
 static void
-write_wtype (FILE *fp, const char *name)
+write_wtype(FILE *fp, wtype_t wt)
 {
-  int i;
-  int len = strlen (name);
-
-  if (len >= 8)
-    {
-      fprintf (stderr, "WT name too long (%s).\n", name);
-      exit (1);
-    }
-
-  for (i = 0; i < len; i++)
-    fputc (name[i], fp);
-
-  for (; i < 8; i++)
-    fputc('\0', fp);
+  fputc(anthy_wtype_get_pos(wt), fp);
+  fputc(anthy_wtype_get_cos(wt), fp);
+  fputc(anthy_wtype_get_scos(wt), fp);
+  fputc(anthy_wtype_get_cc(wt), fp);
+  fputc(anthy_wtype_get_ct(wt), fp);
+  fputc(anthy_wtype_get_wf(wt), fp);
+  fputc(0, fp);
+  fputc(0, fp);
 }
 
 static void
@@ -496,7 +408,7 @@ write_file(const char* file_name)
   /* 各ルール */
   write_nl(fp, nrRules);
   for (i = 0; i < nrRules; ++i) {
-    write_wtype(fp, gRules[i].wtype_name);
+    write_wtype(fp, gRules[i].wt);
     write_nl(fp, gRules[i].node_id);
   }
 
@@ -513,8 +425,12 @@ write_file(const char* file_name)
 int
 main(int argc, char* argv[])
 {
-  anthy_init_wtypes ();
+  /* 付属語辞書を読み込んでファイルに書き出す */
+  anthy_conf_override("CONFFILE", "../anthy-conf");
+  anthy_conf_override("ANTHYDIR", SRCDIR "/../depgraph/");
 
+  anthy_init_wtypes();
+  anthy_do_conf_init();
   /* 付属語グラフ */
   init_depword_tab();
   /* 自立語からの遷移表 */

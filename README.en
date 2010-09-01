@@ -1,0 +1,11 @@
+Anthy is a library for Japanese text input.
+
+You can install this library by following usual commands
+
+ $ ./configure;make
+ # make install
+
+ shared libraries, utility commands, and grammer definition
+ files will be installed.
+
+To be written...

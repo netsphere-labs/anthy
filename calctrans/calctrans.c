@@ -2,7 +2,7 @@
  * 文節の遷移行列を作成する
  *
  * このコマンドは二つの機能を持っている。(-cオプションで制御)
- * (1) proccorpusの結果からテキスト形式で経験的確率の表を作る
+ * (1) proccorpusの結果からテキスト形式で経験的格率の表を作る
  * (2) テキスト形式の表からバイナリ形式に変換する
  *
  * morphological-analyzerの出力には下記のマークが付けてある
@@ -269,8 +269,7 @@ read_file(struct input_info *m, char *fn)
   FILE *ifp;
   ifp = fopen(fn, "r");
   if (!ifp) {
-    fprintf(stderr, "failed to open (%s)\n", fn);
-    exit (1);
+    return ;
   }
   do_read_file(m, ifp);
   fclose(ifp);
@@ -393,7 +392,7 @@ convert_file(FILE *ifp)
       ofp = fopen(fn, "w");
       if (!ofp) {
 	fprintf(stderr, "failed to open (%s)\n", fn);
-	exit (1);
+	abort();
       }
       write_nl(ofp, w);
       write_nl(ofp, n);
@@ -419,7 +418,7 @@ convert_data(int nr_fn, char **fns)
     ifp = fopen(fns[i], "r");
     if (!ifp) {
       fprintf(stderr, "failed to open (%s)\n", fns[i]);
-      exit (1);
+      continue;
     }
     convert_file(ifp);
     fclose(ifp);
@@ -639,7 +638,7 @@ extract_word(int nr_fn, char **fns, FILE *ofp)
     ifp = fopen(fns[i], "r");
     if (!ifp) {
       fprintf(stderr, "failed to open (%s)\n", fns[i]);
-      exit (1);
+      continue;
     }
     extract_word_from_file(ifp, &sp);
     fclose(ifp);
@@ -691,7 +690,6 @@ main(int argc, char **argv)
       ofp = fopen(argv[i+1], "w");
       if (!ofp) {
 	fprintf(stderr, "failed to open (%s)\n", argv[i+1]);
-	exit (1);
       }
       i ++;
     } else if (!strcmp(arg, "-c") ||

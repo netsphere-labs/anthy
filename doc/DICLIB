@@ -26,6 +26,7 @@
  anthy_priv_dic_add_entry          単語の登録
  anthy_priv_dic_delete             単語の削除
 その他
+ anthy_dic_search_words_file       単語の検索
  anthy_dic_util_get_anthydir       (unstable API)
 
 * 各関数の説明 *

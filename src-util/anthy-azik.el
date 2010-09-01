@@ -8,8 +8,6 @@
 ;; (anthy-azik-mode)
 ;;
 
-(require 'anthy)
-
 (defvar anthy-azik-mode-hiragana-map
   '(
     (";" . "っ")  ("x;" . ";")  ("b." . "ぶ")  ("bd" . "べん")  ("bh" . "ぶう")  
@@ -225,9 +223,9 @@
 	  (("katakana" . 16) . "hiragana")))
 ; (define-key anthy-mode-map (char-to-string 16) 'anthy-insert)
   (anthy-send-change-toggle-command "!")
-  (mapc (lambda (x)
-	  (anthy-change-hiragana-map (car x) (cdr x)))
-	anthy-azik-mode-hiragana-map)
+  (mapcar (lambda (x)
+	    (anthy-change-hiragana-map (car x) (cdr x)))
+	  anthy-azik-mode-hiragana-map)
   (anthy-hiragana-map))
 ;  (mapcar (lambda (x)
 ;	    (anthy-change-katakana-map (car x) (cdr x)))

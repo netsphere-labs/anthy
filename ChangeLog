@@ -1,655 +1,823 @@
-2010-08-10  NIIBE Yutaka  <gniibe@fsij.org>
+2009-02-09  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* configure.ac:
+	bump to 9100h.
+
+2009-02-08  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* src-worddic/dic/util.c
+	updated. [Anthy-dev 3674]
+	* mkworddic/extra.t, alt-cannadic/g_fname.t,
+	  alt-cannadic/gtankan.ctd:
+	fixed. Thanks to Oizumi-san.
+
+2009-02-07  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/compound.t, name.t
+	updated. Thanks to Kato-san and MATSUU-san.
+	[Anthy-dev 3667, 3670]
+	* src-util/anthy-azik.el
+	updated. Thanks to KUNIGA-san.
+	[Anthy-dev 3671]
+
+2009-01-29  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* configure.ac:
+	bump to 9100g.
+
+2009-01-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* alt-cannadic/extra, sample
+	added.
+
+2009-01-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/compound.t, mkworddic/udict:
+	updated. Thanks to Iida-san.
+
+2009-01-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* src-util/input.c, src-worddic/record.c:
+	fixed illegal memory access.Thanks to G-HAL san.
+	[Anthy-dev 3657]
+
+2009-01-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* alt-cannadic/g_fname.t:
+	removed UTF-8 BOMB. Thanks to TANAKA-san [Anthy-dev 3656]
+
+2009-01-23  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* src-diclib/ruleparser.c,
+	  src-diclib/xchar.c,
+	  src-diclib/xstr.c,
+	  src-ordering/candsort.c,
+	  src-ordering/candswap.c,
+	  src-ordering/infosort.c,
+	  src-ordering/relation.c,
+	  src-splitter/compose.c,
+	  src-util/input.c,
+	  src-util/rkmap.h,
+	  src-worddic/ext_ent.c,
+	  src-worddic/record.c,
+	  src-worddic/word_dic.c:
+	too many fixes. Thanks to G-HAL-san [Anthy-dev 3651, 3652]	
+	* mkworddic/compound.t, alt-cannadic/g_fname.t.diff:
+	updated. Thanks to Iida-san.
+
+2008-11-29  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* configure.ac:
+	bump to 9100f.
+
+2008-11-29  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* *
+	applied too many patches. thanks to:
+	Iida-san, Irie-san, Oizumi-san, Tabata-san,
+	G-HAL-san, IWAI-san, TAKADA-san.
+
+2008-01-29  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* configure.ac:
+	bump to 9100e.
+
+2008-01-28  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* depgraph/conjugate.table:
+	applied patch. thanks to Utumi-san.
+
+2008-01-28  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/udict:
+	* mkworddic/compound.t:
+	applied patch. thanks to Iida-san.
+
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* configure.ac:
+	bump to 9100d.
+	
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* calctrans/corpus.3.txt
+	fixed typos. thank to Utumi-san.
+	[Anthy-dev 3585]
+
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* calctrans/Makefile.am:
+	add anthy.feature_info to CLEANFILES.
+	Thanks to NOKUBI-san. [Anthy-dev 3586]
+
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* depgraph/conjugate.depword, conjugate.table:
+	applied patch. Thanks to Oizumi-san.
+
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/dict.args.in:
+	modified. Thanks to Oizumi-san.
+
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* alt-cannadic/*:
+	replaced new one. Thanks to Oizumi-san.
+
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* calctrans/corpus.3.txt:
+	added more 5500 corpus.
+	Thanks to Iida-san, SASAKI-san, Shibata-san,
+	kurokuro-san, yama-san.
 
-	* src-splitter/metaword.c (anthy_commit_meta_word): Make it static.
-	* src-splitter/wordborder.h: Removed the declaration.
+2007-10-27  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* calctrans/corpus.1.txt:
+	replaced new one. Thanks to Tabata-san.
 
-2010-08-03  NIIBE Yutaka  <gniibe@fsij.org>
+2007-09-18  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* configure.ac:
+	bump to 9100c.
 
-	* anthy/Makefile.am (noinst_HEADERS): Removed filemap.h.
-	* anthy/filemap.h: Removed.
+2007-09-18  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/dict.args.in:
+	correct path of gtankan.ctd.
+	Thanks to Konosuke Watanabe. [anthy-dev 3568]
 
-	* src-diclib/Makefile.am (libdiclib_la_SOURCES): Removed
-          filemap.c.
-	* src-diclib/filemap.c: Removed.
-	* src-diclib/file_dic.c (struct file_dic): Directly have PTR
-          ans SIZE.
-	(anthy_mmap): Moved here (was: filemap.c).
-	(anthy_quit_file_dic): Call munmap directly.
+2007-09-16  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* configure.ac:
+	bump to 9100b.
 
-	* src-splitter/depgraph.c: Delete #include <anthy/filemap.h>.
+2007-09-16  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/dict.args.in:
+	use gtankan.ctd.
+	Thanks to UTUMI Hirosi. [anthy-dev 3559]
 
-2010-08-02  NIIBE Yutaka  <gniibe@fsij.org>
+2007-09-16  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* alt-cannadic/Makefile.am:
+	removed gtankan-okuri.ctd.
+	*  alt-cannadic/Makefile.in:
+	DITTO.
+	Thanks to UTUMI Hirosi. [anthy-dev 3559]
 
-	* anthy/texttrie.h: Removed.
-	* anthy/Makefile.am (noinst_HEADERS): Remove texttrie.h.
+2007-09-16  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/name.t:
+	updated.
+	Thanks to UTUMI Hirosi. [anthy-dev 3559]
 
-	* src-worddic/Makefile.am (libanthydic_la_SOURCES): Remove
-          texttrie.c.
+2007-09-16  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* mkworddic/compound.t:
+	updated.
+	Thanks to Jun Oizumi. [anthy-dev 3566]
 
-	* src-worddic/dic_util.c (anthy_private_tt_dic, find_next_key)
-        (delete_prefix, encoding_prefix, find_same_word): Removed.
-	(struct iterate_contex): Removed in_tt and key_buf.
+2007-09-16  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* calctrans/corpus.?.txt:
+	updated.
+	Thanks to Yusuke TABATA.
 
-	(anthy_dic_util_init, select_first_entry_in_textdic): Don't
-	access to in_tt field.
-	(anthy_priv_dic_delete): Don't call delete_prefix.
-	(anthy_priv_dic_select_first_entry): Just call
-	select_first_entry_in_textdic.
-	(anthy_priv_dic_select_next_entry): Don't call find_next_key.
-	(anthy_priv_dic_get_index): Don't access in_tt and key_buf.
-	(anthy_priv_dic_get_freq): Just call anthy_parse_word_line.
-	(anthy_priv_dic_get_wtype, anthy_priv_dic_get_word): Don't
-	call anthy_trie_find.
-	(add_word_to_textdic): Don't call anthy_trie_delete.
+2007-09-06  AWASHIRO Ikuya <ikuya@fruitsbasket.info>
+	* src-worddic/priv_dic.c:
+	旧い形式で登録された単語がないと未知語を使わない問題の修正
+	Thanks to Yusuke TABATA.
 
-	* src-worddic/priv_dic.c (anthy_private_tt_dic, open_tt_dic)
-     	(copy_words_from_tt): Removed.
-	(anthy_priv_dic_update): Don't call anthy_trie_update_mapping.
-	(anthy_copy_words_from_private_dic): Don't call copy_words_from_tt.
-	(anthy_init_private_dic): Dont' call open_tt_dic and anthy_trie_close.
-	(anthy_release_private_dic): Don't call anthy_trie_close.
+2005-11-01  YOSHIDA Yuichi <oxy@kmc.gr.jp>
+	* ntohl, htonlをラッパで抽象化した
+	Thanks to Etsushi Katoさん [anthy-dev 2587]
+	          Koga Youichirouさん [anthy-dev 2588]
 
-	* src-worddic/texttrie.c: Removed.
+2005-10-16  Yusuke TABATA  <yusuke@ofanim.net>
 
-	* src-worddic/word_dic.c: Comment fix.
+	* mkanthydic/placename.t 駅名の中で駅の無いものを追加
+	Thanks to Shirou Wakayamaさん [anthy-dev 2551]
 
-	* src-worddic/dic_main.h (anthy_priv_dic_update): Removed.
-	* src-worddic/priv_dic.c: Likewise.
-	* src-worddic/word_dic.c (anthy_lock_dic): Don't call
-	  anthy_priv_dic_update.
+2005-10-16  NIIBE Yutaka  <gniibe@fsij.org>
 
-2010-08-02  NIIBE Yutaka  <gniibe@fsij.org>
+	* src-diclib/wtype.c (anthy_init_wtype_by_name): Change the
+	prototype.
+	* include/wtype.h (anthy_init_wtype_by_name): Change the
+	declaration.
+	* depgraph/mkdepgraph.c (parse_indep): Follow the change.
+	* src-splitter/splitter.c (anthy_init_splitter): Likewise.
 
-	* src-worddic/record.c (read_session): Don't change
-	rst->cur_session, rst->cur_row.
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
 
-	* src-util/agent.c (parse_args): Fix confvar name to "DIC_FILE"
-	(was: "SDIC").
+	* src-splitter/depgraph.c (anthy_get_nth_dep_rule): Use
+	anthy_get_wtype.
+	* src-diclib/wtype.c (anthy_init_wtype_by_name) 
+	(anthy_type_to_wtype): Likewise.
 
-2010-07-08  NIIBE Yutaka  <gniibe@fsij.org>
+	* src-diclib/file_dic.c (add_dic_ent): Use anthy_get_wtype_with_ct.
+	* src-splitter/compose.c (enum_candidates): Likewise.
 
-	* anthy/depgraph.h (dep_transition): Removed unused member POS.
+	* src-diclib/wtype.c (anthy_get_wtype_with_ct, anthy_get_wtype):
+	New functions.
+	* include/wtype.h (anthy_get_wtype, anthy_get_wtype_with_ct): New
+	function declarations.
 
-	* depgraph/mkdepgraph.c (parse_transition): Don't set the member
-	POS, as it's unused.
-	(write_transition): Don't write out unused field POS.
+	* src-diclib/wtype.c (anthy_type_to_wtype): Don't set POS_INVAL
+	partially, but substitute anthy_wt_none.
 
-2010-07-08  NIIBE Yutaka  <gniibe@fsij.org>
+	* src-diclib/file_dic.c (parse_wtype_str): Don't set POS_INVAL
+	partially, but substitute anthy_wt_none.
 
-	* src-worddic/word_dic.c (anthy_get_nr_dic_ents)
-	(anthy_get_seq_ent_pos, anthy_get_seq_ent_wtype_compound_freq)
-	(anthy_get_seq_ent_indep): Remove useless variable S for access
-	internal within encapsulation.
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
 
-	* src-wrddic/ext_ent.c (anthy_get_nth_dic_ent_freq_of_ext_ent):
-	Removed.
-	* src-worddic/dic_ent.h: Likewise.
-	* src-worddic/word_dic.c (anthy_get_nth_dic_ent_freq): Use MAGIC_FREQ.
+	* src-diclib/dic_main.h (anthy_init_wtypes): Removed declaration.
+	* include/wtype.h (anthy_init_wtypes): ... but declared here.
 
-	* src-worddic/ext_ent.c (anthy_get_nth_dic_ent_wtype_of_ext_ent):
-	Removed 2nd argument NTH.
-	* src-worddic/dic_ent.h: Likewise.
+	* mkanthydic/mkdic.c (main): Call anthy_init_wtypes.
+	* depgraph/mkdepgraph.c (main): Likewise.
 
-	* src-worddic/word_dic.c (anthy_get_nth_dic_ent_wtype): Simplified.
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
 
-	* src-worddic/ext_ent.c (anthy_get_nth_dic_ent_wtype_of_ext_ent):
-	Set anthy_wt_none when returning -1.
+	* src-diclib/wtype.c (anthy_wtype_get_wf): Make it public.
+	* include/wtype.h (anthy_wtype_get_wf): Exported to public.
 
-	* src-worddic/word_dic.c (anthy_get_seq_ent_ct): Removed.
-	* anthy/dic.h: Likewise.
+	* depgraph/mkdepgraph.c (write_wtype): Use anthy_wtype_get_wf.
 
-2010-07-08  NIIBE Yutaka  <gniibe@fsij.org>
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
 
-	***DICTIONARY FORMAT CHANGE***
+	* src-diclib/wtype.c (anthy_wtype_get_wf): New Function.
+	(anthy_print_wtype): New implementation using accessors.
 
-	* src-worddic/wtype.c (anthy_get_wtype): Make it internal, and
-	make sure unused bits are cleared with 0.
-	(anthy_init_wtypes): Use anthy_get_wtype for initialization of
-	anthy_wt_all and anthy_wt_none.
-	(anthy_wtype_equal): We can jusc compare by unsigned int.
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
 
-	* src-splitter/depgraph.c (anthy_get_nth_dep_rule): rule->wt is now
-	name of wt.  Call anthy_type_to_wtype.
+	* src-diclib/wtype.c (struct PTab): Removed.
+	(ptab): Use struct wttable.
+	(get_pos_by_name, anthy_init_wtype_by_name): Follow the changes.
 
-	* depgraph/mkdepgraph.c (parse_indep, write_wtype, write_file):
-	Write the name of wt (was: binary value of wt) to anthy.dep.
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
 
-	* anthy/wtype.h (anthy_get_wtype): Removed (make it static).
+	* src-diclib/wtype.c (struct wttable): Change order of members.
+	* src-diclib/wtab.h: Follow the change.
 
-2010-07-07  NIIBE Yutaka  <gniibe@fsij.org>
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
 
-	* src-worddic/wtype.c (anthy_wtype_noun): Moved here (was:
-	wordlist.c).
-	(anthy_init_wtypes): Initialize anthy_wtype_noun.
-	(anthy_wtype_include, anthy_wtype_get_ajv, anthy_wtype_set_cc)
-	(anthy_wtype_set_ct, anthy_wtype_set_pos, anthy_wtype_set_cos)
-	(anthy_wtype_set_scos, anthy_wtype_set_dep)
-	(anthy_get_wtype_with_ct): Removed.
+	* src-diclib/wtype.c (struct PTab): Change order of members.
+	* src-diclib/ptab.h: Follow the change.
 
-	* src-worddic/word_dic.c (anthy_get_seq_ent_wtype_freq0): Removed
-	(anthy_get_seq_ent_wtype_freq): Now works as
-	anthy_get_seq_ent_wtype_freq0 (call anthy_wtype_equal instead of
-	anthy_wtype_include).
+2005-10-15  NIIBE Yutaka  <gniibe@fsij.org>
 
-	* src-worddic/ext_ent.c (anthy_get_nth_dic_ent_wtype_of_ext_ent):
-	Use anthy_wtype_noun (instead of calling anthy_get_type).
-	(anthy_get_ext_seq_ent_wtype): Just compare if it's POS_NUMBER.
+	* src-diclib/wtype.c (anthy_pos_name_intern): Removed.
+	* include/wtype.h (anthy_pos_name_intern): Removed.
 
-	* src-splitter/wordlist.c (make_suc_words): Just compare if it's
-	POS_NUMBER or POS_NOUN (no need to use anthy_wtype_include).
-	(make_pre_words): Likewise.
-	(make_word_list): Call anthy_get_seq_ent_wtype_freq (which
-	is now behave anthy_get_seq_ent_wtype_freq0).
-	(anthy_init_wordlist): Remove initialization of anthy_wtype_noun
-	and anthy_wtype_num_noun.
+2005-10-14  NIIBE Yutaka  <gniibe@fsij.org>
 
-	* anthy/wtype.h (anthy_wtype_include, anthy_wtype_get_ajv)
-	(anthy_get_wtype_with_ct, anthy_wtype_set_pos, anthy_wtype_set_cc)
-	(anthy_wtype_set_ct, anthy_wtype_set_cos, anthy_wtype_set_scos)
-	(anthy_wtype_set_dep): Removed.
-	(anthy_wtype_noun): Added (exported).
+	* depgraph/mkdepgraph.c (gRuleWtNames): Removed. 
+	(parse_indep): Don't set gRuleWtNames.
 
-	* anthy/dic.h (anthy_get_seq_ent_wtype_compound_freq0): Removed.
+2005-06-14  Yusuke TABATA  <yusuke@illusion>
 
-2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
+	* README.en : new file
 
-	* anthy/wtype.h (CT_MEISIKA): Removed.
-	(anthy_wtype_get_meisi): Removed.
+2005-05-21  Yusuke TABATA  <yusuke@illusion>
 
-	* src-worddic/word_lookup.c (add_dic_ent): No need to add
-          entries with CT_MEISIKA.
+	* src-util/anthy.el : [anthy-dev 2034] change language environment
+	name from 'japanese to "Japanese".
+	* src-util/dic-tool.c : [anthy-dev 2036] use %[^\n] to extract string
 
-	* src-worddic/wtype.c (pos_name_tab)
-	(anthy_init_wtype_by_name,anthy_wtype_get_meisi): Removed.
+2005-05-08  Yusuke TABATA  <yusuke@illusion>
 
-2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
+	* src-util/*.el : Mikeさんからのパッチを一部適用 http://lists.freedesktop.org/archives/uim/2005-May/001076.html
 
-	* anthy-conf.in (INDEPWORD, DEPWORD): Removed.
-	* anthy-test-conf.in: Likwise.
-	* test/prediction.c: Likewise.
-	* doc/GUIDE: Remove explanation of them.
+2005-04-24  Yusuke TABATA  <yusuke@illusion>
 
-2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
+	* src-util/anthy-dic.el (anthy-region-active-p,
+	anthy-add-word-interactive):  梅本さんからのパッチを適用し、リージョ
+	ンが有効なら登録単語をそこから拾うようにした。
 
-	* src-splitter/segclass.c (seg_class_tab): Added missing colons.
+2005-03-07  Yusuke TABATA  <yusuke@illusion>
 
-2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
+	* src-splitter.c fixed invalid memory access in anthy-6300c
 
-	* anthy/dic.h (anthy_get_seq_ent_wtype_freq0): New.
+2004-12-23  Yusuke TABATA  <yusuke@illusion>
 
-	* depgraph/indepword-wt.txt: New file.
+	* cannadic/ update to cannadic-0.95c
 
-	* depgraph/Makefile.am: Use indepword-wt.txt.
+2004-12-04  Yusuke TABATA  <yusuke@illusion>
 
-	* depgraph/mkdepgraph.c (INDEPWORD_INPUT_FILENAME): Use
-	indepword-wt.txt.
-	(parse_indep): Support #XX type description.
-	(init_indep_word_seq_tab): # is not comment any more.
+	* src/splitter/commit.c fix mis-computation of segment length which can cause out of array bound access
 
-	* src-splitter/compose.c (enum_candidates): Use anthy_wtype_equal.
+2004-11-11  Yuichi Yoshida  <oxy@kmc.gr.jp>
 
-	* src-splitter/wordlist.c (make_word_list): Use
-	anthy_get_seq_ent_wtype_freq0.
+	* use Hidden Markov Model to find segment boundary.
 
-	* src-worddic/ext_ent.c (anthy_get_ext_seq_ent_wtype): Bug fix.
-	Swap arg1 and arg2.
+2004-08-26  Yusuke TABATA  <yusuke@illusion>
 
-	* src-worddic/word_dic.c (anthy_get_seq_ent_wtype_freq0): New.
-	(anthy_get_seq_ent_wtype_compound_freq): Use anthy_wtype_equal.
+	* add kanji mixed text conversion
 
-2010-07-06  NIIBE Yutaka  <gniibe@fsij.org>
+2004-08-11  Yusuke TABATA  <yusuke@illusion>
 
-	* depgraph/Makefile.am (DEPWORDS): Change order (as same as
-        read order in master.depword).
-	(CLEANFILES): Added all.depword.
-	(all.depword): Added a rule to generate.
+	* src-splitter/splitter.c move seginfo related functions to seginfo.c
+	  src-splitter/seginfo.c(new)
 
-	* depgraph/master.depword: Comment out all include.
+2004-07-31  Yusuke TABATA  <yusuke@illusion>
 
-	* depgraph/mkdepgraph.c (parse_dep): Call fprintf instead of
-          anthy_log.
-	(check_nodes): Likewise.
-	(get_tokens): New.
-	(init_depword_tab): Simply use fopen/fgets/fclose.
-	(init_indep_word_seq_tab): Likewise.
-	(parse_indep): Error check when realloc fails.
-	(main): Don't use anthy/conf.
+	* simplify segment composing
 
-2010-07-05  NIIBE Yutaka  <gniibe@fsij.org>
-
-	* src-worddic/ext_ent.c (wt_num): Removed.
-	(anthy_init_ext_ent): Remove initialization of wt_num.
-	(anthy_get_nth_dic_ent_wtype_of_ext_ent)
-	(anthy_get_ext_seq_ent_wtype): Use anthy_wtype_num_noun instead of
-	wt_num.
-
-	* src-main/main.c (anthy_init): Call anthy_init_wordlist.
-
-	* src-splitter/wordborder.h: Removed variable declarations of
-	anthy_wtype_*.
-
-	* src-splitter/wordlist.c (anthy_wtype_noun)
-	(anthy_wtype_name_noun, anthy_wtype_prefix)
-	(anthy_wtype_num_prefix, anthy_wtype_num_postfix)
-	(anthy_wtype_name_postfix, anthy_wtype_sv_postfix): Moved from
-	splitter.c, and make them static.
-	(anthy_init_wordlist): New function.  Moved calls of
-	anthy_init_wtype_by_name from splitter.c, and change the calls to
-	anthy_type_to_wtype.
-
-	* src-worddic/wtype.c (anthy_wtype_a_tail_of_v_renyou)
-	(anthy_wtype_num_noun): Moved from splitter.c.
-	(anthy_init_wtypes): Initialize anthy_wtype_a_tail_of_v_renyou and
-	anthy_wtype_num_noun by anthy_type_to_wtype.
-
-	* anthy/wtype.h (anthy_init_wordlist, anthy_wtype_num_noun)
-	(anthy_wtype_a_tail_of_v_renyou): Added declarations.
-
-	* src-splitter/splitter.c (anthy_wtype_noun_tail)
-	(anthy_wtype_v_renyou, anthy_wtype_n1, anthy_wtype_n10): Removed
-	unused variables.
-
-2010-07-05  NIIBE Yutaka  <gniibe@fsij.org>
-
-	* src-splitter/wordlist.c (anthy_print_word_list): Use
-	anthy_seg_class_sym (was: anthy_seg_class_name).
-	* src-splitter/metaword.c (anthy_do_print_metaword): Ditto.
-	* src-splitter/lattice.c (calc_probability): Ditto.
-
-	* src-splitter/segclass.c (anthy_seg_class_by_name): Removed.
-	(anthy_seg_class_name): Removed.
-	(seg_class_tab): It's now just a string table.
-	* anthy/segclass.h: Follow the change.
-
-	* depgraph/indepword.txt (FukushiGokan): Removed.
-	* depgraph/av.depword (FukushiGokan): Ditto.
-
-	* src-worddic/textdic.c (anthy_textdic_scan): Added missing break.
-
-2010-07-02  NIIBE Yutaka  <gniibe@fsij.org>
-
-	* src-worddic/ptab.h (KeiyoushiGokan): Added back again.
-
-2010-07-01  Jun Oizumi  <vagus.xyz@gmail.com>
-
-	Cherry pick changes done in alt-depgraph branch (by gniibe).
-	Same as alt-depgraph-new branch.
-
-	[Anthy-dev 3751] alt-depgraph_add_pos.patch
-
-	* anthy/wtype.h: Added/formatted comments.
-	  (CC_A): Removed.
-	  (CC_A_U, CC_AJV, CC_SRV): Renumbered.
-	  (CC_SRV2, CC_KV2, CC_A_KU, CC_A_SIKU, CC_A_E, CC_A_I,
-	  CC_A_ii, CC_A_nai, CC_A_yoi, CC_RZ): New.
-	  (SCOS_T1, SCOS_T6, SCOS_T11, SCOS_T16, SCOS_T21, SCOS_T26,
-	  SCOS_T31, SCOS_T36): New.
-
-	* src-worddic/ptab.h (Meisi1 SCOS_T1): New.
-	  (Meisi6 SCOS_T6): New.
-	  (Meisi11 SCOS_T11): New.
-	  (Meisi16 SCOS_T16): New.
-	  (Meisi21 SCOS_T21): New.
-	  (Meisi26 SCOS_T26): New.
-	  (Meisi31 SCOS_T31): New.
-	  (Meisi36 SCOS_T36): New.
-	  (MeisikaSetsubigo): Use COS_SUFFIX (was: COS_NONE).
-	  (MeishiSetsubiji): Use WF_INDEP (was: WF_NONE).
-	  (JinmeiSettouji,ChimeiSettouji,ChimeiSetsubiji,SahenSetsubiji):
-	  Likewise.
-	  (RengoArazuGokan): New.
-	  (KahenKatsuyouDoushiKateikei2): New.
-	  (SuruMizenkeiSE): Use CC_SRV2 (was: CC_SRV).
-	  (SuruShuushikeiSURU): New.
-	  (SuruShuushikeiSURE): New.
-	  (SuruShuushikeiSURYA): New.
-	  (SuruShuushikeiSEYO): Use CC_SRV2 (was: CC_SRV).
-	  (KeiyoushikaSetsubigo): Use CT_HEAD (was: CT_NONE).
-	  (Keiyoushi): Use SCOS_NONE (was: SCOS_A0).
-	  (KeiyoushiKUgokan,KeiyoushiGokanE-onbin,KeiyoushiGokani-onbin,
-	  KeiyoushiU-onbin,Keiyoushi-II-gokan,Keiyoushi-NAI-gokan,
-	  Keiyoushi-YOI-gokan.): New.
-	  (KeiyoushiGokan): Removed.
-	  (KeiyoushiDoushikaSetsubigo): New.
-	  (Rentaishi): Use WF_INDEP (was: WF_NONE).
-
-	* src-worddic/wtab.h (#kki, #kko, #kxoi, #kxure, #kxuru,
-          #kxuru2, #kxya, #sxi, #sxe, #sxi2, #sxuru, #sxure, #sxiro,
-          #sxeyo, #sxya): New.
-	  (#DNKY): Use COS_SUFFIX, CC_A_KU (was: COS_NONE, CC_A).
-	  (#yasui): Likewise.
-	  (#D2T16): Use POS_NOUN, COS_SUFFIX, WF_INDEP|WF_AJV (was:
-	  POS_INVAL, COS_NONE, WF_INDEP).
-	  (#DT2T35): Use SCOS_T40 (was: SCOS_NONE).
-	  (#KY): Use CC_A_KU (was: CC_A).
-	  (#KYE, #KYI): New.
-	  (#KYT): Use CC_A_KU (was: CC_A).
-	  (#KYU): Use SCOS_A0 (was: SCOS_NONE).
-	  (#KYii): New.
-	  (#KYme,#KYmi,#KYmime): Use CC_A_KU (was: CC_A).
-	  (#KYn): New.
-	  (#KYna): Use CC_A_KU (was: CC_A).
-	  (#KYs, #KYy): New.
-	  (#N2KYT): Use CC_A_KU (was: CC_A).
-	  (#N2T10): Use POS_NOUN, COS_SUFFIX, WF_INDEP|WF_AJV|WF_SV
-	            (was: POS_INVAL, COS_NONE, WF_INDEP).
-	  (#N2T16,#N2T17): Use POS_AJV, COS_SUFFIX, WF_INDEP|WF_AJV
-	  	    (was: POS_INVAL, COS_NONE, WF_INDEP).
-	  (#N2T30): Use COS_SUFFIX, WF_INDEP|WF_SV
-	  	    (was: COS_NONE, WF_INDEP).
-	  (#ND2KY): Use CC_A_KU (was: CC_A).
-	  (#SUC): Use POS_SUC (was: POS_NOUN).
-	  (#T00,#T01,#T02,#T03,#T04): Added WF_AJV with |.
-	  (#T04): Use SCOS_T4 (was: SCOS_NONE).
-	  (#T05): Use CC_NONE (was: CC_AJV).
-	  (#T06,#T07,#T08,#T09,#T10,#T11,#T12,#T13,#T14,#T15,#T16,#T17,#T18,#T19):
-	  Added WF_AJV with |.
-	  (#T21): Use SCOS_T21 (was: SCOS_T20).
-	  (#T26): Use SCOS_T26 (was: SCOS_T25).
-	  (#T31): Use SCOS_T31 (was: SCOS_T30).
-	  (#T36): Use SCOS_T36 (was: SCOS_T35).
-	  (#kxi,#kxo,#kxoi,#kxure,#kxuru,#kxya,#sxi,#sxe,#sxi2,#sxiro,#sxeyo):
-	  Removed.
-	  (#arazu): New.
-
-2010-07-01  Jun Oizumi <vagus.xyz@gmail.com>
-
-	Cherry pick changes done in alt-depgraph-new branch (by gniibe).
-
-	* alt-cannadic/extra/g-keiyousi_ie-std.t: New.
-	* alt-cannadic/gcanna.t: Renamed (was: alt-cannadic/gcanna.ctd).
-	* alt-cannadic/extra/README: Updated.
-	* alt-cannadic/g_fname.t: Updated.
-	* alt-cannadic/gcanna.t: Updated.
-	* mkworddic/Makefile.am: Updated.
-	* mkworddic/compound.t: Updated.
-	* mkworddic/dict.args.in: Updated.
-	* mkworddic/extra.t: Updated.
-
-2010-07-01  Jun Oizumi <vagus.xyz@gmail.com>
-
-	* mkworddic/adjust.t, mkworddic/extra.t, mkworddic/compound.t:
-	Updated.
-
-2010-07-01  Jun Oizumi <vagus.xyz@gmail.com>
-
-	Update of alt-cannadic.  See alt-cannadic/Changes.txt.
-
-	* alt-cannadic/extra/x-conv2self-std.t: New.
-	* alt-cannadic/extra/gt-kuten-34.t: New.
-	* alt-cannadic/extra/gt-kuten-std.t: New.
-
-	* alt-cannadic/How-to-use.txt: Removed.
-	* alt-cannadic/sample/dict.args.in.euc: Removed.
-	* alt-cannadic/sample/dict.args.in.utf8: Removed.
-
-	* alt-cannadic/Changes.txt: Updated.
-	* alt-cannadic/Makefile.am: Updated.
-	* alt-cannadic/README_euc.txt: Updated.
-	* alt-cannadic/extra/README: Updated.
-	* alt-cannadic/extra/g-jiritu-34.t: Updated.
-	* alt-cannadic/extra/gc-fullname-34.t: Updated.
-	* alt-cannadic/extra/gt-tankanji_hikanji-34.t: Updated.
-	* alt-cannadic/extra/gt-tankanji_kanji-34.t: Updated.
-	* alt-cannadic/gcannaf.ctd: Updated.
-	* alt-cannadic/gtankan.ctd: Updated.
-	* mkworddic/dict.args.in: Updated.
-	* alt-cannadic/g_fname.t: Updated.
-	* alt-cannadic/gcanna.ctd: Updated.
-
-2010-07-01  NIIBE Yutaka  <gniibe@fsij.org>
-
-	* depgraph/v.depword (@DoushiRenyoukeiD, @DoushiRenyoukei5):
-	Remove space before EOL.
-
-	* depgraph/fix.depword (@Te, @Ni): Remove extra space.
-	(@No): Remove space before EOL.
-
-	* depgraph/conjugate.depword (@Iru, @Nai): Remove space before EOL.
-
-2010-06-22  NIIBE Yutaka  <gniibe@fsij.org>
-
-	* src-worddic/record.c (check_base_record_uptodate): Return 0 when
-	is_anon is valid.
-	Correct condition when it's up-to-date.
-	(commit_add_row): Don't write when is_anon is valid.
-	(sync_add): Correct condition.
-
-2010-06-22  NIIBE Yutaka  <gniibe@fsij.org>
-
-	* src-worddic/priv_dic.c (anthy_forget_unused_unknown_word):
-	Don't call anthy_trie_delete.
-
-2010-06-21  NIIBE Yutaka  <gniibe@fsij.org>
-
-	* anthy/textdic.h: New file.
-	* anthy/textdict.h: Removed.
-	* src-worddic/textdic.c: New file.
-	* src-worddic/textdict.c: Removed.
-	* anthy/Makefile.am (noinst_HEADERS): Added textdic.h.
-	Removed textdict.h.
-	* src-worddic/Makefile.am (libanthydic_la_SOURCES): Added textdic.c.
-	Removed textdict.c.
-	* src-worddic/dic_main.h (anthy_ask_scan): Follow new API of textdic.
-	* src-worddic/dic_util.c (anthy_private_text_dic): Follow new API
-	of textdic.
-	(anthy_priv_dic_delete, scan_one_word_cb)
-	(select_first_entry_in_textdic, anthy_priv_dic_select_next_entry)
-	(do_add_word_to_textdict): Likewise.
-	(select_first_entry_in_textdic, add_word_to_textdic): Renamed.
-	* src-worddic/priv_dic.c (anthy_private_text_dic)
-	(anthy_imported_text_dic, anthy_ask_scan, anthy_init_private_dic)
-	(anthy_release_private_dic): Follow new API of textdic.
-	(open_textdic): Removed.
-	(textdicname): New.
-	* src-worddic/word_dic.c (gang_scan, scan_dict, request_scan):
-	Follow new API of textdic.
-
-2010-06-21  NIIBE Yutaka  <gniibe@fsij.org>
-
-	* configure.ac (AC_OUTPUT): Removed initial-dic/Makefile.
-
-	* mkworddic/compound.t (IjouTaishou): Fix.
-
-2010-06-11  NIIBE Yutaka  <gniibe@fsij.org>
-
-	* Makefile.am (SUBDIRS): Removed initial-dic.
-	(EXTRA_DIST): Added corpus/corpus.?.txt.
-
-	* initial-dic: Removed.
-
-	* mkanthydic/mkfiledic.c (get_file_name): Remove duplicated /.
-	(usage): New.
-	(main): New option "-i" for initial anthy.dic.
-	New option "-o" to specify output dictionary file.
-
-	* mkanthydic/Makefile.am: Build anthy.dic here.
-	Run proccorpus and calctrans from here.
-
-	* calctrans/Makefile.am (EXTRA_DIST): Removed.
-
-	* corpus: New directory.
-	* corpus/corpus.0.txt: Moved from calctrans/.
-	* corpus/corpus.1.txt: Likewise.
-	* corpus/corpus.2.txt: Likewise.
-	* corpus/corpus.3.txt: Likewise.
-	* corpus/corpus.4.txt: Likewise.
-	* corpus/corpus.5.txt: Likewise.
-
-	* alt-cannadic/g_fname.t (WatanabeKazuhiro): Removed trailing
-	space.
-
-	* mkworddic/compound.t (KansuiKinzoku): Removed.
-	(MondaiTsuikyuu): Removed an entry and added two.
-	(YusouKido): Removed.
-	(YumakuIjo): Fixed.
-
-2010-06-02  Masanari Iida  <standby24x7@gmail.com>
-
-	* mkworddic/compound.t: Fix yomi.
-
-2010-05-29  Masanari Iida  <standby24x7@gmail.com>
-
-	* alt-cannadic/gcanna.ctd (Onkyougaku): Fixed.
-
-	* alt-cannadic/g_fname.t (Abekoubou): Fixed.
-
-2010-05-28  NIIBE Yutaka  <gniibe@fsij.org>
-
-	Dictionary bootstrap support.
-	* configure.ac (AC_OUTPUT): Added initial-dic/Makefile.
-	* Makefile.am (update_params,update_params0,update_params2):
-	Removed.
-	(SUBDIRS): Added initial-dic.
-	* initial-dic/Makefile.am: New.
-	* initial-dic/mkfiledic0.c: New file.
-	* src-ordering/relation.c (anthy_reorder_candidates_by_relation):
-	Only call reorder_by_corpus when we have corpus_info in dictionary.
-	* mkanthydic/mkfiledic.c: Changes for mkfiledic0, initial dic.
-	* calctrans/Makefile.am (update_params,update_params0,update_params2):
-	Removed.
-	(corpus_info, weak_words, parsed_data, calctrans_outputs): Added.
-	* calctrans/proccorpus.c (main): Use initial-anthy.dic.
-	* calctrans/corpus_info, weak_words: Removed from repository and
-	distribution.
-
-	* calctrans/corpus.5.txt: Added some text from test.exp.
-
-2010-05-20  NIIBE Yutaka  <gniibe@fsij.org>
-
-	* test/test.exp: Sort it out.
-
-	* calctrans/corpus.c (corpus_new): Initialize nr_buckets.
-
-	* calctrans/calctrans.c (main): Call exit when error.
-	(convert_file, convert_data, extract_word): Ditto.
-	(read_file): Not to ignore error but to exit.
-
-	* src-worddic/record.c (save_a_row): Fixed typo.
-
-2010-05-19  NIIBE Yutaka  <gniibe@fsij.org>
-
-	* mkanthydic/Makefile.am (anthy.dic): Added dependency on
-	../calctrans/anthy.weak_words.
-
-	* mkworddic/compound.t: Incorporated fixes by Masanari Iida.
-	See [Anthy-dev 3708].
-
-2010-05-18  NIIBE Yutaka  <gniibe@fsij.org>
-
-	* configure.ac: Version 9200.
-
-	* Makefile.am (EXTRA_DIST): Added missing \.
-	* alt-cannadic/Makefile.am (EXTRA_DIST): Removed Makefile.orig.
-	* doc/Makefile.am (EXTRA_DIST): Added DIARY.
-	* Makefile.am (ACLOCAL_AMFLAGS): Unquoted.
-	(EXTRA_DIST): Removed README.en, DIARY.
-	Added COPYING.LIB2_1 README.2007.ja THANKS.2007.ja NEWS.2007.ja
-	INSTALL.2006.ja ChangeLog.2001-2009.
-	* anthy-conf.in: Added datarootdir.
-	* calctrans/corpus_info: Updated.
-	* calctrans/weak_words: Updated.
-
-	* calctrans/calctrans.c: Fix typo in comment.
-
-	* mkworddic/mkdic.c (mk_yomi_hash): Free hash_array.
-	Closes: sf.jp ticket #20964.  Thanks to syama.
-
-	* src-util/anthy.el (anthy-accept-timeout): Support Emacs 23 or
-	later too.  Closes: sf.jp ticket #11263.  Thanks to Kasuga.
-
-	* src-util/Makefile.am (ELCFILES): Removed.
-	* src-util/anthy.el (anthy-erase-preedit): Use mapc instead of mapcar.
-	(anthy-buffer-undo-list): New deflocalvar.
-	(anthy-deflocalvar): New implementation killing old-style quasi-quote.
-	* src-util/anthy-kyuri.el (anthy-kyuri): Use mapc instead of mapcar.
-	(anthy-kyuri-mode-hiragana-map): Define	as defvar.
-	* src-util/anthy-conf.el (anthy-load-hiragana-map)
-	(anthy-kana-map-mode): Use mapc instead of mapcar.
-	* src-util/anthy-azik.el: Require anthy.
-	(anthy-azik-mode): Use mapc instead of mapcar.
-
-	* ChangeLog, mkworddic/Makefile.am, src-diclib/alloc.c,
-	src-diclib/logger.c, src-main/Makefile.am, src-main/context.c,
-	src-ordering/candsort.c, src-splitter/Makefile.am,
-	src-splitter/compose.c, src-splitter/splitter.c,
-	src-splitter/wordlist.c, src-util/Makefile.am, src-util/input.c,
-	src-util/rkconv.c, src-util/rkmap.h, src-worddic/Makefile.am:
-	Removed Id keyword of RCS/CVS.
-
-	* mkworddic/base.t, mkworddic/name.t, mkworddic/tankanji.t: Removed.
-	* mkworddic/Makefile.am (EXTRA_DICS): Follow the removal.
-
-	* COPYING: New file, GNU GPL 3, as LGPL3 refers it.
-
-	* INSTALL, THANKS, NEWS: New.
-
-	* README.2007.ja: Follow the change of paths.  Fixed some
-	information.
-
-	* COPYING.LIB: New file, GNU LGPL 3.
-	* COPYING.LIB2_1: New file, GNU LGPL 2.1.
-
-	* COPYING: Removed.
-	* README: New file, Incorporating text header of COPYING.
-
-	* THANKS.2007.ja: Moved from THANKS.
-	* NEWS.2007.ja: Moved from NEWS.
-	* INSTALL.2006.ja: Moved from INSTALL.
-	* README.2007.ja: Moved from README.
-
-	* ChangeLog.2001-2009: Moved from ChangeLog.2009
-
-2010-05-17  NIIBE Yutaka  <gniibe@fsij.org>
-
-	* mkworddic/Makefile.am (DIC_FILES): Added utf8.t.
-
-    	* src-worddic/ext_ent.c (MAX_LINE_LEN): New.
-    	(parse_zipcode_line, search_zipcode_dict): Use it.
-    	See [Anthy-dev 3706].  Thanks to G-HAL.
-
-    	* mkworddic/extra.t: Fix entry for "Abunai Hashi".
-    	* mkworddic/extra.t, mkworddic/compound.t: Fix double spaces.
-	See [Anthy-dev 3701].  Thanks to G-HAL.
-
-    	* mkworddic/compound.t: Modified words for "TYUI KYU".
-    	See [Anthy-dev 3697], parts of proposal integrated.
-    	Thanks to G-HAL.
-
-    	* src-splitter/lattice.c (cmp_node_by_type): Removed.
-    	(cmp_node_by_type_to_type): Removed.
-    	(cmp_node): Handle the case of lhs->mw->type == MW_COMPOUND_PART,
-    	but rhs->mw->type != MW_COMPOUND_HEAD nor MW_COMPOUND_PART.
-    	See [Anthy-dev 3703].  Thanks to G-HAL.
-
-    	* src-worddic/dic_util.c (do_search,anthy_dic_search_words_file):
-    	  Removed.
-    	* anthy/dicutil.h, doc/DICLIB: Follow the change.
-    	* anthy-test-conf.in, anthy-conf.in: Removed WORDS_FILE.
-
-	* Makefile.am, configure.ac, autogen.sh: Use m4 subdirectory.
-
-	* autogen.sh: New file.
-
-	* doc/DIARY: Moved this historical file from top directory.
-
-	* AUTHORS: New.
-	* THANKS: Moved old AUTHORS to this file.
-
-	* Remove all generated files from repository.
-	Makefile.in, aclocal.m4, config.h.in, config.guess, config.sub,
-	configure, compile, depcomp, install-sh, ltmain.sh, missing,
-	elisp-comp, mkinstalldirs, alt-cannadic/Makefile.in,
-	anthy/Makefile.in, calctrans/Makefile.in, depgraph/Makefile.in,
-	doc/Makefile.in, mkanthydic/Makefile.in, mkworddic/Makefile.in,
-	src-diclib/Makefile.in, src-main/Makefile.in, src-ordering/Makefile.in,
-	src-splitter/Makefile.in, src-util/Makefile.in,
-	src-worddic/Makefile.in, test/Makefile.in: Removed from repository.
-
-	* alt-cannadic/Makefile.orig: Removed.
-
-	* ChangeLog: New.
-	* ChangeLog.2009: Moved old ChangeLog to this file.
-
-	* New development starts.
-	  See ChangeLog.2009 for old development.
+2004-07-24  Yusuke TABATA  <yusuke@illusion>
+
+	* add const to some API functions
+
+2004-07-23  Yusuke TABATA  <yusuke@illusion>
+
+	* mkanthydic/mkudic.c: do not add negative word id to dictionary. fix memory corruption of dictionary generation.
+
+2004-06-06  Yusuke TABATA  <yusuke@illusion>
+
+	* parenthes can be a segment
+
+2004-05-06  Yusuke TABATA  <yusuke@illusion>
+
+	* src-ordering/candswap.c: remove whole candidate swapping
+
+2004-05-04  Yusuke TABATA  <yusuke@illusion>
+
+	* (test/anthy_swig.i, test/test.rb, test/extconf.rb): new. contributed by Kouhei Sutou-san. Thanks.
+	* anthy.el: save and restore buffer-undo-list in conversion mode. patch by Konosuke WATANABE-san. Thanks.
+
+2004-04-27  Yusuke TABATA  <yusuke@illusion>
+
+	* anthy-azik.el: added. Thanks Hara-kun@kmc
+
+2004-04-19  Yusuke TABATA  <yusuke@illusion>
+
+	* src-splitter/splitter.c: add debug printing facility enabled by environment variable
+
+2004-04-13  Yusuke TABATA  <yusuke@illusion>
+
+	* anthy.el: call auto-fill function in auto-fill mode
+
+2004-04-08  Yusuke TABATA  <yusuke@illusion>
+
+	* cannadic update to cannadic-0.95b
+
+2003-09-22  Yusuke TABATA  <yusuke@illusion>
+
+	* cannadic update to cannadic-0.95a
+
+2003-07-10  Yusuke TABATA  <yusuke@illusion>
+
+	*  cannadic update to cannadic-0.95
+
+2003-05-01  TABATA Yusuke  <yusuke@cherubim.icw.co.jp>
+
+	* cannadic update to cannadic-0.94h
+
+2003-02-25  TABATA Yusuke  <yusuke@cherubim.icw.co.jp>
+
+	* cannadic update to cannadic-0.94g
+
+2002-11-30  TABATA Yusuke  <yusuke@cherubim.icw.co.jp>
+
+	* cannadic update to cannadic-0.94f
+
+2002-11-23  TABATA Yusuke  <yusuke@cherubim.icw.co.jp>
+
+	* automake-1.6.3 autoconf-2.53 libtool-1.4.2
+
+2002-11-09  yusuke  <yusuke@cherubim.icw.co.jp>
+
+	* cannadic update to cannadic-0.94e
+
+2002-08-22  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-util/egg.c (struct context): New member SELLEN and SELECTION
+	to remember the selection of candidates.
+	(INITIAL_SELLEN): New macro.
+	(new_context): Added initialization of selection.
+	(release_context): Added finalalization of selection.
+	(get_number_of_segments): Moved upto begin_conversion.
+	(begin_conversion, end_conversion): Added selection support.
+	(resize_segment): Added selection support.
+	(select_candidate): Added selection support.
+
+2002-08-09  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* doc/protocol.txt: Moved from src-util/protocol.txt.
+
+2002-08-08  NIIBE Yutaka  <gniibe@m17n.org>
+
+	Added EGG support.
+	* src-util/agent.c (egg_main): Declared.
+	(egg): New variable.
+	(parse_args, main): Handle --egg option.
+	* src-util/Makefile.am (anthy_agent_SOURCES): Added egg.c.
+
+	* src-utils/egg.c: New file.
+
+	* src-utils/protocol.txt: New file to describe protocol
+	of anthy agent egg protocol.
+
+2002-07-09  yusuke  <yusuke@cherubim.icw.co.jp>
+
+	* cannadic update to cannadic-0.94c
+
+2002-03-25  Yusuke Tabata  <yusuke@kmc.gr.jp>
+
+	* cannadic update to cannadic-0.94b
+
+2002-03-13  Yusuke Tabata  <yusuke@kmc.gr.jp>
+
+	* cannadic update to cannadic-0.94a
+
+2002-03-08  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-diclib/alloc.c (get_chunk_from_page): Add the condition
+	to check if it's the first page or not.
+
+2002-03-07  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-diclib/alloc.c (struct page): Directly place storage here.
+	(CHUNK_HEADER_SIZE): Rename from HEADER_SIZE.
+	(PAGE_HEADER_SIZE): New macro.
+	(alloc_page): No argument.  Use storage (no indirection).
+	(anthy_create_allocator): Change the condition of comparison of size.
+	(anthy_free_allocator): Don't free p->storage.
+	(allocator_list): Change the type to a pointer.
+	(anthy_quit_allocator): Avoid de-reference freed pointer.
+	(anthy_free_allocator_internal): New function.
+	(anthy_free_allocator): Use anthy_free_allocator_internal.
+	Remove it from allocator_list.
+	(anthy_create_allocator): Register 'a' to allocator_list.
+
+2002-03-07  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-diclib/alloc.c (struct page): Move max_obj and use_count to...
+	(struct allocator_priv): ... here.
+	(alloc_page): Don't set p->max_obj and p->use_count.
+	(anthy_create_allocator): Set them (of a) here instead.
+	(anthy_free_allocator): Use a->use_count (was: p->use_count).
+	(anthy_smalloc): Set a->use_count to 0, after alloc_page.
+
+2002-03-07  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-diclib/dic_session.c: Include alloc.h.
+	* src-diclib/ddic_tree.h (struct ddic_handle): Use the type allocator.
+	* src-diclib/alloc.c (struct page): Remove (useless) member of
+	objsize.
+	(alloc_page): Don't use p->objsize.
+	(anthy_free_allocator): Use a->size instead of p->objsize.
+	(get_chunk_from_page): Added argument allocator and use it.
+	(anthy_smalloc): Supply allocator for the call of get_chunk_from_page.
+
+	* include/alloc.h (struct allocator_priv): Rename from allocator_.
+
+2002-03-07  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* Makefile.am (AUTOMAKE_OPTIONS): Added dejagnu.
+	(EXPECT, RUNTEST, RUNTESTFLAG): Defined.
+	(check-DEJAGNU): New target.
+
+2002-03-06  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-splitter/wordlist.c (gRules): Make it as a pointer.
+	(make_following_word_list, make_word_list, parse_line,
+	init_word_seq_tab): Apply the change.
+	(make_word_list_all): Make the variable head as a pointer.
+
+2002-03-06  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-diclib/ddic_tree.h (struct ddic_handle): Change root_node type
+	as a pointer to	struct seq_node.
+	* src-diclib/ddic.c (ddic_alloc_seq_ent_by_xstr): Follow the change.
+	(ddic_find_seq_ent_by_xstr, ddic_release_seq_ent, 
+	invalidate_seq_node_mask, create_ddic, shrink_ddic): Likewise.
+
+2002-03-06  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-diclib/conf.c (ents): Removed.
+	(ent_list): New variable.
+	(find_val_ent): Use ent_list.
+	(SID_FORMAT, MAX_HOSTNAME, MAX_SID_LEN): New macros.
+	(alloc_session_id): Put '\0' at the last of hn.
+
+2002-03-05  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-util/dic-tool.c (read_typetab): exit with 1 (was: -1).
+	* src-diclib/alloc.c (alloc_page, anthy_create_allocator): Likewise.
+
+2002-03-05  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-diclib/record.c (free_section): Coerce to void * to
+	discard const qualifier.
+	* src-diclib/conf.c (add_val, val_ent_dtor, val_ent_dtor): Likewise.
+
+2002-03-05  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-main/main.c (anthy_conf_override, anthy_set_personality):
+	Qualify const for pointer to char.
+	* src-main/main.h (anthy_do_set_personality): Likewise.
+	* src-main/context.c (anthy_do_set_personality): Likewise.
+	* mkanthydic/mkdic.c (output_entry): Likewise.
+	* src-util/agent.c (send_quote_string, make_command1, write_reply,
+	send_string, send_quote_string):Likewise.
+	* src-util/input.c (do_cmd_push_key): Likewise.
+	* src-splitter/wordborder.h (get_node_id_by_name): Likewise.
+	* src-splitter/wordseq.c (get_node_id_by_name): Likewise.
+	* src-diclib/conf.c (find_val_ent, add_val, conf_get_str,
+	conf_override, struct val_ent): Likewise.
+	* src-diclib/dic_cache.h (struct dic_cache) : Likewise.
+	* src-diclib/dic_cache.c (create_dic_cache): Likewise.
+	* src-diclib/dic_personality.h (create_record, create_dic_cache): 
+	Likewise.
+	* src-diclib/dic_main.c (anthy_dic_set_personality): Likewise.
+	* src-diclib/dic_main.h (create_sdic): Likewise.
+	* src-diclib/dic_util.c (dic_util_get_anthydir): Likewise.
+	* src-diclib/logger.c (anthy_do_set_logger, anthy_log, do_log):
+	Likewise.
+	* src-diclib/record.c (struct record_section, do_select_section,
+	fopen_in_recorddir, write_string, write_quote_string,
+	create_record, struct record_stat, commit_column): Likewise.
+	* src-diclib/ruleparser.c (get_token_in, get_line_in): Likewise.
+	* src-diclib/sdic.c (create_sdic, map_sdic): Likewise.
+	* src-diclib/wtype.c (type_to_wtype, get_pos_by_name,
+	name_to_wtype, get_table_by_name): Likewise.
+	* include/anthy.h (anthy_logger, anthy_set_logger,
+	anthy_conf_override, anthy_set_personality): Likewise.
+	* include/conf.h (conf_get_str, conf_override): Likewise.
+	* include/dicutil.h (dic_util_get_anthydir): 
+	* include/logger.h (anthy_log, anthy_do_set_logger): Likewise.
+	* include/record.h (select_section): Likewise.
+	* include/wtype.h (type_to_wtype, name_to_wtype): 
+
+2002-03-05  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-diclib/ptab.h: Added missing initializer.
+	* src-diclib/ctab.h: Likewise.
+	* src-diclib/wtab.h: Likewise.
+
+	* src-util/rkconv.c (rk_get_pending_str): Make p and end const *.
+	* src-util/agent.c (print_version): Prototype-fied.
+	* src-diclib/logger.c (do_log): Make it static.
+	* src-ordering/relation.c (calc_segmask): Likewise.
+
+2002-03-05  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* test/testsplit.c (parse_args): Make it static.
+	* test/test_main.c (parse_args, print_usage, read_file,
+	check_cond, init_lib): Likewise.
+	* src-util/agent.c (kill_connection, make_command1, make_command0,
+	key_name_table, high_level_command_name, make_command,
+	read_command, send_buffer, send_single_candidate, free_command):
+	Likewise.
+	* src-diclib/record.c (write_quote_xstr): Likewise.
+
+2002-03-05  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* test/testsplit.c (fn): Add "const" qualifier.
+	* test/test_main.c (testdata): Likewise.
+	* mkanthydic/mkdic.c (output_fn): Likewise.
+	* src-util/agent.c (struct key_name_table, struct
+	high_level_command_name): Likewise.
+	* src-util/dic-tool.c (personality): Likewise.
+	* src-diclib/wtype.c (struct Ptab, struct wttable): Likewise.
+	* src-splitter/wordlist.c (print_word_list): Likewise for variable wn.
+	* src-util/rkhelper.c (make_rkmap_hirakata): Likewise for variable
+	slash.
+
+	* src-util/input.c (anthy_input_free_preedit): Remove extra ";"
+	after the function.
+
+2002-03-04  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-diclib/alloc.c (struct page): Type change of free_list.
+	(alloc_page): Use free_list (instead of free_list.ptr).
+	(sfree): Likewise.
+
+2002-03-04    <yusuke@kmc.gr.jp>
+
+	* ChangeLog my changelog entry 2002-02-25 & 2002-02-27
+
+2002-03-04  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* configure.in (CFLAGS): More warning flags.
+
+2002-03-04  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-diclib/dic_cache.c (fill_conjugated_ent, fill_sv_conjugated_ent,
+	calc_seq_flags, add_word_to_private_dic, init_private_dic,
+	cache_get_seq_ent_to_ddic, global_cache_get_seq_ent): Make them
+	static as declared.
+	* src-diclib/ddic.c (seq_node_dtor, ddic_dtor, alloc_seq_node_by_xstr,
+	hash_function, sdic_dtor, mark_hash_ent, get_hash_ent,
+	push_back_dic_ent_kv, push_back_dic_ent, parse_wtype,
+	add_dic_ent, fill_dic_ent, mkxstr, search_word_in_page,
+	ordered_xstrcmp, get_page_index_search, get_page_index,
+	extract_page, make_dic_index, map_sdic, search_word, 
+	sdic_fill_seq_ent_by_xstr_kv): Likewise.
+	* src-diclib/conf.c (val_ent_dtor, find_val_ent, add_val, 
+	read_conf_file, alloc_session_id): Likewise.
+	* src-diclib/ruleparser.c (pushchar, get_token_in, get_line_in,
+	proc_include, pop_file, get_line): Likewise.
+	* src-diclib/record.c (init_trie_root, trie_key_nth_bit,
+	trie_key_first_diff_bit_1byte, trie_key_first_diff_bit,
+	trie_key_cmp, trie_key_dup, trie_insert, fopen_in_recorddir,
+	do_get_index_xstr, do_select_section, do_select_longest_column,
+	do_select_column, do_mark_column_used, do_truncate_section,
+	do_select_first_column, do_select_next_column, trie_column_init,
+	trie_column_free, free_section, free_record, get_nth_val_ent,
+	check_anthy_dir, read_session, sync_add, sync_del_and_del,
+	update_session_file, save_a_column, update_base_record,
+	check_base_record, read_base_record, update_record, record_dtor):
+	Likewise.
+	* src-diclib/xchar.c (find_xchar_type, is_hira): Likewise.
+	* src-diclib/ext_ent.c (init_ext_nodes, narrow_num_to_wide_num,
+	wide_num_to_narrow_num, get_kj_num, compose_num_component,
+	toggle_wide_narrow): Likewise.
+	* src-diclib/alloc.c (get_chunk_address, alloc_page,
+	get_chunk_from_page): Likewise.
+	* src-splitter/wordlist.c (wordseq_rule_dtor, ipow,
+	calc_suffix_affinity, make_following_word_list, make_suc_words,
+	make_pre_words, setup_word_list, make_word_list, make_dummy_head,
+	parse_line): Likewise.
+	* src-splitter/metaword.c (commit_metaword, alloc_metaword,
+	make_unkseq_metaword, make_simple_metaword,
+	try_combine_v_renyou_a, try_combine_v_renyou_t, try_combine_name,
+	try_combine_metaword, combine_metaword, make_dummy_metaword,
+	make_ochaire_metaword, make_ochaire_metaword_all,
+	make_metaword_with_depchar, make_metaword_with_depchar_all):
+	Likewise.
+	* src-splitter/wordseq.c (check_nodes, match_branch, match_nodes,
+	parse_line): Likewise.
+	* src-splitter/splitter.c (release_info_cache, make_word_cache,
+	metaword_dtor, seginfo_dtor, get_seginfo_from_metaword,
+	real_seg_len, proc_expanded_segment): Likewise.
+	* src-splitter/evalborder.c (print_astar_node, alloc_astar_node,
+	mark_by_metaword, rebalance_astar_heap_from_root, push_astar_node,
+	pop_astar_node, expand_astar_node, init_astar_heap,
+	free_astar_heap, do_split, shrink_redundant_branch,
+	metaword_constraint_check, metaword_constraint_check_all): Likewise.
+	* src-ordering/candsort.c (release_redundant_candidate,
+	candidate_compare_func, sort_segment, check_dupl_candidate,
+	eval_candidate, eval_segment): Likewise.
+	* src-ordering/infosort.c (eval_seginfo, seginfo_compare_func):
+	Likewise.
+	* src-main/main.c (commit_all_segment_p): Likewise.
+	* src-main/context.c (context_dtor, get_nth_segment_index,
+	pop_back_seg_ent, compose_segment_list, get_personality): Likewise.
+	* src-main/segcompose.c (enum_candidates, dup_candidate, 
+	push_back_candidate, push_back_singleword_candidate, 
+	push_back_noconv_candidate, print_candidate, 
+	make_candidate_from_seginfo, proc_splitter_info): Likewise.
+	* src-util/rkconv.c (rk_convert_iterative): Likewise.
+	* src-diclib/conf.c (read_conf_file): Likewise.
+
+	* src-diclib/xstr.c (xc_isprint): Make it static.
+	(xlengthofcstr): Likewise.
+
+2002-03-04  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-util/agent.c (make_command): Don't use initializer with
+	dynamic contents, use assignment instead.
+
+2002-03-04  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-ordering/infosort.c (seginfo_compare_func): Add const
+	qualifier.
+
+2002-03-04  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* src-diclib/conf.c (read_conf_file, alloc_session_id,
+	anthy_do_conf_init): Argument is void.
+	* src-diclib/dic_cache.c (init_dic_cache, shrink_cache): Likewise.
+	* src-diclib/dic_ent.h (init_ext_ent): Likewise.
+	* src-diclib/dic_main.c (init_anthy_dic, quit_anthy_dic,
+	dic_create_session): Likewise.
+	* src-diclib/dic_main.h (create_session, get_current_session_mask,
+	init_ddic, quit_ddic, create_ddic, init_dic_cache, shrink_cache,
+	init_sdic, init_wtypes, init_xchar_tab): Likewise.
+	* src-diclib/dic_personality.h (init_record): Likewise.
+	* src-diclib/dic_session.c (create_session,
+	get_current_session_mask): Likewise.
+	* src-diclib/dic_util.c (dic_util_init, priv_dic_delete,
+	priv_dic_select_first_entry, priv_dic_select_next_entry,
+	priv_dic_get_freq, dic_util_get_anthydir): Likewise.
+	* src-diclib/ext_ent.c (init_ext_nodes, init_ext_ent): Likewise.
+	* src-diclib/record.c (get_nr_values, select_first_column,
+	select_next_column, get_index_xstr, release_section,
+	release_column, check_anthy_dir, update_session_file,
+	init_record): Likewise.
+	* src-diclib/ruleparser.c (get_line_in, proc_include, pop_file,
+	get_line, anthy_free_line, anthy_close_file, anthy_get_line_number):
+	Likewise.
+	* src-diclib/sdic.c (init_sdic): Likewise.
+	* src-diclib/wtype.c (init_wtypes): Likewise.
+	* src-diclib/xchar.c (init_xchar_tab): Likewise.
+	* src-main/context.c (anthy_do_create_context, anthy_init_contexts,
+	anthy_quit_contexts, get_personality, anthy_init_personality,
+	anthy_quit_personality): Likewise.
+	* src-main/main.c (anthy_init, anthy_quit, anthy_create_context):
+	Likewise.
+	* src-main/main.h (anthy_init_contexts, anthy_quit_contexts,
+	anthy_init_personality, anthy_quit_personality,
+	anthy_do_create_context): Likewise.
+	* src-ordering/candswap.c (cand_swap_ageup): Likewise.
+	* src-ordering/sorter.h (cand_swap_ageup): Likewise.
+	* src-splitter/evalborder.c (alloc_astar_node, pop_astar_node,
+	init_astar_heap, free_astar_heap): Likewise.
+	* src-splitter/splitter.c (init_splitter, quit_splitter):
+	Likewise.
+	* src-splitter/wordborder.h (init_depword_tab,
+	release_depword_tab, init_wordlist): Likewise.
+	* src-splitter/wordlist.c (wordseq_rule_dtor, init_word_seq_tab,
+	init_wordlist): Likewise.
+	* src-splitter/wordseq.c (check_nodes, release_depword_tab):
+	Likewise.
+	* src-util/agent.c (read_command, send_error, send_ok): Likewise.
+	* src-util/dic-tool.c (print_usage, open_typetab,
+	print_usage_text, read_typetab, dump_dic, open_input_file,
+	find_wt, load_dic, print_version): Likewise.
+	* src-util/input.c (anthy_input_init): Likewise.
+	* test/test_main.c (print_usage, check_cond, init_lib): Likewise.
+	* test/testsplit.c (init_lib): Likewise.
+	* src-diclib/ddic.c (init_ddic, quit_ddic, create_ddic): Likewise.
+	* src-diclib/conf.c (read_conf_file, alloc_session_id,
+	anthy_do_conf_init): Likewise.
+	* mkanthydic/mkdic.c (open_output_files, flush_output_files,
+	do_output, print_usage, link_dics): Likewise.
+	* src-diclib/alloc.c (quit_allocator): Likewise.
+	* include/splitter.h (init_splitter, quit_splitter): Likewise.
+	* include/ruleparser.h (anthy_close_file, anthy_get_line_number,
+	anthy_free_line):  Likewise.
+	* include/record.h (select_first_column, select_next_column,
+	release_section, get_index_xstr, get_nr_values, release_column):
+	Likewise.
+	* include/dicutil.h (dic_util_init, dic_util_get_anthydir,
+	priv_dic_delete, priv_dic_select_first_entry,
+	priv_dic_select_next_entry, priv_dic_get_freq): Likewise.
+	* include/dic.h (init_anthy_dic, quit_anthy_dic,
+	dic_create_session): Likewise.
+	* include/conf.h (anthy_do_conf_init): Likewise.
+	* include/anthy.h (anthy_init, anthy_quit, anthy_create_context): 
+	Likewise.
+	* include/alloc.h (quit_allocator): Likewise.
+
+2002-03-04  NIIBE Yutaka  <gniibe@m17n.org>
+
+	* configure.in (fcntl-lock-default): Escape character "`" in the
+	comment string.
+
+2002-02-27  Yusuke Tabata  <yusuke@kmc.gr.jp>
+
+	* rename src-main/segcompose.c -> compose.c
+	* add src-ordering/relatoin.c
+	* add src-diclib/logger.c
+	* add include/logger.h
+
+2002-02-25  Yusuke Tabata  <yusuke@kmc.gr.jp>
+
+	* updated to cannadic-0.94
+
+2002-01-15  Yusuke Tabata  <yusuke@kmc.gr.jp>
+
+	* updated to cannadic-0.93a
+
+2002-01-13  Yusuke Tabata  <yusuke@kmc.gr.jp>
+
+	* updated to cannadic-0.93
+	* moved cannadic files to cannadic/ from mkanthydic/
+
+2002-01-06  Yusuke Tabata  <yusuke@kmc.gr.jp>
+
+	* src-util/leim-list.el added
+	* Changed install directory of elisps to site-lisp/anthy/
+
+2001-11-15  Yusuke Tabata  <yusuke@kmc.kyoto-u.ac.jp>
+
+	* include/editor.h -> include/input.h
+	  src-util/editor.c -> src-util/input.c
+	  libanthyeditor.la -> libanthyinput.la
+	  added src-util/rkhelper.c
+
+2001-11-12  Yusuke Tabata  <yusuke@kmc.kyoto-u.ac.jp>
+
+	* include/editor.h, src-util/editor.c added
+	* libanthyeditor.la added
+
+2001-11-12  Yusuke Tabata  <yusuke@kmc.kyoto-u.ac.jp>
+
+	* anthy-dic.el added.
+
+2001-10-21  Yusuke Tabata  <yusuke@kmc.kyoto-u.ac.jp>
+
+	* Changed install directory of anthy-conf from pkgdatadir to
+	sysconfdir.
+
+	* updated libtool version to 1.4.2a (1.922.2.60 2001/09/16 15:47:12)
+
+2001-09-18  Yusuke Tabata  <yusuke@kmc.kyoto-u.ac.jp>
+
+	* anthy_get_segment()の返り値をバッファの長さに変更
+
+	* anthy_quit() を追加
+
+2001-08-09  Tabatee  <yusuke@kmc.kyoto-u.ac.jp>
+
+	* anthy-dic-toolとanthy-agent、doc/UTILを追加した(これも以前やった)
+
+	* IIIMPサーバutenaを除去
+
+	* anthyを使うためのemacs lispを追加
+
+2001-07-31  Tabatee  <yusuke@kmc.kyoto-u.ac.jp>
+
+	* 変換履歴を保存するファイルを~/.anthy/last-record_{personality-name}
+	に変更した。(本当はもっと以前やった)
+
+2001-05-26  Tabatee  <yusuke@kmc.kyoto-u.ac.jp>
+
+	* 変換履歴を保存するファイルを~/.anthy/last-record:{personality-name}
+	に変更した。
+
+2001-04-20  Tabatee  <yusuke@kmc.kyoto-u.ac.jp>
+
+	* anthy.h に anthy_set_personality()を追加した。
+
+2001-04-02  Tabatee  <yusuke@kmc.kyoto-u.ac.jp>
+
+	* anthy.h に anthy_print_context()を追加した。
+
+2001-04-01  Tabatee  <yusuke@kmc.kyoto-u.ac.jp>
+
+	* ChangeLogファイルを作成した。

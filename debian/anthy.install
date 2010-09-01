@@ -1,0 +1,7 @@
+usr/bin/anthy-agent		usr/bin/
+usr/bin/anthy-dic-tool		usr/bin/
+usr/bin/anthy-morphological-analyzer	usr/bin/
+mkanthydic/mkfiledic 		usr/bin/
+mkworddic/.libs/mkworddic	usr/bin/
+depgraph/.libs/mkdepgraph	usr/bin/
+debian/update-anthy-dics	usr/sbin/

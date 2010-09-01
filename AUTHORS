@@ -1,190 +1,51 @@
-TABATA Yusuke: wrote
-       	calctrans/corpus.c
-       	calctrans/proccorpus.c
-       	depgraph/mkdepgraph.c
-       	mkworddic/mkdic.c
-       	mkworddic/mkudic.c
-       	mkworddic/writewords.c
-       	src-diclib/alloc.c
-       	src-diclib/conf.c
-       	src-diclib/ruleparser.c
-       	src-diclib/xchar.c
-       	src-diclib/xstr.c
-       	src-main/context.c
-       	src-main/main.c
-       	src-ordering/candhistory.c
-       	src-ordering/candsort.c
-       	src-ordering/infosort.c
-       	src-ordering/relation.c
-       	src-splitter/compose.c
-       	src-splitter/depgraph.c
-       	src-splitter/evalborder.c
-       	src-splitter/lattice.c
-       	src-splitter/metaword.c
-       	src-splitter/splitter.c
-       	src-splitter/wordlist.c
-       	src-util/anthy-conf.el
-       	src-util/anthy-dic.el
-       	src-util/anthy-isearch.el
-       	src-util/anthy.el
-       	src-util/dic-tool.c
-       	src-util/morph-main.c
-       	src-worddic/dic_util.c
-       	src-worddic/ext_ent.c
-       	src-worddic/feature_set.c
-       	src-worddic/matrix.c
-       	src-worddic/mem_dic.c
-       	src-worddic/priv_dic.c
-       	src-worddic/record.c
-       	src-worddic/texttrie.c
-       	src-worddic/use_dic.c
-       	src-worddic/word_dic.c
-       	src-worddic/word_lookup.c
-       	src-worddic/wtype.c
-       	test/main.c
-    modified
-	calctrans/calctrans.c
-	calctrans/input_set.c
-	mkanthydic/mkfiledic.c
-	src-util/agent.c
-	src-util/rkhelper.c
+かな漢字変換エンジンAnthy(アンシー)は
+KMC(京大マイコンクラブ)のメンバーの一部によって構成される
+Project Heke のメンバー達によって開発を開始し、その後は
+みなさまの協力も得て開発を行ってきました。
 
-UGAWA Tomoharu: wrote
-	src-diclib/alloc.c
-	src-main/main.c
-	src-splitter/evalborder.c
-	src-util/agent.c
-	src-util/anthy-dic.el
-	src-util/rkconv.c
-	src-util/rkhelper.h
-	src-worddic/record.c
-	src-util/anthy.el
-    modified
-	src-ordering/candsort.c
-	src-splitter/compose.c
-	src-splitter/metaword.c
-	src-splitter/splitter.c
-	src-splitter/wordlist.c
-	src-util/input.c
-	src-util/rkhelper.c
+SPECIAL THANKS
+*辞書のCannadicの開発者であるSUGIMOTOさん(http://cannadic.oucrc.org/)
+*Cannadicをベースとしてalt-cannadicを開発している大泉さん
+*Google Summer of Codeで有用なコードを書いてくださった東山さん、花岡さん
+ この機会を与えてくださったGoogle, FSIJ
+*実家でのコーディングの時にいつも側にいてくれた(故)トラ猫ニーヤさん
+*MLやファイルのupload場所を提供してくださる sourceforge.jp
+*開発を進めるために資金的援助をしてくださった
+ IPA 情報処理振興事業協会、
+*2001年度にIPAの未踏ソフトウェアにプロジェクトを採択してくださり，
+ その後も開発に協力してくださる
+ g新部裕さん
+*例文を送ってくださるIidaさん
+*デバッグやテストをしてくださったり、アイディアを出してくださった
+ 春山さん(http://www.unixuser.org/~haruyama/)
+*北斗の拳辞書の開発者であるri(李)さん
+*辞書検索のハッシュのコードを書いたrijin(@kmc)さん
+*utenaのIPv6パッチを作成してくださったomoteさん(http://utyuuzin.net/)
+*leimの実装に関してアドバイス、およびパッチをくださった
+ Tetsuo Tsukamoto さん
+*いつもテストに参加してくださるiyokan(@kmc)さん
+*利用してくださり，ありがたいコメントをくださる湯浅教授(京都大学情報学研究科)
+*Linux Zaurus用IMKit-anthy(http://zaurus-ja.sourceforge.jp)の開発を
+ 通してバグレポートやコードを書いてくださるヤマケンさん
+*有用なコメントやパッチをくださるlogin:Penguinさん
+*anthy.elのXEmacs対応を行ってくださった Norio Suzuki <suzuki@sanpobu.net>さん
+*uimの開発を引き取ってくださり、私をAnthyの開発に集中させてくださる 
+ tkngさん <tkng@xem.jp>
+*コードの一部をリファクタリングしてシンプルにしてくださるoxy(吉田@kmc)さん
+*いつもRPMを作ってくださるyuheiさん
+*Mandriva(旧Mandrake)の文字入力システムの改善に取り組んでいらっしゃるUTUMIさん
+*いつもテストして貴重なコメントをくださる渡辺(nosuke)さん
+*anthy-dic.elをXEmacsで動くようにしてくださった Mike Fabianさん
+*anthy-dic.elでリージョンから単語を拾えるようにしてくださった梅本さん
+*複合語辞書の作成に協力してくださった岡本さん(henkma)と(株)グッデイさん
+*地名辞書を作成してくださった若山さん(Shirou Wakayama)
+*IRCで単語の不足を指摘してくださるゆきち(Yukichi)さん
+*郵便番号辞書を提供してくださった田郷さん(tagoh)
+*辞書ツールkasumi作者の中本さん
+*例文を送ってくださったIida Masanariさん
 
-TAKAI Kosuke: modified
-	mkworddic/mkdic.c
-	src-main/main.c
-	src-worddic/record.c
-	src-worddic/word_lookup.c
-	test/main.c
-
-Nobuoka Takahiro: modified
-	src-main/main.c
-
-YOSHIDA Yuichi: wrote
-	mkanthydic/mkfiledic.c
-    modified
-    	test/main.c
-	mkworddic/mkdic.c
-	src-diclib/alloc.c
-	src-diclib/conf.c
-	src-main/main.c
-	src-splitter/compose.c
-	src-splitter/depgraph.c
-	src-splitter/lattice.c
-	src-splitter/metaword.c
-	src-splitter/splitter.c
-	src-splitter/wordlist.c
-	src-util/morph-main.c
-	src-worddic/ext_ent.c
-	src-worddic/record.c
-	src-worddic/word_dic.c
-	src-worddic/word_lookup.c
-
-NIIBE Yutaka: wrote
-	src-util/egg.c
-	doc/protocol.txt
-	initial-dic/mkfiledic0.c
-    modified
-	anthy/anthy.h
-	anthy/conf.h
-	anthy/dic.h
-	anthy/dicutil.h
-	anthy/logger.h
-	anthy/record.h
-	anthy/ruleparser.h
-	anthy/splitter.h
-	anthy/wtype.h
-	calctrans/calctrans.c
-	calctrans/corpus.c
-	calctrans/proccorpus.c
-	depgraph/mkdepgraph.c
-	doc/DICLIB
-	mkanthydic/mkfiledic.c
-	mkworddic/mkdic.c
-	src-diclib/alloc.c
-	src-diclib/file_dic.c
-	src-diclib/logger.c 
-	src-diclib/ruleparser.c 
-	src-diclib/xchar.c 
-	src-diclib/xstr.c 
-	src-main/context.c 
-	src-main/main.c 
-	src-main/main.h 
-	src-ordering/candsort.c
-	src-ordering/candswap.c
-	src-ordering/infosort.c
-	src-ordering/relation.c
-	src-ordering/sorter.h
-	src-splitter/compose.c
-	src-splitter/depgraph.c
-	src-splitter/evalborder.c
-	src-splitter/lattice.c
-	src-splitter/metaword.c
-	src-splitter/splitter.c
-	src-splitter/wordborder.h 
-	src-splitter/wordlist.c 
-	src-util/agent.c
-	src-util/anthy-azik.el
-	src-util/anthy-conf.el
-	src-util/anthy-kyuri.el
-	src-util/anthy.el
-	src-util/dic-tool.c 
-	src-util/input.c 
-	src-util/rkconv.c 
-	src-util/rkhelper.c 
-	src-worddic/record.c 
-	src-worddic/dic_personality.h 
-	src-worddic/dic_main.h
-	src-worddic/dic_ent.h 
-	src-worddic/ptab.h
-	src-worddic/dic_util.c
-	src-worddic/ext_ent.c
-	src-worddic/wtab.h
-	src-worddic/wtype.c
-	test/main.c 
-
-HANAOKA Toshiyuki: wrote
-	calctrans/calctrans.c
-	calctrans/input_set.c
-    modified
-	src-splitter/lattice.c
-
-Higashiyama Masahiko: modified
-	src-ordering/relation.c
-
-Yutaka Hara: wrote
-	src-util/anthy-azik.el
-
-Yukihiro Matsumoto: wrote
-	src-util/anthy-kyuri.el
-
-Norio Suzuki: modified
-	src-util/anthy.el
-
-G-HAL: modified
-	mkworddic/compound.t
-	mkworddic/extra.t
-
-Masanari Iida: modified
-	mkworddic/compound.t
-
-All files under alt-cannadic/ and dictionary files under mkworddic/
-are works of alt-cannadic project.
+上記のうちにはプログラムの構造などの変化によってソースコード上から
+消えたものもありますが、プロジェクトに協力していただいたという点で、
+上記のすべての皆様に感謝します。
+また、その他にも直接的or間接的に協力してくださった方は多数おり、同じく
+感謝しています。

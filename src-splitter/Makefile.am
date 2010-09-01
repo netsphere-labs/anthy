@@ -1,3 +1,5 @@
+## $Id: Makefile.am,v 1.2 2001/12/30 15:06:36 tak Exp $
+
 EXTRAD_DIST =
 
 INCLUDES = -I$(top_srcdir)/

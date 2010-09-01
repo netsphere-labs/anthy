@@ -1,66 +1,32 @@
 [ これは何 ]
 
  EUC-JP(JISX0208) 外の文字を含んだエントリを集めた辞書群です。
-主に ~/.anthy/imported_words_default/ に置いて、個人用辞書
-として使うことを想定して作ってあります。
+ 主に ~/.anthy/imported_words_default/ に置いて、個人用辞書
+ として使うことを想定して作ってあります。
 
  ファイル名末尾が
 
   *-34.t
 
-となっているものは、JISX0213:2004 の範囲内に収まるもので、
-それ以外の、Unicode にしかない文字を含んだものは
+ となっているものは、JISX0213:2004 の範囲内に収まるもので、
+ それ以外の、Unicode にしかない文字を含んだものは
 
   *-uni.t
 
-というファイル名になっています。
- なお、一部
+ というファイル名になっています。
 
   *-std.t
 
-のものがありますが、これはファイル自体は UTF-8 ですが、EUC-
-JP 外の文字は含んでいないので、EUC-JP に変換可能です。
-UTF-8 にして extra に入れているのは、
+ のものがありますが、これはファイル自体は UTF-8 ですが、EUC-
+ JP 外の文字は含んでいないので、EUC-JP に変換可能です。
+ UTF-8 にして extra に入れているのは、
 
   ・共有辞書に入れたくない
-  ・「t」付きの読みで変換させたい
+  ・「t」付きで変換させたい
   ・~/.anthy/imported_words_default/ には UTF-8 の辞書しか
     置けないらしい
 
-からです。
-
-[ 各辞書ファイルの説明 ]
-※gkuten.ctd 以外はすべて UTF-8
-※一応、末尾が「.t」の辞書は Anthy用と思って下さい
-  (A)  - Anthy用
-  (C)  - Canna用
-
-* g-jiritu-34.t (A)
-   - 自立語辞書
-* g-keiyousi_ie-std.t (A)
-   - 形容詞イ音便・エ音便辞書(「さみ(寒)ー」「切ねえ」等)
-     ※利用には alt-depgraph が必要です
-* gc-fullname-34.t (A)
-   - 人名フルネーム辞書
-* gf-fuzoku-34.t (A)
-   - 付属語辞書
-* gkuten.ctd (C)
-   - JISX0213 面句点コード辞書(JISX0208 外の文字は含まない)
-* gt-kuten-std.t (A)
-   - JISX0213 面句点コード辞書(JISX0208 外の文字は含まない)
-* gt-kuten-34.t (A)
-   - JISX0213 面句点コード辞書(JISX0208 外の文字)
-* gt-tankanji_hikanji-34.t (A)
-   - 単漢字辞書(非漢字)
-* gt-tankanji_hikanji-uni.t (A)
-   - 単漢字辞書(Unicode にしかない非漢字。未完成)
-* gt-tankanji_kanji-34.t (A)
-   - 単漢字辞書(漢字)
-* gt-tankanji_okuri-std.t (A)
-   - 単漢字辞書(送り仮名あり)
-* x-conv2self-std.t (A)
-   - scim-anthy の逐次変換機能を使った時に英数記号が一々変換される
-     のを、見た目上変換されていないように見せるための辞書
+ からです。
 
 [ 使い方 ]
 

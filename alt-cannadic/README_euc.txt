@@ -4,76 +4,36 @@
 
 
 [ 概要 ]
-
 Anthy、Canna 用の自家製変換辞書です。
 cannadic-0.95c をベースに、大幅に手を加えてあります。
 
-エントリ数 (2009/12/30)
-Canna         : 247,869
-Anthy all     : 270,531
-      (main)  : 244,294
-      (extra) :  26,237
+   総エントリ数: 236,883 エントリ (2007/10/23 現在)
+   ( cannadic-0.95c は 149,384 )
 
 ※変換精度の確認は Anthy で行い、Canna では行っていません。
 
 
 [ ライセンス ]
-
 cannadic がベースなので、GPL を継承します。
 言うまでもありませんが、保証の類は一切ありません。
 
 
 [ ファイル ]
-
-  (A)  - Anthy用
-  (C)  - Canna用
-  (AC) - Anthy, Canna共用
-  ※一応、末尾が「.t」の辞書は Anthy用と思って下さい
-
-./
+ファイルは g_fname.t を除いてすべて EUC-JP です。
+  gcanna.ctd          自立語辞書
+  gcannaf.ctd         付属語辞書
+  gtankan.ctd         単漢字辞書(送り仮名ありの読みのものは除く)
+  g_fname.t           人名フルネーム辞書(Anthy用)(UTF-8)
+  g_fname.ctd         人名フルネーム辞書(Canna用)
   Changes.txt         変更履歴
-  README_euc.txt      このファイル
 
-  辞書ファイル: すべて EUC-JP
-  gcanna.ctd          自立語辞書(AC)
-  gcannaf.ctd         付属語辞書(AC)
-  gtankan.ctd         単漢字辞書(送り仮名なしのもの)(AC)
-  gt_okuri.ctd        単漢字辞書(送り仮名あり)(C)
-  g_fname.ctd         人名フルネーム辞書(C)
-  g_fname.t           人名フルネーム辞書(A)
+  以下のものは cannadic-0.95c そのままのものです。
+  COPYING          ライセンス
+  Makefile         Canna 用 Makefile
+  orig-README.ja   cannadic-0.95c の README
 
-  ※以下のものは cannadic-0.95c そのままのものです。
-  COPYING             ライセンス
-  Makefile            Canna 用 Makefile
-  orig-README.ja      cannadic-0.95c の README
-
-extra/
-  (extra/README 参照)
-
-anthy/
-  以下のファイルは anthy のものと置き換えて使います。
-  mkworddic/compound.t     複合語辞書(修正版)
-  mkworddic/extra.t        anthy 独自の品詞コードのもの
-  mkworddic/dict.args.in   どの辞書を読み込むかの設定
-  calctrans/corpus_info    コーパスパラメータ
-  calctrans/weak_words     コーパスパラメータ
-
-./prepare.sh は、このパッケージ内の辞書を使って anthy をビルド
-  するための準備をするスクリプトです。
-  単に、anthy/ 以下にあるファイルをオリジナルのものと置き換えて
-  るだけです。
-  以下のような感じで使います:
-
-  $ tar xzf anthy-9100h.tar.gz
-  $ tar xjf alt-cannadic-091230.tar.bz2
-  $ cd alt-cannadic-091230/
-  $ ./prepare.sh
-  $ cd ../anthy-9100h/
-  $ ./configure && make
-  ...
 
 [ 使い方 ]
-
 Wiki を参照してください。
 http://sourceforge.jp/projects/alt-cannadic/wiki/
 
@@ -90,8 +50,7 @@ http://sourceforge.jp/projects/alt-cannadic/wiki/
 　　日本郵政公社のデータファイル(平成17年6月30日更新版)
     (http://www.post.japanpost.jp/zipcode/dl/kogaki.html)
   ・anthy-7100b の base.t, katakana.t, placename.t
-　・SKK-JISYO.L(2008/10/15 Download)
-
+    　　
 　ライセンスがややこしくなるのが嫌だったので、上記以外には
 「他の電子辞書ファイルから引っ張ってきて突っ込む」という
 ことはしていません。Canna 付属の辞書すら避けました。
@@ -106,7 +65,9 @@ http://sourceforge.jp/projects/alt-cannadic/wiki/
      ものはかなりカバーできたと思う。
      (「基本的な」というのは「複合語でない」という意味です)
    ・単漢字の漢字部分を完全再作成
-     (jisx0213 infocenterの「漢字音訓索引」がベース)
+     (jisx0213 infocenterの「漢字音訓索引」からjis第1,2水準
+     の漢字のみを抜き出してベースとしたので、その意味では、
+     この部分はかなり品質が高くなっていると思います)
    ・副詞/形容動詞の強化と整理。普通名詞に含まれていたもの
      を副詞/形容動詞として登録し直したり、擬声擬態を表す語
      を拡充したり等。
@@ -125,19 +86,20 @@ http://sourceforge.jp/projects/alt-cannadic/wiki/
  ・「N2〜」「D2〜」のタイプのものは、「ありえない候補を作
    ってしまう」「その場合、区切り直さなければ出したいものが
    出せない」というデメリットの方が大きいと思われるので、
-   今のところほぼ外してある → 必要そうなものは戻したが、
-　 現在の Anthy では使えないようになっている
+   今のところほぼ外してある
  ・「う゛ぁう゛ぃう゛う゛ぇう゛ぉ」でも「ヴぁヴぃヴヴぇヴぉ」
    でも出せるように、読みの「う゛」を「ヴ」に置換した候補を
    追加(例えば「ヴぃーなす」で「ヴィーナス」を出せるように)
 
  ・品詞コードはすべて Canna の品詞コードの範囲内に留め、
-   Anthy 独自のものは使っていない。
+   Anthy 独自のものは使っていない。( Anthy の複合語の登録法
+   は、学習ができない等の欠点があるように思われ、「そのう
+   ち変更されるかもしれない」と思ったので使っていない。)
  ・Canna の品詞コードのうちでも形容詞の「mi」「me」「mime」
    や連用形が名詞化することを表す動詞の「r」など、煩瑣なく
    せにあまり意味のなさそうなコードは使わなくした。
    形容詞の「mi」「me」、動詞の「r」は別途名詞として登録。
- ・人名はすべて JN に、地名はすべて CN に統一した。
+   人名はすべて JN に、地名はすべて CN に統一した。
    敬語表現 OKX も名詞のコードで登録してある(「する」への
 　 接続をコントロールしたかったから)。
  ・主要な品詞の頻度を一括で変更(まだ実験中)
@@ -169,17 +131,15 @@ http://sourceforge.jp/projects/alt-cannadic/wiki/
   nosuke さん
   n/a さん
   2ch の匿名の方々
-  G-HAL さん
-  salvan さん
-  Awashiro_ikuya さん
-  Tonibi_ko さん
-  x さん
-  TAKADA Yoshihito さん
+
 
 [ 連絡先 ]
 何かありましたら下記まで。
   vagus.xyz あっと gmail.com
 
+誤りの指摘、新語追加希望等は掲示板もしくは wiki へお願いします。
+http://bbs11.fc2.com/php/e.php/alt-cannadic/
+http://sourceforge.jp/projects/alt-cannadic/wiki/
 
 
 

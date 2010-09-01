@@ -44,8 +44,9 @@ static void
 combine_metaword(struct splitter_context *sc, struct meta_word *mw);
 
 /* コンテキスト中にmetawordを追加する */
-static void
-anthy_commit_meta_word(struct splitter_context *sc, struct meta_word *mw)
+void
+anthy_commit_meta_word(struct splitter_context *sc,
+		       struct meta_word *mw)
 {
   struct word_split_info_cache *info = sc->word_split_info;
   /* 同じ開始点を持つノードのリスト */
@@ -92,7 +93,7 @@ anthy_do_print_metaword(struct splitter_context *sc,
   printf("*meta word type=%s(%d-%d):score=%d:seg_class=%s",
 	 anthy_metaword_type_tab[mw->type].name,
 	 mw->from, mw->len, mw->score,
-	 anthy_seg_class_sym(mw->seg_class));
+	 anthy_seg_class_name(mw->seg_class));
   print_metaword_features(mw->mw_features);
   printf(":can_use=%d*\n", mw->can_use);
   if (mw->wl) {

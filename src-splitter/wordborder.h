@@ -175,6 +175,7 @@ void anthy_print_word_list(struct splitter_context *, struct word_list *);
 void anthy_make_word_list_all(struct splitter_context *);
 
 /* defined in metaword.c */
+void anthy_commit_meta_word(struct splitter_context *, struct meta_word *mw);
 void anthy_make_metaword_all(struct splitter_context *);
 void anthy_print_metaword(struct splitter_context *, struct meta_word *);
 
@@ -190,5 +191,20 @@ void anthy_mark_borders(struct splitter_context *sc, int from, int to);
 
 /* defined at seg_class.c */
 void anthy_set_seg_class(struct word_list* wl);
+
+/* 品詞(anthy_init_splitterで初期化される) */
+extern wtype_t anthy_wtype_noun;
+extern wtype_t anthy_wtype_name_noun;
+extern wtype_t anthy_wtype_num_noun;
+extern wtype_t anthy_wtype_prefix;
+extern wtype_t anthy_wtype_num_prefix;
+extern wtype_t anthy_wtype_num_postfix;
+extern wtype_t anthy_wtype_name_postfix;
+extern wtype_t anthy_wtype_sv_postfix;
+extern wtype_t anthy_wtype_a_tail_of_v_renyou;
+extern wtype_t anthy_wtype_v_renyou;
+extern wtype_t anthy_wtype_noun_tail;/* いれ「たて」とか */
+extern wtype_t anthy_wtype_n1;
+extern wtype_t anthy_wtype_n10;
 
 #endif

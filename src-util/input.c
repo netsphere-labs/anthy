@@ -6,6 +6,8 @@
  * Funded by IPA未踏ソフトウェア創造事業 2002 1/23
  * Copyright (C) 2001-2002 UGAWA Tomoharu
  *
+ * $Id: input.c,v 1.25 2002/11/16 03:35:21 yusuke Exp $
+ *
  */
 
 #include <stdio.h>

@@ -9,6 +9,7 @@
  * Funded by IPA未踏ソフトウェア創造事業 2001 10/29
  * Copyright (C) 2000-2007 TABATA Yusuke
  *
+ * $Id: context.c,v 1.26 2002/11/17 14:45:47 yusuke Exp $
  */
 /*
   This library is free software; you can redistribute it and/or

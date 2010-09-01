@@ -7,6 +7,8 @@
  * Copyright (C) 2000-2006 TABATA Yusuke
  * Copyright (C) 2001 UGAWA Tomoharu
  *
+ * $Id: candsort.c,v 1.27 2002/11/17 14:45:47 yusuke Exp $
+ *
  */
 /*
   This library is free software; you can redistribute it and/or

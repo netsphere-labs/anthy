@@ -14,6 +14,7 @@
  * Copyright (C) 2000-2004 TABATA Yusuke
  * Copyright (C) 2000-2001 UGAWA Tomoharu
  *
+ * $Id: splitter.c,v 1.48 2002/11/18 11:39:18 yusuke Exp $
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -42,6 +43,22 @@
 #define MAX_EXPAND_PAIR_ENTRY_COUNT 1000
 
 static int splitter_debug_flags;
+
+/**/
+wtype_t anthy_wtype_noun;
+wtype_t anthy_wtype_name_noun;
+wtype_t anthy_wtype_num_noun;
+wtype_t anthy_wtype_prefix;
+wtype_t anthy_wtype_num_prefix;
+wtype_t anthy_wtype_num_postfix;
+wtype_t anthy_wtype_name_postfix;
+wtype_t anthy_wtype_sv_postfix;
+wtype_t anthy_wtype_a_tail_of_v_renyou;
+wtype_t anthy_wtype_v_renyou;
+wtype_t anthy_wtype_noun_tail;/* いれ「たて」とか */
+wtype_t anthy_wtype_n1;
+wtype_t anthy_wtype_n10;
+
 
 /** make_word_cacheで作成した文節情報を解放する
  */
@@ -288,6 +305,20 @@ anthy_init_splitter(void)
     anthy_log(0, "Failed to init dependent word table.\n");
     return -1;
   }
+  /**/
+  anthy_wtype_noun = anthy_init_wtype_by_name("名詞35");
+  anthy_wtype_name_noun = anthy_init_wtype_by_name("人名");
+  anthy_wtype_num_noun = anthy_init_wtype_by_name("数詞");
+  anthy_wtype_a_tail_of_v_renyou = anthy_init_wtype_by_name("形容詞化接尾語");
+  anthy_wtype_v_renyou = anthy_init_wtype_by_name("動詞連用形");
+  anthy_wtype_noun_tail = anthy_init_wtype_by_name("名詞化接尾語");
+  anthy_wtype_prefix = anthy_init_wtype_by_name("名詞接頭辞");
+  anthy_wtype_num_prefix = anthy_init_wtype_by_name("数接頭辞");
+  anthy_wtype_num_postfix = anthy_init_wtype_by_name("数接尾辞");
+  anthy_wtype_name_postfix = anthy_init_wtype_by_name("人名接尾辞");
+  anthy_wtype_sv_postfix = anthy_init_wtype_by_name("サ変接尾辞");
+  anthy_wtype_n1 = anthy_init_wtype_by_name("数詞1");
+  anthy_wtype_n10 = anthy_init_wtype_by_name("数詞10");
   return 0;
 }
 

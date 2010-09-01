@@ -1,0 +1,5 @@
+02_2ch_t.diff
+03_change_anthy_dic_path.diff 
+10_Makefile.am_remove-elc
+11_ZIPDICT_EUC
+remove_name.t

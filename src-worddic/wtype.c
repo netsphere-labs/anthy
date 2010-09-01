@@ -27,9 +27,6 @@
 
 wtype_t anthy_wt_none, anthy_wt_all;
 
-wtype_t anthy_wtype_noun, anthy_wtype_num_noun;
-wtype_t anthy_wtype_a_tail_of_v_renyou;
-
 struct wttable {
   const char *name;
   int pos;
@@ -40,30 +37,15 @@ struct wttable {
   int flags;
 };
 
+/* 品詞の日本語の名前を品詞に変換するテーブル */
+static struct wttable pos_name_tab[]= {
+#include "ptab.h"
+};
+
 /* 辞書中の品詞の名前を品詞に変換するテーブル */
 static struct wttable wt_name_tab[]= {
 #include "wtab.h"
 };
-
-static wtype_t
-anthy_get_wtype (int pos, int cos, int scos, int cc, int ct, int wf)
-{
-  union {
-    unsigned int u;
-    wtype_t wt;
-  } w;
-
-  w.u = 0;
-
-  w.wt.pos = pos;
-  w.wt.cos = cos;
-  w.wt.scos = scos;
-  w.wt.cc = cc;
-  w.wt.ct = ct;
-  w.wt.wf = wf;
-
-  return w.wt;
-}
 
 static struct wttable *
 find_wttab(struct wttable *array, const char *name)
@@ -80,21 +62,15 @@ find_wttab(struct wttable *array, const char *name)
 void
 anthy_init_wtypes(void)
 {
-  anthy_wt_all = anthy_get_wtype (POS_NONE, COS_NONE, SCOS_NONE,
-				  CC_NONE, CT_NONE, WF_NONE);
+  anthy_wt_all.pos = POS_NONE;
+  anthy_wt_all.cc = CC_NONE;
+  anthy_wt_all.ct = CT_NONE;
+  anthy_wt_all.cos = COS_NONE;
+  anthy_wt_all.scos = SCOS_NONE;
+  anthy_wt_all.wf = WF_NONE;
 
-  anthy_wt_none = anthy_get_wtype (POS_INVAL, COS_NONE, SCOS_NONE,
-				   CC_NONE, CT_NONE, WF_NONE);
-
-  /* {"名詞35",POS_NOUN,COS_NONE,SCOS_T35,CC_NONE,CT_NONE,WF_INDEP} */
-  anthy_type_to_wtype ("#T", &anthy_wtype_noun);
-
-  /* {"数詞",POS_NUMBER,COS_NN,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP} */
-  anthy_type_to_wtype ("#NN", &anthy_wtype_num_noun); /* exported for ext_ent.c */
-
-  /* {"形容詞化接尾語",POS_D2KY,COS_NONE,SCOS_A1,CC_NONE,CT_HEAD,WF_INDEP} */
-  /* {"#D2KY",POS_D2KY,COS_SUFFIX,SCOS_A1,CC_A_KU,CT_HEAD,WF_INDEP} # "形容詞化接尾語(しづらい,がたい)" */
-  anthy_type_to_wtype ("#D2KY", &anthy_wtype_a_tail_of_v_renyou); /* exported for metaword.c */
+  anthy_wt_none = anthy_wt_all;
+  anthy_wt_none.pos = POS_INVAL;
 }
 
 /*
@@ -118,21 +94,64 @@ anthy_type_to_wtype(const char *s, wtype_t *t)
   return w->name;
 }
 
+wtype_t
+anthy_init_wtype_by_name(const char *name)
+{
+  struct wttable *p;
+  p = find_wttab(pos_name_tab, name);
+
+  if (p) {
+    return anthy_get_wtype(p->pos, p->cos, p->scos, p->cc, p->ct, p->flags);
+  }
+
+  printf("Failed to find wtype(%s).\n", name);
+  return anthy_wt_all;
+}
+
 /* 二つの品詞が完全に一致しているかどうか */
 int
 anthy_wtype_equal(wtype_t lhs, wtype_t rhs)
 {
-  union {
-    unsigned int u;
-    wtype_t wt;
-  } l, r;
-
-  l.wt = lhs;
-  r.wt = rhs;
-
-  return (l.u == r.u);
+  if (lhs.pos == rhs.pos &&
+      lhs.cos == rhs.cos &&
+      lhs.scos == rhs.scos &&
+      lhs.cc == rhs.cc &&
+      lhs.ct == rhs.ct &&
+      lhs.wf == rhs.wf) {
+    return 1;
+  } else {
+    return 0;
+  }
 }
 
+
+/* n は hs の一部かどうか？ */
+int
+anthy_wtype_include(wtype_t hs, wtype_t n)
+{
+  /*printf("POS %d,%d\n", hs.type[WT_POS], n.type[WT_POS]);*/
+  if (hs.pos != POS_NONE &&
+      hs.pos != n.pos) {
+    return 0;
+  }
+  if (hs.cc != CC_NONE &&
+      hs.cc != n.cc) {
+    return 0;
+  }
+  if (hs.ct != CT_NONE &&
+      hs.ct != n.ct) {
+    return 0;
+  }
+  if (hs.cos != COS_NONE &&
+      hs.cos != n.cos) {
+    return 0;
+  }
+  if (hs.scos != SCOS_NONE &&
+      hs.scos != n.scos) {
+    return 0;
+  }
+  return 1;
+}
 
 int
 anthy_wtype_get_cc(wtype_t t)
@@ -177,9 +196,61 @@ anthy_wtype_get_indep(wtype_t t)
 }
 
 int
+anthy_wtype_get_meisi(wtype_t w)
+{
+  return w.wf & WF_MEISI;
+}
+
+int
 anthy_wtype_get_sv(wtype_t w)
 {
   return w.wf & WF_SV;
+}
+
+int
+anthy_wtype_get_ajv(wtype_t w)
+{
+  return w.wf & WF_AJV;
+}
+
+void
+anthy_wtype_set_cc(wtype_t *w, int cc)
+{
+  w->cc = cc;
+}
+
+void
+anthy_wtype_set_ct(wtype_t *w, int ct)
+{
+  w->ct = ct;
+}
+
+void
+anthy_wtype_set_pos(wtype_t *w, int pos)
+{
+  w->pos = pos;
+}
+
+void
+anthy_wtype_set_cos(wtype_t *w, int cs)
+{
+  w->cos = cs;
+}
+
+void
+anthy_wtype_set_scos(wtype_t *w, int sc)
+{
+  w->scos = sc;
+}
+
+void
+anthy_wtype_set_dep(wtype_t *w, int isDep)
+{
+  if (isDep) {
+    w->wf &= (~WF_INDEP);
+  }else{
+    w->wf |= WF_INDEP;
+  }
 }
 
 void
@@ -192,4 +263,30 @@ anthy_print_wtype(wtype_t w)
 	 anthy_wtype_get_cc(w),
 	 anthy_wtype_get_ct(w),
 	 anthy_wtype_get_wf(w));
+}
+
+wtype_t
+anthy_get_wtype_with_ct(wtype_t base, int ct)
+{
+  wtype_t w;
+
+  w = base;
+  w.ct = ct;
+
+  return w;
+}
+
+wtype_t
+anthy_get_wtype(int pos, int cos, int scos, int cc, int ct, int wf)
+{
+  wtype_t w;
+
+  w.pos = pos;
+  w.cos = cos;
+  w.scos = scos;
+  w.cc = cc;
+  w.ct = ct;
+  w.wf = wf;
+
+  return w;
 }

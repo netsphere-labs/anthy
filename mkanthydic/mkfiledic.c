@@ -74,7 +74,7 @@ static char *
 get_file_name(const char *prefix, struct header_entry* entry)
 {
   char *fn = malloc(strlen(prefix) + strlen(entry->file_name) + 4);
-  sprintf(fn, "%s%s", prefix, entry->file_name);
+  sprintf(fn, "%s/%s", prefix, entry->file_name);
   return fn;
 }
 
@@ -143,16 +143,9 @@ copy_file(FILE *in, FILE *out)
   rewind(in);
   while ((nread = fread (buf, 1, sizeof buf, in)) > 0) {
     if (fwrite (buf, 1, nread, out) < nread) {
-      fprintf (stderr, "failed to write\n");
       exit (1);
     }
   }
-
-  if (feof (in))
-    return;
-
-  fprintf (stderr, "failed to read\n");
-  exit (1);
 }
 
 static void
@@ -166,9 +159,9 @@ write_contents(FILE* fp, const char *prefix,
 
     in_fp = fopen(fn, "r");
     if (in_fp == NULL) {
-      fprintf (stderr, "failed to open %s\n", fn);
-      free (fn);
-      exit (1);
+      printf("failed to open %s\n", fn);
+      free(fn);
+      break;
     }
     printf("  copying %s (%s)\n", fn, entries[i].key);
     free(fn);
@@ -200,42 +193,36 @@ create_file_dic(const char* fn, const char *prefix,
 }
 
 
-static void
-usage (const char* progname)
-{
-  fprintf (stderr, "Usage: %s [-i] [-p PREFIX] [-o OUTPUT]\n", progname);
-  exit (1);
-}
-
 int
 main(int argc, char* argv[])
 {
   int i;
   const char *prefix = "..";
-  const char *output = DIC_NAME;
+  const char *prev_arg = "";
+
   struct header_entry entries[] = {
     {"word_dic", "/mkworddic/anthy.wdic"},
     {"dep_dic", "/depgraph/anthy.dep"},
-    /* Following are optional entries */
-    {"trans_info", "/mkanthydic/anthy.trans_info"},
-    {"cand_info", "/mkanthydic/anthy.cand_info"},
-    {"weak_words", "/mkanthydic/anthy.weak_words"},
-    {"corpus_bucket", "/mkanthydic/anthy.corpus_bucket"},
-    {"corpus_array", "/mkanthydic/anthy.corpus_array"},
+    {"trans_info", "/calctrans/anthy.trans_info"},
+    {"cand_info", "/calctrans/anthy.cand_info"},
+    {"weak_words", "/calctrans/anthy.weak_words"},
+    {"corpus_bucket", "/calctrans/anthy.corpus_bucket"},
+    {"corpus_array", "/calctrans/anthy.corpus_array"},
   };
-  int num_entries = sizeof(entries)/sizeof(struct header_entry);
 
-  for (i = 1; i < argc; i++)
-    if (!strcmp ("-i", argv[i]))
-      /* Make initial anthy.dic with no optional entries */
-      num_entries = 2;
-    else if (!strcmp ("-o", argv[i]) && (i+1) < argc)
-      output = argv[++i];
-    else if (!strcmp ("-p", argv[i]) && (i+1) < argc)
-      prefix = argv[++i];
-    else
-      usage (argv[0]);
+  for (i = 1; i < argc; i++) {
+    if (!strcmp("-p", prev_arg)) {
+      prefix = argv[i];
+    }
+    /**/
+    prev_arg = argv[i];
+  }
+  printf("file name prefix=[%s] you can change this by -p option.\n", prefix);
 
-  create_file_dic(output, prefix, num_entries, entries);
+  create_file_dic(DIC_NAME, prefix,
+		  sizeof(entries)/sizeof(struct header_entry),
+		  entries);
+
+  printf("%s done.\n", argv[0]);
   return 0;
 }

@@ -100,7 +100,6 @@ corpus_new(void)
   c->array = NULL;
   c->nr_values = 0;
   c->elms = NULL;
-  c->nr_buckets = 0;
   c->buckets = NULL;
   c->bucket_collision = 0;
   return c;

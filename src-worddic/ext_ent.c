@@ -36,6 +36,8 @@
 static struct seq_ent unkseq_ent;/*未知文字列たとえば英文字列とか*/
 static struct seq_ent num_ent;/*数字など*/
 static struct seq_ent sep_ent;/*セパレータなど。*/
+/* ext entryのwtype*/
+static wtype_t wt_num;
 
 static xchar narrow_wide_tab[]= {WIDE_0, WIDE_1, WIDE_2,
 				 WIDE_3, WIDE_4, WIDE_5,
@@ -60,20 +62,11 @@ pushback_place_name(struct zipcode_line *zl, char *pn)
   zl->nr++;
 }
 
-/*
- * This comment is written by NIIBE Yutaka -- 2010-05-17
- * 
- * XXX: The implementation of search_zipcode_dict is quite bad.
- * XXX: Every call of search_zipcode_dict opens/parse the file, amazing...
- *
- */
-#define MAX_LINE_LEN 2048	/* XXX: Please kill this limit too */
-
 /* 郵便番号辞書をパースしてスペース区切りを検出する */
 static void
 parse_zipcode_line(struct zipcode_line *zl, char *ln)
 {
-  char buf[MAX_LINE_LEN];
+  char buf[1000];
   int i = 0;
   while (*ln) {
     buf[i] = *ln;
@@ -102,7 +95,7 @@ static void
 search_zipcode_dict(struct zipcode_line *zl, xstr* xs)
 {
   FILE *fp;
-  char buf[MAX_LINE_LEN];
+  char buf[1000];
   int len;
   xstr *temp;
   char *index;
@@ -120,7 +113,7 @@ search_zipcode_dict(struct zipcode_line *zl, xstr* xs)
   len = strlen(index);
 
   /* 全部grepする */
-  while (fgets(buf, MAX_LINE_LEN, fp)) {
+  while (fgets(buf, 1000, fp)) {
     /* 3文字の郵便番号が7文字の郵便番号の頭にマッチしないように */
     if (!strncmp(buf, index, len) && buf[len] == ' ') {
       /* 改行を消す */
@@ -511,27 +504,37 @@ anthy_get_ext_seq_ent_from_xstr(xstr *x, int is_reverse)
 }
 
 int
-anthy_get_nth_dic_ent_wtype_of_ext_ent (xstr *xs, wtype_t *wt)
+anthy_get_nth_dic_ent_wtype_of_ext_ent(xstr *xs, int nth,
+				       wtype_t *wt)
 {
-  int type = anthy_get_xstr_type(xs);
-
+  int type;
+  (void)nth;
+  type = anthy_get_xstr_type(xs);
   if (type & (XCT_NUM | XCT_WIDENUM)) {
-    *wt = anthy_wtype_num_noun;
-    return 0;
-  } else if (type & XCT_KATA) {
-    *wt = anthy_wtype_noun;
+    *wt = wt_num;
     return 0;
   }
-
-  *wt = anthy_wt_none;
+  if (type & XCT_KATA) {
+    *wt = anthy_get_wtype(POS_NOUN, COS_NONE, SCOS_NONE, CC_NONE,
+			  CT_NONE, WF_INDEP);
+    return 0;
+  }
   return -1;
+}
+
+int
+anthy_get_nth_dic_ent_freq_of_ext_ent(struct seq_ent *se, int nth)
+{
+  (void)se;
+  (void)nth;
+  return 100;
 }
 
 int
 anthy_get_ext_seq_ent_wtype(struct seq_ent *se, wtype_t w)
 {
   if (se == &num_ent) {
-    if (anthy_wtype_get_pos (w) == POS_NUMBER) {
+    if (anthy_wtype_include(w, wt_num)) {
       /* 数字の場合 */
       return 10;
     }
@@ -556,4 +559,6 @@ anthy_init_ext_ent(void)
   num_ent.nr_dic_ents = 0;
   sep_ent.seq_type = 0;
   sep_ent.nr_dic_ents = 0;
+  /**/
+  wt_num = anthy_init_wtype_by_name("数詞");
 }

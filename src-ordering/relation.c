@@ -418,8 +418,7 @@ anthy_reorder_candidates_by_relation(struct segment_list *sl, int nth)
   int i;
   for (i = nth; i < sl->nr_segments; i++) {
     reorder_by_use_dict(sl, i);
-    if (corpus_info.array)
-      reorder_by_corpus(sl, i);
+    reorder_by_corpus(sl, i);
   }
 }
 
@@ -429,11 +428,7 @@ anthy_relation_init(void)
   corpus_info.corpus_array = anthy_file_dic_get_section("corpus_array");
   corpus_info.corpus_bucket = anthy_file_dic_get_section("corpus_bucket");
   if (!corpus_info.corpus_array ||
-      !corpus_info.corpus_bucket) {
-    corpus_info.array = NULL;
-    corpus_info.bucket = NULL;
-    corpus_info.array_size = 0;
-    corpus_info.bucket_size = 0;
+      !corpus_info.corpus_array) {
     return ;
   }
   corpus_info.array_size = ntohl(((int *)corpus_info.corpus_array)[1]);

@@ -5,7 +5,7 @@
 
 (require 'anthy)
 
-(defvar anthy-kyuri-mode-hiragana-map
+(setq anthy-kyuri-mode-hiragana-map
   '(
     ("bh" . "ぁ") ("h" . "あ") ("bk" . "ぃ") ("k" . "い") ("bj" . "ぅ")
     ("j" . "う") ("yj" . "う゛") ("yh" . "う゛ぁ") ("yk" . "う゛ぃ") ("y;" . "う゛ぇ") 
@@ -177,9 +177,9 @@
   (anthy-set-break-into-roman t)
   (anthy-send-change-toggle-command "~")
   (anthy-clear-map)
-  (mapc (lambda (x)
-	  (anthy-change-hiragana-map (car x) (cdr x)))
-	anthy-kyuri-mode-hiragana-map)
+  (mapcar (lambda (x)
+	    (anthy-change-hiragana-map (car x) (cdr x)))
+	  anthy-kyuri-mode-hiragana-map)
   )
 
 (define-key anthy-mode-map (char-to-string 10) 'newline-and-indent)

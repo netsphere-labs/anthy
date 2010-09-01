@@ -86,7 +86,6 @@ anthy_init(void)
     anthy_log(0, "Failed to init splitter.\n");
     return -1;
   }
-  anthy_init_wordlist();
   anthy_init_contexts();
   anthy_init_personality();
   anthy_infosort_init();
