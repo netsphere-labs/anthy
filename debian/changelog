@@ -1,3 +1,14 @@
+anthy (9100h-8) unstable; urgency=low
+
+  * debian/control
+    - Bump up Standards-Version: 3.9.1 with no change
+    - add "Homepage:", "Vcs-Git:" and "Vcs-Browser:" field.
+  * debian/po
+    - add Brazilian Portuguese tranlsation (pt_BR).
+      Thanks to Adriano Rafael Gomes <adrianorg@gmail.com>
+
+ -- Hideki Yamane <henrich@debian.org>  Sun, 06 Feb 2011 20:55:48 +0900
+
 anthy (9100h-7) unstable; urgency=low
 
   * remove debian/dirs and add debian/anthy.dirs, delete unnnecessary lines
