@@ -1,3 +1,15 @@
+anthy (9100h-9) unstable; urgency=low
+
+  * debian/po
+    - add Danish translation. Thanks to Joe Dalton <joedalton2@yahoo.dk> 
+      (Closes: #621023)
+  * debian/libanthy-dev.install
+    - not install *.la file. Thanks to codehelp@debian.org (Closes: #621319)
+  * debian/control
+    - Bump up Standards-Version: 3.9.2 with no change
+
+ -- Hideki Yamane <henrich@debian.org>  Fri, 29 Apr 2011 22:22:35 +0900
+
 anthy (9100h-8) unstable; urgency=low
 
   * debian/control
@@ -5,7 +17,7 @@ anthy (9100h-8) unstable; urgency=low
     - add "Homepage:", "Vcs-Git:" and "Vcs-Browser:" field.
   * debian/po
     - add Brazilian Portuguese tranlsation (pt_BR).
-      Thanks to Adriano Rafael Gomes <adrianorg@gmail.com>
+      Thanks to Adriano Rafael Gomes <adrianorg@gmail.com> (Closes: #610488)
 
  -- Hideki Yamane <henrich@debian.org>  Sun, 06 Feb 2011 20:55:48 +0900
 
