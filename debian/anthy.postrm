@@ -23,10 +23,13 @@ case "$1" in
         if [ "$1" = purge -a -e /usr/share/debconf/confmodule ]; then
             . /usr/share/debconf/confmodule
             db_purge
-            rm -rf /var/lib/anthy
-            rm -rf /var/cache/anthy
-	    rm -f /etc/anthy/diclist
-	    rm -f /etc/anthy/dict.args
+            rm -rf /var/lib/anthy \
+                   /var/cache/anthy \
+                   /etc/anthy/diclist \
+                   /etc/anthy/dict.args
+            if [ ! -f /etc/anthy/* ]; then
+              rmdir /etc/anthy
+            fi
         fi
         ;;
 
