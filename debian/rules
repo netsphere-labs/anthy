@@ -2,6 +2,9 @@
 # Uncomment this to turn on verbose mode.
 # export DH_VERBOSE=1
 
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all,-pie
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
 %:
 	dh $@
 
@@ -11,3 +14,8 @@ override_dh_auto_configure:
 override_dh_auto_clean:
 	debconf-updatepo
 	dh_auto_clean
+
+override_dh_builddeb:
+	dh_builddeb -Nanthy-common
+	# it reduces anthy-common's size 1MB
+	dh_builddeb -panthy-common -- -Zxz

@@ -3,8 +3,8 @@ Section: utils
 Priority: optional
 Maintainer: NOKUBI Takatsugu <knok@daionet.gr.jp>
 Uploaders: Hideki Yamane <henrich@debian.org>, NIIBE Yutaka <gniibe@fsij.org>
-Build-Depends: debhelper (>= 7.0.50~), autotools-dev, debconf (>= 0.5), po-debconf, automake
-Standards-Version: 3.9.2
+Build-Depends: debhelper (>= 9), autotools-dev, debconf (>= 0.5), po-debconf, automake
+Standards-Version: 3.9.3
 Vcs-Git: git://git.debian.org/collab-maint/anthy.git
 Vcs-Browser: http://git.debian.org/?p=collab-maint/anthy.git
 Homepage: http://anthy.sourceforge.jp/
@@ -23,6 +23,7 @@ Description: input method for Japanese - backend, dictionary and utility
 
 Package: anthy-common
 Architecture: all
+Multi-Arch: foreign
 Depends: ${misc:Depends}
 Conflicts: anthy (<= 9100h-4)
 Description: input method for Japanese - common files and dictionary
@@ -50,6 +51,8 @@ Description: input method for Japanese - elisp frontend
 Package: libanthy0
 Section: libs
 Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}, anthy-common
 Description: input method for Japanese - runtime library
  Anthy is a Japanese input method working on X11 and Emacs. It converts
@@ -63,6 +66,7 @@ Description: input method for Japanese - runtime library
 Package: libanthy-dev
 Section: libdevel
 Architecture: any
+Multi-Arch: same
 Depends: libanthy0 (= ${binary:Version}), ${misc:Depends}
 Description: input method for Japanese - development files
  Anthy is a Japanese input method working on X11 and Emacs. It converts

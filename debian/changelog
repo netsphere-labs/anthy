@@ -1,3 +1,21 @@
+anthy (9100h-11) unstable; urgency=low
+
+  * debian/control
+    - set "Build-Depends: debhelper (>= 9)" to enable hardening
+    - set "Standards-Version: 3.9.3"
+    - anthy-common: set "Multi-Arch: foreign"
+    - libanthy0, libanthy-dev: set "Multi-Arch: same"
+  * debian/compat
+    - set 9
+  * debian/rules
+    - set "DEB_HOST_MULTIARCH"
+    - set "DEB_BUILD_MAINT_OPTIONS = hardening=+all, -pie"
+    - compress anthy-common package with xz
+  * debian/{libanthy0,libanthy-dev}.install 
+    - adjust file path for Multi-Arch
+
+ -- Hideki Yamane <henrich@debian.org>  Sun, 27 May 2012 06:56:25 +0900
+
 anthy (9100h-10) unstable; urgency=low
 
   * debian/anthy.postrm
