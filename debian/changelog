@@ -1,3 +1,14 @@
+anthy (9100h-12) unstable; urgency=low
+
+  * debian/anthy.config
+    - modify to fix lintian false positive 
+  * debian/control
+    - add "Pre-Depends on dpkg (>= 1.15.6~)" to fix 
+      "data.tar.xz-member-without-dpkg-pre-depends"
+    - add "Recommends: kasumi"
+
+ -- Hideki Yamane <henrich@debian.org>  Tue, 12 Jun 2012 12:51:27 +0900
+
 anthy (9100h-11) unstable; urgency=low
 
   * debian/control
