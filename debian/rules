@@ -17,5 +17,5 @@ override_dh_auto_clean:
 
 override_dh_builddeb:
 	dh_builddeb -Nanthy-common
-	# it reduces anthy-common's size 1MB
+# it reduces anthy-common's size > 1MB
 	dh_builddeb -panthy-common -- -Zxz

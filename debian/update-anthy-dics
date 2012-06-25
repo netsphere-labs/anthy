@@ -2,6 +2,7 @@
 
 set -e
 
+#CANNADIC='gcanna.ctd gcannaf.ctd gtankan.ctd social-ime.ctd wikipedia.ctd'
 CANNADIC='gcanna.ctd gcannaf.ctd gtankan.ctd'
 EXTRADIC='adjust.t compound.t extra.t'
 EXTRADIC_UTF8='g_fname.t'

@@ -2,24 +2,29 @@ Anthy for Debian
 ----------------
 * Introduction
 
-Anthy is Japanese input method made by Heke Project.
-If you want to use user customized dictionary, see dic-tool-usage.txt.
+ Anthy is Japanese input method made by Heke Project.
+ If you want to use user customized dictionary, see dic-tool-usage.txt.
 
-Developer documents are moved to libanthy-dev since 3322-1.
+ - Developer documents are moved to libanthy-dev since 3322-1.
+ - Documantations for this package available mostly in Japanese only.
 
-Documantations for this package available mostly in Japanese only.
-
-* Messages for po translators
-
-If you make new po translations and you are DD, you may NMU without my
-permission (Proper BTS report on your po translations is required). If you
-cannot NMU by yourself, please consult translation team and ask them for NMU
-upload at appropriate moment.
-
-Basically, I do not upload an updated package just for po translations.
-Translations are merged when there is a new upload for the new upstream
-release. This is to avoid slow process of creating dictionaries in
-anthy.postinst which makes end-users annoyed.
 
  -- Masahito Omote <omote@debian.org>, Jul, 8 Oct 2007 03:38:29 +0900
  -- Osamu Aoki <osamu@debian.org>, Sat, 03 Apr 2010 00:11:43 +0900
+
+
+------------------------------------------------------------------------------
+* How to add 3rd party dictionaries to your system anthy dictionary
+------------------------------------------------------------------------------
+
+ Some people/organizations provide cannadic-style dictionary and you can
+ use it with Anthy if you want. To add such dictionary (encoded by UTF-8) to 
+ your system, do like this (step 0 is not needed if dictionary is EUC-JP).
+
+ 0. $ iconv -f UTF-8 -t EUC-JP data.ctd -c -o 3rd.ctd
+ 1. # echo "3rd.ctd" >> /etc/anthy/diclist
+ 2. # cp /somewhare/exists/3rd.ctd /usr/share/anthy/dic/
+ 3. # update-anthy-dics
+
+
+ -- Hideki Yamane <henrich@debian.org>, Fri, 22 Jun 2012 13:42:22 +0900

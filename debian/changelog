@@ -1,3 +1,16 @@
+anthy (9100h-13) unstable; urgency=low
+
+  * debian/anthy.README.Debian
+    - remove lines "Messages for po translators" since I'll upload l10n update
+      package now, and add "How to add 3rd party dictionary" instructions to 
+      help users
+  * debian/patches
+    - remove 02_2ch_t.diff and provide it as anthy_9100h.orig-2ch_t.tar.xz
+      multiple upstream tarball (Closes: #576285)
+    - remove 04_mkworddic-compound.t since it was already merged
+
+ -- Hideki Yamane <henrich@debian.org>  Mon, 25 Jun 2012 13:55:54 +0900
+
 anthy (9100h-12) unstable; urgency=low
 
   * debian/anthy.config
