@@ -35,7 +35,7 @@ case "$1" in
 		if [ ! -f "$HASHLIST" ]; then
    		  $UPDATE
 		  mv $tmpdir/$temp_hashlist $HASHLIST
-		elif [ ! -z `diff "$HASHLIST" "$tmpdir/$temp_hashlist"` ]; then
+		elif [ -z "`cmp -l $HASHLIST $tmpdir/$temp_hashlist 2 > /dev/null`" ]; then
 		  $UPDATE
 		  mv $tmpdir/$temp_hashlist $HASHLIST
 		else

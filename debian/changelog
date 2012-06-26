@@ -1,3 +1,10 @@
+anthy (9100h-15) unstable; urgency=low
+
+  * debian/anthy.postinst
+    - fix checking compare dictonaries
+
+ -- Hideki Yamane <henrich@debian.org>  Tue, 26 Jun 2012 18:06:46 +0900
+
 anthy (9100h-14) unstable; urgency=low
 
   * debian/anthy.postinst
