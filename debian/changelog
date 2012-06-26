@@ -1,3 +1,16 @@
+anthy (9100h-14) unstable; urgency=low
+
+  * debian/anthy.postinst
+    - To avoid unnecessary dictionary generation, check dictionaries' hashsum.
+      If you want to add another dictionary, then update anthy.postinst file 
+      (add it to EXTRADICTLIST line).
+  * debian/anthy.{postrm, postinst}
+    - Cleanup unused lines
+  * debian/control
+    - Fix description for anthy-el, it is for only Emacs, drop XEmacs.
+
+ -- Hideki Yamane <henrich@debian.org>  Tue, 26 Jun 2012 16:14:58 +0900
+
 anthy (9100h-13) unstable; urgency=low
 
   * debian/anthy.README.Debian

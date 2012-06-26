@@ -48,7 +48,7 @@ Description: input method for Japanese - elisp frontend
  Thus, Anthy is simple and secure (information is protected from
  spoofing and snooping). 
  .
- This package provides an Anthy frontend for Emacs and XEmacs.
+ This package provides an Anthy frontend for Emacs.
 
 Package: libanthy0
 Section: libs
