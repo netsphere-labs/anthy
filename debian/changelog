@@ -1,3 +1,10 @@
+anthy (9100h-16) unstable; urgency=low
+
+  * debian/anthy-common.install
+    - add missing g_fname.t  
+
+ -- Hideki Yamane <henrich@debian.org>  Thu, 05 Jul 2012 16:59:52 +0900
+
 anthy (9100h-15) unstable; urgency=low
 
   * debian/anthy.postinst
