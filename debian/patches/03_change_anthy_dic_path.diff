@@ -1,7 +1,14 @@
-Index: anthy-9100/anthy-conf.in
-===================================================================
---- anthy-9100~/anthy-conf.in	2007-05-12 10:14:14.000000000 +0900
-+++ anthy-9100/anthy-conf.in	2007-07-08 03:01:11.546305624 +0900
+Description: adjust path for Debian
+ .
+Author: Masahito Omote <omote@debian.org>
+
+---
+Origin: vendor
+Forwarded: not-needed
+Last-Update: <2004-10-24>
+
+--- anthy-9100h.orig/anthy-conf.in
++++ anthy-9100h/anthy-conf.in
 @@ -2,7 +2,7 @@
  prefix @prefix@
  datadir @datadir@

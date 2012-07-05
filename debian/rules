@@ -2,15 +2,11 @@
 # Uncomment this to turn on verbose mode.
 # export DH_VERBOSE=1
 
-DIC_DIR=usr/share/anthy/dic
-DIC_LIST=2ch.t udict zipcode.t utf8.t tankanji.t extra.t compound.t base.t \
-	  adjust.t gtankan.ctd gcannaf.ctd gcanna.ctd
-
 export DEB_BUILD_MAINT_OPTIONS = hardening=+all,-pie
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 %:
-	dh $@
+	dh $@ --parallel
 
 override_dh_auto_configure:
 	dh_auto_configure -- --sysconfdir=/etc/anthy
@@ -18,6 +14,11 @@ override_dh_auto_configure:
 override_dh_auto_clean:
 	debconf-updatepo
 	dh_auto_clean
+
+override_dh_install:
+	cd  $(CURDIR)/nokuno-dictionary-20120103-dfsg && \
+	for i in wikipedia social-ime ; do iconv -f UTF-8 -t EUC-JP $$i -c -o $$i.ctd; done
+	dh_install
 
 override_dh_builddeb:
 	dh_builddeb -Nanthy-common

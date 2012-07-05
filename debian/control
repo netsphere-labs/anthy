@@ -41,6 +41,7 @@ Package: anthy-el
 Section: lisp
 Architecture: all
 Depends: ${misc:Depends}, anthy, emacs23 | emacsen
+Conflicts: xemacs21-nomule
 Description: input method for Japanese - elisp frontend
  Anthy is a Japanese input method working on X11 and Emacs. It converts
  hiragana text to mixed kana and kanji. It is implemented as a library

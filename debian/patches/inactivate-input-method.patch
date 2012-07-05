@@ -1,0 +1,17 @@
+Description: deal with inactivate-input-method -> deactivate-input-method change
+Author: Hideki Yamane <henrich@debian.org>
+---
+Origin: vendor
+Last-Update: 2012-08-01
+
+--- anthy-9100h.orig/src-util/anthy.el
++++ anthy-9100h/src-util/anthy.el
+@@ -874,7 +874,7 @@
+ ;; emacsのバグ避けらしいです
+ ;;
+ (defun anthy-leim-exit-from-minibuffer ()
+-  (inactivate-input-method)
++  (deactivate-input-method)
+   (when (<= (minibuffer-depth) 1)
+     (remove-hook 'minibuffer-exit-hook 'anthy-leim-exit-from-minibuffer)))
+ 

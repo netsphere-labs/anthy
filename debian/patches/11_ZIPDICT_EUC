@@ -1,8 +1,14 @@
-Index: anthy-9100h/anthy-conf.in
-===================================================================
---- anthy-9100h.orig/anthy-conf.in	2010-03-29 11:00:05.084718338 +0900
-+++ anthy-9100h/anthy-conf.in	2010-03-29 11:00:23.160718726 +0900
-@@ -3,7 +3,7 @@
+Description: adjust dictionary location for Debian
+Author: Hideki Yamane <henrich@debian.org>
+
+---
+Origin: vendor
+Forwarded: not-needed
+Last-Update: <2010-03-29>
+
+--- anthy-9100h.orig/anthy-conf.in
++++ anthy-9100h/anthy-conf.in
+@@ -3,7 +3,7 @@ prefix @prefix@
  datadir @datadir@
  ANTHYDIR @datadir@/anthy/
  DIC_FILE /var/lib/anthy/anthy.dic

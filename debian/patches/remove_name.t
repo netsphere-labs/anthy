@@ -1,5 +1,15 @@
-Index: anthy-9100h/mkworddic/name.t
-===================================================================
+Description: drop whole name.t file
+ This file is not necessary because altcannadic has same data, as
+ alt-cannadic/g_fname.t file.
+ .
+ See http://sourceforge.jp/projects/alt-cannadic/wiki/%E4%BD%BF%E3%81%84%E6%96%B9_Anthy
+
+Author: Hideki Yamane <henrich@debian.org>
+---
+Origin: vendor
+Forwarded: no
+Last-Update: 2010-03-09
+
 --- anthy-9100h.orig/mkworddic/name.t	2010-05-01 13:57:34.000000000 +0900
 +++ /dev/null	1970-01-01 00:00:00.000000000 +0000
 @@ -1,1263 +0,0 @@

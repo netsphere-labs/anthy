@@ -1,7 +1,30 @@
+anthy (9100h-17) experimental; urgency=low
+
+  * debian/control
+    - anthy-el seems to not work with xemacs21-nomule, so set "Conflicts: 
+      xemacs21-nomule" as workaround. If it would work again, then remove this
+      setting (Closes: LP#325790)
+  * debian/patches
+    - add explanation to each patch file
+    - add inactivate-input-method.patch to deal with changes in emacs-head
+    - add remove_wrong_trans_data.patch to avoid wrong translation
+  * debian/rules
+    - enable parallel build
+  * nokuno-dictionary-20120103-dfsg (hatena is removed since license issue)
+    - add SocialIME and Wikipedia dictionary, those files are provided as 
+      multiple upstream tarball. It comes from 
+      http://code.google.com/p/nokuno/downloads/detail?name=dictionary.tar.bz2
+  * debian/update-anthy-dic,anthy-common.install,rules
+    - add social-ime.ctd and wikipedia.ctd 
+  * debian/copyright
+    - add explation for zip_code.t license (Closes: #635958)
+
+ -- Hideki Yamane <henrich@debian.org>  Thu, 05 Jul 2012 16:57:13 +0900
+
 anthy (9100h-16) unstable; urgency=low
 
   * debian/anthy-common.install
-    - add missing g_fname.t  
+    - add missing g_fname.t
 
  -- Hideki Yamane <henrich@debian.org>  Thu, 05 Jul 2012 16:59:52 +0900
 

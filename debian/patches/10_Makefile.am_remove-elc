@@ -1,8 +1,15 @@
-Index: anthy-9100h/src-util/Makefile.am
-===================================================================
---- anthy-9100h.orig/src-util/Makefile.am	2007-06-20 16:40:09.000000000 +0900
-+++ anthy-9100h/src-util/Makefile.am	2010-03-29 10:36:09.836718765 +0900
-@@ -8,7 +8,6 @@
+Description: drop precompiled elips files
+ 
+Author: Hideki Yamane <henrich@debian.org>
+
+---
+Origin: vendor
+Forwarded: not-needed
+Last-Update: 2010-03-29
+
+--- anthy-9100h.orig/src-util/Makefile.am
++++ anthy-9100h/src-util/Makefile.am
+@@ -8,7 +8,6 @@ ELISP_FILES = anthy.el anthy-dic.el anth
   anthy-isearch.el anthy-azik.el anthy-kyuri.el
  EXTRA_DIST = $(ELISP_FILES) typetab dic-tool-usage.txt anthy.i
  bin_PROGRAMS = anthy-dic-tool anthy-agent anthy-morphological-analyzer
