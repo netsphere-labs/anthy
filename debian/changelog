@@ -1,3 +1,11 @@
+anthy (9100h-18) experimental; urgency=low
+
+  * debian/patches
+    - add fedora_anthy-fix-typo-in-dict-name.patch, taken from Fedora
+    - add fedora_anthy-fix-typo-in-dict.patch, taken from Fedora
+
+ -- Hideki Yamane <henrich@debian.org>  Fri, 03 Aug 2012 14:47:27 +0900
+
 anthy (9100h-17) experimental; urgency=low
 
   * debian/control
