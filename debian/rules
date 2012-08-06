@@ -6,7 +6,7 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all,-pie
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 %:
-	dh $@ --parallel
+	dh $@ --parallel --with autotools-dev
 
 override_dh_auto_configure:
 	dh_auto_configure -- --sysconfdir=/etc/anthy
