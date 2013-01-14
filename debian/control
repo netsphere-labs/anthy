@@ -3,7 +3,7 @@ Section: utils
 Priority: optional
 Maintainer: NOKUBI Takatsugu <knok@daionet.gr.jp>
 Uploaders: Hideki Yamane <henrich@debian.org>, NIIBE Yutaka <gniibe@fsij.org>
-Build-Depends: debhelper (>= 9), autotools-dev, debconf (>= 0.5), po-debconf, automake, autotools-dev
+Build-Depends: debhelper (>= 9), autotools-dev, debconf (>= 0.5), po-debconf, automake, autotools-dev, dh-autoreconf
 Standards-Version: 3.9.3
 Vcs-Git: git://git.debian.org/collab-maint/anthy.git
 Vcs-Browser: http://git.debian.org/?p=collab-maint/anthy.git

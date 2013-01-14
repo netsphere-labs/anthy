@@ -1,3 +1,15 @@
+anthy (9100h-20) experimental; urgency=low
+
+  * debian/rules
+    - remove -pie from hardening 
+    - add dh_autoreconf to avoid build failure by enabling PIE hardening
+  * debian/control
+    - add "Build-Depends: dh-autoreconf"
+  * debian/copyright
+    - convert to copyright format 1.0
+
+ -- Hideki Yamane <henrich@debian.org>  Mon, 14 Jan 2013 10:34:58 +0900
+
 anthy (9100h-19) experimental; urgency=low
 
   * debian/patches
