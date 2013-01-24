@@ -1,3 +1,14 @@
+anthy (9100h-21) experimental; urgency=low
+
+  * debian/control
+    - set Standards-Version: 3.9.4
+  * debian/copyright
+    - fix "copyright-refers-to-deprecated-bsd-license-file" warning 
+  * debian/libanthy0.lintian-overrides
+    - avoid false positive warning
+
+ -- Hideki Yamane <henrich@debian.org>  Fri, 25 Jan 2013 08:08:16 +0900
+
 anthy (9100h-20) experimental; urgency=low
 
   * debian/rules
@@ -15,7 +26,8 @@ anthy (9100h-19) experimental; urgency=low
   * debian/patches
     - update remove_wrong_trans_data.patch 
   * debian/{rules,control}
-    - use autotools-dev to deal with Outdated config.{sub,guess} (Closes: #579072)
+    - use autotools-dev to deal with Outdated config.{sub,guess}
+      (Closes: #579072)
 
  -- Hideki Yamane <henrich@debian.org>  Mon, 06 Aug 2012 23:27:02 +0900
 
