@@ -1,3 +1,15 @@
+anthy (9100h-22) experimental; urgency=low
+
+  * debian/patches
+    - add work-with-emacs-24.3.1.patch to make anthy.el works with
+      Emacs-24.3.1 or later.
+  * debian/control
+    - remove duplicate autotools-dev
+  * debian/libanthy0.lintian-overrides
+    - make it works with other architecture
+
+ -- Hideki Yamane <henrich@debian.org>  Mon, 11 Mar 2013 23:33:33 +0900
+
 anthy (9100h-21) experimental; urgency=low
 
   * debian/control

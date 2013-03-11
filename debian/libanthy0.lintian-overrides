@@ -1,1 +1,1 @@
-libanthy0: hardening-no-fortify-functions usr/lib/x86_64-linux-gnu/libanthyinput.so.0.0.0
+libanthy0: hardening-no-fortify-functions usr/lib/*/libanthyinput.so.0.0.0
