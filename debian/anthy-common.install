@@ -13,5 +13,5 @@ calctrans/anthy.corpus_bucket   usr/share/anthy/calctrans
 calctrans/anthy.weak_words      usr/share/anthy/calctrans
 usr/share/anthy/typetab         usr/share/anthy/
 2ch-20040519/2ch.t		usr/share/anthy/dic/
-nokuno-dictionary-20120103-dfsg/wikipedia.ctd	usr/share/anthy/dic/
-nokuno-dictionary-20120103-dfsg/social-ime.ctd	usr/share/anthy/dic/
+#nokuno-dictionary-20120103-dfsg/wikipedia.ctd	usr/share/anthy/dic/
+#nokuno-dictionary-20120103-dfsg/social-ime.ctd	usr/share/anthy/dic/
