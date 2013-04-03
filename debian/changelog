@@ -1,3 +1,10 @@
+anthy (9100h-23) experimental; urgency=low
+
+  * Once remove social-ime and wikipedia dic data since it causes a lot of
+    wrong output. 
+
+ -- Hideki Yamane <henrich@debian.org>  Wed, 03 Apr 2013 11:03:20 +0900
+
 anthy (9100h-22) experimental; urgency=low
 
   * debian/patches
