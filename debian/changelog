@@ -1,7 +1,8 @@
-anthy (9100h-23) experimental; urgency=low
+anthy (9100h-23) unstable; urgency=low
 
   * Once remove social-ime and wikipedia dic data since it causes a lot of
     wrong output. 
+  * Upload to unstable
 
  -- Hideki Yamane <henrich@debian.org>  Wed, 03 Apr 2013 11:03:20 +0900
 
