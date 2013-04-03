@@ -3,7 +3,7 @@
 11_ZIPDICT_EUC
 remove_name.t
 inactivate-input-method.patch
-remove_wrong_trans_data.patch
+#remove_wrong_trans_data.patch
 fedora_anthy-fix-typo-in-dict-name.patch
 fedora_anthy-fix-typo-in-dict.patch
 work-with-emacs-24.3.1.patch
