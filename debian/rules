@@ -14,7 +14,7 @@ override_dh_auto_configure:
 
 override_dh_auto_clean:
 	debconf-updatepo
-	dh_auto_clean -Xalt-cannadic/Makefile.orig
+	dh_clean -Xalt-cannadic/Makefile.orig
 
 override_dh_install:
 #	cd  $(CURDIR)/nokuno-dictionary-20120103-dfsg && \
