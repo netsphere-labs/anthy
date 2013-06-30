@@ -1,17 +1,17 @@
 /*
- * ¼­½ñÁàºîÍÑ¤Î¥æ¡¼¥Æ¥£¥ê¥Æ¥£¥³¥Ş¥ó¥É
+ * è¾æ›¸æ“ä½œç”¨ã®ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£ã‚³ãƒãƒ³ãƒ‰
  *
- * ¼­½ñ¤Î¥é¥¤¥Ö¥é¥êÆâÉô¤Î·Á¼°¤È³°Éô¤Î·Á¼°¤ÎÁê¸ßÊÑ´¹¤ò¹Ô¤¦
- * ³°Éô·Á¼°¤Ï
- * *ÆÉ¤ß ÉÑÅÙ Ã±¸ì
- * *ÉÊ»ì¤ÎÊÑ¿ô1 = ÃÍ1
- * *ÉÊ»ì¤ÎÊÑ¿ô2 = ÃÍ2
+ * è¾æ›¸ã®ãƒ©ã‚¤ãƒ–ãƒ©ãƒªå†…éƒ¨ã®å½¢å¼ã¨å¤–éƒ¨ã®å½¢å¼ã®ç›¸äº’å¤‰æ›ã‚’è¡Œã†
+ * å¤–éƒ¨å½¢å¼ã¯
+ * *èª­ã¿ é »åº¦ å˜èª
+ * *å“è©ã®å¤‰æ•°1 = å€¤1
+ * *å“è©ã®å¤‰æ•°2 = å€¤2
  * *...
- * *<¶õ¹Ô>
- * ¤Ë¤Ê¤ë
+ * *<ç©ºè¡Œ>
+ * ã«ãªã‚‹
  */
 /*
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2001 9/22
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2001 9/22
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  */
@@ -65,18 +65,18 @@ static FILE *fp_in;
 static char *fn;
 static const char *personality = "";
 
-/* ÊÑ¿ôÌ¾¤ÈÃÍ¤Î¥Ú¥¢ */
+/* å¤‰æ•°åã¨å€¤ã®ãƒšã‚¢ */
 struct var{
   struct var *next;
   char *var_name;
   char *val;
 };
 
-/* ÉÊ»ì¤Î¥Ñ¥é¥á¡¼¥¿¤«¤éÉÊ»ìÌ¾¤òÆÀ¤ë¤¿¤á¤Î¥Æ¡¼¥Ö¥ë */
+/* å“è©ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‹ã‚‰å“è©åã‚’å¾—ã‚‹ãŸã‚ã®ãƒ†ãƒ¼ãƒ–ãƒ« */
 struct trans_tab {
   struct trans_tab *next;
-  char *type_name; /* ÆâÉô¤Ç¤Î·¿¤ÎÌ¾Á° T35¤È¤« */
-  struct var var_list; /* ·¿¤ò·èÄê¤¹¤ë¤¿¤á¤Î¥Ñ¥é¥á¡¼¥¿ */
+  char *type_name; /* å†…éƒ¨ã§ã®å‹ã®åå‰ T35ã¨ã‹ */
+  struct var var_list; /* å‹ã‚’æ±ºå®šã™ã‚‹ãŸã‚ã®ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ */
 }trans_tab_list;
 
 static void
@@ -107,10 +107,10 @@ static FILE *
 open_usage_file(void)
 {
   FILE *fp;
-  /* ¥«¥ì¥ó¥È¥Ç¥£¥ì¥¯¥È¥ê¤Ë¤¢¤ë¾ì¹ç¤Ï¡¢¤½¤ì¤ò»ÈÍÑ¤¹¤ë */
+  /* ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã«ã‚ã‚‹å ´åˆã¯ã€ãã‚Œã‚’ä½¿ç”¨ã™ã‚‹ */
   fp = fopen(USAGE_TEXT, "r");
   if (!fp) {
-    /* ¥¤¥ó¥¹¥È¡¼¥ë¤µ¤ì¤¿¤â¤Î¤ò»ÈÍÑ */
+    /* ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚ŒãŸã‚‚ã®ã‚’ä½¿ç”¨ */
     char *fn;
     fn = strdup(anthy_dic_util_get_anthydir());
     fn = realloc(fn, strlen(fn) + strlen(USAGE_TEXT) + 10);
@@ -133,7 +133,7 @@ print_usage_text(void)
   if (encoding == ANTHY_UTF8_ENCODING) {
   } else {
   }
-  /* ¤½¤Î¤Ş¤Ş¥Õ¥¡¥¤¥ë¤ÎÆâÍÆ¤ò½ĞÎÏ */
+  /* ãã®ã¾ã¾ãƒ•ã‚¡ã‚¤ãƒ«ã®å†…å®¹ã‚’å‡ºåŠ› */
   while (fgets(buf, 256, fp)) {
     if (encoding == ANTHY_UTF8_ENCODING) {
       char *s;
@@ -152,7 +152,7 @@ read_line(char *buf, int len, FILE *fp)
 {
   while (fgets(buf, len, fp)) {
     if (buf[0] != '#') {
-      /* ²ş¹Ô¤òºï½ü¤¹¤ë */
+      /* æ”¹è¡Œã‚’å‰Šé™¤ã™ã‚‹ */
       int l = strlen(buf);
       if (l > 0 && buf[l-1] == '\n') {
 	buf[l-1] = 0;
@@ -191,7 +191,7 @@ read_typetab_var(struct var *head, FILE *fp, int table)
     v->val = strdup(val);
   }
 
-  /* ¥ê¥¹¥È¤Ë¤Ä¤Ê¤° */
+  /* ãƒªã‚¹ãƒˆã«ã¤ãªã */
   v->next = head->next;
   head->next = v;
 
@@ -204,7 +204,7 @@ read_typetab_entry(FILE *fp)
   char buf[256], type_name[257];
   char *res;
   struct trans_tab *t;
-  /* °ì¹ÔÌÜ¤ÎÉÊ»ìÌ¾¤òÆÉ¤à */
+  /* ä¸€è¡Œç›®ã®å“è©åã‚’èª­ã‚€ */
   do {
     res = read_line(buf, 256, fp);
     if (!res) {
@@ -215,9 +215,9 @@ read_typetab_entry(FILE *fp)
   sprintf(type_name, "#%s", buf);
   t->type_name = strdup(type_name);
   t->var_list.next = 0;
-  /* ¥Ñ¥é¥á¡¼¥¿¤òÆÉ¤à */
+  /* ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ã‚’èª­ã‚€ */
   while(!read_typetab_var(&t->var_list, fp, 1));
-  /* ¥ê¥¹¥È¤Ë¤Ä¤Ê¤° */
+  /* ãƒªã‚¹ãƒˆã«ã¤ãªã */
   t->next = trans_tab_list.next;
   trans_tab_list.next = t;
   return 0;
@@ -298,7 +298,7 @@ open_input_file(void)
   }
 }
 
-/* v¤¬ s¤ÎÃæ¤Ë¤¢¤ë¤« */
+/* vãŒ sã®ä¸­ã«ã‚ã‚‹ã‹ */
 static int
 match_var(struct var *v, struct var *s)
 {
@@ -312,7 +312,7 @@ match_var(struct var *v, struct var *s)
   return 0;
 }
 
-/* v1¤¬v2¤ÎÉôÊ¬½¸¹ç¤«¤É¤¦¤« */
+/* v1ãŒv2ã®éƒ¨åˆ†é›†åˆã‹ã©ã†ã‹ */
 static int
 var_list_subset_p(struct var *v1, struct var *v2)
 {

@@ -1,9 +1,9 @@
 /*
- * Anthy¤Î¥­¡¼¤Î¼õ¤±ÉÕ¤±¤ä¥×¥ê¥¨¥Ç¥£¥Ã¥È¤ÎÀ©¸æ¤ò¹Ô¤¦¥ì¥¤¥ä¡¼
+ * Anthyã®ã‚­ãƒ¼ã®å—ã‘ä»˜ã‘ã‚„ãƒ—ãƒªã‚¨ãƒ‡ã‚£ãƒƒãƒˆã®åˆ¶å¾¡ã‚’è¡Œã†ãƒ¬ã‚¤ãƒ¤ãƒ¼
  *
- * º£¤«¤é¥¢¥×¥ê¥±¡¼¥·¥ç¥ó¤ò½ñ¤¯¾ì¹ç¤Ë¤Ïuim¤ÎÍøÍÑ¤ò¤ªÁ¦¤á¤·¤Þ¤¹¡£
+ * ä»Šã‹ã‚‰ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã‚’æ›¸ãå ´åˆã«ã¯uimã®åˆ©ç”¨ã‚’ãŠè–¦ã‚ã—ã¾ã™ã€‚
  *
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2002 1/23
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2002 1/23
  * Copyright (C) 2001-2002 UGAWA Tomoharu
  *
  * $Id: input.c,v 1.25 2002/11/16 03:35:21 yusuke Exp $
@@ -32,7 +32,7 @@ struct anthy_input_context {
   /* always allocated */
   struct rk_conv_context* rkctx;
   int map_no;  /* RKMAP_* */
-  /* ÊÑ´¹¤¹¤ëÊ¸»úÎó¤Î¥Ð¥Ã¥Õ¥¡*/
+  /* å¤‰æ›ã™ã‚‹æ–‡å­—åˆ—ã®ãƒãƒƒãƒ•ã‚¡*/
   char* hbuf;
   int n_hbuf;
   int s_hbuf;
@@ -50,13 +50,13 @@ struct anthy_input_context {
   int last_gotten_cand;
 
   /* always allocated by the library */
-  /* ¥³¥ß¥Ã¥È¥Ð¥Ã¥Õ¥¡ */
+  /* ã‚³ãƒŸãƒƒãƒˆãƒãƒƒãƒ•ã‚¡ */
   char* commit;
   int n_commit;
   int s_commit;
 
   /* always allocated by the library */
-  /* ¥«¥Ã¥È¥Ð¥Ã¥Õ¥¡ */
+  /* ã‚«ãƒƒãƒˆãƒãƒƒãƒ•ã‚¡ */
   char* cut;
   int n_cut;
   int s_cut;
@@ -76,7 +76,7 @@ int anthy_input_errno;
 
 struct anthy_input_config {
   struct rk_option* rk_option;
-  /* 6¤Ïsrc-util/rkhelper.h ¤Î NR_RKMAP¤ËÁêÅö */
+  /* 6ã¯src-util/rkhelper.h ã® NR_RKMAPã«ç›¸å½“ */
   struct rk_map*   rk_map[6];
   struct anthy_input_context* owners;
   /**/
@@ -462,7 +462,7 @@ cmd_backspace(struct anthy_input_context* ictx)
   len = rk_get_pending_str(ictx->rkctx, NULL, 0);
   if (len > 1) {
     char* buf;
-    /* ³ÎÄê¤µ¤ì¤Æ¤¤¤Ê¤¤¥í¡¼¥Þ»ú¤¬¤¢¤ë¤Î¤Ç¡¢ºÇ¸å¤ÎÊ¸»ú¤ò¥«¥Ã¥È */
+    /* ç¢ºå®šã•ã‚Œã¦ã„ãªã„ãƒ­ãƒ¼ãƒžå­—ãŒã‚ã‚‹ã®ã§ã€æœ€å¾Œã®æ–‡å­—ã‚’ã‚«ãƒƒãƒˆ */
     len--;
 
     buf = (char*) malloc(len);
@@ -566,7 +566,7 @@ cmd_resize(struct anthy_input_context* ictx, int d)
   }
   ictx->last_gotten_cand = NTH_UNCONVERTED_CANDIDATE;
 
-  as = as->next;            /* ÉÔÀµ¤Ê¥á¥â¥ê¥¢¥¯¥»¥¹¤Î½¤Àµ */
+  as = as->next;            /* ä¸æ­£ãªãƒ¡ãƒ¢ãƒªã‚¢ã‚¯ã‚»ã‚¹ã®ä¿®æ­£ */
   if (as) {
     as->prev->next = NULL;
     for (; as; ) {
@@ -702,7 +702,7 @@ cmd_move_to_bol(struct anthy_input_context* ictx)
 {
   terminate_rk(ictx);
 
-  if (ictx->hbuf_follow == NULL) { /* ºÇÅ¬²½ */
+  if (ictx->hbuf_follow == NULL) { /* æœ€é©åŒ– */
     ictx->hbuf_follow = ictx->hbuf;
     ictx->n_hbuf_follow = ictx->n_hbuf;
     ictx->s_hbuf_follow = ictx->s_hbuf;
@@ -726,7 +726,7 @@ cmd_move_to_eol(struct anthy_input_context* ictx)
 {
   terminate_rk(ictx);
 
-  if (ictx->hbuf == NULL) { /* ºÇÅ¬²½ */
+  if (ictx->hbuf == NULL) { /* æœ€é©åŒ– */
     ictx->hbuf = ictx->hbuf_follow;
     ictx->n_hbuf = ictx->n_hbuf_follow;
     ictx->s_hbuf = ictx->s_hbuf_follow;
@@ -751,7 +751,7 @@ cmd_cut(struct anthy_input_context* ictx)
 
   terminate_rk(ictx);
 
-  /* ¥Ð¥Ã¥Õ¥¡¤ÎÆþ¤ì´¹¤¨¤ÇºÑ¤Þ¤»¤ë */
+  /* ãƒãƒƒãƒ•ã‚¡ã®å…¥ã‚Œæ›ãˆã§æ¸ˆã¾ã›ã‚‹ */
   tmp_str = ictx->cut;
   tmp_int = ictx->s_cut;
   ictx->cut = ictx->hbuf_follow;
@@ -790,8 +790,8 @@ anthy_input_create_context(struct anthy_input_config* cfg)
   ictx->actx = NULL;
   ictx->segment = NULL;
   ictx->cur_segment = NULL;
-  ictx->enum_reverse = 0;       /* ½é´ü²½Ëº¤ì¤Î½¤Àµ */
-  ictx->last_gotten_cand = 0;   /* ½é´ü²½Ëº¤ì¤Î½¤Àµ */
+  ictx->enum_reverse = 0;       /* åˆæœŸåŒ–å¿˜ã‚Œã®ä¿®æ­£ */
+  ictx->last_gotten_cand = 0;   /* åˆæœŸåŒ–å¿˜ã‚Œã®ä¿®æ­£ */
   ictx->commit = NULL;
   ictx->n_commit = 0;
   ictx->s_commit = 0;
@@ -1199,7 +1199,7 @@ get_edit_mode_preedit(struct anthy_input_context* ictx,
 {
   struct anthy_input_segment** p;
   int len;
-  /* º¸¤ÎÊ¸»úÎópending|¥«¡¼¥½¥ë|±¦¤ÎÊ¸»úÎó */
+  /* å·¦ã®æ–‡å­—åˆ—pending|ã‚«ãƒ¼ã‚½ãƒ«|å³ã®æ–‡å­—åˆ— */
 
   p = &pedit->segment;
 
@@ -1256,7 +1256,7 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
 
   pedit->state = ictx->state;
 
-  /* Ì¤¥³¥ß¥Ã¥È¤ÎÊ¸»úÎó */
+  /* æœªã‚³ãƒŸãƒƒãƒˆã®æ–‡å­—åˆ— */
   if (ictx->n_commit > 0) {
     pedit->commit = (char*) malloc(ictx->n_commit + 1);
     memcpy(pedit->commit, ictx->commit, ictx->n_commit);
@@ -1266,7 +1266,7 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
     pedit->commit = NULL;
   }
 
-  /* ¥«¥Ã¥È¥Ð¥Ã¥Õ¥¡¤ÎÊ¸»úÎó */
+  /* ã‚«ãƒƒãƒˆãƒãƒƒãƒ•ã‚¡ã®æ–‡å­—åˆ— */
   if(ictx->n_cut > 0) {
     pedit->cut_buf = (char*) malloc(ictx->n_cut + 1);
     memcpy(pedit->cut_buf, ictx->cut, ictx->n_cut);
@@ -1292,7 +1292,7 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
       struct a_segment* as;
 
       for (as = ictx->segment, p = &pedit->segment; as; as = as->next) {
-	/* ³ÆÊ¸Àá¤ËÂÐ¤·¤Æ */
+	/* å„æ–‡ç¯€ã«å¯¾ã—ã¦ */
 	int len, noconv_len;
 
 	noconv_len = anthy_get_segment(ictx->actx, as->index,
@@ -1466,7 +1466,7 @@ anthy_input_change_config(struct anthy_input_config* cfg)
   cfg->rk_map[RKMAP_SHIFT_ASCII] = make_rkmap_shiftascii(cfg->rk_option);
   cfg->rk_map[RKMAP_HANKAKU_KANA] = make_rkmap_hankaku_kana(cfg->rk_option);
 
-  /* ¤³¤Îconfig¤ò¶¦Í­¤¹¤ë¥³¥ó¥Æ¥­¥¹¥È¤¹¤Ù¤Æ¤ËÂÐ¤·¤Æ */
+  /* ã“ã®configã‚’å…±æœ‰ã™ã‚‹ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã™ã¹ã¦ã«å¯¾ã—ã¦ */
   for (p = cfg->owners; p; p = p->next_cfg_owner) {
     reset_anthy_input_context(p);
     rk_register_map(p->rkctx, RKMAP_HIRAGANA, cfg->rk_map[RKMAP_HIRAGANA]);
@@ -1510,7 +1510,7 @@ anthy_input_free_config(struct anthy_input_config* cfg)
 {
   int err;
 
-  /* ¤³¤Îconfig¤ò¶¦Í­¤¹¤ëÁ´¤Æ¤Îcontext¤ò»öÁ°¤Ë²òÊü¤¹¤ë»ö */
+  /* ã“ã®configã‚’å…±æœ‰ã™ã‚‹å…¨ã¦ã®contextã‚’äº‹å‰ã«è§£æ”¾ã™ã‚‹äº‹ */
   assert(!cfg->owners);
 
   rk_map_free(cfg->rk_map[RKMAP_ASCII]);
