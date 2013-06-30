@@ -1,34 +1,34 @@
-* Anthy¸Ä¿Í¼­½ñ¥é¥¤¥Ö¥é¥ê¤Î»ÈÍÑÊıË¡¤ÎÀâÌÀ *
+* Anthyå€‹äººè¾æ›¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®ä½¿ç”¨æ–¹æ³•ã®èª¬æ˜ *
 
-¥é¥¤¥Ö¥é¥ê¤Î¥ª¥×¥·¥ç¥ó	-lanthydic
-(¤â¤·¤¯¤Ïpkg-config¤Çanthy¤ò»ØÄê¤¹¤ë)
-¥¤¥ó¥¯¥ë¡¼¥É¥Õ¥¡¥¤¥ë	anthy/dicutil.h
-			anthy/anthy.h (¥¨¥ó¥³¡¼¥Ç¥£¥ó¥°¤ÎÄê¿ô¤Î¤¿¤á)
+ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®ã‚ªãƒ—ã‚·ãƒ§ãƒ³	-lanthydic
+(ã‚‚ã—ãã¯pkg-configã§anthyã‚’æŒ‡å®šã™ã‚‹)
+ã‚¤ãƒ³ã‚¯ãƒ«ãƒ¼ãƒ‰ãƒ•ã‚¡ã‚¤ãƒ«	anthy/dicutil.h
+			anthy/anthy.h (ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã®å®šæ•°ã®ãŸã‚)
 
-* ¥Ç¡¼¥¿·¿ *
+* ãƒ‡ãƒ¼ã‚¿å‹ *
 
-* ´Ø¿ô¤Î³µÀâ *
-½é´ü²½´Ø¿ô
- anthy_dic_util_init               ¸Ä¿Í¼­½ñ¥é¥¤¥Ö¥é¥ê¤Î½é´ü²½
- anthy_dic_util_quit               ¸Ä¿Í¼­½ñ¥é¥¤¥Ö¥é¥ê¤Î½ªÎ»
- anthy_dic_util_set_personality    ¥Ñ¡¼¥½¥Ê¥ê¥Æ¥£¤ÎÀßÄê
- anthy_dic_util_set_encoding       ¥¨¥ó¥³¡¼¥Ç¥£¥ó¥°¤ÎÀßÄê
-Ã±¸ì¤ÎÁªÂò
- anthy_priv_dic_select_first_entry ºÇ½é¤ÎÃ±¸ì¤ÎÁªÂò
- anthy_priv_dic_select_next_entry  ¼¡¤ÎÃ±¸ì¤ÎÁªÂò
+* é–¢æ•°ã®æ¦‚èª¬ *
+åˆæœŸåŒ–é–¢æ•°
+ anthy_dic_util_init               å€‹äººè¾æ›¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®åˆæœŸåŒ–
+ anthy_dic_util_quit               å€‹äººè¾æ›¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®çµ‚äº†
+ anthy_dic_util_set_personality    ãƒ‘ãƒ¼ã‚½ãƒŠãƒªãƒ†ã‚£ã®è¨­å®š
+ anthy_dic_util_set_encoding       ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã®è¨­å®š
+å˜èªã®é¸æŠ
+ anthy_priv_dic_select_first_entry æœ€åˆã®å˜èªã®é¸æŠ
+ anthy_priv_dic_select_next_entry  æ¬¡ã®å˜èªã®é¸æŠ
  anthy_priv_dic_select_entry       (not implemented)
-Ã±¸ì¤Î¾ğÊó¤Î¼èÆÀ
- anthy_priv_dic_get_index          ¸«½Ğ¤·¸ì¤Î¼èÆÀ
- anthy_priv_dic_get_freq           ÉÑÅÙ¤Î¼èÆÀ
- anthy_priv_dic_get_wtype          ÉÊ»ì¤Î¼èÆÀ
- anthy_priv_dic_get_word           Ã±¸ì¤Î¼èÆÀ
-Ã±¸ì¤ÎÅĞÏ¿
- anthy_priv_dic_add_entry          Ã±¸ì¤ÎÅĞÏ¿
- anthy_priv_dic_delete             Ã±¸ì¤Îºï½ü
-¤½¤ÎÂ¾
- anthy_dic_search_words_file       Ã±¸ì¤Î¸¡º÷
+å˜èªã®æƒ…å ±ã®å–å¾—
+ anthy_priv_dic_get_index          è¦‹å‡ºã—èªã®å–å¾—
+ anthy_priv_dic_get_freq           é »åº¦ã®å–å¾—
+ anthy_priv_dic_get_wtype          å“è©ã®å–å¾—
+ anthy_priv_dic_get_word           å˜èªã®å–å¾—
+å˜èªã®ç™»éŒ²
+ anthy_priv_dic_add_entry          å˜èªã®ç™»éŒ²
+ anthy_priv_dic_delete             å˜èªã®å‰Šé™¤
+ãã®ä»–
+ anthy_dic_search_words_file       å˜èªã®æ¤œç´¢
  anthy_dic_util_get_anthydir       (unstable API)
 
-* ³Æ´Ø¿ô¤ÎÀâÌÀ *
+* å„é–¢æ•°ã®èª¬æ˜ *
 void anthy_dic_util_init(void)
 void anthy_dic_util_quit(void)
