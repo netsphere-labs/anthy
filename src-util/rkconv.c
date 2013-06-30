@@ -157,7 +157,7 @@ alloc_next_array(void)
   return na;
 }
 
-static struct rk_slr_closure* 
+static struct rk_slr_closure*
 rk_slr_closure_create(struct rk_rule_set* rs,
 		      const char* prefix, int pflen)
 {
@@ -184,7 +184,7 @@ rk_slr_closure_create(struct rk_rule_set* rs,
       return NULL;
     }
   }
-    
+
   cl->r = NULL;
   cl->is_reduction_only = 1;
   cl->next = NULL;
@@ -272,9 +272,9 @@ rk_reduce(struct rk_conv_context* cc,
   r = cur_state->r;
   if (r == NULL || size <= 0)
     return 0;
-  
+
   if (r->rhs[0] == SPECIAL_CHAR) {
-    if (r->rhs[1] == 'o') 
+    if (r->rhs[1] == 'o')
       rk_select_registered_map(cc, cc->old_map_no);
     else {
       int mapn = r->rhs[1] - '0';
@@ -315,10 +315,10 @@ rk_convert_iterative(struct rk_conv_context* cc, int c,
 	return;
       }
       cur_state = cc->map->root_cl;
-    } else 
+    } else
       cur_state = next_state;
   } else if (cur_state->r != NULL &&
-	     (cur_state->r->follow == NULL || 
+	     (cur_state->r->follow == NULL ||
 	      strchr(cur_state->r->follow, c))) {
     int len;
 
@@ -361,7 +361,7 @@ brk_roman_free(struct rk_conv_context *rkctx)
 }
 
 
-static void 
+static void
 brk_roman_save_pending(struct rk_conv_context *rkctx)
 {
   struct break_roman *br=rkctx->brk_roman;
@@ -383,7 +383,7 @@ brk_roman_save_pending(struct rk_conv_context *rkctx)
 }
 
 
-static void 
+static void
 brk_roman_set_decided_len(struct rk_conv_context *rkctx,int len)
 {
   struct break_roman *br=rkctx->brk_roman;
@@ -452,13 +452,13 @@ rk_push_key(struct rk_conv_context* cc, int c)
     return -1;
 
   brk_roman_save_pending(cc);
-  rk_convert_iterative(cc, c, 
-		       cc->cur_str + cc->cur_str_len, 
+  rk_convert_iterative(cc, c,
+		       cc->cur_str + cc->cur_str_len,
 		       MAX_CONV_CHARS + 1 - cc->cur_str_len);
   increased_length = strlen(cc->cur_str + cc->cur_str_len);
   brk_roman_set_decided_len(cc,increased_length);
   cc->cur_str_len += increased_length;
-  
+
   return 0;
 }
 
@@ -508,17 +508,17 @@ int
 rk_result(struct rk_conv_context* cc, char* buf, int size)
 {
   int copy_len;
-  
+
   if (size <= 0)
     return cc->cur_str_len;
   copy_len = (size - 1 < cc->cur_str_len) ? size - 1 : cc->cur_str_len;
   memcpy(buf, cc->cur_str, copy_len);
   buf[copy_len] = '\0';
   if (copy_len < cc->cur_str_len)
-    memmove(cc->cur_str, cc->cur_str + copy_len, 
+    memmove(cc->cur_str, cc->cur_str + copy_len,
 	    cc->cur_str_len - copy_len + 1);
   cc->cur_str_len -= copy_len;
-  
+
   return cc->cur_str_len;
 }
 
@@ -526,7 +526,7 @@ struct rk_map*
 rk_select_map(struct rk_conv_context* cc, struct rk_map* map)
 {
   struct rk_map* old_map;
-  
+
   cc->old_map_no = cc->map_no;
   old_map = cc->map;
   if (old_map) {
@@ -566,7 +566,7 @@ rk_get_pending_str(struct rk_conv_context* cc, char* buf, int size)
   return strlen(p);
 }
 
-struct rk_map* 
+struct rk_map*
 rk_register_map(struct rk_conv_context* cc, int mapn, struct rk_map* map)
 {
   struct rk_map* old_map;
@@ -656,7 +656,7 @@ rk_sort_rule(const struct rk_rule *src)
   }
   qsort(rules, size, sizeof(struct rk_rule),
 	rk_rule_compare_func);
-	
+
   rules[i].lhs = NULL;
   return rules;
 
@@ -764,7 +764,7 @@ rk_rules_free(struct rk_rule* rules)
     free((void *) p->rhs);
     free((void *) p->follow);
   }
-  
+
   free(rules);
 }
 

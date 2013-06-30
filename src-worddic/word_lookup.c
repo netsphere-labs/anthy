@@ -267,7 +267,7 @@ add_dic_ent(struct seq_ent *seq, struct wt_stat *ws,
       freq = normalize_freq(ws);
       anthy_mem_dic_push_back_dic_ent(seq, 0, yomi, w,
 				      ws->wt_name, freq, 0);
-    }      
+    }
     anthy_free_xstr(xs);
     return char_count;
   }
@@ -348,7 +348,7 @@ init_wt_stat(struct wt_stat *ws, char *line)
 
 /** 辞書のエントリの情報を元にseq_entをうめる */
 static void
-fill_dic_ent(char *line, struct seq_ent *seq, 
+fill_dic_ent(char *line, struct seq_ent *seq,
 	     xstr* yomi, int is_reverse)
 {
   struct wt_stat ws;
@@ -403,7 +403,7 @@ mkxstr(char *s, xstr *x)
       x->str[x->len] = s[i];
       x->len ++;
     }
-  } 
+  }
   return i;
 }
 
@@ -491,7 +491,7 @@ get_page_index_search(struct word_dic *wdic, const char *key, int f, int t)
       /* c<= <t */
       return get_page_index_search(wdic, key, c, t);
     }
-  } 
+  }
 }
 
 /** keyを含む可能性のあるページの番号を得る、

@@ -1,7 +1,7 @@
 /*
  * 文節の最小単位であるwordlistを構成する
  *
- * anthy_make_word_list_all() 
+ * anthy_make_word_list_all()
  * 文節の形式を満たす部分文字列を列挙する
  *  いくかの経路で列挙されたword_listは
  *  anthy_commit_word_listでsplitter_contextに追加される
@@ -125,7 +125,7 @@ set_features(struct word_list *wl)
 }
 
 /** 作ったword_listのスコアを計算してからコミットする */
-void 
+void
 anthy_commit_word_list(struct splitter_context *sc,
 		       struct word_list *wl)
 {
@@ -220,7 +220,7 @@ push_part_back(struct word_list *tmpl, int len,
 }
 
 /* 接尾辞をくっつける */
-static void 
+static void
 make_suc_words(struct splitter_context *sc,
 	       struct word_list *tmpl)
 {
@@ -306,7 +306,7 @@ make_pre_words(struct splitter_context *sc,
     core_is_num = 1;
   }
   /* 接頭辞を列挙する */
-  for (i = 1; 
+  for (i = 1;
        i <= sc->word_split_info->rev_seq_len[tmpl->part[PART_CORE].from];
        i++) {
     seq_ent_t pre;
@@ -468,7 +468,7 @@ check_weak(xstr *xs)
 }
 
 /* コンテキストに設定された文字列の部分文字列から全てのword_listを列挙する */
-void 
+void
 anthy_make_word_list_all(struct splitter_context *sc)
 {
   int i, j;
@@ -575,7 +575,7 @@ anthy_make_word_list_all(struct splitter_context *sc)
 	make_following_word_list(sc, &tmpl);
       }
     }
-  }  
+  }
 
   /* 先頭に0文字の自立語を付ける */
   make_dummy_head(sc);

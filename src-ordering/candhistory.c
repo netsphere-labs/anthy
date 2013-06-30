@@ -72,7 +72,7 @@ learn_suffix_history(struct seg_ent *seg)
   }
 }
 
-/** 外から呼ばれる関数 
+/** 外から呼ばれる関数
  * 履歴に追加する */
 void
 anthy_learn_cand_history(struct segment_list *sl)

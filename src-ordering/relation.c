@@ -263,7 +263,7 @@ collect_user_context(struct neighbor *ctx,
 }
 
 /* 隣接文節の情報を比較する */
-static int 
+static int
 do_compare_context(struct neighbor *n1,
 		   struct neighbor *n2)
 {

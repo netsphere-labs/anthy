@@ -29,7 +29,7 @@
 /* for MW_FEATURE* constants */
 #include <anthy/splitter.h>
 
-/* 素性の番号 
+/* 素性の番号
  *
  * 0-19 クラス素性
  * 30-319(30+SEG_SIZE^2) クラス遷移属性

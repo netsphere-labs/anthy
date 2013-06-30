@@ -1,4 +1,4 @@
-/* コーパスから遷移行列を作るためのコード 
+/* コーパスから遷移行列を作るためのコード
  *
  * Copyright (C) 2005-2006 TABATA Yusuke
  * Copyright (C) 2005-2006 YOSHIDA Yuichi

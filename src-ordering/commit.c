@@ -40,7 +40,7 @@ learn_swapped_candidates(struct segment_list *sl)
 static void
 learn_resized_segment(struct splitter_context *sc,
 		      struct segment_list *sl)
-		      
+
 {
   int i;
   struct meta_word **mw
@@ -206,7 +206,7 @@ learn_prediction_str(xstr *idx, xstr *xs)
   /* ない場合は末尾に追加 */
   if (i == nr_predictions) {
     anthy_set_nth_value(nr_predictions, t);
-    anthy_set_nth_xstr(nr_predictions + 1, xs);      
+    anthy_set_nth_xstr(nr_predictions + 1, xs);
     anthy_mark_row_used();
     return 1;
   }

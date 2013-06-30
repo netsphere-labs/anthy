@@ -39,7 +39,7 @@ border_check(struct meta_word* mw,
 static void
 metaword_constraint_check(struct splitter_context *sc,
 			  struct meta_word *mw,
-			  int from, 
+			  int from,
 			  int border)
 {
   if (!mw) return;
@@ -63,7 +63,7 @@ metaword_constraint_check(struct splitter_context *sc,
 	metaword_constraint_check(sc, mw1, from, border);
       if (mw2)
 	metaword_constraint_check(sc, mw2, mw2->from, border);
-      
+
       if ((!mw1 || mw1->can_use == ok) && (!mw2 || mw2->can_use == ok)) {
 	mw->can_use = ok;
       } else {
@@ -79,7 +79,7 @@ metaword_constraint_check(struct splitter_context *sc,
     {
       struct meta_word* itr = mw;
       mw->can_use = ok;
-      
+
       /* 個々の文節の一つでも文節区切りをまたがっていれば、この複合語は使えない */
       for (; itr && itr->type == MW_NUMBER; itr = itr->mw2) {
 	struct meta_word* mw1 = itr->mw1;
@@ -94,7 +94,7 @@ metaword_constraint_check(struct splitter_context *sc,
     {
       struct meta_word* itr = mw;
       mw->can_use = ok;
-      
+
       /* 個々の文節の一つでも文節区切りをまたがっていれば、この複合語は使えない */
       for (; itr && (itr->type == MW_COMPOUND_HEAD || itr->type == MW_COMPOUND); itr = itr->mw2) {
 	struct meta_word* mw1 = itr->mw1;
@@ -115,7 +115,7 @@ metaword_constraint_check(struct splitter_context *sc,
       } else {
 	for (mw1 = mw; mw1; mw1 = mw1->mw1) {
 	  mw1->can_use = ng;
-	}	
+	}
       }
     }
     break;

@@ -9,7 +9,7 @@
  * Copyright (C) 2006-2007 TABATA Yusuke
  * Copyright (C) 2004-2006 YOSHIDA Yuichi
  * Copyright (C) 2006 HANAOKA Toshiyuki
- * 
+ *
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -158,7 +158,7 @@ build_feature_list(struct lattice_node *node,
     pc = SEG_HEAD;
   }
   anthy_feature_list_set_class_trans(features, pc, cc);
-  
+
   if (node && node->mw) {
     struct meta_word *mw = node->mw;
     anthy_feature_list_set_dep_class(features, mw->dep_class);
@@ -236,7 +236,7 @@ static void
 calc_node_parameters(struct lattice_node *node)
 {
   /* 対応するmetawordが無い場合は文頭と判断する */
-  node->seg_class = node->mw ? node->mw->seg_class : SEG_HEAD; 
+  node->seg_class = node->mw ? node->mw->seg_class : SEG_HEAD;
 
   if (node->before_node) {
     /* 左に隣接するノードがある場合 */
@@ -268,7 +268,7 @@ alloc_lattice_node(struct lattice_info *info,
   return node;
 }
 
-static void 
+static void
 release_lattice_node(struct lattice_info *info, struct lattice_node* node)
 {
   anthy_sfree(info->node_allocator, node);
@@ -305,7 +305,7 @@ cmp_node_by_type_to_type(struct lattice_node *lhs, struct lattice_node *rhs,
     return -1;
   } else {
     return 0;
-  } 
+  }
 }
 
 /*
@@ -445,7 +445,7 @@ choose_path(struct lattice_info* info, int to)
   /* 最後まで到達した遷移のなかで一番確率の大きいものを選ぶ */
   struct lattice_node* node;
   struct lattice_node* best_node = NULL;
-  int last = to; 
+  int last = to;
   while (!info->lattice_node_list[last].head) {
     /* 最後の文字まで遷移していなかったら後戻り */
     --last;
@@ -489,7 +489,7 @@ build_graph(struct lattice_info* info, int from, int to)
   push_node(info, node, from);
 
   /* info->lattice_node_list[index]にはindexまでの遷移が入っているのであって、
-   * indexからの遷移が入っているのではない 
+   * indexからの遷移が入っているのではない
    */
 
   /* 全ての遷移を左から試す */

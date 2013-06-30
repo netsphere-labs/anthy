@@ -170,7 +170,7 @@ enum_candidates(struct seg_ent *seg,
       anthy_xstrcat(&cand->str, &word);
       free(word.str);
       /* 自分を再帰呼び出しして続きを割り当てる */
-      nr_cands += enum_candidates(seg, cand, 
+      nr_cands += enum_candidates(seg, cand,
 				  from + yomi.len,
 				  n+1);
       anthy_release_cand_ent(cand);
@@ -276,7 +276,7 @@ make_cand_elem_from_word_list(struct seg_ent *se,
 			      int index,
 			      int is_reverse)
 {
-  int i; 
+  int i;
   int from = wl->from - se->from;
 
   for (i = 0; i < NR_PARTS; ++i) {
@@ -395,7 +395,7 @@ proc_splitter_info(struct seg_ent *se,
     make_candidate_from_simple_metaword(se, mw, top_mw, is_reverse);
     return;
   }
-  
+
   st = anthy_metaword_type_tab[mw->type].status;
   switch (st) {
   case MW_STATUS_WRAPPED:

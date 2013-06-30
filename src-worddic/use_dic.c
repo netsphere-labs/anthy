@@ -1,5 +1,5 @@
 /*
- * 用例辞書を扱う 
+ * 用例辞書を扱う
  * Copyright (C) 2003 TABATA Yusuke
  */
 #include <string.h>

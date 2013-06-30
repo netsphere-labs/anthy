@@ -236,7 +236,7 @@ load_word(xstr *xs, const char *n, int is_reverse)
 {
   struct seq_ent *seq = anthy_get_seq_ent_from_xstr(xs, 0);
   xstr *word_xs;
-  wtype_t wt;  
+  wtype_t wt;
   struct word_line wl;
   if (!seq || is_ext_ent(seq)) {
     seq = anthy_mem_dic_alloc_seq_ent_by_xstr(anthy_current_personal_dic_cache,
@@ -779,4 +779,3 @@ anthy_quit_dic(void)
   anthy_quit_mem_dic();
   anthy_quit_diclib();
 }
-
