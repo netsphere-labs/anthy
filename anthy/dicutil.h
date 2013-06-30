@@ -8,14 +8,14 @@
 extern "C" {
 #endif
 
-/* ÊÖ¤êÃÍ / anthy_priv_dic_add_entry*/
-/* OK / Ã±¸ì¤¬ÅĞÏ¿¤Ç¤­¤¿ */
+/* è¿”ã‚Šå€¤ / anthy_priv_dic_add_entry*/
+/* OK / å˜èªãŒç™»éŒ²ã§ããŸ */
 #define ANTHY_DIC_UTIL_OK 0
-/* ¼ºÇÔ / ÅĞÏ¿¤Ë¼ºÇÔ¤·¤¿ */
+/* å¤±æ•— / ç™»éŒ²ã«å¤±æ•—ã—ãŸ */
 #define ANTHY_DIC_UTIL_ERROR -1
-/* Æ±¤¸Ã±¸ì¤¬ÅĞÏ¿¤·¤Æ¤¢¤Ã¤¿¡¢ÉÑÅÙ¤À¤±¤ò¾å½ñ¤­ */
+/* åŒã˜å˜èªãŒç™»éŒ²ã—ã¦ã‚ã£ãŸã€é »åº¦ã ã‘ã‚’ä¸Šæ›¸ã */
 #define ANTHY_DIC_UTIL_DUPLICATE -2
-/* ¼­½ñ¤¬Â¸ºß¤·¤Ê¤¤ */
+/* è¾æ›¸ãŒå­˜åœ¨ã—ãªã„ */
 #define ANTHY_DIC_UTIL_INVALID -3
 
 void anthy_dic_util_init(void);
@@ -38,7 +38,7 @@ char *anthy_priv_dic_get_word(char *buf, int len);
 int anthy_priv_dic_add_entry(const char *yomi, const char *word,
 			     const char *wt, int freq);
 
-/* experimental and unstable /usr/share/dict/words¤«¤éÃ±¸ì¤òÃµ¤¹ */
+/* experimental and unstable /usr/share/dict/wordsã‹ã‚‰å˜èªã‚’æ¢ã™ */
 #define HAS_ANTHY_DIC_SEARCH_WORDS_FILE
 char *anthy_dic_search_words_file(const char *word);
 

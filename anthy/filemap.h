@@ -1,8 +1,8 @@
-/* mmap¤òÃê¾İ²½¤¹¤ë */
+/* mmapã‚’æŠ½è±¡åŒ–ã™ã‚‹ */
 #ifndef _filemap_h_included_
 #define _filemap_h_included_
 
-/* ¥á¥â¥ê¾å¤Ëmap¤µ¤ì¤¿¥Õ¥¡¥¤¥ë¤Î¥Ï¥ó¥É¥ë */
+/* ãƒ¡ãƒ¢ãƒªä¸Šã«mapã•ã‚ŒãŸãƒ•ã‚¡ã‚¤ãƒ«ã®ãƒãƒ³ãƒ‰ãƒ« */
 struct filemapping;
 
 struct filemapping *anthy_mmap(const char *fn, int wr);

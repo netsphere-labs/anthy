@@ -1,4 +1,4 @@
-/* splitter¥â¥¸¥å¡¼¥ë¤Î¥¤¥ó¥¿¡¼¥Õ¥§¥¤¥¹ */
+/* splitterãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«ã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ */
 #ifndef _splitter_h_included_
 #define _splitter_h_included_
 
@@ -7,54 +7,54 @@
 #include <anthy/wtype.h>
 #include <anthy/segclass.h>
 
-/* ¥Ñ¥é¥á¡¼¥¿ */
+/* ãƒ‘ãƒ©ãƒ¡ãƒ¼ã‚¿ */
 #define RATIO_BASE 256
 #define OCHAIRE_SCORE 5000000
 
-/** splitter¤Î¥³¥ó¥Æ¥­¥¹¥È¡¥
- * ºÇ½é¤Î¶­³¦ÀßÄê¤«¤éanthy_context¤Î²òÊü¤Ş¤ÇÍ­¸ú
+/** splitterã®ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆï¼
+ * æœ€åˆã®å¢ƒç•Œè¨­å®šã‹ã‚‰anthy_contextã®è§£æ”¾ã¾ã§æœ‰åŠ¹
  */
 struct splitter_context {
-  /** splitterÆâÉô¤Ç»ÈÍÑ¤¹¤ë¹½Â¤ÂÎ */
+  /** splitterå†…éƒ¨ã§ä½¿ç”¨ã™ã‚‹æ§‹é€ ä½“ */
   struct word_split_info_cache *word_split_info;
   int char_count;
   int is_reverse;
   struct char_ent {
     xchar *c;
     int seg_border;
-    int initial_seg_len;/* ºÇ½é¤ÎÊ¸ÀáÊ¬³ä¤Îºİ¤Ë¤³¤³¤«¤é»Ï¤Ş¤Ã¤¿Ê¸Àá¤¬
-			   ¤¢¤ì¤Ğ¤½¤ÎÄ¹¤µ */
+    int initial_seg_len;/* æœ€åˆã®æ–‡ç¯€åˆ†å‰²ã®éš›ã«ã“ã“ã‹ã‚‰å§‹ã¾ã£ãŸæ–‡ç¯€ãŒ
+			   ã‚ã‚Œã°ãã®é•·ã• */
     enum seg_class best_seg_class;
-    struct meta_word* best_mw; /* °ìÈÖÍ¥Àè¤·¤Æ»È¤¤¤¿¤¤metaword */
+    struct meta_word* best_mw; /* ä¸€ç•ªå„ªå…ˆã—ã¦ä½¿ã„ãŸã„metaword */
   }*ce;
 };
 
-/* À©Ìó¤Î¥Á¥§¥Ã¥¯¤Î¾õÂÖ */
+/* åˆ¶ç´„ã®ãƒã‚§ãƒƒã‚¯ã®çŠ¶æ…‹ */
 enum constraint_stat {
   unchecked, ok, ng
 };
 
-/* ¤È¤ê¤¢¤¨¤º¡¢Å¬Åö¤ËÁı¤ä¤·¤Æ¤ß¤ÆÌäÂê¤¬½Ğ¤¿¤éÊ¬Îà¤¹¤ë */
+/* ã¨ã‚Šã‚ãˆãšã€é©å½“ã«å¢—ã‚„ã—ã¦ã¿ã¦å•é¡ŒãŒå‡ºãŸã‚‰åˆ†é¡ã™ã‚‹ */
 enum metaword_type {
-  /* ¥À¥ß¡¼ : seginfo¤ò»ı¤¿¤Ê¤¤ */
+  /* ãƒ€ãƒŸãƒ¼ : seginfoã‚’æŒãŸãªã„ */
   MW_DUMMY,
-  /* wordlist¤ò0¸Ä or °ì¸Ä´Ş¤à¤â¤Î */
+  /* wordlistã‚’0å€‹ or ä¸€å€‹å«ã‚€ã‚‚ã® */
   MW_SINGLE,
-  /* ÊÌ¤Îmetaword°ì¸Ä¤ò´Ş¤à: metaword + ¶çÆÉÅÀ ¤Ê¤É :seginfo¤Ïmw1¤«¤é¼è¤ë */
+  /* åˆ¥ã®metawordä¸€å€‹ã‚’å«ã‚€: metaword + å¥èª­ç‚¹ ãªã© :seginfoã¯mw1ã‹ã‚‰å–ã‚‹ */
   MW_WRAP,
-  /* Ê£¹ç¸ìÀèÆ¬ */
+  /* è¤‡åˆèªå…ˆé ­ */
   MW_COMPOUND_HEAD,
-  /* Ê£¹ç¸ìÍÑ */
+  /* è¤‡åˆèªç”¨ */
   MW_COMPOUND,
-  /* Ê£¹ç¸ì¤Î°ìÊ¸Àá */
+  /* è¤‡åˆèªã®ä¸€æ–‡ç¯€ */
   MW_COMPOUND_LEAF,
-  /* Ê£¹ç¸ì¤ÎÃæ¤Î¸Ä¡¹¤ÎÊ¸Àá¤ò·ë¹ç¤·¤Æ°ì¤Ä¤ÎÊ¸Àá¤È¤·¤Æ¤ß¤¿¤â¤Î */
+  /* è¤‡åˆèªã®ä¸­ã®å€‹ã€…ã®æ–‡ç¯€ã‚’çµåˆã—ã¦ä¸€ã¤ã®æ–‡ç¯€ã¨ã—ã¦ã¿ãŸã‚‚ã® */
   MW_COMPOUND_PART,
-  /* Æ°»ì¤ÎÏ¢ÍÑ·Á + ·ÁÍÆ»ì */
+  /* å‹•è©ã®é€£ç”¨å½¢ + å½¢å®¹è© */
   MW_V_RENYOU_A,
-  /* Æ°»ì¤ÎÏ¢ÍÑ·Á + Ì¾»ì */
+  /* å‹•è©ã®é€£ç”¨å½¢ + åè© */
   MW_V_RENYOU_NOUN,
-  /* ¿ô»ú */
+  /* æ•°å­— */
   MW_NUMBER,
   /**/
   MW_OCHAIRE,
@@ -73,24 +73,24 @@ enum metaword_type {
 #define MW_FEATURE_WEAK_SEQ 256
 
 /*
- * meta_word: ¶­³¦¤Î¸¡º÷¤ÎÂĞ¾İ¤È¤Ê¤ë¤â¤Î
- * Ã±°ì¤Îword_list¤ò´Ş¤à¤â¤Î¤ÎÂ¾¤Ë¤¤¤¯¤Ä¤«¤Î¼ïÎà¤¬¤¢¤ë¡¥
+ * meta_word: å¢ƒç•Œã®æ¤œç´¢ã®å¯¾è±¡ã¨ãªã‚‹ã‚‚ã®
+ * å˜ä¸€ã®word_listã‚’å«ã‚€ã‚‚ã®ã®ä»–ã«ã„ãã¤ã‹ã®ç¨®é¡ãŒã‚ã‚‹ï¼
  * 
  */
 struct meta_word {
   int from, len;
-  /* Ê¸Àá¶­³¦¤Î¸¡½Ğ¤Ë»ÈÍÑ¤¹¤ë¥¹¥³¥¢ */
+  /* æ–‡ç¯€å¢ƒç•Œã®æ¤œå‡ºã«ä½¿ç”¨ã™ã‚‹ã‚¹ã‚³ã‚¢ */
   int score;
-  /* ¸õÊä¤ÎÀ¸À®¤Î»ş¤Ë»ÈÍÑ¤¹¤ë¥¹¥³¥¢ */
+  /* å€™è£œã®ç”Ÿæˆã®æ™‚ã«ä½¿ç”¨ã™ã‚‹ã‚¹ã‚³ã‚¢ */
   int struct_score;
-  /* ·Á¼°¤Î¾ğÊó */
+  /* å½¢å¼ã®æƒ…å ± */
   int dep_word_hash;
   int mw_features;
   wtype_t core_wt;
   enum dep_class dep_class;
   /**/
   enum seg_class seg_class;
-  enum constraint_stat can_use; /* ¥»¥°¥á¥ó¥È¶­³¦¤Ë¸Ù¤¬¤Ã¤Æ¤¤¤Ê¤¤ */
+  enum constraint_stat can_use; /* ã‚»ã‚°ãƒ¡ãƒ³ãƒˆå¢ƒç•Œã«è·¨ãŒã£ã¦ã„ãªã„ */
   enum metaword_type type;
   struct word_list *wl;
   struct meta_word *mw1, *mw2;
@@ -98,7 +98,7 @@ struct meta_word {
 
   int nr_parts;
 
-  /* list¤Î¥ê¥ó¥¯ */
+  /* listã®ãƒªãƒ³ã‚¯ */
   struct meta_word *next;
 };
 
@@ -108,14 +108,14 @@ void anthy_quit_splitter(void);
 void anthy_init_split_context(xstr *xs, struct splitter_context *, int is_reverse);
 /*
  * mark_border(context, l1, l2, r1);
- * l1¤Èr1¤Î´Ö¤ÎÊ¸Àá¤ò¸¡½Ğ¤¹¤ë¡¢¤¿¤À¤·l1¤Èl2¤Î´Ö¤Ï¶­³¦¤Ë¤·¤Ê¤¤¡£
+ * l1ã¨r1ã®é–“ã®æ–‡ç¯€ã‚’æ¤œå‡ºã™ã‚‹ã€ãŸã ã—l1ã¨l2ã®é–“ã¯å¢ƒç•Œã«ã—ãªã„ã€‚
  */
 void anthy_mark_border(struct splitter_context *, int from, int from2, int to);
 void anthy_commit_border(struct splitter_context *, int nr,
 		   struct meta_word **mw, int *len);
 void anthy_release_split_context(struct splitter_context *c);
 
-/* ºî¤ê½Ğ¤·¤¿Ê¸Àá¤Î¾ğÊó¤ò¼èÆÀ¤¹¤ë */
+/* ä½œã‚Šå‡ºã—ãŸæ–‡ç¯€ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹ */
 int anthy_get_nr_metaword(struct splitter_context *, int from, int len);
 struct meta_word *anthy_get_nth_metaword(struct splitter_context *,
 					 int from, int len, int nth);

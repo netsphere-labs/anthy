@@ -1,22 +1,22 @@
 /*
- * ÉÊ»ì¤Î·¿ wtype_t ¤ò°·¤¦
+ * å“è©ã®å‹ wtype_t ã‚’æ‰±ã†
  *
- * Ã±¸ì¤ÎÉÊ»ì¤ò°·¤¦
- * Ã±¸ì¤Ï¼¡¤ÎÍ×ÁÇ¤ò»ı¤Ä¡£
- * *ÉÊ»ì
- * *ÉÊ»ì¥µ¥Ö¥¿¥¤¥×
- * *ÉÊ»ì¥µ¥Ö¥µ¥Ö¥¿¥¤¥×
- * *³èÍÑ¥¯¥é¥¹(CC)
- * *³èÍÑ·Á
- * *¼«Î©¸ì¤«¤É¤¦¤«¤Î¥Õ¥é¥°
- * wtype_t¤Ï¾åµ­¤Î¾ğÊó¤ò¤¹¤Ù¤Æ´Ş¤à¡£
+ * å˜èªã®å“è©ã‚’æ‰±ã†
+ * å˜èªã¯æ¬¡ã®è¦ç´ ã‚’æŒã¤ã€‚
+ * *å“è©
+ * *å“è©ã‚µãƒ–ã‚¿ã‚¤ãƒ—
+ * *å“è©ã‚µãƒ–ã‚µãƒ–ã‚¿ã‚¤ãƒ—
+ * *æ´»ç”¨ã‚¯ãƒ©ã‚¹(CC)
+ * *æ´»ç”¨å½¢
+ * *è‡ªç«‹èªã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°
+ * wtype_tã¯ä¸Šè¨˜ã®æƒ…å ±ã‚’ã™ã¹ã¦å«ã‚€ã€‚
  *
- * ³ÆÍ×ÁÇ¤Î¾ÜºÙ¤Ë¤Ä¤¤¤Æ¤Ï doc/POS¤ò»²¾È¤¹¤Ù¤·
+ * å„è¦ç´ ã®è©³ç´°ã«ã¤ã„ã¦ã¯ doc/POSã‚’å‚ç…§ã™ã¹ã—
  */
 #ifndef _wtype_h_included_
 #define _wtype_h_included_
 
-/*ÉÊ»ì Part Of Speech */
+/*å“è© Part Of Speech */
 #define POS_NONE 0
 #define POS_NOUN 1
 #define POS_PRT 2
@@ -38,7 +38,7 @@
 #define POS_OPEN 18
 #define POS_CLOSE 19
 
-/* ³èÍÑ·Á Conjugate Type */
+/* æ´»ç”¨å½¢ Conjugate Type */
 #define CT_NONE 0
 #define CT_SYUSI 1
 #define CT_MIZEN 2
@@ -49,7 +49,7 @@
 #define CT_HEAD 7
 #define CT_MEISIKA 8
 
-/* ³èÍÑ¥¯¥é¥¹ Conjugate Class */
+/* æ´»ç”¨ã‚¯ãƒ©ã‚¹ Conjugate Class */
 #define CC_NONE 0
 #define CC_K5 1
 #define CC_C5 2
@@ -73,23 +73,23 @@
 #define CC_AJV 20
 #define CC_SRV 21
 
-/* ÉûÉÊ»ì Class Of Speech */
+/* å‰¯å“è© Class Of Speech */
 #define COS_NONE 0
-/* ÃÏÌ¾ */
+/* åœ°å */
 #define COS_CN 1
-/* ¿ô»ì */
+/* æ•°è© */
 #define COS_NN 2
-/* ¿ÍÌ¾ */
+/* äººå */
 #define COS_JN 3
-/* ÃÄÂÎÌ¾ */
+/* å›£ä½“å */
 #define COS_KK 4
-/* °ìÈÌÀÜÆ¬¼­¡¦ÀÜÈø¼­ */
+/* ä¸€èˆ¬æ¥é ­è¾ãƒ»æ¥å°¾è¾ */
 #define COS_SUFFIX 5
-/* ¥µÊÑ¤ÎÀÜÈø¼­ */
+/* ã‚µå¤‰ã®æ¥å°¾è¾ */
 #define COS_SVSUFFIX 6
 /**/
 
-/* Éû¡¹ÉÊ»ì Sub Class Of Speech*/
+/* å‰¯ã€…å“è© Sub Class Of Speech*/
 #define SCOS_NONE 0
 #define SCOS_FAMNAME 1
 #define SCOS_FSTNAME 2
@@ -151,16 +151,16 @@
 
 /* FLAGS */
 #define WF_NONE 0
-/* ¤³¤ÎÆ°»ì¤ÏÏ¢ÂÎ»ì¤¬Ì¾»ì²½¤¹¤ë */
+/* ã“ã®å‹•è©ã¯é€£ä½“è©ãŒåè©åŒ–ã™ã‚‹ */
 #define WF_MEISI 1
-/* ¥µÊÑÌ¾»ì */
+/* ã‚µå¤‰åè© */
 #define WF_SV 2
-/* ¼«Î©¸ì¡¢Ê¸Àá¤Î¥³¥¢¤È¤Ê¤ë */
+/* è‡ªç«‹èªã€æ–‡ç¯€ã®ã‚³ã‚¢ã¨ãªã‚‹ */
 #define WF_INDEP 4
-/* ·ÁÍÆÆ°»ì */
+/* å½¢å®¹å‹•è© */
 #define WF_AJV 8
 
-/* wtype_tÃæ¤Î¥ª¥Õ¥»¥Ã¥È */
+/* wtype_tä¸­ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ */
 #define WT_POS 0
 #define WT_COS 1
 #define WT_SCOS 2
@@ -168,7 +168,7 @@
 #define WT_CT 4
 #define WT_FLAGS 5
 
-/* ³Æbit field¤ÎÉı */
+/* å„bit fieldã®å¹… */
 #define POS_BITS 5
 #define COS_BITS 4
 #define SCOS_BITS 7
@@ -177,7 +177,7 @@
 #define WF_BITS 4
 /* 29bits */
 
-/** ÉÊ»ì */
+/** å“è© */
 struct wtype{
   unsigned int pos  : POS_BITS;
   unsigned int cos  : COS_BITS;
@@ -189,16 +189,16 @@ struct wtype{
 
 typedef struct wtype wtype_t;
 
-/** anthy_wtype_include(Ì¾»ì¡¢¿ÍÌ¾)¤Ï¿¿¡¢µÕ¤Ïµ¶ */
+/** anthy_wtype_include(åè©ã€äººå)ã¯çœŸã€é€†ã¯å½ */
 int anthy_wtype_include(wtype_t haystack, wtype_t needle);
 
-/* Æó¤Ä¤ÎÉÊ»ì¤¬´°Á´¤Ë°ìÃ×¤¹¤ë¤«¤É¤¦¤«¤ò¸«¤ë */
+/* äºŒã¤ã®å“è©ãŒå®Œå…¨ã«ä¸€è‡´ã™ã‚‹ã‹ã©ã†ã‹ã‚’è¦‹ã‚‹ */
 int anthy_wtype_equal(wtype_t lhs, wtype_t rhs);
 
 void anthy_print_wtype(wtype_t w);
-/* ¼­½ñ¥Õ¥¡¥¤¥ëÃæ¤ÎÌ¾Á°¤«¤éÉÊ»ì¤òÆÀ¤ë(´Ø¿ôÌ¾¤¬°­¤¤) */
+/* è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ä¸­ã®åå‰ã‹ã‚‰å“è©ã‚’å¾—ã‚‹(é–¢æ•°åãŒæ‚ªã„) */
 const char *anthy_type_to_wtype(const char *name, wtype_t *w);
-/* ÉÊ»ì¤ÎÌ¾Á°¤«¤éÉÊ»ì¤òÆÀ¤ë */
+/* å“è©ã®åå‰ã‹ã‚‰å“è©ã‚’å¾—ã‚‹ */
 wtype_t anthy_init_wtype_by_name(const char *str);
 
 int anthy_wtype_get_pos(wtype_t w);
@@ -208,7 +208,7 @@ int anthy_wtype_get_cos(wtype_t w);
 int anthy_wtype_get_scos(wtype_t w);
 int anthy_wtype_get_wf(wtype_t w);
 
-/* ¥Õ¥é¥°¤Î¼èÆÀ */
+/* ãƒ•ãƒ©ã‚°ã®å–å¾— */
 int anthy_wtype_get_indep(wtype_t w);
 int anthy_wtype_get_sv(wtype_t w);
 int anthy_wtype_get_meisi(wtype_t w);
@@ -226,7 +226,7 @@ void anthy_wtype_set_dep(wtype_t *w, int isDep);
 
 void anthy_init_wtypes(void);
 
-extern wtype_t anthy_wt_all;/* ¤¹¤Ù¤Æ¤Ë¥Ş¥Ã¥Á¤¹¤ë¼«Î©¸ì */
-extern wtype_t anthy_wt_none;/* ÉÊ»ìÌµ¤·POS_INVAL */
+extern wtype_t anthy_wt_all;/* ã™ã¹ã¦ã«ãƒãƒƒãƒã™ã‚‹è‡ªç«‹èª */
+extern wtype_t anthy_wt_none;/* å“è©ç„¡ã—POS_INVAL */
 
 #endif
