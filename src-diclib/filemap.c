@@ -1,7 +1,7 @@
-/* mmap����ݲ�����
+/* mmapを抽象化する
  *
- * *Unix�ϤΥ����ƥॳ����򥽡�����˻��餵�ʤ�����
- * *����Ū�ˤϰ�ĤΥե������ʣ������Ū��map���뤳�Ȥ��θ
+ * *Unix系のシステムコールをソース中に散らさないため
+ * *将来的には一つのファイルを複数の目的にmapすることも考慮
  *
  * Copyright (C) 2005 TABATA Yusuke
  *
@@ -32,11 +32,11 @@
 #include <anthy/logger.h>
 
 struct filemapping {
-  /* �񤭹��ߥ⡼�� */
+  /* 書き込みモード */
   int wr;
-  /* mmap�������ɥ쥹 */
+  /* mmapしたアドレス */
   void *ptr;
-  /* mmap�����ΰ��Ĺ�� */
+  /* mmapした領域の長さ */
   size_t size;
 };
 
@@ -88,7 +88,7 @@ anthy_mmap(const char *fn, int wr)
     return NULL;
   }
 
-  /* mmap�����������ΤǾ�����֤� */
+  /* mmapに成功したので情報を返す */
   m = malloc(sizeof(struct filemapping));
   m->size = st.st_size;
   m->ptr = ptr;

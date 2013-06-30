@@ -1,6 +1,6 @@
 /*
- * ÉÊ»ì·¿¤ò´ÉÍı¤¹¤ë
- * Ãæ¿È¤Ïwtype_t¤ÎÆâÉô¤Î¥ì¥¤¥¢¥¦¥È¤Ë¶¯¤¯°ÍÂ¸¤¹¤ë¡£
+ * å“è©å‹ã‚’ç®¡ç†ã™ã‚‹
+ * ä¸­èº«ã¯wtype_tã®å†…éƒ¨ã®ãƒ¬ã‚¤ã‚¢ã‚¦ãƒˆã«å¼·ãä¾å­˜ã™ã‚‹ã€‚
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  */
@@ -33,16 +33,16 @@ struct wttable {
   int cos;
   int scos;
   int cc;
-  int ct;/*¥«ÊÑ¤Ê¤É*/
+  int ct;/*ã‚«å¤‰ãªã©*/
   int flags;
 };
 
-/* ÉÊ»ì¤ÎÆüËÜ¸ì¤ÎÌ¾Á°¤òÉÊ»ì¤ËÊÑ´¹¤¹¤ë¥Æ¡¼¥Ö¥ë */
+/* å“è©ã®æ—¥æœ¬èªã®åå‰ã‚’å“è©ã«å¤‰æ›ã™ã‚‹ãƒ†ãƒ¼ãƒ–ãƒ« */
 static struct wttable pos_name_tab[]= {
 #include "ptab.h"
 };
 
-/* ¼­½ñÃæ¤ÎÉÊ»ì¤ÎÌ¾Á°¤òÉÊ»ì¤ËÊÑ´¹¤¹¤ë¥Æ¡¼¥Ö¥ë */
+/* è¾æ›¸ä¸­ã®å“è©ã®åå‰ã‚’å“è©ã«å¤‰æ›ã™ã‚‹ãƒ†ãƒ¼ãƒ–ãƒ« */
 static struct wttable wt_name_tab[]= {
 #include "wtab.h"
 };
@@ -74,8 +74,8 @@ anthy_init_wtypes(void)
 }
 
 /*
- * ÊÖ¤êÃÍ¤Ë¤ÏÉÊ»ì¤ÎÌ¾Á°
- * t¤Ë¤ÏÉÊ»ì¤¬ÊÖ¤µ¤ì¤ë
+ * è¿”ã‚Šå€¤ã«ã¯å“è©ã®åå‰
+ * tã«ã¯å“è©ãŒè¿”ã•ã‚Œã‚‹
  */
 const char *
 anthy_type_to_wtype(const char *s, wtype_t *t)
@@ -108,7 +108,7 @@ anthy_init_wtype_by_name(const char *name)
   return anthy_wt_all;
 }
 
-/* Æó¤Ä¤ÎÉÊ»ì¤¬´°Á´¤Ë°ìÃ×¤·¤Æ¤¤¤ë¤«¤É¤¦¤« */
+/* äºŒã¤ã®å“è©ãŒå®Œå…¨ã«ä¸€è‡´ã—ã¦ã„ã‚‹ã‹ã©ã†ã‹ */
 int
 anthy_wtype_equal(wtype_t lhs, wtype_t rhs)
 {
@@ -125,7 +125,7 @@ anthy_wtype_equal(wtype_t lhs, wtype_t rhs)
 }
 
 
-/* n ¤Ï hs ¤Î°ìÉô¤«¤É¤¦¤«¡© */
+/* n ã¯ hs ã®ä¸€éƒ¨ã‹ã©ã†ã‹ï¼Ÿ */
 int
 anthy_wtype_include(wtype_t hs, wtype_t n)
 {

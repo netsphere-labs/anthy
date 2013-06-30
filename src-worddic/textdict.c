@@ -1,5 +1,5 @@
 /*
- * ¥½¡¼¥È¤µ¤ì¤¿¥Æ¥­¥¹¥È¤«¤é¸¡º÷¤ò¹Ô¤¦
+ * ã‚½ãƒ¼ãƒˆã•ã‚ŒãŸãƒ†ã‚­ã‚¹ãƒˆã‹ã‚‰æ¤œç´¢ã‚’è¡Œã†
  */
 /*
   This library is free software; you can redistribute it and/or

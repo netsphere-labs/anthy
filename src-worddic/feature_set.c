@@ -1,6 +1,6 @@
 /* features
  *
- * ÁÇÀ­¤ÎÈÖ¹æ¤È°ÕÌ£¤ò±£ÊÃ¤·¤Æ´ÉÍı¤¹¤ë
+ * ç´ æ€§ã®ç•ªå·ã¨æ„å‘³ã‚’éš è”½ã—ã¦ç®¡ç†ã™ã‚‹
  *
  * Copyright (C) 2006-2007 TABATA Yusuke
  *
@@ -29,12 +29,12 @@
 /* for MW_FEATURE* constants */
 #include <anthy/splitter.h>
 
-/* ÁÇÀ­¤ÎÈÖ¹æ 
+/* ç´ æ€§ã®ç•ªå· 
  *
- * 0-19 ¥¯¥é¥¹ÁÇÀ­
- * 30-319(30+SEG_SIZE^2) ¥¯¥é¥¹Á«°ÜÂ°À­
- * 540-579 ¤½¤ÎÂ¾
- * 580- (1024¸Ä) ÉÕÂ°¸ì¤Î¼ïÎà
+ * 0-19 ã‚¯ãƒ©ã‚¹ç´ æ€§
+ * 30-319(30+SEG_SIZE^2) ã‚¯ãƒ©ã‚¹é·ç§»å±æ€§
+ * 540-579 ãã®ä»–
+ * 580- (1024å€‹) ä»˜å±èªã®ç¨®é¡
  */
 
 #define CUR_CLASS_BASE 0
@@ -200,7 +200,7 @@ anthy_find_array_freq(const void *image, int *f, int nr,
   if (!image) {
     return NULL;
   }
-  /* ¥³¥Ô¡¼¤¹¤ë */
+  /* ã‚³ãƒ”ãƒ¼ã™ã‚‹ */
   for (i = 0; i < NR_EM_FEATURES; i++) {
     if (i < nr) {
       n[i] = f[i];
@@ -230,7 +230,7 @@ anthy_find_feature_freq(const void *image,
   int i, nr;
   int f[NR_EM_FEATURES + 2];
 
-  /* ÇÛÎó¤Ë¥³¥Ô¡¼¤¹¤ë */
+  /* é…åˆ—ã«ã‚³ãƒ”ãƒ¼ã™ã‚‹ */
   nr = anthy_feature_list_nr(fl);
   for (i = 0; i < NR_EM_FEATURES + 2; i++) {
     if (i < nr) {

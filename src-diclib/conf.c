@@ -1,7 +1,7 @@
 /*
- * Anthy¤ÎÀßÄê¤Î¥Ç¡¼¥¿¥Ù¡¼¥¹
- * conf_init¤ÇÀßÄê¤µ¤ì¤ëÊÑ¿ô¤Èconf_override¤ÇÀßÄê¤µ¤ì¤ë
- * ÊÑ¿ô¤Î´Ø·¸¤ËÃí°Õ
+ * Anthyã®è¨­å®šã®ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹
+ * conf_initã§è¨­å®šã•ã‚Œã‚‹å¤‰æ•°ã¨conf_overrideã§è¨­å®šã•ã‚Œã‚‹
+ * å¤‰æ•°ã®é–¢ä¿‚ã«æ³¨æ„
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  */
@@ -34,18 +34,18 @@
 
 #include <config.h>
 
-/** ÀßÄê¤ÎÊÑ¿ô¤ÈÃÍ */
+/** è¨­å®šã®å¤‰æ•°ã¨å€¤ */
 struct val_ent {
-  /** ÊÑ¿ôÌ¾ */
+  /** å¤‰æ•°å */
   const char *var;
-  /** ÃÍ */
+  /** å€¤ */
   const char *val;
-  /** ¥ê¥¹¥È¤Î¼¡Í×ÁÇ */
+  /** ãƒªã‚¹ãƒˆã®æ¬¡è¦ç´  */
   struct val_ent *next;
 };
 
 static struct val_ent *ent_list;
-/** ½é´ü²½ºÑ¤ß¥Õ¥é¥° */
+/** åˆæœŸåŒ–æ¸ˆã¿ãƒ•ãƒ©ã‚° */
 static int confIsInit;
 static allocator val_ent_ator;
 
@@ -59,7 +59,7 @@ val_ent_dtor(void *p)
   }
 }
 
-/** ÊÑ¿ôÌ¾¤ËÂĞ±ş¤¹¤ëval_ent¤ò¼èÆÀ¤¹¤ë */
+/** å¤‰æ•°åã«å¯¾å¿œã™ã‚‹val_entã‚’å–å¾—ã™ã‚‹ */
 static struct val_ent *
 find_val_ent(const char *v)
 {
@@ -80,7 +80,7 @@ find_val_ent(const char *v)
   return e;
 }
 
-/** ${ÊÑ¿ôÌ¾}¤Î·Á¤ÎÊÑ¿ô¤ÎÃÍ¤ò¼èÆÀ¤¹¤ë
+/** ${å¤‰æ•°å}ã®å½¢ã®å¤‰æ•°ã®å€¤ã‚’å–å¾—ã™ã‚‹
  */
 static const char *
 get_subst(const char *s)
@@ -203,7 +203,7 @@ anthy_do_conf_override(const char *var, const char *val)
   }
 }
 
-/* ¥æ¥Ë¡¼¥¯¤Ê¥»¥Ã¥·¥ç¥óID¤ò³ÎÊİ¤¹¤ë */
+/* ãƒ¦ãƒ‹ãƒ¼ã‚¯ãªã‚»ãƒƒã‚·ãƒ§ãƒ³IDã‚’ç¢ºä¿ã™ã‚‹ */
 #define SID_FORMAT	"%s-%08x-%05d" /* HOST-TIME-PID */
 #define MAX_SID_LEN  	(MAX_HOSTNAME+8+5+2)
 #define MAX_HOSTNAME 	64
@@ -231,7 +231,7 @@ anthy_do_conf_init(void)
     const char *fn;
     struct passwd *pw;
     val_ent_ator = anthy_create_allocator(sizeof(struct val_ent), val_ent_dtor);
-    /*¥Ç¥Õ¥©¥ë¥È¤ÎÃÍ¤òÀßÄê¤¹¤ë¡£*/
+    /*ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®å€¤ã‚’è¨­å®šã™ã‚‹ã€‚*/
     add_val("VERSION", VERSION);
     fn = anthy_conf_get_str("CONFFILE");
     if (!fn){

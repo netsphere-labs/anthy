@@ -1,8 +1,8 @@
 /*
- * ¸Ä¿Í¼­½ñ¤ò°·¤¦¤¿¤á¤Î¥³¡¼¥É
+ * å€‹äººè¾æ›¸ã‚’æ‰±ã†ãŸã‚ã®ã‚³ãƒ¼ãƒ‰
  *
- * ¥æ¡¼¥¶¤¬ÌÀ¼¨Åª¤ËÅĞÏ¿¤·¤¿Ã±¸ì¤À¤±¤Ç¤Ê¤¯¡¢
- * Ì¤ÃÎ¸ì¤ò¼«Æ°Åª¤Ë³Ø½¬¤·¤Æ´ÉÍı¤¹¤ëAPI¤â»ı¤Ä¡£
+ * ãƒ¦ãƒ¼ã‚¶ãŒæ˜ç¤ºçš„ã«ç™»éŒ²ã—ãŸå˜èªã ã‘ã§ãªãã€
+ * æœªçŸ¥èªã‚’è‡ªå‹•çš„ã«å­¦ç¿’ã—ã¦ç®¡ç†ã™ã‚‹APIã‚‚æŒã¤ã€‚
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  */
@@ -44,19 +44,19 @@
 #include "dic_main.h"
 #include "dic_ent.h"
 
-/* ¸Ä¿Í¼­½ñ */
+/* å€‹äººè¾æ›¸ */
 struct text_trie *anthy_private_tt_dic;
 struct textdict *anthy_private_text_dic;
 static struct textdict *anthy_imported_text_dic;
 static char *imported_dic_dir;
-/* ¥í¥Ã¥¯ÍÑ¤ÎÊÑ¿ô */
+/* ãƒ­ãƒƒã‚¯ç”¨ã®å¤‰æ•° */
 static char *lock_fn;
 static int lock_depth;
 static int lock_fd;
 
 #define MAX_DICT_SIZE 100000000
 
-/* ¸Ä¿Í¼­½ñ¤Î¥Ç¥£¥ì¥¯¥È¥ê¤ÎÍ­Ìµ¤ò³ÎÇ§¤¹¤ë */
+/* å€‹äººè¾æ›¸ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®æœ‰ç„¡ã‚’ç¢ºèªã™ã‚‹ */
 void
 anthy_check_user_dir(void)
 {
@@ -120,12 +120,12 @@ anthy_priv_dic_lock(void)
     return ;
   }
   if (!lock_fn) {
-    /* ½é´ü²½¤ò¥ß¥¹¤Ã¤Æ¤ë */
+    /* åˆæœŸåŒ–ã‚’ãƒŸã‚¹ã£ã¦ã‚‹ */
     lock_fd = -1;
     return ;
   }
 
-  /* ¥Õ¥¡¥¤¥ë¥í¥Ã¥¯¤ÎÊıË¡¤ÏÂ¿¿ô¤¢¤ë¤¬¡¢¤³¤ÎÊıË¡¤Ïcygwin¤Ç¤âÆ°¤¯¤Î¤ÇºÎÍÑ¤·¤¿ */
+  /* ãƒ•ã‚¡ã‚¤ãƒ«ãƒ­ãƒƒã‚¯ã®æ–¹æ³•ã¯å¤šæ•°ã‚ã‚‹ãŒã€ã“ã®æ–¹æ³•ã¯cygwinã§ã‚‚å‹•ãã®ã§æ¡ç”¨ã—ãŸ */
   lock_fd = open(lock_fn, O_CREAT|O_RDWR, S_IREAD|S_IWRITE);
   if (lock_fd == -1) {
     return ;
@@ -165,7 +165,7 @@ anthy_priv_dic_update(void)
   anthy_trie_update_mapping(anthy_private_tt_dic);
 }
 
-/* seq_ent¤ËÄÉ²Ã¤¹¤ë */
+/* seq_entã«è¿½åŠ ã™ã‚‹ */
 static void
 add_to_seq_ent(const char *line, int encoding, struct seq_ent *seq)
 {
@@ -183,8 +183,8 @@ add_to_seq_ent(const char *line, int encoding, struct seq_ent *seq)
   anthy_free_xstr(xs);
 }
 
-/* texttrie¤ËÅĞÏ¿¤µ¤ì¤Æ¤¤¤ë¤«¤ò¥Á¥§¥Ã¥¯¤·¡¢
- * ÅĞÏ¿¤µ¤ì¤Æ¤¤¤ì¤Ğseq_ent¤ËÄÉ²Ã¤¹¤ë
+/* texttrieã«ç™»éŒ²ã•ã‚Œã¦ã„ã‚‹ã‹ã‚’ãƒã‚§ãƒƒã‚¯ã—ã€
+ * ç™»éŒ²ã•ã‚Œã¦ã„ã‚Œã°seq_entã«è¿½åŠ ã™ã‚‹
  */
 static void
 copy_words_from_tt(struct seq_ent *seq, xstr *xs,
@@ -201,18 +201,18 @@ copy_words_from_tt(struct seq_ent *seq, xstr *xs,
   key = anthy_xstr_to_cstr(xs, encoding);
   key_len = strlen(key);
   key_buf = malloc(key_len + 12);
-  /* ¼­½ñÃæ¤Ë¤Ï³ÆÃ±¸ì¤¬¡Ö¸«½Ğ¤· XXXX¡×(XXXX¤Ï¥é¥ó¥À¥à¤ÊÊ¸»úÎó)¤ò
-   * ¥­¡¼¤È¤·¤ÆÊİÂ¸¤µ¤ì¤Æ¤¤¤ë¤Î¤ÇÎóµó¤¹¤ë
+  /* è¾æ›¸ä¸­ã«ã¯å„å˜èªãŒã€Œè¦‹å‡ºã— XXXXã€(XXXXã¯ãƒ©ãƒ³ãƒ€ãƒ ãªæ–‡å­—åˆ—)ã‚’
+   * ã‚­ãƒ¼ã¨ã—ã¦ä¿å­˜ã•ã‚Œã¦ã„ã‚‹ã®ã§åˆ—æŒ™ã™ã‚‹
    */
   sprintf(key_buf, "%s%s ", prefix, key);
   do {
     if (strncmp(&key_buf[2], key, key_len) ||
 	strncmp(&key_buf[0], prefix, prefix_len) ||
 	key_buf[key_len+2] != ' ') {
-      /* ¡Ö¸«½Ğ¤· ¡×¤Ç»Ï¤Ş¤Ã¤Æ¤¤¤Ê¤¤¤Î¤ÇÂĞ¾İ³° */
+      /* ã€Œè¦‹å‡ºã— ã€ã§å§‹ã¾ã£ã¦ã„ãªã„ã®ã§å¯¾è±¡å¤– */
       break;
     }
-    /* Ã±¸ì¤òÆÉ¤ß½Ğ¤·¤ÆÅĞÏ¿ */
+    /* å˜èªã‚’èª­ã¿å‡ºã—ã¦ç™»éŒ² */
     v = anthy_trie_find(anthy_private_tt_dic, key_buf);
     if (v) {
       add_to_seq_ent(v, encoding, seq);
@@ -232,7 +232,7 @@ anthy_copy_words_from_private_dic(struct seq_ent *seq,
   if (is_reverse) {
     return ;
   }
-  /* ¸Ä¿Í¼­½ñ¤«¤é¼è¤Ã¤Æ¤¯¤ë */
+  /* å€‹äººè¾æ›¸ã‹ã‚‰å–ã£ã¦ãã‚‹ */
   copy_words_from_tt(seq, xs, ANTHY_EUC_JP_ENCODING, "  ");
   copy_words_from_tt(seq, xs, ANTHY_UTF8_ENCODING, " p");
   /**/
@@ -255,7 +255,7 @@ anthy_parse_word_line(const char *line, struct word_line *res)
   res->wt[0] = 0;
   res->freq = 1;
   res->word = NULL;
-  /* ÉÊ»ì¤ÈÉÑÅÙ¤òparse */
+  /* å“è©ã¨é »åº¦ã‚’parse */
   for (i = 0; i < 9 && *buf && *buf != '*' && *buf != ' '; buf++, i++) {
     res->wt[i] = *buf;
   }
@@ -272,7 +272,7 @@ anthy_parse_word_line(const char *line, struct word_line *res)
     return -1;
   }
   buf++;
-  /* Ã±¸ì */
+  /* å˜èª */
   res->word = buf;
   return 0;
 }
@@ -323,7 +323,7 @@ anthy_ask_scan(void (*request_scan)(struct textdict *, void *),
 static void
 add_unknown_word(xstr *yomi, xstr *word)
 {
-  /* record¤ËÄÉ²Ã */
+  /* recordã«è¿½åŠ  */
   if (anthy_select_section("UNKNOWN_WORD", 1)) {
     return ;
   }
@@ -365,7 +365,7 @@ anthy_forget_unused_unknown_word(xstr *xs)
   free(v);
   anthy_trie_delete(anthy_private_tt_dic, key_buf);
 
-  /* record¤Ëµ­Ï¿¤µ¤ì¤¿Êª¤ò¾Ã¤¹ */
+  /* recordã«è¨˜éŒ²ã•ã‚ŒãŸç‰©ã‚’æ¶ˆã™ */
   if (anthy_select_section("UNKNOWN_WORD", 0)) {
     return ;
   }

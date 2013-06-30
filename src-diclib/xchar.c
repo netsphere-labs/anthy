@@ -1,5 +1,5 @@
 /*
- * й╦╩З(xchar)╓н╔©╔╓╔в╓й╓и╓Р╟╥╓╕
+ * Ф√┤Е╜≈(xchar)Ц│╝Ц┌©Ц┌╓Ц┐≈Ц│╙Ц│╘Ц┌▓Ф┴╠Ц│├
  *
  * Copyright (C) 2001-2006 TABATA Yusuke
  */
@@ -23,47 +23,47 @@ static struct xchar_ent {
   struct xchar_ent *next;/* hash chain */
 } xchar_tab[] =
 {
-  {0xFF40, XCT_OPEN , 0}, /* ║╝, ди╡ц */
-  {0x2032, XCT_CLOSE, 0}, /* ║Л, ди╡ц */
-  {0x2018, XCT_OPEN , 0}, /* ║ф, ди╡ц */
-  {0x2019, XCT_CLOSE, 0}, /* ║г, ди╡ц */
-  {0x201C, XCT_OPEN , 0}, /* ║х, ди╡ц */
-  {0x201D, XCT_CLOSE, 0}, /* ║и, й╦╩З╔Ё║╪╔и╓╛╢ж╟Ц╓ц╓ф╓╓╓К╓х╩в╓О╓Л╓К╓н╓г╫╓ю╣ */
-  {0xff08, XCT_OPEN, 0}, /* ║й║║*/
-  {0xff09, XCT_CLOSE, 0}, /* ║к */
-  {0x3014, XCT_OPEN, 0},  /* ║л */
-  {0x3015, XCT_CLOSE, 0}, /* ║м */
-  {0xff3b, XCT_OPEN, 0}, /* ║н */
+  {0xFF40, XCT_OPEN , 0}, /* О╫─, Х©╫Е┼═ */
+  {0x2032, XCT_CLOSE, 0}, /* Б─╡, Х©╫Е┼═ */
+  {0x2018, XCT_OPEN , 0}, /* Б─≤, Х©╫Е┼═ */
+  {0x2019, XCT_CLOSE, 0}, /* Б─≥, Х©╫Е┼═ */
+  {0x201C, XCT_OPEN , 0}, /* Б─°, Х©╫Е┼═ */
+  {0x201D, XCT_CLOSE, 0}, /* Б─², Ф√┤Е╜≈Ц┌ЁЦ┐╪Ц┐┴Ц│▄И√⌠И│∙Ц│ёЦ│╕Ц│└Ц┌▀Ц│╗Ф─²Ц┌▐Ц┌▄Ц┌▀Ц│╝Ц│╖Д©╝Ф╜ё */
+  {0xff08, XCT_OPEN, 0}, /* О╪┬Ц──*/
+  {0xff09, XCT_CLOSE, 0}, /* О╪┴ */
+  {0x3014, XCT_OPEN, 0},  /* Ц─■ */
+  {0x3015, XCT_CLOSE, 0}, /* Ц─∙ */
+  {0xff3b, XCT_OPEN, 0}, /* О╪╩ */
   {0xff3d, XCT_CLOSE, 0}, /* ] */
   {0xff5b, XCT_OPEN, 0},  /* { */
-  {0xff5d, XCT_CLOSE, 0},  /* ║я║║*/
-  {0x3008, XCT_OPEN, 0},  /* ║Ц║║*/
-  {0x3009, XCT_CLOSE, 0},  /* ║Д║║*/
-  {0x300a, XCT_OPEN, 0},  /* ║т║║*/
-  {0x300b, XCT_CLOSE, 0},  /* ║у║║*/
-  {0x300c, XCT_OPEN, 0},  /* ║ж║║*/
-  {0x300d, XCT_CLOSE, 0},  /* ║в║║*/
-  {0x300e, XCT_OPEN, 0},  /* ║ь║║*/
-  {0x300f, XCT_CLOSE, 0},  /* ║ы║║*/
-  {0x3010, XCT_OPEN, 0},  /* ║з║║*/
-  {0x3011, XCT_CLOSE, 0},  /* ║ш║║*/
-  {0x3001, XCT_PUNCTUATION, 0},  /* ║╒║║*/
-  {0x3002, XCT_PUNCTUATION, 0},  /* ║ё║║*/
-  {0xff0c, XCT_PUNCTUATION, 0},  /* ║╓║║*/
-  {0xff0e, XCT_PUNCTUATION, 0},  /* ║╔║║*/
-  {0xff1f, XCT_PUNCTUATION, 0},  /* ║╘║║*/
-  {0xff01, XCT_PUNCTUATION, 0},  /* ║╙║║*/
+  {0xff5d, XCT_CLOSE, 0},  /* О╫²Ц──*/
+  {0x3008, XCT_OPEN, 0},  /* О╪°Ц──*/
+  {0x3009, XCT_CLOSE, 0},  /* О╪·Ц──*/
+  {0x300a, XCT_OPEN, 0},  /* Ц─┼Ц──*/
+  {0x300b, XCT_CLOSE, 0},  /* Ц─▀Ц──*/
+  {0x300c, XCT_OPEN, 0},  /* Ц─▄Ц──*/
+  {0x300d, XCT_CLOSE, 0},  /* Ц─█Ц──*/
+  {0x300e, XCT_OPEN, 0},  /* Ц─▌Ц──*/
+  {0x300f, XCT_CLOSE, 0},  /* Ц─▐Ц──*/
+  {0x3010, XCT_OPEN, 0},  /* Ц─░Ц──*/
+  {0x3011, XCT_CLOSE, 0},  /* Ц─▒Ц──*/
+  {0x3001, XCT_PUNCTUATION, 0},  /* Ц─│Ц──*/
+  {0x3002, XCT_PUNCTUATION, 0},  /* Ц─┌Ц──*/
+  {0xff0c, XCT_PUNCTUATION, 0},  /* О╪▄Ц──*/
+  {0xff0e, XCT_PUNCTUATION, 0},  /* О╪▌Ц──*/
+  {0xff1f, XCT_PUNCTUATION, 0},  /* О╪÷Ц──*/
+  {0xff01, XCT_PUNCTUATION, 0},  /* О╪│Ц──*/
 
   {28, XCT_OPEN, 0}, /* ( */
   {133, XCT_OPEN, 0}, /* [ */
   {29, XCT_CLOSE, 0}, /* ) */
   {135, XCT_CLOSE, 0}, /* ] */
-  {HK_TO, XCT_DEP, 0},/* ╓х */
-  {HK_HA, XCT_DEP, 0},/* ╓о */
-  {HK_NO, XCT_DEP, 0},/* ╓н */
-  {HK_NI, XCT_DEP, 0},/* ╓к */
-  {HK_GA, XCT_DEP, 0},/* ╓╛ */
-  {HK_WO, XCT_DEP, 0},/* ╓Р */
+  {HK_TO, XCT_DEP, 0},/* Ц│╗ */
+  {HK_HA, XCT_DEP, 0},/* Ц│╞ */
+  {HK_NO, XCT_DEP, 0},/* Ц│╝ */
+  {HK_NI, XCT_DEP, 0},/* Ц│╚ */
+  {HK_GA, XCT_DEP, 0},/* Ц│▄ */
+  {HK_WO, XCT_DEP, 0},/* Ц┌▓ */
   {WIDE_0, XCT_WIDENUM, 0},
   {WIDE_1, XCT_WIDENUM, 0},
   {WIDE_2, XCT_WIDENUM, 0},
