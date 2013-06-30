@@ -1,0 +1,68 @@
+This document is written in Japanese(EUC-JP).
+
+本ソフトウェアの概要についてはREADMEをお読みください。
+
+(1)インストールに必要なもの
+(2)インストールの手順
+(3)インストールされるファイル
+(4)アンインストールの手順
+(5)補足
+
+
+(1)インストールに必要なもの
+ コンパイラ等および、emacs
+
+(2)インストールの手順
+各種プログラムを作ります。
+$ ./configure
+$ make
+
+うまくできたら
+$ su
+# make install
+でインストールします。
+
+あるいはテストプログラムを実行します。
+$ cd test
+$ ./anthy
+
+emacsから使う場合はdoc/ELISPを参照してください．
+
+(3)インストールされるファイル
+bin/anthy-dic-tool
+bin/anthy-agent
+bin/anthy-morphological-analyzer
+share/emacs/site-lisp/anthy/leim-list.{el,elc}
+share/emacs/site-lisp/anthy/anthy.{el,elc}
+share/emacs/site-lisp/anthy/anthy-dic.{el,elc}
+share/emacs/site-lisp/anthy/anthy-isearch.{el,elc}
+share/emacs/site-lisp/anthy/anthy-kyuri.{el,elc}
+share/emacs/site-lisp/anthy/anthy-conf.{el,elc}
+share/emacs/site-lisp/anthy/anthy-azik.{el,elc}
+share/anthy/zipcode.t
+share/anthy/anthy.dic
+share/anthy/typetab
+share/anthy/dic-tool-usage.txt
+include/anthy/anthy.h
+include/anthy/dicutil.h
+include/anthy/input.h
+lib/libanthyinput.{a,so}
+lib/libanthy.{a,so}
+lib/libanthydic.{a,so}
+lib/pkgconfig/anthy.pc
+etc/anthy-conf
+
+(4)アンインストールの手順
+ コンパイルを行ったディレクトリで su ; make uninstall を行うか
+ (3)で述べたファイルを手動で消してください。
+ 各個人の履歴は~/.anthy/以下にあるのでそれも消してください。
+
+(5)補足
+--注意--
+ 特にオプションを指定せずにconfigureを行うと作成された
+ ライブラリは/usr/local/lib にインストールされますが
+ 多くのディストリビューションはデフォルトの設定では/usr/local/libの
+ シェアードライブラリを読みません。
+ */etc/ld.so.conf に /usr/local/lib を追加して ldconfigを行う。
+ *環境変数 LD_LIBRARY_PATHに /usr/local/lib をセットする。
+ のいずれかの方法で解決することができます。
