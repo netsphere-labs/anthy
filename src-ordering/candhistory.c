@@ -1,9 +1,9 @@
 /*
- * ¸õÊä¤ÎÍúÎò¤ò³Ğ¤¨¤ë
+ * å€™è£œã®å±¥æ­´ã‚’è¦šãˆã‚‹
  *
  *
- * ¤¢¤ëÆÉ¤ß¤ÎÍúÎò¤¬ ¸õÊäA ¸õÊäB ¸õÊäA ¸õÊäA ¸õÊäA
- * ¤Ç¤¢¤Ã¤¿¤È¤¤¤¦¤è¤¦¤Ê¾ğÊó¤ò¤â¤È¤Ë¸õÊä¤Î¥¹¥³¥¢¤ò²ÃÅÀ¤¹¤ë¡£
+ * ã‚ã‚‹èª­ã¿ã®å±¥æ­´ãŒ å€™è£œA å€™è£œB å€™è£œA å€™è£œA å€™è£œA
+ * ã§ã‚ã£ãŸã¨ã„ã†ã‚ˆã†ãªæƒ…å ±ã‚’ã‚‚ã¨ã«å€™è£œã®ã‚¹ã‚³ã‚¢ã‚’åŠ ç‚¹ã™ã‚‹ã€‚
  *
  * Copyright (C) 2006-2007 TABATA Yusuke
  *
@@ -17,7 +17,7 @@
 #define HISTORY_DEPTH 8
 #define MAX_HISTORY_ENTRY 200
 
-/** Ê¸Àá¤Î¥³¥ß¥Ã¥È¤òÍúÎò¤ËÄÉ²Ã¤¹¤ë */
+/** æ–‡ç¯€ã®ã‚³ãƒŸãƒƒãƒˆã‚’å±¥æ­´ã«è¿½åŠ ã™ã‚‹ */
 static void
 learn_cand_history(struct seg_ent *seg)
 {
@@ -29,7 +29,7 @@ learn_cand_history(struct seg_ent *seg)
   if (anthy_select_row(&seg->str, 1)) {
     return ;
   }
-  /* ¥·¥Õ¥È¤¹¤ë */
+  /* ã‚·ãƒ•ãƒˆã™ã‚‹ */
   nr = anthy_get_nr_values();
   nr ++;
   if (nr > HISTORY_DEPTH) {
@@ -39,7 +39,7 @@ learn_cand_history(struct seg_ent *seg)
     xstr *xs = anthy_get_nth_xstr(i - 1);
     anthy_set_nth_xstr(i, xs);
   }
-  /* 0ÈÖÌÜ¤ËÀßÄê */
+  /* 0ç•ªç›®ã«è¨­å®š */
   anthy_set_nth_xstr(0, &seg->cands[seg->committed]->str);
   anthy_mark_row_used();
 }
@@ -72,8 +72,8 @@ learn_suffix_history(struct seg_ent *seg)
   }
 }
 
-/** ³°¤«¤é¸Æ¤Ğ¤ì¤ë´Ø¿ô 
- * ÍúÎò¤ËÄÉ²Ã¤¹¤ë */
+/** å¤–ã‹ã‚‰å‘¼ã°ã‚Œã‚‹é–¢æ•° 
+ * å±¥æ­´ã«è¿½åŠ ã™ã‚‹ */
 void
 anthy_learn_cand_history(struct segment_list *sl)
 {
@@ -86,7 +86,7 @@ anthy_learn_cand_history(struct segment_list *sl)
     }
     if (anthy_select_row(xs, 0)) {
       if (seg->committed == 0) {
-	/* ¸õÊä¤Î¥¨¥ó¥È¥ê¤¬Ìµ¤¯¤Æ¡¢¥³¥ß¥Ã¥È¤µ¤ì¤¿¸õÊä¤âÀèÆ¬¤Î¤â¤Î¤Ç¤¢¤ì¤Ğ¥Ñ¥¹ */
+	/* å€™è£œã®ã‚¨ãƒ³ãƒˆãƒªãŒç„¡ãã¦ã€ã‚³ãƒŸãƒƒãƒˆã•ã‚ŒãŸå€™è£œã‚‚å…ˆé ­ã®ã‚‚ã®ã§ã‚ã‚Œã°ãƒ‘ã‚¹ */
 	continue;
       }
     }
@@ -105,7 +105,7 @@ anthy_learn_cand_history(struct segment_list *sl)
   }
 }
 
-/* ÍúÎò¤ò¤ß¤Æ¸õÊä¤Î½Å¤ß¤ò·×»»¤¹¤ë */
+/* å±¥æ­´ã‚’ã¿ã¦å€™è£œã®é‡ã¿ã‚’è¨ˆç®—ã™ã‚‹ */
 static int
 get_history_weight(xstr *xs)
 {
@@ -119,7 +119,7 @@ get_history_weight(xstr *xs)
     if (!anthy_xstrcmp(xs, h)) {
       w++;
       if (i == 0) {
-	/* Ä¾Á°¤Ë³ÎÄê¤µ¤ì¤¿¤â¤Î¤Ë¤Ï¹â¤¤¥¹¥³¥¢*/
+	/* ç›´å‰ã«ç¢ºå®šã•ã‚ŒãŸã‚‚ã®ã«ã¯é«˜ã„ã‚¹ã‚³ã‚¢*/
 	w += (HISTORY_DEPTH / 2);
       }
     }
@@ -138,7 +138,7 @@ reorder_by_candidate(struct seg_ent *se)
   if (anthy_select_row(&se->str, 0)) {
     return ;
   }
-  /* ºÇ¤âÉ¾²Á¤Î¹â¤¤¸õÊä */
+  /* æœ€ã‚‚è©•ä¾¡ã®é«˜ã„å€™è£œ */
   primary_score = se->cands[0]->score;
   /**/
   for (i = 0; i < se->nr_cands; i++) {
@@ -149,7 +149,7 @@ reorder_by_candidate(struct seg_ent *se)
   anthy_mark_row_used();
 }
 
-/* ÀÜÈø¼­¤Î³Ø½¬¤òÅ¬ÍÑ¤¹¤ë */
+/* æ¥å°¾è¾ã®å­¦ç¿’ã‚’é©ç”¨ã™ã‚‹ */
 static void
 reorder_by_suffix(struct seg_ent *se)
 {
@@ -159,10 +159,10 @@ reorder_by_suffix(struct seg_ent *se)
   if (anthy_select_section("SUFFIX_HISTORY", 0)) {
     return ;
   }
-  /* ³Æ¸õÊä */
+  /* å„å€™è£œ */
   for (i = 0; i < se->nr_cands; i++) {
     struct cand_ent *ce = se->cands[i];
-    /* ¸õÊä¤ò¹½À®¤¹¤ë³ÆÃ±¸ì */
+    /* å€™è£œã‚’æ§‹æˆã™ã‚‹å„å˜èª */
     for (j = 0; j < ce->nr_words; j++) {
       struct cand_elm *elm = &ce->elm[j];
       xstr xs;
@@ -172,15 +172,15 @@ reorder_by_suffix(struct seg_ent *se)
       if (anthy_wtype_get_pos(elm->wt) != POS_SUC) {
 	continue;
       }
-      /* ÊÑ´¹¸µ¤ÎÊ¸»úÎó¤ò¥­¡¼¤Ë¸¡º÷ */
+      /* å¤‰æ›å…ƒã®æ–‡å­—åˆ—ã‚’ã‚­ãƒ¼ã«æ¤œç´¢ */
       if (anthy_select_row(&elm->str, 0)) {
 	continue;
       }
-      /* ÊÑ´¹¸å¤ÎÊ¸»úÎó¤ò¼èÆÀ */
+      /* å¤‰æ›å¾Œã®æ–‡å­—åˆ—ã‚’å–å¾— */
       if (anthy_get_nth_dic_ent_str(elm->se, &elm->str, elm->nth, &xs)) {
 	continue;
       }
-      /* ÍúÎòÃæ¤ÎÊ¸»úÎó¤ÈÈæ³Ó¤¹¤ë */
+      /* å±¥æ­´ä¸­ã®æ–‡å­—åˆ—ã¨æ¯”è¼ƒã™ã‚‹ */
       if (anthy_xstrcmp(&xs, anthy_get_nth_xstr(0))) {
 	free(xs.str);
 	continue;
@@ -198,7 +198,7 @@ reorder_by_suffix(struct seg_ent *se)
   }
 }
 
-/* ÍúÎò¤Ç²ÃÅÀ¤¹¤ë */
+/* å±¥æ­´ã§åŠ ç‚¹ã™ã‚‹ */
 void
 anthy_reorder_candidates_by_history(struct seg_ent *se)
 {

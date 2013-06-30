@@ -9,7 +9,7 @@
 #include "diclib_inner.h"
 
 /**
-   Ê£¿ô¥»¥¯¥·¥ç¥ó¤¬¥ê¥ó¥¯¤µ¤ì¤¿¼­½ñ
+   è¤‡æ•°ã‚»ã‚¯ã‚·ãƒ§ãƒ³ãŒãƒªãƒ³ã‚¯ã•ã‚ŒãŸè¾æ›¸
  */
 struct file_dic
 {
@@ -47,7 +47,7 @@ anthy_init_file_dic(void)
     return -1;
   }
 
-  /* ¼­½ñ¤ò¥á¥â¥ê¾å¤Ëmap¤¹¤ë */
+  /* è¾æ›¸ã‚’ãƒ¡ãƒ¢ãƒªä¸Šã«mapã™ã‚‹ */
   fdic.mapping = anthy_mmap(fn, 0);
   if (!fdic.mapping) {
     anthy_log(0, "failed to init file dic.\n");

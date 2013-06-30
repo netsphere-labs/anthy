@@ -1,10 +1,10 @@
 /*
- * �¹���򰷤�����Υ�����
+ * 疎行列を扱うためのコード
  *
- * (1) ����(sparse_matrix)�Υ��󥹥��󥹤��������������Ǥ����ꤹ��
- * (2) ���󤫤���󥤥᡼��(matrix_image)���������
- *  *  ���󥤥᡼����network byteorder�ǥե�����˽񤭽Ф�
- * (3) ���󥤥᡼�����ɤ߹���(or mmap����)���Ǥ˥�����������
+ * (1) 行列(sparse_matrix)のインスタンスを作成し行列の要素を設定する
+ * (2) 行列から行列イメージ(matrix_image)を作成する
+ *  *  行列イメージをnetwork byteorderでファイルに書き出す
+ * (3) 行列イメージを読み込み(or mmapする)要素にアクセスする
  *
  */
 /*

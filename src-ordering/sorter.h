@@ -2,11 +2,11 @@
 #define _sorter_h_included_
 
 /* candswap.c */
-/* °ì°Ì¤È¤·¤Æ½Ğ¤·¤¿¸õÊä¤Ç¤Ï¤Ê¤¤¸õÊä¤¬¥³¥ß¥Ã¥È¤µ¤ì¤¿ */
+/* ä¸€ä½ã¨ã—ã¦å‡ºã—ãŸå€™è£œã§ã¯ãªã„å€™è£œãŒã‚³ãƒŸãƒƒãƒˆã•ã‚ŒãŸ */
 void anthy_swap_cand_ent(struct cand_ent *old_one, struct cand_ent *new_one);
 /**/
 void anthy_proc_swap_candidate(struct seg_ent *se);
-/* ¥³¥ß¥Ã¥È»ş¤Ëcandswap¤Îµ­Ï¿¤òaging¤¹¤ë */
+/* ã‚³ãƒŸãƒƒãƒˆæ™‚ã«candswapã®è¨˜éŒ²ã‚’agingã™ã‚‹ */
 void anthy_cand_swap_ageup(void);
 
 /**/
