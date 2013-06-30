@@ -9,7 +9,7 @@
  * Copyright (C) 2002, 2005 NIIBE Yutaka
  *
  * dtor: destructor
- * 
+ *
  * ページ中のフリーなchunkは単方向リストに継がれている
  *
  */
@@ -52,7 +52,7 @@ struct chunk {
 #define CHUNK_ALIGN (sizeof(double))
 
 /*
- * pageのstorage中には 
+ * pageのstorage中には
  * max_obj = (PAGE_SIZE - PAGE_HEADER_SIZE) / (size + CHUNK_HEADER_SIZE)個の
  * スロットがある。そのうちuse_count個のスロットがfree_listにつながっている、
  * もしくは使用中である。
@@ -75,8 +75,8 @@ struct allocator_priv {
   int size;
   /* ページ内に入れることができるオブジェクトの数 */
   int max_num;
-  /* 
-     実際のデータが格納され始める場所のオフセット 
+  /*
+     実際のデータが格納され始める場所のオフセット
      ページ中のこれより手前には対応する場所のデータが使われているかどうかを0/1で表す
      ビットマップがある
    */
@@ -123,7 +123,7 @@ alloc_page(struct allocator_priv *ator)
 {
   struct page *p;
   unsigned char* avail;
-    
+
   p = malloc(PAGE_SIZE);
   if (!p) {
     return NULL;
@@ -149,7 +149,7 @@ get_chunk_from_page(allocator a, struct page *p)
       return PAGE_CHUNK(a, p, i);
     }
   }
-  return NULL;  
+  return NULL;
 }
 
 static int
@@ -188,7 +188,7 @@ size=roundup_align(size);
     exit(1);
   }
   a->size = size;
-  a->max_num = calc_max_num(size); 
+  a->max_num = calc_max_num(size);
   a->storage_offset = roundup_align(sizeof(struct page) + a->max_num / 8 + 1);
   /*printf("size=%d max_num=%d offset=%d area=%d\n", size, a->max_num, a->storage_offset, size*a->max_num + a->storage_offset);*/
   a->dtor = dtor;
@@ -297,7 +297,7 @@ anthy_sfree(allocator a, void *ptr)
 
   /* ページ中の何番目のオブジェクトかを求める */
   index = ((unsigned long)c - (unsigned long)PAGE_STORAGE(a, p)) /
-    (a->size + CHUNK_HEADER_SIZE);  
+    (a->size + CHUNK_HEADER_SIZE);
   bit_set(PAGE_AVAIL(p), index, 0);
 
   /* デストラクタを呼ぶ */

@@ -14,11 +14,11 @@
 #include "rkhelper.h"
 
 static const char* rk_default_symbol[128] = {
-  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-  "¡¡", "¡ª", "¡É", "¡ô", "¡ð", "¡ó", "¡õ", "¡Ç", 
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+  "¡¡", "¡ª", "¡É", "¡ô", "¡ð", "¡ó", "¡õ", "¡Ç",
   "¡Ê", "¡Ë", "¡ö", "¡Ü", "¡¢", "¡¼", "¡£", "¡¿",
   "£°", "£±", "£²", "£³", "£´", "£µ", "£¶", "£·",
   "£¸", "£¹", "¡§", "¡¨", "¡ã", "¡á", "¡ä", "¡©",
@@ -29,7 +29,7 @@ static const char* rk_default_symbol[128] = {
   NULL, NULL, NULL, "¡Ö", "¡À", "¡×", "¡°", "¡²",
   "¡Æ", NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, "¡Ð", "¡Ã", "¡Ñ", "¡Á", NULL
 };
 
@@ -143,7 +143,7 @@ find_rk_conf_ent(struct rk_option *opt, int map,
  * follow follow½¸¹ç
  */
 int
-anthy_input_do_edit_rk_option(struct rk_option* opt, int map, 
+anthy_input_do_edit_rk_option(struct rk_option* opt, int map,
 			      const char* from, const char* to, const char *follow)
 {
   struct rk_conf_ent *tab;
@@ -237,7 +237,7 @@ make_rkmap_ascii(struct rk_option* opt)
   char work[2*128];
   char* w;
   int c;
-  
+
   (void)opt;
   p = var_part;
   w = work;
@@ -276,7 +276,7 @@ make_rkmap_shiftascii(struct rk_option* opt)
   char* w;
   int c;
   int toggle_char = opt->toggle;
-  
+
   p = var_part;
   w = work;
   for (c = 0; c < 128; c++) {
@@ -290,7 +290,7 @@ make_rkmap_shiftascii(struct rk_option* opt)
 	w[3] = c;
 	w[4] = '\0';
 	rkrule_set(p++, w + 2, w, NULL);
-	w += 5;	
+	w += 5;
       } else {
 	/* ÉáÄÌ¤ÎÊ¸»ú¤Î¾ì¹ç */
 	w[0] = c;

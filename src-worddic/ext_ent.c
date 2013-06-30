@@ -106,7 +106,7 @@ search_zipcode_dict(struct zipcode_line *zl, xstr* xs)
   if (!fp) {
     return ;
   }
-  
+
   /* 半角、全角を吸収する */
   temp = anthy_xstr_wide_num_to_num(xs);
   index = anthy_xstr_to_cstr(temp, 0);
@@ -450,7 +450,7 @@ int
 anthy_get_ext_seq_ent_ct(struct seq_ent *se, int pos, int ct)
 {
   if (anthy_get_ext_seq_ent_pos(se, pos) && ct == CT_NONE) {
-    /* 品詞が合っていてかつ無活用の場合 
+    /* 品詞が合っていてかつ無活用の場合
        (ext_entは活用しない) */
     return 10;
   }

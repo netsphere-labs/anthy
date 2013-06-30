@@ -25,7 +25,7 @@ anthy_file_dic_get_section(const char* section_name)
   char* head = anthy_mmap_address(fdic.mapping);
   int* p = (int*)head;
   int entry_num = anthy_dic_ntohl(*p++);
-  
+
   for (i = 0; i < entry_num; ++i) {
     int hash_offset = anthy_dic_ntohl(*p++);
     int key_len =  anthy_dic_ntohl(*p++);
@@ -60,6 +60,5 @@ anthy_init_file_dic(void)
 void
 anthy_quit_file_dic(void)
 {
-  anthy_munmap(fdic.mapping);  
+  anthy_munmap(fdic.mapping);
 }
-

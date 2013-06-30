@@ -163,7 +163,7 @@ anthy_release_context(struct anthy_context *ac)
   anthy_do_release_context(ac);
 }
 
-/** 
+/**
  * 再変換が必要かどうかの判定
  */
 static int
@@ -443,7 +443,7 @@ anthy_set_prediction_string(struct anthy_context *ac, const char* s)
 }
 
 /** (API) 予測変換の状態の取得 */
-int 
+int
 anthy_get_prediction_stat(struct anthy_context *ac, struct anthy_prediction_stat * ps)
 {
   ps->nr_prediction = ac->prediction.nr_prediction;

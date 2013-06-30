@@ -163,7 +163,7 @@ struct record_stat {
  *  由来する xstr が無効になるのを防ぐ目的がある。
  *  したがって、データベースの flush 時でも xstr の intern 用
  *  のデータベース xstrs はそのまま保存する。
- *  
+ *
  *  xstrs: xstr の intern 用のデータベース
  *         row の key を intern された xstr として使う。
  *         row に value は持たない。
@@ -216,7 +216,7 @@ struct record_stat {
  *       された更新情報を直ちに更新ファイルに追加し、メモリ上の
  *       データベースを flush した後基本ファイル、差分ファイルを
  *       読み込み直す。
- *       データベースの flush により、 
+ *       データベースの flush により、
  *           ・cur_row が無効になる (NULL になる)
  *           ・cur_section の有効性は保存される(sectionは解放しない)
  *           ・xstr は intern していれば保存される
@@ -269,7 +269,7 @@ static void trie_mark_used(struct trie_root *root, struct trie_node *n,
 			   int *nr_used, int *nr_sused);
 
 
-/* 
+/*
  * トライの実装
  * struct trie_nodeのうちrow以外の部分とrow.keyを使用
  * 削除の時はtrie_row_freeを使ってrowの内容を解放
@@ -390,7 +390,7 @@ trie_key_first_diff_bit(xstr *k1, xstr *k2)
   }
   for ( i = 0 ; i < len ; i++ ){
     if (k1->str[i] != k2->str[i]) {
-      return (2 + (i * (sizeof(xchar) << 3)) + 
+      return (2 + (i * (sizeof(xchar) << 3)) +
 	      trie_key_first_diff_bit_1byte(k1->str[i], k2->str[i]));
     }
   }
@@ -421,7 +421,7 @@ trie_key_dup(xstr *dst, xstr *src)
 }
 
 /*
- * 見つからなければ 0 
+ * 見つからなければ 0
  */
 static struct trie_node *
 trie_find(struct trie_root *root, xstr *key)
@@ -435,7 +435,7 @@ trie_find(struct trie_root *root, xstr *key)
     p = q;
     q = trie_key_nth_bit(key, p->bit) ? p->r : p->l;
   }
-  return trie_key_cmp(&q->row.key,key) ? NULL : q; 
+  return trie_key_cmp(&q->row.key,key) ? NULL : q;
 }
 
 /*
@@ -458,7 +458,7 @@ trie_find_longest (struct trie_root* root, xstr *key)
   return q;
 }
 
-/* 
+/*
  * 追加したノードを返す
  * すでに同じキーをもつノードがあるときは、追加せずに0を返す
  */
@@ -530,7 +530,7 @@ trie_insert(struct trie_root *root, xstr *key,
   return n;
 }
 
-/* 
+/*
  * ノードを見つけると削除する
  * 内部でtrie_row_freeを呼び、キーを含むデータ部分をfreeする
  *
@@ -544,7 +544,7 @@ trie_insert(struct trie_root *root, xstr *key,
  *  対象のノードを削除対象の葉をもつノードの位置に移動させ生かす
  */
 static void
-trie_remove(struct trie_root *root, xstr *key, 
+trie_remove(struct trie_root *root, xstr *key,
 	    int *nr_used, int *nr_sused)
 {
   struct trie_node *p;
@@ -617,7 +617,7 @@ trie_next (struct trie_root *root,
  * head以外全てのノードを削除する
  * 内部でtrie_row_freeを呼び、キーを含むデータ部分をfreeする
  */
-static void 
+static void
 trie_remove_all (struct trie_root *root,
 		 int *nr_used, int *nr_sused)
 {
@@ -635,7 +635,7 @@ trie_remove_all (struct trie_root *root,
  * LRU リストの先頭から count 番目までを残して残りを解放する
  */
 static void
-trie_remove_old (struct trie_root *root, int count, 
+trie_remove_old (struct trie_root *root, int count,
 		 int *nr_used, int *nr_sused)
 {
   struct trie_node *p;
@@ -651,7 +651,7 @@ trie_remove_old (struct trie_root *root, int count,
     }
   } else if (*nr_used + *nr_sused > count) {
     for (p = root->root.lru_next; p->dirty == LRU_USED; p = p->lru_next)
-      ; 
+      ;
     /*
      * p から root まで  sused    -> dirty := 0
      *                   それ以外 -> 消す
@@ -666,7 +666,7 @@ trie_remove_old (struct trie_root *root, int count,
     }
     *nr_sused = 0;
   }
-}      
+}
 
 static void
 trie_mark_used (struct trie_root *root, struct trie_node *n,
@@ -729,7 +729,7 @@ do_select_section(struct record_stat *rst, const char *name, int flag)
   return NULL;
 }
 
-static struct trie_node* 
+static struct trie_node*
 do_select_longest_row(struct record_section *rsc, xstr *name)
 {
   struct trie_node *mark, *found;
@@ -756,7 +756,7 @@ do_select_longest_row(struct record_section *rsc, xstr *name)
   return NULL;
 }
 
-static struct trie_node* 
+static struct trie_node*
 do_select_row(struct record_section* rsc, xstr *name,
 		 int flag, int dirty)
 {
@@ -777,7 +777,7 @@ do_select_row(struct record_section* rsc, xstr *name,
   return node;
 }
 
-static void 
+static void
 do_mark_row_used(struct record_section* rsc, struct trie_node* node)
 {
   trie_mark_used(&rsc->cols, node, &rsc->lru_nr_used, &rsc->lru_nr_sused);
@@ -803,7 +803,7 @@ do_select_first_row(struct record_section *rsc)
 }
 
 static struct trie_node*
-do_select_next_row(struct record_section *rsc, 
+do_select_next_row(struct record_section *rsc,
   struct trie_node* node)
 {
   return trie_next(&rsc->cols, node);
@@ -889,7 +889,7 @@ intern_xstr (struct trie_root* xstrs, xstr* xs)
     return NULL;
   }
   node = trie_find(xstrs, xs);
-  if (!node) 
+  if (!node)
     node = trie_insert(xstrs, xs, 0, &dummy, &dummy);
   return &node->row.key;
 }
@@ -915,7 +915,7 @@ do_truncate_row (struct trie_node* node, int n)
     for (i = n; i < node->row.nr_vals; i++) {
       free_val_contents(node->row.vals + i);
     }
-    node->row.vals = realloc(node->row.vals, 
+    node->row.vals = realloc(node->row.vals,
 				sizeof(struct record_val)* n);
     node->row.nr_vals = n;
   }
@@ -927,7 +927,7 @@ do_remove_row (struct record_section* rsc,
 {
   xstr* xs;
   xs = anthy_xstr_dup(&node->row.key);
-  trie_remove(&rsc->cols, &node->row.key, 
+  trie_remove(&rsc->cols, &node->row.key,
 	      &rsc->lru_nr_used, &rsc->lru_nr_sused);
 
   anthy_free_xstr(xs);
@@ -1289,7 +1289,7 @@ clear_record(struct record_stat* rst)
 {
   struct record_section *rsc;
   for (rsc = rst->section_list.next; rsc; rsc = rsc->next) {
-    trie_remove_all(&rsc->cols, &rsc->lru_nr_used, &rsc->lru_nr_sused); 
+    trie_remove_all(&rsc->cols, &rsc->lru_nr_used, &rsc->lru_nr_sused);
   }
   rst->cur_row = NULL;
 }
@@ -1391,7 +1391,7 @@ open_tmp_in_recorddir(void)
 }
 
 /*
- * 一時ファイルからbaseファイルへrenameする 
+ * 一時ファイルからbaseファイルへrenameする
  */
 static void
 update_file(const char *fn)
@@ -1480,7 +1480,7 @@ update_base_record(struct record_stat* rst)
     /* セクション境界の文字列 */
     fprintf(fp, "--- %s\n", sec->name);
     /* 各カラムを保存する */
-    for (col = trie_first(&sec->cols); col; 
+    for (col = trie_first(&sec->cols); col;
 	 col = trie_next(&sec->cols, col)) {
       save_a_row(fp, rst, &col->row, col->dirty);
     }
@@ -1527,7 +1527,7 @@ commit_del_row(struct record_stat* rst,
  *   ただし、 cur_section の有効性は保存される。
  */
 static void
-sync_add(struct record_stat* rst, struct record_section* rsc, 
+sync_add(struct record_stat* rst, struct record_section* rsc,
 	 struct trie_node* node)
 {
   lock_record(rst);
@@ -1550,7 +1550,7 @@ sync_add(struct record_stat* rst, struct record_section* rsc,
 }
 
 static void
-sync_del_and_del(struct record_stat* rst, struct record_section* rsc, 
+sync_del_and_del(struct record_stat* rst, struct record_section* rsc,
 		 struct trie_node* node)
 {
   lock_record(rst);
@@ -1677,7 +1677,7 @@ anthy_traverse_record_for_prediction(xstr* key, struct prediction_t* predictions
 }
 
 /* Wrappers begin.. */
-int 
+int
 anthy_select_section(const char *name, int flag)
 {
   struct record_stat* rst;
@@ -1753,7 +1753,7 @@ anthy_truncate_section(int count)
 void
 anthy_truncate_row(int nth)
 {
-  struct trie_node *cur_row = anthy_current_record->cur_row;  
+  struct trie_node *cur_row = anthy_current_record->cur_row;
   if (!cur_row) {
     return ;
   }
@@ -1826,7 +1826,7 @@ anthy_select_first_row(void)
   rst = anthy_current_record;
   if (!rst->cur_section)
     return -1;
-  
+
   if (rst->row_dirty && rst->cur_row) {
     sync_add(rst, rst->cur_section, rst->cur_row);
     rst->row_dirty = 0;
@@ -1849,7 +1849,7 @@ anthy_select_next_row(void)
   rst = anthy_current_record;
   if (!rst->cur_section || !rst->cur_row)
     return -1;
-  
+
   /* sync_add() で cur_row が無効になることがあるので、
    * たとえ row_dirty でも sync_add() しない
    */
@@ -1887,7 +1887,7 @@ trie_row_free(struct record_row *rc)
     free_val_contents(rc->vals + i);
   free(rc->vals);
   free(rc->key.str);
-}  
+}
 
 /* あるセクションのデータを全て解放する */
 static void
@@ -1991,7 +1991,7 @@ anthy_reload_record(void)
 {
   struct stat st;
   struct record_stat *rst = anthy_current_record;
-  
+
   if (stat(rst->journal_fn, &st) == 0 &&
       rst->journal_timestamp == st.st_mtime) {
     return ;

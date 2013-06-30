@@ -219,8 +219,8 @@ anthy_create_mem_dic(void)
   for (i = 0; i < HASH_SIZE; i++) {
     md->seq_ent_hash[i] = NULL;
   }
-  
-  md->seq_ent_allocator = 
+
+  md->seq_ent_allocator =
     anthy_create_allocator(sizeof(struct seq_ent),
 			   seq_ent_dtor);
   md->dic_ent_allocator =

@@ -1,4 +1,4 @@
-/* 
+/*
  * 標準入出力でコマンドを受けたり，変換結果を送るなどの通信を
  * アプリケーション(おもにEmacs)と行うことにより，アプリケーションに
  * Anthyによる入力機能を容易かつ安全に追加できる．
@@ -81,7 +81,7 @@ enum {
   /* キーコマンド */
   CMD_SPACE = 1000,
   CMD_ENTER,
-  CMD_BACKSPACE, 
+  CMD_BACKSPACE,
   CMD_DELETE,
   CMD_UP,
   CMD_ESC,
@@ -529,7 +529,7 @@ proc_connection(void)
   if (ret < 0) {
     return -1;
   }
-  
+
   if (conn->n_wbuf > 0 && FD_ISSET(conn->wfd, &wfds)) {
     ret = write(conn->wfd, conn->wbuf, conn->n_wbuf);
     if (ret <= 0) {
@@ -541,11 +541,11 @@ proc_connection(void)
       }
     }
   }
-  
+
   if (FD_ISSET(conn->rfd, &rfds)) {
-    ensure_buffer(&conn->rbuf, &conn->s_rbuf, 
+    ensure_buffer(&conn->rbuf, &conn->s_rbuf,
 		  conn->n_rbuf + BUF_GROW_SIZE);
-    ret = read(conn->rfd, 
+    ret = read(conn->rfd,
 	       conn->rbuf + conn->n_rbuf, conn->s_rbuf - conn->n_rbuf);
     if (ret <= 0) {
       kill_connection (conn);
@@ -647,7 +647,7 @@ send_quote_string(const char* str)
     default:
       break;
     }
-    
+
     *q++ = *p++;
   }
   *q = '\0';
@@ -694,9 +694,9 @@ send_preedit(struct anthy_input_preedit* pedit)
 	      send_string(" ((UL RV ENUMR) \"");
 	    else
 	      send_string(" ((UL RV) \"");
-	  } else 
+	  } else
 	    send_string(" ((UL) \"");
-	  
+
 	  send_quote_string(seg->str);
 	  send_string("\" ");
 	  send_number10(seg->cand_no);
@@ -708,7 +708,7 @@ send_preedit(struct anthy_input_preedit* pedit)
     }
     break;
   }
-	  
+
   send_string(")\r\n");
 }
 
@@ -748,7 +748,7 @@ new_input_context(int id)
 {
   struct input_context_list* ictxl;
 
-  ictxl = 
+  ictxl =
     (struct input_context_list*) malloc(sizeof (struct input_context_list));
   ictxl->id = id;
   ictxl->ictx = anthy_input_create_context(config);
@@ -780,7 +780,7 @@ cmdh_select_input_context(struct command* cmd)
 {
   int id;
   struct input_context_list** p;
-  
+
   id = atoi(cmd->arg[0]);
   for (p = &ictx_list; *p; p = &(*p)->next) {
     if ((*p)->id == id) {
@@ -861,7 +861,7 @@ cmdh_map_edit(struct command* cmd)
   int map_no = atoi(cmd->arg[0]);
   int ret;
 
-  ret = anthy_input_edit_rk_config(config, map_no, 
+  ret = anthy_input_edit_rk_config(config, map_no,
 				   cmd->arg[1], cmd->arg[2], NULL);
 
   if (ret != 0) {
@@ -958,7 +958,7 @@ cmd_key(struct anthy_input_context* ictx, struct command* cmd)
  * コマンドをディスパッチする
  */
 static void
-dispatch_command(struct anthy_input_context* ictx, 
+dispatch_command(struct anthy_input_context* ictx,
 		 struct command* cmd)
 {
   switch (cmd->cmd) {
@@ -968,7 +968,7 @@ dispatch_command(struct anthy_input_context* ictx,
   case CMDH_PRINT_CONTEXT:
     /* Dirty implementation, would cause corrpution.*/
     {
-      anthy_context_t ac = anthy_input_get_anthy_context(ictx); 
+      anthy_context_t ac = anthy_input_get_anthy_context(ictx);
       if (ac) {
 	anthy_print_context(ac);
       }
@@ -1056,7 +1056,7 @@ main_loop(void)
 
   while (1) {
     cmd = read_command();
-    if (!cmd) 
+    if (!cmd)
       break;
     ictx = get_current_input_context();
 

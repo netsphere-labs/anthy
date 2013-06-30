@@ -236,7 +236,7 @@ static void
 get_line(void)
 {
   int r;
-  
+
  again:
   anthy_free_line();
   g_ps.line_num ++;

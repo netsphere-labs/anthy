@@ -376,7 +376,7 @@ anthy_xstrcpy(xstr *dest, xstr *src)
   for (i = 0; i < src->len; i++) {
     dest->str[i] = src->str[i];
   }
-  
+
   return dest;
 }
 /* 返り値の符号はstrcmpと同じ */

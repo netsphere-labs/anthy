@@ -16,11 +16,11 @@
 #include "config.h"
 
 /*
- *            connection        context 
+ *            connection        context
  *  S -- open -> [ ] -- new ----> [ ] -- convert --> [ ] --> get_candidates
  *   <- close --     <- release -     <-- commit --      --> resize_segment
  *                                    <-- cancel --      --> select_candidate
- *                                                
+ *
  */
 
 struct context {
@@ -273,7 +273,7 @@ say_hello (void)
 {
   const char *options = "";
 
-  printf ("Anthy (Version %s) [%s] : Nice to meet you.\r\n", VERSION, 
+  printf ("Anthy (Version %s) [%s] : Nice to meet you.\r\n", VERSION,
 	  options);
   fflush (stdout);
   return 0;
@@ -371,7 +371,7 @@ do_get_candidates (const char *line)
   printf ("+DATA %d %d\r\n", cand_offset, max);
   for (i = cand_offset; i < max; i++)
     printf ("%s\r\n", get_segment_candidate (c, seg_num, i));
-  printf ("\r\n");  
+  printf ("\r\n");
 
   fflush (stdout);
   return 0;
@@ -539,9 +539,9 @@ egg_main (void)
     else
       *p = '\0';
     d = (struct dispatch_table *)
-      bsearch (s, dt, 
-	       sizeof (dt) / sizeof (struct dispatch_table), 
-	       sizeof (struct dispatch_table), 
+      bsearch (s, dt,
+	       sizeof (dt) / sizeof (struct dispatch_table),
+	       sizeof (struct dispatch_table),
 	       (int (*)(const void *, const void *))dt_cmp);
     if (d != NULL)
       done = d->func (s);
