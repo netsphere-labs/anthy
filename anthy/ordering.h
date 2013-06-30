@@ -1,4 +1,4 @@
-/* ¸õÊä¤Î½ç½ø¤ò·èÄê¤¹¤ë¤¿¤á¤Î¥â¥¸¥å¡¼¥ë */
+/* å€™è£œã®é †åºã‚’æ±ºå®šã™ã‚‹ãŸã‚ã®ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ« */
 #ifndef _ordering_h_included_
 #define _ordering_h_included_
 
@@ -7,7 +7,7 @@
 struct segment_list;
 struct splitter_context;
 
-/** ordering_context¤Îwrapper¹½Â¤ÂÎ
+/** ordering_contextã®wrapperæ§‹é€ ä½“
  */
 struct ordering_context_wrapper{
   struct ordering_context *oc;

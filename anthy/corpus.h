@@ -1,4 +1,4 @@
-/* ¥³¡¼¥Ñ¥¹¤Î¹½ÃÛµÚ¤Ó¥¢¥¯¥»¥¹¤ò¹Ô¤¦ */
+/* ã‚³ãƒ¼ãƒ‘ã‚¹ã®æ§‹ç¯‰åŠã³ã‚¢ã‚¯ã‚»ã‚¹ã‚’è¡Œã† */
 #ifndef _corpus_h_included_
 #define _corpus_h_included_
 
@@ -11,10 +11,10 @@ struct corpus;
 #define ELM_WORD_BORDER 0x20000000
 #define ELM_INVALID 0x40000000
 
-/* hashÃÍ¤Î²¼°Ì28bit¤ò»È¤¦ */
+/* hashå€¤ã®ä¸‹ä½28bitã‚’ä½¿ã† */
 #define CORPUS_KEY_MASK 0x0fffffff
 
-/* ¥³¡¼¥Ñ¥¹¹½ÃÛÍÑ¤Î´Ø¿ô */
+/* ã‚³ãƒ¼ãƒ‘ã‚¹æ§‹ç¯‰ç”¨ã®é–¢æ•° */
 struct corpus *corpus_new(void);
 void corpus_push_back(struct corpus *c, int *val, int nr, int flags);
 void corpus_build(struct corpus *c);

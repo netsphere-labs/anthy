@@ -1,4 +1,4 @@
-/* ÁÂ¹ÔÎó¤ò°·¤¦¤¿¤á¤Î¥³¡¼¥É */
+/* ç–è¡Œåˆ—ã‚’æ‰±ã†ãŸã‚ã®ã‚³ãƒ¼ãƒ‰ */
 #ifndef _matrix_h_included_
 #define _matrix_h_included_
 
@@ -12,15 +12,15 @@ struct matrix_image {
 struct sparse_matrix;
 struct sparse_array;
 
-/* ¹ÔÎó¤ò¹½À®¤¹¤ëAPI */
+/* è¡Œåˆ—ã‚’æ§‹æˆã™ã‚‹API */
 struct sparse_matrix *anthy_sparse_matrix_new(void);
 void anthy_sparse_matrix_set(struct sparse_matrix *m, int row, int column,
 			     int value, void *ptr);
 int anthy_sparse_matrix_get_int(struct sparse_matrix *m, int row, int column);
 void anthy_sparse_matrix_make_matrix(struct sparse_matrix *m);
-/* ¹ÔÎó¥¤¥á¡¼¥¸¤ò¹½ÃÛ¤¹¤ëAPI(ÇÛÎó¤Ïhost byte order) */
+/* è¡Œåˆ—ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’æ§‹ç¯‰ã™ã‚‹API(é…åˆ—ã¯host byte order) */
 struct matrix_image *anthy_matrix_image_new(struct sparse_matrix *s);
-/* ¹ÔÎó¥¤¥á¡¼¥¸¤Ë¥¢¥¯¥»¥¹¤¹¤ëAPI(ÇÛÎó¤Ïnetwork byte order) */
+/* è¡Œåˆ—ã‚¤ãƒ¡ãƒ¼ã‚¸ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹API(é…åˆ—ã¯network byte order) */
 int anthy_matrix_image_peek(int *im, int row, int col);
 
 #endif

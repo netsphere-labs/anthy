@@ -1,17 +1,17 @@
-/* ÁÇÀ­¤ò°·¤¦ */
+/* ç´ æ€§ã‚’æ‰±ã† */
 #ifndef _feature_set_h_included_
 #define _feature_set_h_included_
 
 #include <anthy/wtype.h>
 
-/* hash collision¤¬½Ğ¤¿¤éÅ¬µ¹Áı¤ä¤¹ */
+/* hash collisionãŒå‡ºãŸã‚‰é©å®œå¢—ã‚„ã™ */
 #define WORD_HASH_MAX 1024
 
 /**/
 #define NR_EM_FEATURES 14
 
 struct feature_list {
-  /* ¤¤¤Ş¤Î¤È¤³¤í¡¢ÁÇÀ­¤Ï14¸Ä¤Ş¤Ç */
+  /* ã„ã¾ã®ã¨ã“ã‚ã€ç´ æ€§ã¯14å€‹ã¾ã§ */
   int nr;
   int size;
   union {

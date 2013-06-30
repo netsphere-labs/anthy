@@ -5,13 +5,13 @@
 
 struct prediction_t {
   int timestamp;
-  /* ÆÉ¤ß */
+  /* èª­ã¿ */
   xstr *src_str;
-  /* ·ë²Ì¤ÎÊ¸»úÎó */
+  /* çµæœã®æ–‡å­—åˆ— */
   xstr *str;
 };
 
-/* Í½Â¬¤µ¤ì¤¿Ê¸»úÎó¤ò³ÊÇ¼¤¹¤ë */
+/* äºˆæ¸¬ã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’æ ¼ç´ã™ã‚‹ */
 int anthy_traverse_record_for_prediction(xstr*, struct prediction_t*);
 
 

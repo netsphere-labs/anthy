@@ -72,7 +72,7 @@ extern int anthy_get_stat(anthy_context_t, struct anthy_conv_stat *);
 extern int anthy_get_segment_stat(anthy_context_t, int, struct anthy_segment_stat *);
 /* context,nth segment,nth candidate,buffer,buffer len */
 extern int anthy_get_segment(anthy_context_t, int, int, char *, int);
-/* ��ʸ�ᤴ�Ȥ˥��ߥåȤ��� */
+/* 一文節ごとにコミットする */
 extern int anthy_commit_segment(anthy_context_t, int, int);
 
 /* Prediction */
