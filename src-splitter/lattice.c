@@ -1,9 +1,9 @@
 /*
- * ³ÎÎ¨¤òÉ¾²Á¤·¥Ó¥¿¥Ó¥¢¥ë¥´¥ê¥º¥à(viterbi algorithm)¤Ë¤è¤Ã¤Æ
- * Ê¸Àá¤Î¶èÀÚ¤ê¤ò·èÄê¤·¤Æ¥Ş¡¼¥¯¤¹¤ë¡£
+ * ç¢ºç‡ã‚’è©•ä¾¡ã—ãƒ“ã‚¿ãƒ“ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ (viterbi algorithm)ã«ã‚ˆã£ã¦
+ * æ–‡ç¯€ã®åŒºåˆ‡ã‚Šã‚’æ±ºå®šã—ã¦ãƒãƒ¼ã‚¯ã™ã‚‹ã€‚
  *
  *
- * ³°Éô¤«¤é¸Æ¤Ó½Ğ¤µ¤ì¤ë´Ø¿ô
+ * å¤–éƒ¨ã‹ã‚‰å‘¼ã³å‡ºã•ã‚Œã‚‹é–¢æ•°
  *  anthy_mark_borders()
  *
  * Copyright (C) 2006-2007 TABATA Yusuke
@@ -27,14 +27,14 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 /*
- * ¥³¥ó¥Æ¥­¥¹¥ÈÃæ¤ËÂ¸ºß¤¹¤ëmeta_word¤ò¤Ä¤Ê¤¤¤Ç¥°¥é¥Õ¤ò¹½À®¤·¤Ş¤¹¡£
- * (¤³¤Î¥°¥é¥Õ¤Î¤³¤È¤ò¥é¥Æ¥£¥¹(lattice/Â«)¤â¤·¤¯¤Ï¥È¥ì¥ê¥¹(trellis)¤È¸Æ¤Ó¤Ş¤¹)
- * meta_word¤É¤¦¤·¤ÎÀÜÂ³¤¬¥°¥é¥Õ¤Î¥Î¡¼¥É¤È¤Ê¤ê¡¢¹½Â¤ÂÎlattice_node¤Î
- * ¥ê¥ó¥¯¤È¤·¤Æ¹½À®¤µ¤ì¤Ş¤¹¡£
+ * ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆä¸­ã«å­˜åœ¨ã™ã‚‹meta_wordã‚’ã¤ãªã„ã§ã‚°ãƒ©ãƒ•ã‚’æ§‹æˆã—ã¾ã™ã€‚
+ * (ã“ã®ã‚°ãƒ©ãƒ•ã®ã“ã¨ã‚’ãƒ©ãƒ†ã‚£ã‚¹(lattice/æŸ)ã‚‚ã—ãã¯ãƒˆãƒ¬ãƒªã‚¹(trellis)ã¨å‘¼ã³ã¾ã™)
+ * meta_wordã©ã†ã—ã®æ¥ç¶šãŒã‚°ãƒ©ãƒ•ã®ãƒãƒ¼ãƒ‰ã¨ãªã‚Šã€æ§‹é€ ä½“lattice_nodeã®
+ * ãƒªãƒ³ã‚¯ã¨ã—ã¦æ§‹æˆã•ã‚Œã¾ã™ã€‚
  *
- * ¤³¤³¤Ç¤Î½èÍı¤Ï¼¡¤ÎÆó¤Ä¤ÎÍ×ÁÇ¤Ç¹½À®¤µ¤ì¤Ş¤¹
- * (1) ¥°¥é¥Õ¤ò¹½À®¤·¤Ä¤Ä¡¢³Æ¥Î¡¼¥É¤Ø¤ÎÅşÃ£³ÎÎ¨¤òµá¤á¤ë
- * (2) ¥°¥é¥Õ¤ò¸å¤í(±¦)¤«¤é¤¿¤É¤Ã¤ÆºÇÅ¬¤Ê¥Ñ¥¹¤òµá¤á¤ë
+ * ã“ã“ã§ã®å‡¦ç†ã¯æ¬¡ã®äºŒã¤ã®è¦ç´ ã§æ§‹æˆã•ã‚Œã¾ã™
+ * (1) ã‚°ãƒ©ãƒ•ã‚’æ§‹æˆã—ã¤ã¤ã€å„ãƒãƒ¼ãƒ‰ã¸ã®åˆ°é”ç¢ºç‡ã‚’æ±‚ã‚ã‚‹
+ * (2) ã‚°ãƒ©ãƒ•ã‚’å¾Œã‚(å³)ã‹ã‚‰ãŸã©ã£ã¦æœ€é©ãªãƒ‘ã‚¹ã‚’æ±‚ã‚ã‚‹
  *
  */
 #include <stdio.h>
@@ -50,25 +50,25 @@
 #include <anthy/diclib.h>
 #include "wordborder.h"
 
-static float anthy_normal_length = 20.0; /* Ê¸Àá¤Î´üÂÔ¤µ¤ì¤ëÄ¹¤µ */
+static float anthy_normal_length = 20.0; /* æ–‡ç¯€ã®æœŸå¾…ã•ã‚Œã‚‹é•·ã• */
 static void *trans_info_array;
 
 #define NODE_MAX_SIZE 50
 
-/* ¥°¥é¥Õ¤Î¥Î¡¼¥É(Á«°Ü¾õÂÖ) */
+/* ã‚°ãƒ©ãƒ•ã®ãƒãƒ¼ãƒ‰(é·ç§»çŠ¶æ…‹) */
 struct lattice_node {
-  int border; /* Ê¸»úÎóÃæ¤Î¤É¤³¤«¤é»Ï¤Ş¤ë¾õÂÖ¤« */
-  enum seg_class seg_class; /* ¤³¤Î¾õÂÖ¤ÎÉÊ»ì */
+  int border; /* æ–‡å­—åˆ—ä¸­ã®ã©ã“ã‹ã‚‰å§‹ã¾ã‚‹çŠ¶æ…‹ã‹ */
+  enum seg_class seg_class; /* ã“ã®çŠ¶æ…‹ã®å“è© */
 
 
-  double real_probability;  /* ¤³¤³¤Ë»ê¤ë¤Ş¤Ç¤Î³ÎÎ¨(Ê¸Àá¿ôÊäÀµÌµ¤·) */
-  double adjusted_probability;  /* ¤³¤³¤Ë»ê¤ë¤Ş¤Ç¤Î³ÎÎ¨(Ê¸Àá¿ôÊäÀµÍ­¤ê) */
+  double real_probability;  /* ã“ã“ã«è‡³ã‚‹ã¾ã§ã®ç¢ºç‡(æ–‡ç¯€æ•°è£œæ­£ç„¡ã—) */
+  double adjusted_probability;  /* ã“ã“ã«è‡³ã‚‹ã¾ã§ã®ç¢ºç‡(æ–‡ç¯€æ•°è£œæ­£æœ‰ã‚Š) */
 
 
-  struct lattice_node* before_node; /* °ì¤ÄÁ°¤ÎÁ«°Ü¾õÂÖ */
-  struct meta_word* mw; /* ¤³¤ÎÁ«°Ü¾õÂÖ¤ËÂĞ±ş¤¹¤ëmeta_word */
+  struct lattice_node* before_node; /* ä¸€ã¤å‰ã®é·ç§»çŠ¶æ…‹ */
+  struct meta_word* mw; /* ã“ã®é·ç§»çŠ¶æ…‹ã«å¯¾å¿œã™ã‚‹meta_word */
 
-  struct lattice_node* next; /* ¥ê¥¹¥È¹½Â¤¤Î¤¿¤á¤Î¥İ¥¤¥ó¥¿ */
+  struct lattice_node* next; /* ãƒªã‚¹ãƒˆæ§‹é€ ã®ãŸã‚ã®ãƒã‚¤ãƒ³ã‚¿ */
 };
 
 struct node_list_head {
@@ -77,10 +77,10 @@ struct node_list_head {
 };
 
 struct lattice_info {
-  /* Á«°Ü¾õÂÖ¤Î¥ê¥¹¥È¤ÎÇÛÎó */
+  /* é·ç§»çŠ¶æ…‹ã®ãƒªã‚¹ãƒˆã®é…åˆ— */
   struct node_list_head *lattice_node_list;
   struct splitter_context *sc;
-  /* ¥Î¡¼¥É¤Î¥¢¥í¥±¡¼¥¿ */
+  /* ãƒãƒ¼ãƒ‰ã®ã‚¢ãƒ­ã‚±ãƒ¼ã‚¿ */
   allocator node_allocator;
 };
 
@@ -105,7 +105,7 @@ get_poisson(double lambda, int r)
   int i;
   double result;
 
-  /* Í×¤¹¤ë¤Ë¥İ¥ï¥½¥óÊ¬ÉÛ */
+  /* è¦ã™ã‚‹ã«ãƒãƒ¯ã‚½ãƒ³åˆ†å¸ƒ */
   result = pow(lambda, r) * exp(-lambda);
   for (i = 2; i <= r; ++i) {
     result /= i;
@@ -114,17 +114,17 @@ get_poisson(double lambda, int r)
   return result;
 }
 
-/* Ê¸Àá¤Î·Á¼°¤«¤é¥¹¥³¥¢¤òÄ´À°¤¹¤ë */
+/* æ–‡ç¯€ã®å½¢å¼ã‹ã‚‰ã‚¹ã‚³ã‚¢ã‚’èª¿æ•´ã™ã‚‹ */
 static double
 get_form_bias(struct meta_word *mw)
 {
   double bias;
   int r;
-  /* wrap¤µ¤ì¤Æ¤¤¤ë¾ì¹ç¤ÏÆâÉô¤Î¤ò»È¤¦ */
+  /* wrapã•ã‚Œã¦ã„ã‚‹å ´åˆã¯å†…éƒ¨ã®ã‚’ä½¿ã† */
   while (mw->type == MW_WRAP) {
     mw = mw->mw1;
   }
-  /* Ê¸ÀáÄ¹¤Ë¤è¤ëÄ´À° */
+  /* æ–‡ç¯€é•·ã«ã‚ˆã‚‹èª¿æ•´ */
   r = mw->len;
   if (r > 6) {
     r = 6;
@@ -134,7 +134,7 @@ get_form_bias(struct meta_word *mw)
   }
   if (mw->seg_class == SEG_RENTAI_SHUSHOKU &&
       r < 3) {
-    /* »Ø¼¨¸ì */
+    /* æŒ‡ç¤ºèª */
     r = 3;
   }
   bias = get_poisson(anthy_normal_length, r);
@@ -177,7 +177,7 @@ calc_probability(int cc, struct feature_list *fl)
   struct feature_freq *res, arg;
   double prob;
 
-  /* ³ÎÎ¨¤ò·×»»¤¹¤ë */
+  /* ç¢ºç‡ã‚’è¨ˆç®—ã™ã‚‹ */
   res = anthy_find_feature_freq(trans_info_array,
 				fl, &arg);
   prob = 0;
@@ -187,7 +187,7 @@ calc_probability(int cc, struct feature_list *fl)
     prob = 1 - (neg) / (double) (pos + neg);
   }
   if (prob <= 0) {
-    /* ÎãÊ¸Ãæ¤ËÂ¸ºß¤·¤Ê¤¤¥Ñ¥¿¡¼¥ó¤Ê¤Î¤Ç0¤Ë¶á¤¤¥¹¥³¥¢ */
+    /* ä¾‹æ–‡ä¸­ã«å­˜åœ¨ã—ãªã„ãƒ‘ã‚¿ãƒ¼ãƒ³ãªã®ã§0ã«è¿‘ã„ã‚¹ã‚³ã‚¢ */
     prob = 1.0f / (double)(10000 * 100);
   }
 
@@ -210,7 +210,7 @@ get_transition_probability(struct lattice_node *node)
   probability = calc_probability(node->seg_class, &features);
   anthy_feature_list_free(&features);
 
-  /* Ê¸Àá¤Î·Á¤ËÂĞ¤¹¤ëÉ¾²Á */
+  /* æ–‡ç¯€ã®å½¢ã«å¯¾ã™ã‚‹è©•ä¾¡ */
   probability *= get_form_bias(node->mw);
   return probability;
 }
@@ -235,17 +235,17 @@ alloc_lattice_info(struct splitter_context *sc, int size)
 static void
 calc_node_parameters(struct lattice_node *node)
 {
-  /* ÂĞ±ş¤¹¤ëmetaword¤¬Ìµ¤¤¾ì¹ç¤ÏÊ¸Æ¬¤ÈÈ½ÃÇ¤¹¤ë */
+  /* å¯¾å¿œã™ã‚‹metawordãŒç„¡ã„å ´åˆã¯æ–‡é ­ã¨åˆ¤æ–­ã™ã‚‹ */
   node->seg_class = node->mw ? node->mw->seg_class : SEG_HEAD;
 
   if (node->before_node) {
-    /* º¸¤ËÎÙÀÜ¤¹¤ë¥Î¡¼¥É¤¬¤¢¤ë¾ì¹ç */
+    /* å·¦ã«éš£æ¥ã™ã‚‹ãƒãƒ¼ãƒ‰ãŒã‚ã‚‹å ´åˆ */
     node->real_probability = node->before_node->real_probability *
       get_transition_probability(node);
     node->adjusted_probability = node->real_probability *
       (node->mw ? node->mw->score : 1000);
   } else {
-    /* º¸¤ËÎÙÀÜ¤¹¤ë¥Î¡¼¥É¤¬Ìµ¤¤¾ì¹ç */
+    /* å·¦ã«éš£æ¥ã™ã‚‹ãƒãƒ¼ãƒ‰ãŒç„¡ã„å ´åˆ */
     node->real_probability = 1.0;
     node->adjusted_probability = node->real_probability;
   }
@@ -309,12 +309,12 @@ cmp_node_by_type_to_type(struct lattice_node *lhs, struct lattice_node *rhs,
 }
 
 /*
- * ¥Î¡¼¥É¤òÈæ³Ó¤¹¤ë
+ * ãƒãƒ¼ãƒ‰ã‚’æ¯”è¼ƒã™ã‚‹
  *
- ** ÊÖ¤êÃÍ
- * 1: lhs¤ÎÊı¤¬³ÎÎ¨¤¬¹â¤¤
- * 0: Æ±¤¸
- * -1: rhs¤ÎÊı¤¬³ÎÎ¨¤¬¹â¤¤
+ ** è¿”ã‚Šå€¤
+ * 1: lhsã®æ–¹ãŒç¢ºç‡ãŒé«˜ã„
+ * 0: åŒã˜
+ * -1: rhsã®æ–¹ãŒç¢ºç‡ãŒé«˜ã„
  */
 static int
 cmp_node(struct lattice_node *lhs, struct lattice_node *rhs)
@@ -330,11 +330,11 @@ cmp_node(struct lattice_node *lhs, struct lattice_node *rhs)
   while (lhs_before && rhs_before) {
     if (lhs_before->mw && rhs_before->mw &&
 	lhs_before->mw->from + lhs_before->mw->len == rhs_before->mw->from + rhs_before->mw->len) {
-      /* ³Ø½¬¤«¤éºî¤é¤ì¤¿¥Î¡¼¥É¤«¤É¤¦¤«¤ò¸«¤ë */
+      /* å­¦ç¿’ã‹ã‚‰ä½œã‚‰ã‚ŒãŸãƒãƒ¼ãƒ‰ã‹ã©ã†ã‹ã‚’è¦‹ã‚‹ */
       ret = cmp_node_by_type(lhs_before, rhs_before, MW_OCHAIRE);
       if (ret != 0) return ret;
 
-      /* COMPOUND_PART¤è¤ê¤ÏCOMPOUND_HEAD¤òÍ¥Àè */
+      /* COMPOUND_PARTã‚ˆã‚Šã¯COMPOUND_HEADã‚’å„ªå…ˆ */
       ret = cmp_node_by_type_to_type(lhs_before, rhs_before, MW_COMPOUND_HEAD, MW_COMPOUND_PART);
       if (ret != 0) return ret;
     } else {
@@ -344,7 +344,7 @@ cmp_node(struct lattice_node *lhs, struct lattice_node *rhs)
     rhs_before = rhs_before->before_node;
   }
 
-  /* ºÇ¸å¤ËÁ«°Ü³ÎÎ¨¤ò¸«¤ë */
+  /* æœ€å¾Œã«é·ç§»ç¢ºç‡ã‚’è¦‹ã‚‹ */
   if (lhs->adjusted_probability > rhs->adjusted_probability) {
     return 1;
   } else if (lhs->adjusted_probability < rhs->adjusted_probability) {
@@ -355,7 +355,7 @@ cmp_node(struct lattice_node *lhs, struct lattice_node *rhs)
 }
 
 /*
- * ¹½À®Ãæ¤Î¥é¥Æ¥£¥¹¤Ë¥Î¡¼¥É¤òÄÉ²Ã¤¹¤ë
+ * æ§‹æˆä¸­ã®ãƒ©ãƒ†ã‚£ã‚¹ã«ãƒãƒ¼ãƒ‰ã‚’è¿½åŠ ã™ã‚‹
  */
 static void
 push_node(struct lattice_info* info, struct lattice_node* new_node,
@@ -368,7 +368,7 @@ push_node(struct lattice_info* info, struct lattice_node* new_node,
     print_lattice_node(info, new_node);
   }
 
-  /* ÀèÆ¬¤Înode¤¬Ìµ¤±¤ì¤ĞÌµ¾ò·ï¤ËÄÉ²Ã */
+  /* å…ˆé ­ã®nodeãŒç„¡ã‘ã‚Œã°ç„¡æ¡ä»¶ã«è¿½åŠ  */
   node = info->lattice_node_list[position].head;
   if (!node) {
     info->lattice_node_list[position].head = new_node;
@@ -377,14 +377,14 @@ push_node(struct lattice_info* info, struct lattice_node* new_node,
   }
 
   while (node->next) {
-    /* Í¾·×¤Ê¥Î¡¼¥É¤òÄÉ²Ã¤·¤Ê¤¤¤¿¤á¤Î»Ş´¢¤ê */
+    /* ä½™è¨ˆãªãƒãƒ¼ãƒ‰ã‚’è¿½åŠ ã—ãªã„ãŸã‚ã®æåˆˆã‚Š */
     if (new_node->seg_class == node->seg_class &&
 	new_node->border == node->border) {
-      /* segclass¤¬Æ±¤¸¤Ç¡¢»Ï¤Ş¤ë°ÌÃÖ¤¬Æ±¤¸¤Ê¤é */
+      /* segclassãŒåŒã˜ã§ã€å§‹ã¾ã‚‹ä½ç½®ãŒåŒã˜ãªã‚‰ */
       switch (cmp_node(new_node, node)) {
       case 0:
       case 1:
-	/* ¿·¤·¤¤Êı¤¬³ÎÎ¨¤¬Âç¤­¤¤¤«³Ø½¬¤Ë¤è¤ë¤â¤Î¤Ê¤é¡¢¸Å¤¤¤Î¤ÈÃÖ¤­´¹¤¨*/
+	/* æ–°ã—ã„æ–¹ãŒç¢ºç‡ãŒå¤§ãã„ã‹å­¦ç¿’ã«ã‚ˆã‚‹ã‚‚ã®ãªã‚‰ã€å¤ã„ã®ã¨ç½®ãæ›ãˆ*/
 	if (previous_node) {
 	  previous_node->next = new_node;
 	} else {
@@ -394,7 +394,7 @@ push_node(struct lattice_info* info, struct lattice_node* new_node,
 	release_lattice_node(info, node);
 	break;
       case -1:
-	/* ¤½¤¦¤Ç¤Ê¤¤¤Ê¤éºï½ü */
+	/* ãã†ã§ãªã„ãªã‚‰å‰Šé™¤ */
 	release_lattice_node(info, new_node);
 	break;
       }
@@ -404,12 +404,12 @@ push_node(struct lattice_info* info, struct lattice_node* new_node,
     node = node->next;
   }
 
-  /* ºÇ¸å¤Î¥Î¡¼¥É¤Î¸å¤í¤ËÄÉ²Ã */
+  /* æœ€å¾Œã®ãƒãƒ¼ãƒ‰ã®å¾Œã‚ã«è¿½åŠ  */
   node->next = new_node;
   info->lattice_node_list[position].nr_nodes ++;
 }
 
-/* °ìÈÖ³ÎÎ¨¤ÎÄã¤¤¥Î¡¼¥É¤ò¾Ãµî¤¹¤ë*/
+/* ä¸€ç•ªç¢ºç‡ã®ä½ã„ãƒãƒ¼ãƒ‰ã‚’æ¶ˆå»ã™ã‚‹*/
 static void
 remove_min_node(struct lattice_info *info, struct node_list_head *node_list)
 {
@@ -418,7 +418,7 @@ remove_min_node(struct lattice_info *info, struct node_list_head *node_list)
   struct lattice_node* min_node = node;
   struct lattice_node* previous_min_node = NULL;
 
-  /* °ìÈÖ³ÎÎ¨¤ÎÄã¤¤¥Î¡¼¥É¤òÃµ¤¹ */
+  /* ä¸€ç•ªç¢ºç‡ã®ä½ã„ãƒãƒ¼ãƒ‰ã‚’æ¢ã™ */
   while (node) {
     if (cmp_node(node, min_node) < 0) {
       previous_min_node = previous_node;
@@ -428,7 +428,7 @@ remove_min_node(struct lattice_info *info, struct node_list_head *node_list)
     node = node->next;
   }
 
-  /* °ìÈÖ³ÎÎ¨¤ÎÄã¤¤¥Î¡¼¥É¤òºï½ü¤¹¤ë */
+  /* ä¸€ç•ªç¢ºç‡ã®ä½ã„ãƒãƒ¼ãƒ‰ã‚’å‰Šé™¤ã™ã‚‹ */
   if (previous_min_node) {
     previous_min_node->next = min_node->next;
   } else {
@@ -438,16 +438,16 @@ remove_min_node(struct lattice_info *info, struct node_list_head *node_list)
   node_list->nr_nodes --;
 }
 
-/* ¤¤¤ï¤æ¤ë¥Ó¥¿¥Ó¥¢¥ë¥´¥ê¥º¥à¤ò»ÈÍÑ¤·¤Æ·ĞÏ©¤òÁª¤Ö */
+/* ã„ã‚ã‚†ã‚‹ãƒ“ã‚¿ãƒ“ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ã‚’ä½¿ç”¨ã—ã¦çµŒè·¯ã‚’é¸ã¶ */
 static void
 choose_path(struct lattice_info* info, int to)
 {
-  /* ºÇ¸å¤Ş¤ÇÅşÃ£¤·¤¿Á«°Ü¤Î¤Ê¤«¤Ç°ìÈÖ³ÎÎ¨¤ÎÂç¤­¤¤¤â¤Î¤òÁª¤Ö */
+  /* æœ€å¾Œã¾ã§åˆ°é”ã—ãŸé·ç§»ã®ãªã‹ã§ä¸€ç•ªç¢ºç‡ã®å¤§ãã„ã‚‚ã®ã‚’é¸ã¶ */
   struct lattice_node* node;
   struct lattice_node* best_node = NULL;
   int last = to;
   while (!info->lattice_node_list[last].head) {
-    /* ºÇ¸å¤ÎÊ¸»ú¤Ş¤ÇÁ«°Ü¤·¤Æ¤¤¤Ê¤«¤Ã¤¿¤é¸åÌá¤ê */
+    /* æœ€å¾Œã®æ–‡å­—ã¾ã§é·ç§»ã—ã¦ã„ãªã‹ã£ãŸã‚‰å¾Œæˆ»ã‚Š */
     --last;
   }
   for (node = info->lattice_node_list[last].head; node; node = node->next) {
@@ -459,7 +459,7 @@ choose_path(struct lattice_info* info, int to)
     return;
   }
 
-  /* Á«°Ü¤òµÕ¤Ë¤¿¤É¤ê¤Ä¤ÄÊ¸Àá¤ÎÀÚ¤ìÌÜ¤òµ­Ï¿ */
+  /* é·ç§»ã‚’é€†ã«ãŸã©ã‚Šã¤ã¤æ–‡ç¯€ã®åˆ‡ã‚Œç›®ã‚’è¨˜éŒ² */
   node = best_node;
   if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_LN) {
     printf("choose_path()\n");
@@ -484,34 +484,34 @@ build_graph(struct lattice_info* info, int from, int to)
   struct lattice_node* node;
   struct lattice_node* left_node;
 
-  /* »ÏÅÀ¤È¤Ê¤ë¥Î¡¼¥É¤òÄÉ²Ã */
+  /* å§‹ç‚¹ã¨ãªã‚‹ãƒãƒ¼ãƒ‰ã‚’è¿½åŠ  */
   node = alloc_lattice_node(info, NULL, NULL, from);
   push_node(info, node, from);
 
-  /* info->lattice_node_list[index]¤Ë¤Ïindex¤Ş¤Ç¤ÎÁ«°Ü¤¬Æş¤Ã¤Æ¤¤¤ë¤Î¤Ç¤¢¤Ã¤Æ¡¢
-   * index¤«¤é¤ÎÁ«°Ü¤¬Æş¤Ã¤Æ¤¤¤ë¤Î¤Ç¤Ï¤Ê¤¤
+  /* info->lattice_node_list[index]ã«ã¯indexã¾ã§ã®é·ç§»ãŒå…¥ã£ã¦ã„ã‚‹ã®ã§ã‚ã£ã¦ã€
+   * indexã‹ã‚‰ã®é·ç§»ãŒå…¥ã£ã¦ã„ã‚‹ã®ã§ã¯ãªã„
    */
 
-  /* Á´¤Æ¤ÎÁ«°Ü¤òº¸¤«¤é»î¤¹ */
+  /* å…¨ã¦ã®é·ç§»ã‚’å·¦ã‹ã‚‰è©¦ã™ */
   for (i = from; i < to; ++i) {
     for (left_node = info->lattice_node_list[i].head; left_node;
 	 left_node = left_node->next) {
       struct meta_word *mw;
-      /* iÊ¸»úÌÜ¤ËÅşÃ£¤¹¤ëlattice_node¤Î¥ë¡¼¥× */
+      /* iæ–‡å­—ç›®ã«åˆ°é”ã™ã‚‹lattice_nodeã®ãƒ«ãƒ¼ãƒ— */
 
       for (mw = info->sc->word_split_info->cnode[i].mw; mw; mw = mw->next) {
 	int position;
 	struct lattice_node* new_node;
-	/* iÊ¸»úÌÜ¤«¤é¤Îmeta_word¤Î¥ë¡¼¥× */
+	/* iæ–‡å­—ç›®ã‹ã‚‰ã®meta_wordã®ãƒ«ãƒ¼ãƒ— */
 
 	if (mw->can_use != ok) {
-	  continue; /* ·è¤á¤é¤ì¤¿Ê¸Àá¤Î¶èÀÚ¤ê¤ò¤Ş¤¿¤°metaword¤Ï»È¤ï¤Ê¤¤ */
+	  continue; /* æ±ºã‚ã‚‰ã‚ŒãŸæ–‡ç¯€ã®åŒºåˆ‡ã‚Šã‚’ã¾ãŸãmetawordã¯ä½¿ã‚ãªã„ */
 	}
 	position = i + mw->len;
 	new_node = alloc_lattice_node(info, left_node, mw, i);
 	push_node(info, new_node, position);
 
-	/* ²ò¤Î¸õÊä¤¬Â¿¤¹¤®¤¿¤é¡¢³ÎÎ¨¤ÎÄã¤¤Êı¤«¤éºï¤ë */
+	/* è§£ã®å€™è£œãŒå¤šã™ããŸã‚‰ã€ç¢ºç‡ã®ä½ã„æ–¹ã‹ã‚‰å‰Šã‚‹ */
 	if (info->lattice_node_list[position].nr_nodes >= NODE_MAX_SIZE) {
 	  remove_min_node(info, &info->lattice_node_list[position]);
 	}
@@ -519,7 +519,7 @@ build_graph(struct lattice_info* info, int from, int to)
     }
   }
 
-  /* Ê¸ËöÊäÀµ */
+  /* æ–‡æœ«è£œæ­£ */
   for (node = info->lattice_node_list[to].head; node; node = node->next) {
     struct feature_list features;
     anthy_feature_list_init(&features);

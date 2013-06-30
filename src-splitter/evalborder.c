@@ -1,11 +1,11 @@
 /*
- * Ê¸Àá¤Î¶­³¦¤ò¸¡½Ğ¤¹¤ë¡£
+ * æ–‡ç¯€ã®å¢ƒç•Œã‚’æ¤œå‡ºã™ã‚‹ã€‚
  *
- * metaword¤ÎÁªÂò¤Ë¤Ï¥Ó¥¿¥Ó¥¢¥ë¥´¥ê¥º¥à¤ò»È¤¦
+ * metawordã®é¸æŠã«ã¯ãƒ“ã‚¿ãƒ“ã‚¢ãƒ«ã‚´ãƒªã‚ºãƒ ã‚’ä½¿ã†
  *
- * anthy_eval_border() ¤Ç»ØÄê¤µ¤ì¤¿ÎÎ°è¤òÊ¸Àá¤ËÊ¬³ä¤¹¤ë
+ * anthy_eval_border() ã§æŒ‡å®šã•ã‚ŒãŸé ˜åŸŸã‚’æ–‡ç¯€ã«åˆ†å‰²ã™ã‚‹
  *
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2001 10/29
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2001 10/29
  * Copyright (C) 2000-2003 TABATA Yusuke, UGAWA Tomoharu
  */
 #include <stdio.h>
@@ -21,20 +21,20 @@ border_check(struct meta_word* mw,
 	     int border)
 {
   if (mw->from < border) {
-    /* ÀèÆ¬¤ÎÊ¸Àá¤ÎÃæ¤«¤é»Ï¤Ş¤ëmw¤ÏÊ¸Àá¶èÀÚ¤ê¤Ë¤Ô¤Ã¤¿¤ê¤¢¤Ã¤Æ¤¤¤Ê¤¤¤È¥À¥á */
+    /* å…ˆé ­ã®æ–‡ç¯€ã®ä¸­ã‹ã‚‰å§‹ã¾ã‚‹mwã¯æ–‡ç¯€åŒºåˆ‡ã‚Šã«ã´ã£ãŸã‚Šã‚ã£ã¦ã„ãªã„ã¨ãƒ€ãƒ¡ */
     if (mw->from == from && mw->from + mw->len == border) {
       return 1;
     } else {
       return 0;
     }
   } else {
-    /* ¸å¤í¤ÎÊ¸Àá¤ÏÌµ¾ò·ï¤Ë»ÈÍÑ²ÄÇ½ */
+    /* å¾Œã‚ã®æ–‡ç¯€ã¯ç„¡æ¡ä»¶ã«ä½¿ç”¨å¯èƒ½ */
     return 1;
   }
 }
 
 /*
- * ºÆµ¢Åª¤Ëmetaword¤¬»ÈÍÑ²ÄÇ½¤«¥Á¥§¥Ã¥¯¤¹¤ë
+ * å†å¸°çš„ã«metawordãŒä½¿ç”¨å¯èƒ½ã‹ãƒã‚§ãƒƒã‚¯ã™ã‚‹
  */
 static void
 metaword_constraint_check(struct splitter_context *sc,
@@ -55,7 +55,7 @@ metaword_constraint_check(struct splitter_context *sc,
       struct meta_word* mw2 = mw->mw2;
 
       if (mw1&&mw2&&mw1->from + mw1->len == border) {
-	/* ¤Á¤ç¤¦¤É¶­ÌÜ¤Ë¥Ş¡¼¥¯¤¬Æş¤Ã¤Æ¤ë */
+	/* ã¡ã‚‡ã†ã©å¢ƒç›®ã«ãƒãƒ¼ã‚¯ãŒå…¥ã£ã¦ã‚‹ */
 	mw->can_use = ng;
 	break;
       }
@@ -80,7 +80,7 @@ metaword_constraint_check(struct splitter_context *sc,
       struct meta_word* itr = mw;
       mw->can_use = ok;
 
-      /* ¸Ä¡¹¤ÎÊ¸Àá¤Î°ì¤Ä¤Ç¤âÊ¸Àá¶èÀÚ¤ê¤ò¤Ş¤¿¤¬¤Ã¤Æ¤¤¤ì¤Ğ¡¢¤³¤ÎÊ£¹ç¸ì¤Ï»È¤¨¤Ê¤¤ */
+      /* å€‹ã€…ã®æ–‡ç¯€ã®ä¸€ã¤ã§ã‚‚æ–‡ç¯€åŒºåˆ‡ã‚Šã‚’ã¾ãŸãŒã£ã¦ã„ã‚Œã°ã€ã“ã®è¤‡åˆèªã¯ä½¿ãˆãªã„ */
       for (; itr && itr->type == MW_NUMBER; itr = itr->mw2) {
 	struct meta_word* mw1 = itr->mw1;
 	if (!border_check(mw1, from, border)) {
@@ -95,7 +95,7 @@ metaword_constraint_check(struct splitter_context *sc,
       struct meta_word* itr = mw;
       mw->can_use = ok;
 
-      /* ¸Ä¡¹¤ÎÊ¸Àá¤Î°ì¤Ä¤Ç¤âÊ¸Àá¶èÀÚ¤ê¤ò¤Ş¤¿¤¬¤Ã¤Æ¤¤¤ì¤Ğ¡¢¤³¤ÎÊ£¹ç¸ì¤Ï»È¤¨¤Ê¤¤ */
+      /* å€‹ã€…ã®æ–‡ç¯€ã®ä¸€ã¤ã§ã‚‚æ–‡ç¯€åŒºåˆ‡ã‚Šã‚’ã¾ãŸãŒã£ã¦ã„ã‚Œã°ã€ã“ã®è¤‡åˆèªã¯ä½¿ãˆãªã„ */
       for (; itr && (itr->type == MW_COMPOUND_HEAD || itr->type == MW_COMPOUND); itr = itr->mw2) {
 	struct meta_word* mw1 = itr->mw1;
 	if (!border_check(mw1, from, border)) {
@@ -127,7 +127,7 @@ metaword_constraint_check(struct splitter_context *sc,
 }
 
 /*
- * Á´¤Æ¤Îmetaword¤Ë¤Ä¤¤¤Æ»ÈÍÑ¤Ç¤­¤ë¤«¤É¤¦¤«¤ò¥Á¥§¥Ã¥¯¤¹¤ë
+ * å…¨ã¦ã®metawordã«ã¤ã„ã¦ä½¿ç”¨ã§ãã‚‹ã‹ã©ã†ã‹ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
  */
 static void
 metaword_constraint_check_all(struct splitter_context *sc,
@@ -138,7 +138,7 @@ metaword_constraint_check_all(struct splitter_context *sc,
   struct word_split_info_cache *info;
   info = sc->word_split_info;
 
-  /* ¤Ş¤ºunchecked¤Ë¤¹¤ë */
+  /* ã¾ãšuncheckedã«ã™ã‚‹ */
   for (i = from; i < to; i ++) {
     struct meta_word *mw;
     for (mw = info->cnode[i].mw;
@@ -147,7 +147,7 @@ metaword_constraint_check_all(struct splitter_context *sc,
     }
   }
 
-  /* ¼¡¤Ë¹çÀ®¤µ¤ì¤¿metaword¤Ë¤Ä¤¤¤Æ¥Á¥§¥Ã¥¯ */
+  /* æ¬¡ã«åˆæˆã•ã‚ŒãŸmetawordã«ã¤ã„ã¦ãƒã‚§ãƒƒã‚¯ */
   for (i = from; i < to; i ++) {
     struct meta_word *mw;
     for (mw = info->cnode[i].mw; mw; mw = mw->next) {
@@ -157,7 +157,7 @@ metaword_constraint_check_all(struct splitter_context *sc,
 }
 
 /*
- * ¤³¤³¤«¤éÊ¸Àá¶­³¦¤ò¥Ş¡¼¥¯¤¹¤ë
+ * ã“ã“ã‹ã‚‰æ–‡ç¯€å¢ƒç•Œã‚’ãƒãƒ¼ã‚¯ã™ã‚‹
  */
 void
 anthy_eval_border(struct splitter_context *sc, int from, int from2, int to)
@@ -165,11 +165,11 @@ anthy_eval_border(struct splitter_context *sc, int from, int from2, int to)
   struct meta_word *mw;
   int nr;
 
-  /* Ê¸Àá¸õÊä¤Î¤¦¤Á»È¤¨¤ë¤â¤Î¤Î¤ßÁªÂò */
+  /* æ–‡ç¯€å€™è£œã®ã†ã¡ä½¿ãˆã‚‹ã‚‚ã®ã®ã¿é¸æŠ */
   metaword_constraint_check_all(sc, from, to, from2);
 
-  /* from¤Èfrom2¤Î´Ö¤ò¥«¥Ğ¡¼¤¹¤ëmeta_word¤¬¤¢¤ë¤«¤É¤¦¤«¤òÃµ¤¹¡£
-   * ¤¢¤ì¤Ğ¡¢from¤«¤é²òÀÏ¤ò¹Ô¤¤¡¢¤Ê¤±¤ì¤Ğfrom2¤«¤é²òÀÏ¤ò¤¹¤ë¡£
+  /* fromã¨from2ã®é–“ã‚’ã‚«ãƒãƒ¼ã™ã‚‹meta_wordãŒã‚ã‚‹ã‹ã©ã†ã‹ã‚’æ¢ã™ã€‚
+   * ã‚ã‚Œã°ã€fromã‹ã‚‰è§£æã‚’è¡Œã„ã€ãªã‘ã‚Œã°from2ã‹ã‚‰è§£æã‚’ã™ã‚‹ã€‚
    */
   nr = 0;
   for (mw = sc->word_split_info->cnode[from].mw; mw; mw = mw->next) {
@@ -182,6 +182,6 @@ anthy_eval_border(struct splitter_context *sc, int from, int from2, int to)
     from = from2;
   }
 
-  /* Ê¸Àá¤Î¶­³¦¤òÀßÄê¤¹¤ë */
+  /* æ–‡ç¯€ã®å¢ƒç•Œã‚’è¨­å®šã™ã‚‹ */
   anthy_mark_borders(sc, from, to);
 }

@@ -1,15 +1,15 @@
 /*
- * Ê¸Àá¤ËÂĞ¤·¤Æ¸õÊä¤Î¥ê¥¹¥È¤òÀ¸À®¤¹¤ë¡£
- * make_candidates()¤¬context´ÉÍıÉô¤«¤é¸Æ¤Ğ¤ì¤ë¡£
+ * æ–‡ç¯€ã«å¯¾ã—ã¦å€™è£œã®ãƒªã‚¹ãƒˆã‚’ç”Ÿæˆã™ã‚‹ã€‚
+ * make_candidates()ãŒcontextç®¡ç†éƒ¨ã‹ã‚‰å‘¼ã°ã‚Œã‚‹ã€‚
  *
- * ¸õÊä¤ÎÀ¸À®¤Ï¼¡¤ÎÊıË¡¤Ç¹Ô¤¦
- * (1)splitter¤¬³ä¤êÅö¤Æ¤¿ÉÊ»ì¤ËÂĞ¤·¤Æproc_splitter_info()
- *    ¤«¤é¸õÊä¤òÀ¸À®¤¹¤ë
- * (2)¤Ò¤é¤¬¤Ê¤Î¤ß¤È¥«¥¿¥«¥Ê¤Î¤ß¤Î¸õÊä¤òÀ¸À®¤¹¤ë
- * (3)ºÇ¸å¤ÎÊ¸»ú¤ò½õ»ì¤È²ò¼á¤·¤ÆÌµÍıÌğÍı¸õÊä¤òÀ¸À®¤¹¤ë
+ * å€™è£œã®ç”Ÿæˆã¯æ¬¡ã®æ–¹æ³•ã§è¡Œã†
+ * (1)splitterãŒå‰²ã‚Šå½“ã¦ãŸå“è©ã«å¯¾ã—ã¦proc_splitter_info()
+ *    ã‹ã‚‰å€™è£œã‚’ç”Ÿæˆã™ã‚‹
+ * (2)ã²ã‚‰ãŒãªã®ã¿ã¨ã‚«ã‚¿ã‚«ãƒŠã®ã¿ã®å€™è£œã‚’ç”Ÿæˆã™ã‚‹
+ * (3)æœ€å¾Œã®æ–‡å­—ã‚’åŠ©è©ã¨è§£é‡ˆã—ã¦ç„¡ç†çŸ¢ç†å€™è£œã‚’ç”Ÿæˆã™ã‚‹
  */
 /*
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2001 9/30
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2001 9/30
  * Copyright (C) 2000-2005 TABATA Yusuke
  * Copyright (C) 2004-2005 YOSHIDA Yuichi
  * Copyright (C) 2002 UGAWA Tomoharu
@@ -55,7 +55,7 @@ alloc_cand_ent(void)
 }
 
 /*
- * ¸õÊä¤òÊ£À½¤¹¤ë
+ * å€™è£œã‚’è¤‡è£½ã™ã‚‹
  */
 static struct cand_ent *
 dup_candidate(struct cand_ent *ce)
@@ -79,11 +79,11 @@ dup_candidate(struct cand_ent *ce)
   return ce_new;
 }
 
-/** Ê¸Àá¤Ë¸õÊä¤òÄÉ²Ã¤¹¤ë */
+/** æ–‡ç¯€ã«å€™è£œã‚’è¿½åŠ ã™ã‚‹ */
 static void
 push_back_candidate(struct seg_ent *seg, struct cand_ent *ce)
 {
-  /* seg_ent¤Ë¸õÊäce¤òÄÉ²Ã */
+  /* seg_entã«å€™è£œceã‚’è¿½åŠ  */
   seg->nr_cands++;
   seg->cands = (struct cand_ent **)
     realloc(seg->cands, sizeof(struct cand_ent *) * seg->nr_cands);
@@ -104,12 +104,12 @@ push_back_guessed_candidate(struct seg_ent *seg)
   if (seg->str.len < 2) {
     return ;
   }
-  /* ºÇ¸å¤ÎÊ¸»ú¤Ï½õ»ì¤«¡© */
+  /* æœ€å¾Œã®æ–‡å­—ã¯åŠ©è©ã‹ï¼Ÿ */
   xc = seg->str.str[seg->str.len - 1];
   if (!(anthy_get_xchar_type(xc) & XCT_DEP)) {
     return ;
   }
-  /* ºÇ¸å¤ÎÊ¸»ú°Ê³°¤ò¥«¥¿¥«¥Ê¤Ë¤·¤Æ¤ß¤ë */
+  /* æœ€å¾Œã®æ–‡å­—ä»¥å¤–ã‚’ã‚«ã‚¿ã‚«ãƒŠã«ã—ã¦ã¿ã‚‹ */
   ce = alloc_cand_ent();
   xs = anthy_xstr_hira_to_kata(&seg->str);
   xs->str[xs->len-1] = xc;
@@ -120,7 +120,7 @@ push_back_guessed_candidate(struct seg_ent *seg)
   push_back_candidate(seg, ce);
 }
 
-/** ºÆµ¢¤Ç1Ã±¸ì¤º¤Ä¸õÊä¤ò³äÅö¤Æ¤Æ¤¤¤¯ */
+/** å†å¸°ã§1å˜èªãšã¤å€™è£œã‚’å‰²å½“ã¦ã¦ã„ã */
 static int
 enum_candidates(struct seg_ent *seg,
 		struct cand_ent *ce,
@@ -132,13 +132,13 @@ enum_candidates(struct seg_ent *seg,
   int pos;
 
   if (n == ce->mw->nr_parts) {
-    /* ´°À®·Á */
-    /* Ê¸Àá¸åÉô¤Î²òÀÏ¤·¤Ê¤«¤Ã¤¿ÉôÊ¬¤ò¸õÊäÊ¸»úÎó¤ËÄÉ²Ã */
+    /* å®Œæˆå½¢ */
+    /* æ–‡ç¯€å¾Œéƒ¨ã®è§£æã—ãªã‹ã£ãŸéƒ¨åˆ†ã‚’å€™è£œæ–‡å­—åˆ—ã«è¿½åŠ  */
     xstr tail;
     tail.len = seg->len - from;
     tail.str = &seg->str.str[from];
     anthy_xstrcat(&ce->str, &tail);
-    if (ce->str.str && (0 < ce->str.len)) { /* ¼­½ñ¤â¤·¤¯¤Ï³Ø½¬¥Ç¡¼¥¿¤¬²õ¤ì¤Æ¤¤¤¿»ş¤ÎÂĞºö */
+    if (ce->str.str && (0 < ce->str.len)) { /* è¾æ›¸ã‚‚ã—ãã¯å­¦ç¿’ãƒ‡ãƒ¼ã‚¿ãŒå£Šã‚Œã¦ã„ãŸæ™‚ã®å¯¾ç­– */
       push_back_candidate(seg, dup_candidate(ce));
     }
     return 1;
@@ -146,7 +146,7 @@ enum_candidates(struct seg_ent *seg,
 
   p = anthy_get_nr_dic_ents(ce->elm[n].se, &ce->elm[n].str);
 
-  /* ÉÊ»ì¤¬³äÅö¤Æ¤é¤ì¤Æ¤¤¤ë¤Î¤Ç¡¢¤½¤ÎÉÊ»ì¤Ë¥Ş¥Ã¥Á¤¹¤ë¤â¤Î¤ò³äÅö¤Æ¤ë */
+  /* å“è©ãŒå‰²å½“ã¦ã‚‰ã‚Œã¦ã„ã‚‹ã®ã§ã€ãã®å“è©ã«ãƒãƒƒãƒã™ã‚‹ã‚‚ã®ã‚’å‰²å½“ã¦ã‚‹ */
   for (i = 0; i < p; i++) {
     wtype_t wt;
     if (anthy_get_nth_dic_ent_is_compound(ce->elm[n].se, i)) {
@@ -166,10 +166,10 @@ enum_candidates(struct seg_ent *seg,
       cand->elm[n].nth = i;
       cand->elm[n].id = anthy_xstr_hash(&word);
 
-      /* Ã±¸ì¤ÎËÜÂÎ */
+      /* å˜èªã®æœ¬ä½“ */
       anthy_xstrcat(&cand->str, &word);
       free(word.str);
-      /* ¼«Ê¬¤òºÆµ¢¸Æ¤Ó½Ğ¤·¤·¤ÆÂ³¤­¤ò³ä¤êÅö¤Æ¤ë */
+      /* è‡ªåˆ†ã‚’å†å¸°å‘¼ã³å‡ºã—ã—ã¦ç¶šãã‚’å‰²ã‚Šå½“ã¦ã‚‹ */
       nr_cands += enum_candidates(seg, cand,
 				  from + yomi.len,
 				  n+1);
@@ -177,7 +177,7 @@ enum_candidates(struct seg_ent *seg,
     }
   }
 
-  /* ÉÊ»ìÉÔÄê¤Î¾ì¹ç¤Ë¤ÏÌ¤ÊÑ´¹¤Ç¼¡¤ÎÃ±¸ì¤Ø¹Ô¤¯ */
+  /* å“è©ä¸å®šã®å ´åˆã«ã¯æœªå¤‰æ›ã§æ¬¡ã®å˜èªã¸è¡Œã */
   pos = anthy_wtype_get_pos(ce->elm[n].wt);
   if (nr_cands == 0 || pos == POS_INVAL || pos == POS_NONE) {
     xstr xs;
@@ -198,7 +198,7 @@ enum_candidates(struct seg_ent *seg,
 }
 
 /**
- * Ê¸ÀáÁ´ÂÎ¤ò´Ş¤à°ìÃ±¸ì(Ã±´Á»ú¤ò´Ş¤à)¤Î¸õÊä¤òÀ¸À®¤¹¤ë
+ * æ–‡ç¯€å…¨ä½“ã‚’å«ã‚€ä¸€å˜èª(å˜æ¼¢å­—ã‚’å«ã‚€)ã®å€™è£œã‚’ç”Ÿæˆã™ã‚‹
  */
 static void
 push_back_singleword_candidate(struct seg_ent *seg,
@@ -212,16 +212,16 @@ push_back_singleword_candidate(struct seg_ent *seg,
 
   se = anthy_get_seq_ent_from_xstr(&seg->str, is_reverse);
   n = anthy_get_nr_dic_ents(se, &seg->str);
-  /* ¼­½ñ¤Î³Æ¥¨¥ó¥È¥ê¤ËÂĞ¤·¤Æ */
+  /* è¾æ›¸ã®å„ã‚¨ãƒ³ãƒˆãƒªã«å¯¾ã—ã¦ */
   for (i = 0; i < n; i++) {
     int ct;
     if (anthy_get_nth_dic_ent_is_compound(se, i)) {
       continue;
     }
-    /* ÉÊ»ì¤ò¼è¤ê½Ğ¤·¤Æ */
+    /* å“è©ã‚’å–ã‚Šå‡ºã—ã¦ */
     anthy_get_nth_dic_ent_wtype(se, &seg->str, i, &wt);
     ct = anthy_wtype_get_ct(wt);
-    /* ½ª»ß·Á¤«³èÍÑ¤·¤Ê¤¤¤â¤Î¤Î¸¶·Á¤Ê¤é */
+    /* çµ‚æ­¢å½¢ã‹æ´»ç”¨ã—ãªã„ã‚‚ã®ã®åŸå½¢ãªã‚‰ */
     if (ct == CT_SYUSI || ct == CT_NONE) {
       ce = alloc_cand_ent();
       anthy_get_nth_dic_ent_str(se,&seg->str, i, &xs);
@@ -236,18 +236,18 @@ push_back_singleword_candidate(struct seg_ent *seg,
 static void
 push_back_noconv_candidate(struct seg_ent *seg)
 {
-  /* ÌµÊÑ´¹¤ÇÊÒ²¾Ì¾¤Ë¤Ê¤ë¸õÊä¤ÈÊ¿²¾Ì¾¤Î¤ß¤Ë¤Ê¤ë¸õÊä¤òÄÉ²Ã */
+  /* ç„¡å¤‰æ›ã§ç‰‡ä»®åã«ãªã‚‹å€™è£œã¨å¹³ä»®åã®ã¿ã«ãªã‚‹å€™è£œã‚’è¿½åŠ  */
   struct cand_ent *ce;
   xstr *xs;
 
-  /* ¤Ò¤é¤¬¤Ê¤Î¤ß */
+  /* ã²ã‚‰ãŒãªã®ã¿ */
   ce = alloc_cand_ent();
   ce->str.str = anthy_xstr_dup_str(&seg->str);
   ce->str.len = seg->str.len;
   ce->flag = CEF_HIRAGANA;
   push_back_candidate(seg, ce);
 
-  /* ¼¡¤Ë¥«¥¿¥«¥Ê */
+  /* æ¬¡ã«ã‚«ã‚¿ã‚«ãƒŠ */
   ce = alloc_cand_ent();
   xs = anthy_xstr_hira_to_kata(&seg->str);
   ce->str.str = anthy_xstr_dup_str(xs);
@@ -256,7 +256,7 @@ push_back_noconv_candidate(struct seg_ent *seg)
   anthy_free_xstr(xs);
   push_back_candidate(seg, ce);
 
-  /* µ­¹æ¤Î¤ß¤ÎÊ¸Àá */
+  /* è¨˜å·ã®ã¿ã®æ–‡ç¯€ */
   xs = anthy_conv_half_wide(&seg->str);
   if (xs) {
     ce = alloc_cand_ent();
@@ -268,7 +268,7 @@ push_back_noconv_candidate(struct seg_ent *seg)
   }
 }
 
-/* word_list¤ÎÍ×ÁÇpart_info¤ÎÇÛÎó¤«¤écand_elm¤ÎÇÛÎó¤òºî¤ë */
+/* word_listã®è¦ç´ part_infoã®é…åˆ—ã‹ã‚‰cand_elmã®é…åˆ—ã‚’ä½œã‚‹ */
 static void
 make_cand_elem_from_word_list(struct seg_ent *se,
 			      struct cand_ent *ce,
@@ -283,7 +283,7 @@ make_cand_elem_from_word_list(struct seg_ent *se,
     struct part_info *part = &wl->part[i];
     xstr core_xs;
     if (part->len == 0) {
-      /* Ä¹¤µ¤ÎÌµ¤¤part¤ÏÌµ»ë¤¹¤ë */
+      /* é•·ã•ã®ç„¡ã„partã¯ç„¡è¦–ã™ã‚‹ */
       continue;
     }
     if (i == PART_CORE) {
@@ -304,7 +304,7 @@ make_cand_elem_from_word_list(struct seg_ent *se,
 }
 
 
-/** ¤Ş¤ºwordlist¤ò»ı¤Ämetaword¤«¤émeta_word¤ò¼è¤ê½Ğ¤¹ */
+/** ã¾ãšwordlistã‚’æŒã¤metawordã‹ã‚‰meta_wordã‚’å–ã‚Šå‡ºã™ */
 static void
 make_candidate_from_simple_metaword(struct seg_ent *se,
 				    struct meta_word *mw,
@@ -312,11 +312,11 @@ make_candidate_from_simple_metaword(struct seg_ent *se,
 				    int is_reverse)
 {
   /*
-   * ³ÆÃ±¸ì¤ÎÉÊ»ì¤¬·èÄê¤µ¤ì¤¿¾õÂÖ¤Ç¥³¥ß¥Ã¥È¤µ¤ì¤ë¡£
+   * å„å˜èªã®å“è©ãŒæ±ºå®šã•ã‚ŒãŸçŠ¶æ…‹ã§ã‚³ãƒŸãƒƒãƒˆã•ã‚Œã‚‹ã€‚
    */
   struct cand_ent *ce;
 
-  /* Ê£¿ô(1¤â´Ş¤à)¤ÎÃ±¸ì¤Ç¹½À®¤µ¤ì¤ëÊ¸Àá¤ËÃ±¸ì¤ò³äÅö¤Æ¤Æ¤¤¤¯ */
+  /* è¤‡æ•°(1ã‚‚å«ã‚€)ã®å˜èªã§æ§‹æˆã•ã‚Œã‚‹æ–‡ç¯€ã«å˜èªã‚’å‰²å½“ã¦ã¦ã„ã */
   ce = alloc_cand_ent();
   ce->nr_words = mw->nr_parts;
   ce->str.str = NULL;
@@ -325,10 +325,10 @@ make_candidate_from_simple_metaword(struct seg_ent *se,
   ce->mw = mw;
   ce->score = 0;
 
-  /* ÀÜÆ¬¼­, ¼«Î©¸ìÉô, ÀÜÈø¼­, ÉÕÂ°¸ì */
+  /* æ¥é ­è¾, è‡ªç«‹èªéƒ¨, æ¥å°¾è¾, ä»˜å±èª */
   make_cand_elem_from_word_list(se, ce, mw->wl, 0, is_reverse);
 
-  /* WRAP¤µ¤ì¤Æ¤¤¤¿¤éGUESS¤ÈÆ±¤¸°·¤¤¤Ë¤·¤ÆÅÀ¿ô¤ò²¼¤²¤ë */
+  /* WRAPã•ã‚Œã¦ã„ãŸã‚‰GUESSã¨åŒã˜æ‰±ã„ã«ã—ã¦ç‚¹æ•°ã‚’ä¸‹ã’ã‚‹ */
   if (anthy_metaword_type_tab[top_mw->type].status != MW_STATUS_WRAPPED) {
     ce->flag = (se->best_mw == mw) ? CEF_BEST : CEF_NONE;
   } else {
@@ -339,7 +339,7 @@ make_candidate_from_simple_metaword(struct seg_ent *se,
   anthy_release_cand_ent(ce);
 }
 
-/** combined¤Êmetaword¤ÏÆó¤Ä¤Î¸ì¤ò¹çÂÎ¤·¤Æ°ì¤Ä¤Î¸ì¤È¤·¤Æ½Ğ¤¹ */
+/** combinedãªmetawordã¯äºŒã¤ã®èªã‚’åˆä½“ã—ã¦ä¸€ã¤ã®èªã¨ã—ã¦å‡ºã™ */
 static void
 make_candidate_from_combined_metaword(struct seg_ent *se,
 				      struct meta_word *mw,
@@ -347,11 +347,11 @@ make_candidate_from_combined_metaword(struct seg_ent *se,
 				      int is_reverse)
 {
   /*
-   * ³ÆÃ±¸ì¤ÎÉÊ»ì¤¬·èÄê¤µ¤ì¤¿¾õÂÖ¤Ç¥³¥ß¥Ã¥È¤µ¤ì¤ë¡£
+   * å„å˜èªã®å“è©ãŒæ±ºå®šã•ã‚ŒãŸçŠ¶æ…‹ã§ã‚³ãƒŸãƒƒãƒˆã•ã‚Œã‚‹ã€‚
    */
   struct cand_ent *ce;
 
-  /* Ê£¿ô(1¤â´Ş¤à)¤ÎÃ±¸ì¤Ç¹½À®¤µ¤ì¤ëÊ¸Àá¤ËÃ±¸ì¤ò³äÅö¤Æ¤Æ¤¤¤¯ */
+  /* è¤‡æ•°(1ã‚‚å«ã‚€)ã®å˜èªã§æ§‹æˆã•ã‚Œã‚‹æ–‡ç¯€ã«å˜èªã‚’å‰²å½“ã¦ã¦ã„ã */
   ce = alloc_cand_ent();
   ce->nr_words = mw->nr_parts;
   ce->score = 0;
@@ -360,13 +360,13 @@ make_candidate_from_combined_metaword(struct seg_ent *se,
   ce->elm = calloc(sizeof(struct cand_elm),ce->nr_words);
   ce->mw = top_mw;
 
-  /* ÀÜÆ¬¼­, ¼«Î©¸ìÉô, ÀÜÈø¼­, ÉÕÂ°¸ì */
+  /* æ¥é ­è¾, è‡ªç«‹èªéƒ¨, æ¥å°¾è¾, ä»˜å±èª */
   make_cand_elem_from_word_list(se, ce, mw->mw1->wl, 0, is_reverse);
   if (mw->mw2) {
     make_cand_elem_from_word_list(se, ce, mw->mw2->mw1->wl, NR_PARTS, is_reverse);
   }
 
-  /* WRAP¤µ¤ì¤Æ¤¤¤¿¤éGUESS¤ÈÆ±¤¸°·¤¤¤Ë¤·¤ÆÅÀ¿ô¤ò²¼¤²¤ë */
+  /* WRAPã•ã‚Œã¦ã„ãŸã‚‰GUESSã¨åŒã˜æ‰±ã„ã«ã—ã¦ç‚¹æ•°ã‚’ä¸‹ã’ã‚‹ */
   if (anthy_metaword_type_tab[top_mw->type].status != MW_STATUS_WRAPPED) {
     ce->flag = (se->best_mw == mw) ? CEF_BEST : CEF_NONE;
   } else {
@@ -378,19 +378,19 @@ make_candidate_from_combined_metaword(struct seg_ent *se,
 }
 
 
-/** splitter¤Î¾ğÊó¤òÍøÍÑ¤·¤Æ¸õÊä¤òÀ¸À®¤¹¤ë
+/** splitterã®æƒ…å ±ã‚’åˆ©ç”¨ã—ã¦å€™è£œã‚’ç”Ÿæˆã™ã‚‹
  */
 static void
 proc_splitter_info(struct seg_ent *se,
 		   struct meta_word *mw,
-		   /* top¤È¤Ïtree¤Î¥È¥Ã¥× */
+		   /* topã¨ã¯treeã®ãƒˆãƒƒãƒ— */
 		   struct meta_word *top_mw,
 		   int is_reverse)
 {
   enum mw_status st;
   if (!mw) return;
 
-  /* ¤Ş¤ºwordlist¤ò»ı¤Ämetaword¤Î¾ì¹ç */
+  /* ã¾ãšwordlistã‚’æŒã¤metawordã®å ´åˆ */
   if (mw->wl && mw->wl->len) {
     make_candidate_from_simple_metaword(se, mw, top_mw, is_reverse);
     return;
@@ -399,14 +399,14 @@ proc_splitter_info(struct seg_ent *se,
   st = anthy_metaword_type_tab[mw->type].status;
   switch (st) {
   case MW_STATUS_WRAPPED:
-    /* wrap¤µ¤ì¤¿¤â¤Î¤Î¾ğÊó¤ò¼è¤ê½Ğ¤¹ */
+    /* wrapã•ã‚ŒãŸã‚‚ã®ã®æƒ…å ±ã‚’å–ã‚Šå‡ºã™ */
     proc_splitter_info(se, mw->mw1, top_mw, is_reverse);
     break;
   case MW_STATUS_COMBINED:
     make_candidate_from_combined_metaword(se, mw, top_mw, is_reverse);
     break;
   case MW_STATUS_COMPOUND:
-    /* Ï¢Ê¸Àá¤ÎÍÕ */
+    /* é€£æ–‡ç¯€ã®è‘‰ */
     {
       struct cand_ent *ce;
       ce = alloc_cand_ent();
@@ -418,12 +418,12 @@ proc_splitter_info(struct seg_ent *se,
     }
     break;
   case MW_STATUS_COMPOUND_PART:
-    /* Ï¢Ê¸Àá¤Î¸Ä¡¹¤ÎÊ¸Àá¤ò·ë¹ç¤·¤Æ°ì¤Ä¤ÎÊ¸Àá¤È¤·¤Æ¤ß¤¿¤â¤Î */
+    /* é€£æ–‡ç¯€ã®å€‹ã€…ã®æ–‡ç¯€ã‚’çµåˆã—ã¦ä¸€ã¤ã®æ–‡ç¯€ã¨ã—ã¦ã¿ãŸã‚‚ã® */
     /* BREAK THROUGH */
   case MW_STATUS_OCHAIRE:
     {
-    /* metaword¤ò»ı¤¿¤Ê¤¤¸õÊäÊ¸»úÎó¤¬
-       Ä¾ÀÜ¤Ë»ØÄê¤µ¤ì¤¿ */
+    /* metawordã‚’æŒãŸãªã„å€™è£œæ–‡å­—åˆ—ãŒ
+       ç›´æ¥ã«æŒ‡å®šã•ã‚ŒãŸ */
       struct cand_ent *ce;
       ce = alloc_cand_ent();
       ce->str.str = anthy_xstr_dup_str(&mw->cand_hint);
@@ -432,7 +432,7 @@ proc_splitter_info(struct seg_ent *se,
       ce->flag = (st == MW_STATUS_OCHAIRE) ? CEF_OCHAIRE : CEF_COMPOUND_PART;
 
       if (mw->len < se->len) {
-	/* metaword¤Ç¥«¥Ğ¡¼¤µ¤ì¤Æ¤Ê¤¤ÎÎ°è¤ÎÊ¸»úÎó¤òÉÕ¤±¤ë */
+	/* metawordã§ã‚«ãƒãƒ¼ã•ã‚Œã¦ãªã„é ˜åŸŸã®æ–‡å­—åˆ—ã‚’ä»˜ã‘ã‚‹ */
 	xstr xs;
 	xs.str = &se->str.str[mw->len];
 	xs.len = se->len - mw->len;
@@ -448,8 +448,8 @@ proc_splitter_info(struct seg_ent *se,
   }
 }
 
-/** context.c¤«¤é¸Æ½Ğ¤µ¤ì¤ë¤â¤Ã¤È¤âÂçÊª
- * °ì¤Ä°Ê¾å¤Î¸õÊä¤òÉ¬¤ºÀ¸À®¤¹¤ë
+/** context.cã‹ã‚‰å‘¼å‡ºã•ã‚Œã‚‹ã‚‚ã£ã¨ã‚‚å¤§ç‰©
+ * ä¸€ã¤ä»¥ä¸Šã®å€™è£œã‚’å¿…ãšç”Ÿæˆã™ã‚‹
  */
 void
 anthy_do_make_candidates(struct splitter_context *sc,
@@ -457,7 +457,7 @@ anthy_do_make_candidates(struct splitter_context *sc,
 {
   int i;
 
-  /* metaword¤«¤é¸õÊä¤òÀ¸À®¤¹¤ë */
+  /* metawordã‹ã‚‰å€™è£œã‚’ç”Ÿæˆã™ã‚‹ */
   for (i = 0; i < se->nr_metaword; i++) {
     struct meta_word *mw = se->mw_array[i];
     if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_CAND) {
@@ -468,12 +468,12 @@ anthy_do_make_candidates(struct splitter_context *sc,
   if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_CAND) {
     printf("#done\n");
   }
-  /* Ã±´Á»ú¤Ê¤É¤Î¸õÊä */
+  /* å˜æ¼¢å­—ãªã©ã®å€™è£œ */
   push_back_singleword_candidate(se, is_reverse);
 
-  /* ¤Ò¤é¤¬¤Ê¡¢¥«¥¿¥«¥Ê¤ÎÌµÊÑ´¹¥¨¥ó¥È¥ê¤òºî¤ë */
+  /* ã²ã‚‰ãŒãªã€ã‚«ã‚¿ã‚«ãƒŠã®ç„¡å¤‰æ›ã‚¨ãƒ³ãƒˆãƒªã‚’ä½œã‚‹ */
   push_back_noconv_candidate(se);
 
-  /* ¸õÊä¤¬Æó¤Ä¤·¤«Ìµ¤¤¤È¤­¤ÏºÇ¸å¤¬½õ»ì¤Ç»Ä¤ê¤¬Ê¿²¾Ì¾¤Î¸õÊä¤òºî¤ì¤ë¤«»î¤¹ */
+  /* å€™è£œãŒäºŒã¤ã—ã‹ç„¡ã„ã¨ãã¯æœ€å¾ŒãŒåŠ©è©ã§æ®‹ã‚ŠãŒå¹³ä»®åã®å€™è£œã‚’ä½œã‚Œã‚‹ã‹è©¦ã™ */
   push_back_guessed_candidate(se);
 }
