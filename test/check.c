@@ -80,9 +80,8 @@ shake_test(const char *str)
   }
   anthy_set_string(ac, str);
   for (i = 0; i < 50; i++) {
-    int res, nth, rsz;
+    int nth, rsz;
     struct anthy_conv_stat cs;
-    res = anthy_get_stat(ac, &cs);
     nth = rand() % cs.nr_segment;
     rsz = (rand() % 3) - 1;
     anthy_resize_segment(ac, nth, rsz);

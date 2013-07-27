@@ -265,15 +265,17 @@ sparse_array_get(struct sparse_array *s, int index, struct array_elm *arg)
   }
 }
 
-static int
-sparse_array_get_int(struct sparse_array *s, int index)
-{
-  struct array_elm elm;
-  if (sparse_array_get(s, index, &elm)) {
-    return elm.value;
-  }
-  return 0;
-}
+/* Orphan function */
+
+/* static int */
+/* sparse_array_get_int(struct sparse_array *s, int index) */
+/* { */
+/*   struct array_elm elm; */
+/*   if (sparse_array_get(s, index, &elm)) { */
+/*     return elm.value; */
+/*   } */
+/*   return 0; */
+/* } */
 
 static void *
 sparse_array_get_ptr(struct sparse_array *s, int index)

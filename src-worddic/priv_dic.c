@@ -106,7 +106,7 @@ open_textdic(const char *home, const char *name, const char *id)
   char *fn = malloc(strlen(home) + strlen(name) + strlen(id) + 10);
   struct textdict *td;
   sprintf(fn, "%s/.anthy/%s%s", home, name, id);
-  td = anthy_textdict_open(fn, 0);
+  td = anthy_textdict_open(fn);
   free(fn);
   return td;
 }
@@ -312,7 +312,7 @@ anthy_ask_scan(void (*request_scan)(struct textdict *, void *),
       free(fn);
       break;
     }
-    td = anthy_textdict_open(fn, 0);
+    td = anthy_textdict_open(fn);
     request_scan(td, arg);
     anthy_textdict_close(td);
     free(fn);

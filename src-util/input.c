@@ -1508,7 +1508,7 @@ anthy_input_create_config(void)
 void
 anthy_input_free_config(struct anthy_input_config* cfg)
 {
-  int err;
+  /* int err; */
 
   /* このconfigを共有する全てのcontextを事前に解放する事 */
   assert(!cfg->owners);
@@ -1520,7 +1520,9 @@ anthy_input_free_config(struct anthy_input_config* cfg)
   rk_map_free(cfg->rk_map[RKMAP_WASCII]);
   rk_map_free(cfg->rk_map[RKMAP_HANKAKU_KANA]);
 
-  err = anthy_input_free_rk_option(cfg->rk_option);
+
+  /* There should be some error code checking here I think, but for now it's just producing compile warnings */
+  /* err =  */ anthy_input_free_rk_option(cfg->rk_option);
   free(cfg);
 }
 

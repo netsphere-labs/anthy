@@ -3,7 +3,7 @@
 
 struct textdict;
 
-struct textdict *anthy_textdict_open(const char *fn, int create);
+struct textdict *anthy_textdict_open(const char *fn);
 void anthy_textdict_close(struct textdict *td);
 /**/
 void anthy_textdict_scan(struct textdict *td, int offset, void *ptr,

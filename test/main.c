@@ -218,16 +218,13 @@ print_run_env(void)
 static void
 sum_up(struct res_db *db, struct conv_res *cr)
 {
-  int is_split;
   struct res_stat *rs;
   cr->used = 1;
   db->total ++;
   if (cr->res_str[0] == '|') {
     rs = &db->split;
-    is_split = 1;
   } else {
     rs = &db->res;
-    is_split = 0;
   }
   if (cr->check == CHK_OK) {
     rs->ok ++;

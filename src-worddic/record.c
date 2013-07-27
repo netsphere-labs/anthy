@@ -276,46 +276,53 @@ static void trie_mark_used(struct trie_root *root, struct trie_node *n,
  */
 
 #define PUTNODE(x) ((x) == &root->root ? printf("root\n") : anthy_putxstrln(&(x)->row.key))
-static int
-debug_trie_dump(FILE* fp, struct trie_node* n, int encoding)
-{
-  int cnt = 0;
-  char buf[1024];
 
-  if (n->l->bit > n->bit) {
-    cnt = debug_trie_dump(fp, n->l, encoding);
-  } else {
-    if (n->l->row.key.len == -1) {
-      if (fp) {
-	fprintf(fp, "root\n");
-      }
-    } else {
-      if (fp) {
-	anthy_sputxstr(buf, &n->l->row.key, encoding);
-	fprintf(fp, "%s\n", buf);
-      }
-      cnt = 1;
-    }
-  }
 
-  if (n->r->bit > n->bit) {
-    return cnt + debug_trie_dump(fp, n->r, encoding);
-  } else {
-    if (n->r->row.key.len == -1) {
-      if(fp) {
-	fprintf(fp, "root\n");
-      }
-    } else {
-      if(fp) {
-	anthy_sputxstr(buf, &n->r->row.key, encoding);
-	fprintf(fp, "%s\n", buf);
-      }
-      return cnt + 1;
-    }
-  }
+/*
+ * Orphan debug function, presumably for dumping trees.
+ */
 
-  return cnt;
-}
+
+/* static int */
+/* debug_trie_dump(FILE* fp, struct trie_node* n, int encoding) */
+/* { */
+/*   int cnt = 0; */
+/*   char buf[1024]; */
+
+/*   if (n->l->bit > n->bit) { */
+/*     cnt = debug_trie_dump(fp, n->l, encoding); */
+/*   } else { */
+/*     if (n->l->row.key.len == -1) { */
+/*       if (fp) { */
+/* 	fprintf(fp, "root\n"); */
+/*       } */
+/*     } else { */
+/*       if (fp) { */
+/* 	anthy_sputxstr(buf, &n->l->row.key, encoding); */
+/* 	fprintf(fp, "%s\n", buf); */
+/*       } */
+/*       cnt = 1; */
+/*     } */
+/*   } */
+
+/*   if (n->r->bit > n->bit) { */
+/*     return cnt + debug_trie_dump(fp, n->r, encoding); */
+/*   } else { */
+/*     if (n->r->row.key.len == -1) { */
+/*       if(fp) { */
+/* 	fprintf(fp, "root\n"); */
+/*       } */
+/*     } else { */
+/*       if(fp) { */
+/* 	anthy_sputxstr(buf, &n->r->row.key, encoding); */
+/* 	fprintf(fp, "%s\n", buf); */
+/*       } */
+/*       return cnt + 1; */
+/*     } */
+/*   } */
+
+/*   return cnt; */
+/* } */
 
 static void
 init_trie_root(struct trie_root *root)

@@ -31,7 +31,7 @@ struct textdict {
 };
 
 struct textdict *
-anthy_textdict_open(const char *fn, int create)
+anthy_textdict_open(const char *fn)
 {
   struct textdict *td = malloc(sizeof(struct textdict));
   if (!td) {

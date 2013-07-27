@@ -422,8 +422,8 @@ write_file(const char* file_name)
   fclose(fp);
 }
 
-int
-main(int argc, char* argv[])
+int 
+main(void)
 {
   /* 付属語辞書を読み込んでファイルに書き出す */
   anthy_conf_override("CONFFILE", "../anthy-conf");
