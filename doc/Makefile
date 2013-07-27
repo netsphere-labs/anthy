@@ -146,12 +146,12 @@ mandir = ${datarootdir}/man
 mkdir_p = mkdir -p --
 oldincludedir = /usr/include
 pdfdir = ${docdir}
-prefix = /usr
+prefix = /usr/local
 program_transform_name = s,x,x,
 psdir = ${docdir}
 sbindir = ${exec_prefix}/sbin
 sharedstatedir = ${prefix}/com
-sysconfdir = /etc
+sysconfdir = ${prefix}/etc
 target_alias = 
 EXTRA_DIST = \
  00INDEX POS LIB SPLITTER DICUTIL ELISP GLOSSARY GRAMMAR\
