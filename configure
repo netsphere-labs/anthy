@@ -18521,7 +18521,7 @@ test -n "$lispdir" || lispdir="/tmp/"
 
 lispdir="$lispdir/anthy"
 
-test -z "$GCC" || CFLAGS="$CFLAGS -W -Wall -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -pedantic -Wno-long-long"
+test -z "$GCC" || CFLAGS="$CFLAGS -W -Werror -Wall -Wextra -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -pedantic -Wno-long-long"
 
 ac_config_files="$ac_config_files Makefile src-diclib/Makefile src-worddic/Makefile src-splitter/Makefile src-ordering/Makefile src-main/Makefile src-util/Makefile anthy/Makefile depgraph/Makefile mkanthydic/Makefile mkworddic/Makefile mkworddic/dict.args test/Makefile alt-cannadic/Makefile doc/Makefile calctrans/Makefile anthy-conf anthy-test-conf anthy.spec anthy.pc"
 
