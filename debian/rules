@@ -14,6 +14,7 @@ override_dh_auto_configure:
 
 override_dh_clean:
 	debconf-updatepo
+	dh_autoreconf_clean
 	dh_clean -Xalt-cannadic/Makefile.orig
 
 override_dh_install:

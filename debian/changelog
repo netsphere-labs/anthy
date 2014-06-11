@@ -1,3 +1,10 @@
+anthy (9100h-24) UNRELEASED; urgency=medium
+
+  * debian/rules
+    - merge from Ubuntu, call dh_autoreconf_clean 
+
+ -- Hideki Yamane <henrich@debian.org>  Thu, 12 Jun 2014 05:58:16 +0900
+
 anthy (9100h-23) unstable; urgency=low
 
   * Once remove social-ime and wikipedia dic data since it causes a lot of
