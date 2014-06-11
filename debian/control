@@ -1,12 +1,12 @@
 Source: anthy
 Section: utils
 Priority: optional
-Maintainer: NOKUBI Takatsugu <knok@daionet.gr.jp>
-Uploaders: Hideki Yamane <henrich@debian.org>, NIIBE Yutaka <gniibe@fsij.org>
+Maintainer: IME Packaging Team <pkg-ime-devel@lists.alioth.debian.org>
+Uploaders: NOKUBI Takatsugu <knok@daionet.gr.jp>, Hideki Yamane <henrich@debian.org>, NIIBE Yutaka <gniibe@fsij.org>
 Build-Depends: debhelper (>= 9), autotools-dev, debconf (>= 0.5), po-debconf, automake, dh-autoreconf
 Standards-Version: 3.9.5
-Vcs-Git: git://git.debian.org/collab-maint/anthy.git
-Vcs-Browser: http://git.debian.org/?p=collab-maint/anthy.git
+Vcs-Git: git://git.debian.org/pkg-ime/anthy.git
+Vcs-Browser: http://git.debian.org/?p=pkg-ime/anthy.git
 Homepage: http://anthy.sourceforge.jp/
 
 Package: anthy

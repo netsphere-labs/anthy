@@ -5,6 +5,7 @@ anthy (9100h-24) UNRELEASED; urgency=medium
     - drop override_dh_builddeb since xz compression becomes default
   * debian/control
     - set Standards-Version: 3.9.5
+    - move to pkg-ime maint umbrella
 
  -- Hideki Yamane <henrich@debian.org>  Thu, 12 Jun 2014 05:58:16 +0900
 
