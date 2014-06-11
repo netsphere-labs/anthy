@@ -1,4 +1,4 @@
-anthy (9100h-24) UNRELEASED; urgency=medium
+anthy (9100h-24) unstable; urgency=medium
 
   * debian/rules
     - merge from Ubuntu, call dh_autoreconf_clean 
@@ -7,7 +7,7 @@ anthy (9100h-24) UNRELEASED; urgency=medium
     - set Standards-Version: 3.9.5
     - move to pkg-ime maint umbrella
 
- -- Hideki Yamane <henrich@debian.org>  Thu, 12 Jun 2014 05:58:16 +0900
+ -- Hideki Yamane <henrich@debian.org>  Thu, 12 Jun 2014 06:09:38 +0900
 
 anthy (9100h-23) unstable; urgency=low
 
