@@ -21,8 +21,3 @@ override_dh_install:
 #	cd  $(CURDIR)/nokuno-dictionary-20120103-dfsg && \
 	for i in wikipedia social-ime ; do iconv -f UTF-8 -t EUC-JP $$i -c -o $$i.ctd; done
 	dh_install
-
-override_dh_builddeb:
-	dh_builddeb -Nanthy-common
-# it reduces anthy-common's size
-	dh_builddeb -panthy-common -- -Zxz
