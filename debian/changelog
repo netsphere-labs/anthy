@@ -1,3 +1,11 @@
+anthy (9100h-23.1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Update depends of anthy-el from emacs23 to emacs.
+    Thanks to Gabriele Giacone. (Closes: #753988)
+
+ -- Ana Beatriz Guerrero Lopez <ana@debian.org>  Fri, 12 Sep 2014 23:47:01 +0200
+
 anthy (9100h-23) unstable; urgency=low
 
   * Once remove social-ime and wikipedia dic data since it causes a lot of
