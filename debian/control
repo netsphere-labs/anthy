@@ -40,7 +40,7 @@ Description: input method for Japanese - common files and dictionary
 Package: anthy-el
 Section: lisp
 Architecture: all
-Depends: ${misc:Depends}, anthy, emacs23 | emacsen
+Depends: ${misc:Depends}, anthy, emacs | emacsen
 Conflicts: xemacs21-nomule
 Description: input method for Japanese - elisp frontend
  Anthy is a Japanese input method working on X11 and Emacs. It converts

@@ -5,8 +5,10 @@ anthy (9100h-24) unstable; urgency=medium
     - drop override_dh_builddeb since xz compression becomes default
   * debian/control
     - set Standards-Version: 3.9.5
+    - move "Depends: emacs23" to emacs that provides newest emacs
+      (Closes: #753988)
 
- -- Hideki Yamane <henrich@debian.org>  Thu, 12 Jun 2014 06:09:38 +0900
+ -- Hideki Yamane <henrich@debian.org>  Sat, 13 Sep 2014 22:59:20 +0900
 
 anthy (9100h-23) unstable; urgency=low
 
