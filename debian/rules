@@ -6,15 +6,13 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 
 %:
-	dh $@ --parallel --with autotools-dev
+	dh $@ --parallel --with autotools-dev,autoreconf
 
 override_dh_auto_configure:
-	dh_autoreconf
 	dh_auto_configure -- --sysconfdir=/etc/anthy
 
 override_dh_clean:
 	debconf-updatepo
-	dh_autoreconf_clean
 	dh_clean -Xalt-cannadic/Makefile.orig
 
 override_dh_install:

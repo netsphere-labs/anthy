@@ -1,7 +1,7 @@
 anthy (9100h-24) unstable; urgency=medium
 
   * debian/rules
-    - merge from Ubuntu, call dh_autoreconf_clean 
+    - add dh --with autoreconf
     - drop override_dh_builddeb since xz compression becomes default
   * debian/control
     - set Standards-Version: 3.9.5
