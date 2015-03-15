@@ -4,7 +4,7 @@ Priority: optional
 Maintainer: NOKUBI Takatsugu <knok@daionet.gr.jp>  
 Uploaders: Hideki Yamane <henrich@debian.org>, NIIBE Yutaka <gniibe@fsij.org>
 Build-Depends: debhelper (>= 9), autotools-dev, debconf (>= 0.5), po-debconf, automake, dh-autoreconf
-Standards-Version: 3.9.5
+Standards-Version: 3.9.6
 Vcs-Git: git://anonscm.debian.org/collab-maint/anthy.git
 Vcs-Browser: http://anonscm.debian.org/cgit/collab-maint/anthy.git
 Homepage: http://anthy.sourceforge.jp/
