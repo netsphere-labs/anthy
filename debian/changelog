@@ -1,3 +1,10 @@
+anthy (9100h-25) UNRELEASED; urgency=medium
+
+  * debian/patches
+    - add bug#777689.patch to fix infinite loop (Closes: #777689)
+
+ -- Hideki Yamane <henrich@debian.org>  Sun, 15 Mar 2015 20:29:42 +0900
+
 anthy (9100h-24) unstable; urgency=medium
 
   * debian/rules

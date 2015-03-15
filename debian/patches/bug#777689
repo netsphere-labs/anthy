@@ -1,0 +1,17 @@
+2015-03-10  NOKUBI Takatsugu  <knok ＠ daionet.gr.jp>
+
+       * src-worddic/record.c (read_1_token):
+       check EOF without last return code to prevent infinite loop.
+       https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=777689
+
+--- a/src-worddic/record.c
++++ b/src-worddic/record.c
+@@ -1043,7 +1043,7 @@
+   if (s) {
+     s[len] = '\0';
+   }
+-  *eol = (c == '\n');
++  *eol = (c == '\n' || c == EOF);
+   return s;
+ }
+ 

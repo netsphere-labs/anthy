@@ -7,3 +7,4 @@ inactivate-input-method.patch
 fedora_anthy-fix-typo-in-dict-name.patch
 fedora_anthy-fix-typo-in-dict.patch
 work-with-emacs-24.3.1.patch
+bug#777689
