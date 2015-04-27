@@ -1,188 +1,188 @@
-����ʼ��� cannadic
+かんな辞書 cannadic
 
 'cannadic' is a Japanese kana-kanji conversion dictionary for Canna (and Anthy,
 PRIME). This dictionary has been compiled as a supplement/replacement to the
 dictionaries distributed with Canna3.5b2 or later. Currently the main
 dictionary and suffix- and prefix-dictionaries contain over 140000 words.
 
-[����ʪ����]
+[配布物内容]
 
 cannadic-0.95c.tar.gz
 
 README.ja
-    ���Υե�����Ǥ���
+    このファイルです。
 COPYING
-    �饤���󥹤򵭽Ҥ��� GNU GENERAL PUBLIC LICENSE �Ǥ���
+    ライセンスを記述した GNU GENERAL PUBLIC LICENSE です。
 gcanna.ctd
-    ��Ω�켭��Ǥ���
+    自立語辞書です。
 gcannaf.ctd
-    ��°�켭��Ǥ���
+    付属語辞書です。
 Makefile
-    ���󥹥ȡ����� Makefile �Ǥ���
+    インストール用 Makefile です。
 convert-old-cannadic.pl
-    �Ť��С������Τ���ʤ��ʻ�ʬ����б����뤿��Υ�����ץȤǤ���
+    古いバージョンのかんなの品詞分類に対応するためのスクリプトです。
 
-������������������������������������������������������������������������������
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[����ؤ�ñ���Ͽ�ˤĤ���]
+[辞書への単語収録について]
 
-���ʴ����Ѵ��Υ١����ˤʤ뼭��Ȥ��� FreeWnn ��Ͽ�μ���(pubdic+, gerodic)�����
-���ޤ������ޤ�������ʳ��˲����μ��񤫤�ñ�����С��ɲä��ޤ�����
+かな漢字変換のベースになる辞書として FreeWnn 収録の辞書(pubdic+, gerodic)を採用
+しました。また、これ以外に下記の辞書から単語を抽出・追加しました。
 
- �� FreeWnn (http://www.freewnn.org/) ��°����(pubdic+, gerodic)��Ͽñ��Τۤ�
-    ��ɡ�
- �� kakasi (http://kakasi.namazu.org/) ��°���񤫤�̾�����Ф�����Τΰ�����
- �� �޽�۴�Ϣñ�켭�� ldic (http://www.tulips.tsukuba.ac.jp/misc/export/cat/
-    ldic/) �˼�Ͽñ��ΤۤȤ�ɡ�
- �� ����ͦ���󶡤ΰ���Ѹ켭��ΤۤȤ�ɤ��٤ơ�
+ ・ FreeWnn (http://www.freewnn.org/) 付属辞書(pubdic+, gerodic)収録単語のほと
+    んど。
+ ・ kakasi (http://kakasi.namazu.org/) 付属辞書から名詞を抽出したものの一部。
+ ・ 図書館関連単語辞書 ldic (http://www.tulips.tsukuba.ac.jp/misc/export/cat/
+    ldic/) に収録単語のほとんど。
+ ・ 池田勇氏提供の医学用語辞書のほとんどすべて。
 
-���廊�ơ��Ի��Ԥ�����ñ����༡�ɲä��Ƥ��ޤ���
+くわえて、編纂者が新規単語を逐次追加しています。
 
-������������������������������������������������������������������������������
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[�С����������]
+[バージョン履歴]
 
 version 0.90 - 2000-05-17
-    �ɥ��������������Ӽ���ƹ��ۤ��ơ�GPL �ǤȤ��ƥ�꡼����
+    ドキュメント整理および辞書再構築して、GPL 版としてリリース。
 version 0.91 - 2000-06-13
-    kakasi ��°����ñ��򤪼�ڥ�����ץ� + ���Ϥ��ʻ�ʬ�ष�������ɲá���Ω��
-    ������°�켭���ʬΥ��
+    kakasi 付属辞書単語をお手軽スクリプト + 人力で品詞分類して大量追加。自立語
+    辞書、付属語辞書の分離。
 version 0.92 - 2001-02-13
-    �������Ѥ���­����ñ����ɲá����������ȸ����������Х��ʥ꼭�񲽥ɥ�����
-    ���ɲá�
+    日常利用で不足した単語の追加。いろいろと誤字修正。バイナリ辞書化ドキュメン
+    ト追加。
 version 0.93 - 2002-01-12
-    �����Ȱ��ۤ���������Ŧñ�콤����ñ���ɲá��ʻ�ʬ�หľ�����Ѵ�����ɽ������
-    �ꡣREADME �ѹ���
+    サイト引越し。誤字指摘単語修正。単語追加。品詞分類見直し。変換候補表示順設
+    定。README 変更。
 version 0.93a - 2002-01-14
-    Makefile �� README �������鷺����ñ���ɲá��ʻ�ʬ�หľ����
+    Makefile と README 修正。わずかな単語追加。品詞分類見直し。
 version 0.94 - 2002-02-19
-    ñ���ɲá��ʻ�ʬ�หľ������°�켭������ĥ��
+    単語追加。品詞分類見直し。付属語辞書口語拡張。
 version 0.94a - 2002-02-28
-    �����Ĥ��θ���ñ��ν�����ñ���ɲä��ʻ�ʬ�หľ��������ʤ�����ĥ��
+    いくつかの誤字単語の修正。単語追加と品詞分類見直し。さらなる口語拡張。
 version 0.94b - 2002-03-10
-    http://www.sekimizu.net/ �ǻ�Ŧ����Ƥ��� pubdic+ ͳ��θ���������
+    http://www.sekimizu.net/ で指摘されている pubdic+ 由来の誤字修正。
 version 0.94c - 2002-07-05
-    ���ľ���������դ�ñ���ɲá�anthy-3100 �ξ���ȿ�ǡ�����¾ñ���ɲä����پ���
-    ��ľ����
+    飯田昌成さん寄付の単語追加。anthy-3100 の情報反映。その他単語追加と頻度情報
+    見直し。
 version 0.94d - 2002-09-04
-    ��1000���ɲá����پ���ľ����anthy-3222 �ξ���ȿ�ǡ���Ω�켭���Ͽñ�����
-    140,000���ۤ��롣
+    約1000語追加。頻度情報見直し。anthy-3222 の情報反映。自立語辞書収録単語数が
+    140,000語を越える。
 version 0.94e - 2002-10-20
-    T??�ϼ�Ω�����ʬ���ʣ����������ʻ�ʬ�หľ������2000���ɲá�anthy-3403
-    �ξ���ȿ�ǡ�
+    T??系自立語の別分類重複語削除および品詞分類見直し。約2000語追加。anthy-3403
+    の情報反映。
 version 0.94f - 2002-11-26
-    [Canna-dev 85], anthy-3525, Vine Linux cannadic-0.94e.wrongword.patch �ξ�
-    ��ȿ�ǡ�
+    [Canna-dev 85], anthy-3525, Vine Linux cannadic-0.94e.wrongword.patch の情
+    報反映。
 version 0.94g - 2003-02-24
-    ��500���ɲá�[Canna-dev 165], anthy-3822 �ξ���ȿ�ǡ�Teruo YAMAWAKI ����
-    ����������komura ����Yu OOASA ���󤫤�θ�������ȿ�ǡ�J. Grant ����
-    ��α�ʸ��������ȿ�ǡ�
+    約500語追加。[Canna-dev 165], anthy-3822 の情報反映。Teruo YAMAWAKI さん、
+    井汲景太さん、komura さん、Yu OOASA さんからの誤字情報反映。J. Grant さんか
+    らの英文修正情報反映。
 version 0.94h - 2003-04-25
-    ��200���ɲá�anthy-4023 �ξ���ȿ�ǡ���ƣε���������紴�פ���H N ����
-    ��θ������󡦿������ȿ�ǡ�
+    約200語追加。anthy-4023 の情報反映。伊藤竜太さん、中島幹夫さん、H N さんか
+    らの誤字情報・新語情報反映。
 version 0.95 - 2003-07-07
-    ��1000���ɲá�anthy-4229 �ξ���ȿ�ǡ�H N ���󡢰��������󤫤�ο������ȿ
-    �ǡ��ƥ����ȼ����ĥ���ѹ�(.t �� .ctd)��
+    約1000語追加。anthy-4229 の情報反映。H N さん、井汲景太さんからの新語情報反
+    映。テキスト辞書拡張子変更(.t → .ctd)。
 version 0.95a - 2003-09-15
-    ��1000���ɲá�anthy-4515 �ξ���ȿ�ǡ�SUWA Yoshikazu ���󡢹ⶶ�Τ���H N
-    ������湬��󤫤�ο��졦��������ȿ�ǡ�
+    約1000語追加。anthy-4515 の情報反映。SUWA Yoshikazu さん、高橋仁さん、H N
+    さん、中井幸博さんからの新語・誤字情報反映。
 version 0.95b - 2004-04-01
-    ��800���ɲá�anthy-5122 �ξ���ȿ�ǡ���湬���H N ���󡢾�����������
-    �ⶶ�Τ��󤫤�ο��졦��������ȿ�ǡ�
+    約800語追加。anthy-5122 の情報反映。中井幸博さん、H N さん、小松弘幸さん、
+    高橋仁さんからの新語・誤字情報反映。
 version 0.95c - 2004-11-27
-    ��400���ɲá�anthy-5924 �ξ���ȿ�ǡ�
+    約400語追加。anthy-5924 の情報反映。
 
-������������������������������������������������������������������������������
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[���󥹥ȡ���]
+[インストール]
 
-�����Ǥϥѥå��������������ƥ�����Ѥ��ʤ������������ɤ���Υ��󥹥ȡ�����ˡ��
-���⤷�Ƥ��ޤ����ѥå��������������ƥ��Ȥä����󥹥ȡ���ˤĤ��Ƥ� Gentoo
-Linux, FreeBSD ports��MacOS X fink �ʤɤ��󶡤���ɥ�����Ȥˤ������äƤ�����
-���������Ĥ��� Linux �ǥ����ȥ�ӥ塼�����(Vine Linux, Plamo Linux �ʤ�)�Ǥ�
-cannadic ���ǥե���ȼ���Ȥ����Ȥ߹��ޤ�Ƥ��ޤ������ξ�硢��¸������񤭤�
-�뤳�Ȥˤʤ�ޤ������ޤޤǤμ�������پ��󤬼����Ƥ��ޤ��Τ����դ��Ƥ�������
-��
+ここではパッケージ管理システムを利用しないソースコードからのインストール方法を
+解説しています。パッケージ管理システムを使ったインストールについては Gentoo
+Linux, FreeBSD ports、MacOS X fink などが提供するドキュメントにしたがってくださ
+い。いくつかの Linux ディストリビューション(Vine Linux, Plamo Linux など)では
+cannadic がデフォルト辞書として組み込まれています。この場合、既存辞書を上書きす
+ることになります。いままでの辞書の頻度情報が失われてしまうので注意してください
+。
 
-OS ��ǥ����ȥ�ӥ塼�����ˤ�äơ�����ʼ���Υ��󥹥ȡ���ǥ��쥯�ȥ꤬�ۤ�
-�äƤ��ޤ�������ե����뤬��Ǽ����Ƥ���ǥ��쥯�ȥ��
+OS やディストリビューションによって、かんな辞書のインストールディレクトリが異な
+っています。辞書ファイルが格納されているディレクトリは
 
- �� /usr/local/canna/lib/dic/canna/ (�ǥե��������ǥ���ѥ��뤷�����)
- �� /var/lib/canna/dic/canna/ (Vine Linux, Debian GNU/Linux �ʤ�)
- �� /usr/local/lib/canna/dic/canna/ (FreeBSD �ʤ�)
- �� /var/dict/canna/canna/ (NetBSD, OpenBSD �ʤ�)
+ ・ /usr/local/canna/lib/dic/canna/ (デフォルト設定でコンパイルした場合)
+ ・ /var/lib/canna/dic/canna/ (Vine Linux, Debian GNU/Linux など)
+ ・ /usr/local/lib/canna/dic/canna/ (FreeBSD など)
+ ・ /var/dict/canna/canna/ (NetBSD, OpenBSD など)
 
-�ʤɤˤʤäƤ��ޤ����ʲ���/usr/local/canna/lib/dic/canna/ �˥����ƥ༭��ե���
-�뤬¸�ߤ��� cannaserver, cannakill �� /usr/local/canna/bin/ ��¸�ߤ����ΤȤ�
-�ƺ�Ȥ�ʤ�ޤ�����ʬ�δĶ��Ǥμ���ե����������ե�����γ�Ǽ�ǥ��쥯�ȥ��
-�Ƽ���Ĵ�٤Ƥ���������
+などになっています。以下、/usr/local/canna/lib/dic/canna/ にシステム辞書ファイ
+ルが存在し、 cannaserver, cannakill が /usr/local/canna/bin/ に存在するものとし
+て作業を進めます。自分の環境での辞書ファイルや設定ファイルの格納ディレクトリは
+各自で調べてください。
 
-canna3.5b2 ������ΥС������� canna �Ǥ��ܼ������°�켭��ϻȤ��ޤ��󡣤���
-�� canna3.5b2 �ʹߤǳ�ĥ���줿�ʻ�ʬ�����Ѥ��Ƥ��뤿��Ǥ��� canna3.5b2 ���
-���ΥС������� canna ���ܼ����Ƴ�����������°�켭��˴ؤ�����ʬ�Ϻ���о�
-���ˤ��Ƥ���������
+canna3.5b2 より前のバージョンの canna では本辞書の付属語辞書は使えません。これ
+は canna3.5b2 以降で拡張された品詞分類を採用しているためです。 canna3.5b2 より
+前のバージョンの canna に本辞書を導入する場合は付属語辞書に関する部分は作業対象
+外にしてください。
 
-��³��Τ���ʥ��饤����Ȥ�¸�ߤ���ȼ���Υ��󥹥ȡ���˼��Ԥ��뤳�Ȥ������
-�������󥹥ȡ�������� emacs �� kinput2 �ʤɤΤ���ʥ��饤����Ȥ�λ���Ƥ���
-������
+接続中のかんなクライアントが存在すると辞書のインストールに失敗することがありま
+す。インストールの前に emacs や kinput2 などのかんなクライアントを終了してくだ
+さい。
 
-�ޤ��ϥƥ����ȼ��񤫤�Х��ʥ꼭���������ޤ���
+まずはテキスト辞書からバイナリ辞書を作成します。
 
 $ gzip -dc cannadic-0.95c.tar.gz | tar xf -
 $ cd cannadic-0.95c
 
-Canna3.5b2 �ʹߤΥС������� canna ��ȤäƤ�����
+Canna3.5b2 以降のバージョンの canna を使っている場合
 $ make maindic
 
-Canna3.5b2 ������ΥС������� canna ��ȤäƤ�����
+Canna3.5b2 より前のバージョンの canna を使っている場合
 $ make maindic-old-version
 
-����. Canna3.6p1 �����ΥС������� mkdic ���ޥ�ɤˤϰʲ��˼���������������
-�꤬����ޤ���
+注意. Canna3.6p1 以前のバージョンの mkdic コマンドには以下に示す辞書作成上の問
+題があります。
 
- �� mkdic ���ޥ�ɤϥƥ����ȼ����������ʸ�������ɽ��ñ��򥽡��Ȥ��ޤ���
+ ・ mkdic コマンドはテキスト辞書作成時に文字コード順で単語をソートします。
 
-���Τ��ᡢ�ܼ������ꤷ�Ƥ����Ѵ������������̵���ˤʤ�ޤ������ܸ줫�ʴ�
-���Ѵ������ƥ��ư��Τ�Τˤϱƶ�����ޤ��󤬡����󥹥ȡ���ľ����Ѵ���Ψ��
-�����㲼���ޤ��������������򤹤뤿��ˤ� crxdic �� crfreq ���ޥ�ɤ򤽤줾
-��ñ�ȤǻȤäƥХ��ʥ꼭���������Ƥ�����������°�� Makefile �Ϥ��Τ褦�ˤʤ�
-�Ƥ��ޤ���
+このため、本辞書が想定している変換候補順初期情報が無効になります。日本語かな漢
+字変換システムの動作そのものには影響ありませんが、インストール直後の変換効率が
+非常に低下します。この問題を回避するためには crxdic と crfreq コマンドをそれぞ
+れ単独で使ってバイナリ辞書を作成してください。付属の Makefile はそのようになっ
+ています。
 
-�Ǥ������ä��Х��ʥ꼭��ե�����򤫤�ʼ���ǥ��쥯�ȥ�˥��ԡ������ѡ��ߥå�
-���Ƚ�ͭ�������ꤷ�ޤ��� OS ��ǥ����ȥ�ӥ塼�����ˤ�äƤϽ�ͭ�Ԥ� bin ��
-�Ϥʤ� root �� canna �ʤɤˤʤäƤ��뤫�⤷��ޤ���Ŭ�ڤʽ�ͭ�Ԥ����ꤷ�Ƥ���
-������
+できあがったバイナリ辞書ファイルをかんな辞書ディレクトリにコピーし、パーミッシ
+ョンと所有権を設定します。 OS やディストリビューションによっては所有者は bin で
+はなく root や canna などになっているかもしれません。適切な所有者を設定してくだ
+さい。
 
-(��Ȥ� root ���¤�)
+(作業は root 権限で)
 $ su
-(����ʥ��������)
+(かんなサーバ停止)
 # /usr/local/canna/bin/cannakill
-(��Ω�켭��ե����륳�ԡ�/��ͭ������/�ѡ��ߥå��������)
+(自立語辞書ファイルコピー/所有者設定/パーミッション設定)
 # install -o bin -g bin -m 0664 gcanna.c[bl]d /usr/local/canna/lib/dic/canna/
-(��°�켭��ե����륳�ԡ�/��ͭ������/�ѡ��ߥå��������)
+(付属語辞書ファイルコピー/所有者設定/パーミッション設定)
 # install -o bin -g bin -m 0664 gcannaf.ctd /usr/local/canna/lib/dic/canna/
 
-������Ͽ�ե������ /usr/local/canna/lib/dic/canna/dics.dir �˰ʲ���3�Ԥ��ɲä�
-�ޤ��� cannadic-0.95 ���ƥ����ȼ���γ�ĥ�Ҥ� ".t" ���� ".ctd" ���ѹ����줿��
-�����դ��Ƥ���������
+辞書登録ファイルの /usr/local/canna/lib/dic/canna/dics.dir に以下の3行を追加し
+ます。 cannadic-0.95 よりテキスト辞書の拡張子が ".t" から ".ctd" に変更されたの
+で注意してください．
 
 gcanna.cbd(gcanna.mwd) -gcanna---
 gcanna.cld(gcanna.mwd) -gcanna---
 gcannaf.ctd(.swd) -gcannaf---
 
-cannaserver ��Ƶ�ư���ޤ���
+cannaserver を再起動します。
 
-(����ʥ����кƵ�ư)
+(かんなサーバ再起動)
 # /usr/local/canna/bin/cannaserver
 
-�桼�����¤���äơ��ۡ���ǥ��쥯�ȥ��¸�ߤ���ƥ桼���� .canna ��
-(use-dictionary ...) ����ʬ�� "gcanna", "gcannaf" ��2�Ԥ��դ�­���Ƥ���������ȴ
-�褹��Ȥ���ʴ����Ǥ���
+ユーザ権限に戻って、ホームディレクトリに存在する各ユーザの .canna の
+(use-dictionary ...) の部分に "gcanna", "gcannaf" の2行を付け足してください。抜
+粋するとこんな感じです。
 
 (use-dictionary
- "gcanna"   ; ����Ω�켭��Ϥ��ιԤ��ɲ�
- "gcannaf"  ; ����°�켭��Ϥ��ιԤ��ɲ�
- ;;"iroha"  ; ����̸ߴ��ʤΤǤ��ιԤ򥳥��ȥ����Ȥ��ޤ�
+ "gcanna"   ; ←自立語辞書はこの行を追加
+ "gcannaf"  ; ←付属語辞書はこの行を追加
+ ;;"iroha"  ; ←上位互換なのでこの行をコメントアウトします
  "fuzokugo"
  "hojomwd"
  "hojoswd"
@@ -190,88 +190,88 @@ cannaserver ��Ƶ�ư���ޤ���
  :user "user"
  )
 
-�Ѵ���̤�ؽ������뤿��˥桼�����Ȥ����ټ����������ޤ�������Ʊ̾�Υ桼����
-�񤬥��󥹥ȡ��뤵��Ƥ����硢������񤭤��뤫�ɤ������䤵��ޤ����Ť�����
-����ΤޤޤǤ��Ѵ������ޤ������ʤ��Τǡ�ɬ�� yes �����򤷤ƾ�񤭺������Ƥ�����
-��(�����������ޤޤǤ����پ�������ƥꥻ�åȤ���ޤ�)��
+変換結果を学習させるためにユーザごとに頻度辞書を作成します。既に同名のユーザ辞
+書がインストールされている場合、辞書を上書きするかどうか質問されます。古い頻度
+辞書のままでは変換がうまくいかないので、必ず yes を選択して上書き作成してくださ
+い(ただし、いままでの頻度情報は全てリセットされます)。
 
 $ mkdic -fq gcanna
 Personal learning file of dictionary "gcanna" exists. Do you overwrite it ? (y/n)
 
-�ʤ����Ѵ������񤷤�ñ�������Ѵ�������������˽ФƤ��ơ��Ѵ���Ψ�������ʤäƤ�
-��ȴ������硢 :bushu "bushu" �򥳥��ȥ����Ȥ��뤳�ȤǾ����������֤������
-��ޤ����������������Ѵ������ѤǤ��ʤ��ʤ�ޤ��Τǡ��Ƽ��ι��ߤˤ��碌�����ꤷ
-�Ƥ���������
+なお、変換時に難しい単漢字が変換候補の前の方に出てきて、変換効率が悪くなってい
+ると感じる場合、 :bushu "bushu" をコメントアウトすることで状況がいくぶん改善さ
+れます。ただし、部首変換は利用できなくなりますので、各自の好みにあわせて設定し
+てください。
 
-������������������������������������������������������������������������������
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[�饤����]
+[ライセンス]
 
-���ۤ�������Ѥˤ����äƤϤ����ʤ��ݾڤ�Ԥʤ��ޤ��󡣥饤���󥹤ϼ���Υ١���
-�Ȥʤä� FreeWnn ��Ʊ�ͤ� GPL �ˤ��������ޤ����ܺ٤ˤĤ��Ƥ���°�� COPYING �ե�
-����(�Ѹ�)���ɤߤ��������� GNU General Public License(���ܸ���) �Ϥ����� -
+配布および利用にあたってはいかなる保証も行ないません。ライセンスは辞書のベース
+となった FreeWnn と同様に GPL にしたがいます。詳細については付属の COPYING ファ
+イル(英語)をお読みください。 GNU General Public License(日本語訳) はこちら -
 http://www.gnu.org/philosophy/license-list.ja.html
 
-������������������������������������������������������������������������������
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[�ռ�]
+[謝辞]
 
-�ޤ��ʤˤ�꤫��ʤ�ȯ�����ե꡼���եȥ������Ȥ��Ƹ������Ƥ������ä��ط��Գ�
-�̤˴��դ��ޤ����ޤ����Ƽ�ե꡼���������Ի����Ƥ������ä��Ͼ�ȥ����˴��դ�
-�ޤ���
+まずなによりかんなを開発し、フリーソフトウェアとして公開してくださった関係者各
+位に感謝します。また、各種フリー辞書情報を編纂してくださった馬場肇さんに感謝し
+ます。
 
- �� �ե꡼�Τ��ʴ����Ѵ����񤿤� - http://www.kusastro.kyoto-u.ac.jp/%7Ebaba/
+ ・ フリーのかな漢字変換辞書たち - http://www.kusastro.kyoto-u.ac.jp/%7Ebaba/
     dic/free-dic.html
 
-�����ơ��ƼＭ��� GPL �ޤ��� public domain �Ȥ��Ƹ������Ƥ������ä��ߤʤ��ޤ�
-���դ��ޤ��������ơ��ʲ��������˸���ñ��θ��Ŧ���������Υ��ɥХ����򤤤���
-���ޤ��������꤬�Ȥ��������ޤ���
+そして、各種辞書を GPL または public domain として公開してくださったみなさまに
+感謝します。そして、以下の方々に誤字単語の御指摘や設定情報のアドバイスをいただ
+きました。ありがとうございます。
 
- �� ����ͦ����
- �� �����Ѥ���
- �� George ����
- �� ���֤�@Kondara Project ����
- �� ������Τ��� - FreeBSD ports ��
- �� ����ͺ�󤵤�
- �� Project Anthy ��Ȫͪ�𤵤�
- �� Yasuhiro Ohta ����
- �� ���ʥ�@�������礵��
- �� ʿ����������
- �� nyx-a ����
- �� ����򤵤�
- �� ��湬���
- �� http://www.sekimizu.net/
- �� ����������
- �� ���ľ�������
- �� Teruo YAMAWAKI ����
- �� J. Grant ����
- �� komura ����
- �� Yu OOASA ����
- �� ��ƣε������
- �� ���紴�פ���
- �� H N ����
- �� SUWA Yoshikazu ����
- �� �ⶶ�Τ���
- �� ������������
- �� ����¾ƿ̾�Ǹ���ñ�������󼨤��Ƥ������ä���������
+ ・ 池田勇さん
+ ・ 奥山倫さん
+ ・ George さん
+ ・ たぶち@Kondara Project さん
+ ・ 戸川聡士さん - FreeBSD ports 化
+ ・ 広瀬雄二さん
+ ・ Project Anthy 田畑悠介さん
+ ・ Yasuhiro Ohta さん
+ ・ カナダ@関西医大さん
+ ・ 平原貴音さん
+ ・ nyx-a さん
+ ・ 力野健さん
+ ・ 中井幸博さん
+ ・ http://www.sekimizu.net/
+ ・ 井汲景太さん
+ ・ 飯田昌成さん
+ ・ Teruo YAMAWAKI さん
+ ・ J. Grant さん
+ ・ komura さん
+ ・ Yu OOASA さん
+ ・ 伊藤竜太さん
+ ・ 中島幹夫さん
+ ・ H N さん
+ ・ SUWA Yoshikazu さん
+ ・ 高橋仁さん
+ ・ 小松弘幸さん
+ ・ その他匿名で誤字単語情報を提示してくださったかたがた
 
 ...and special thanks to yc.el
 
-������������������������������������������������������������������������������
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-[��Ϣ���]
+[関連リンク]
 
 http://canna.sourceforge.jp/
-    ���ܸ����ϥ����ƥफ���
+    日本語入力システムかんな
 http://anthy.sourceforge.jp/
-    ���ܸ����ϥ����ƥ� Anthy
+    日本語入力システム Anthy
 http://www.taiyaki.org/prime/
-    ͽ¬���ϥ����ƥ� PRIME
+    予測入力システム PRIME
 http://www.ceres.dti.ne.jp/%7Eknak/yc.html
-    �⡼�ɥ쥹�����ܸ����ϴĶ���¸����� Emacs Lisp ��yc��
+    モードレスな日本語入力環境を実現する Emacs Lisp 「yc」
 
-������������������������������������������������������������������������������
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-���ۡ���ո�������æ���λ�Ŧ��������Ͽ�ʤɤΥ᡼��Ϥ����顣
-������Ȥޤ��� <sugimoto@oucrc.org>
+感想、御意見、誤字脱字の指摘、新語登録などのメールはこちら。
+すぎもとまさお <sugimoto@oucrc.org>
 

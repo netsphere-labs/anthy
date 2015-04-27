@@ -1,10 +1,10 @@
-[ ���� ]
+[ 履歴 ]
 
 2009/12/30
- * �����ɲ�&����Ͽ����
- * anthy/mkworddic/zipcode.t: �����ɲ�
-  - �ե����뼫�Τ��ⳤ����� anthy-ut-patches-20091228.tar.bz2 ����
-    ĺ���Ƥ��ޤ��� XD
+ * 新語追加&誤登録修正
+ * anthy/mkworddic/zipcode.t: 新規追加
+  - ファイル自体は内海さんの anthy-ut-patches-20091228.tar.bz2 から
+    頂いてきました XD
     http://www.geocities.jp/ep3797/anthy_dict_01.html
     http://sourceforge.net/projects/mdk-ut/
 
@@ -14,32 +14,32 @@ Anthy all     : 270,531
       (extra) :  26,237
 
 2009/11/22
- * �����ɲ�&����Ͽ����(G-HAL ����2ch)
- * gtankan.ctd: �����դ�ľ��
-    ����ޤǤϡֶ�������β�ǯ���ǽ����������ס־��Ѵ��������������٤�
-    �Ĥ��Ƥ��ꡢ�ɤߤϹ�θ���Ƥ��ʤ��ä������ɤߤ��θ����褦�ˤ�������
-    Ū��̾��Ȥ���ۤ��Ѥ��ʤ��ͤˤޤǾ夲�Ƥߤ���
-    ����ޤǤ����٤����������ơ����Ȥ��С֤ˤ夦�פǡ����פ�����פ�ꡢ
-    ��ð����(��̾)����˽ФƤ��ꤷ���Τǡ�
- * �ܲ� Anthy �Ϥ⤦��꡼������ʤ��褦�ʤΤǡ�������б���
-   * sample/: �ѻ�
-   * anthy/ : ��������
+ * 新語追加&誤登録修正(G-HAL さん、2ch)
+ * gtankan.ctd: 頻度付け直し
+    これまでは「教育漢字の何年生で習う漢字か」「常用漢字か」等で頻度を
+    つけており、読みは考慮していなかったが、読みを考慮するようにし、全体
+    的に名詞とそれほど変わらない値にまで上げてみた。
+    これまでは頻度が小さすぎて、たとえば「にゅう」で「入」や「乳」より、
+    「丹生」(地名)が先に出てたりしたので。
+ * 本家 Anthy はもうリリースされないようなので、それの対応。
+   * sample/: 廃止
+   * anthy/ : 新規作成
     - anthy/mkworddic/compound.t, extra.t:
-        extra.t �ˤ��ä�ʣ�������Τ�Τ� compound.t �˰�ư��
-        compound.t �θ���Ͽ����(����ľ�����櫓�ǤϤʤ����ޤ����������
-        �äƤ�)
+        extra.t にあった複合語形式のものを compound.t に移動。
+        compound.t の誤登録修正(全部直したわけではない。まだたくさん残
+        ってる)
     - anthy/mkworddic/dict.args.in:
-        anthy Ʊ���θŤ� alt-cannadic �ǤϤʤ������Υѥå������μ����
-        �Ȥ��褦�ˤ�����
-        compound.t, extra.t �⤳�Υѥå������Τ�Τ���ѡ�
+        anthy 同梱の古い alt-cannadic ではなく、このパッケージの辞書を
+        使うようにした。
+        compound.t, extra.t もこのパッケージのものを使用。
     - anthy/calctrans/corpus_info, weak_words:
-        ���Υѥå������μ����Ȥäƹ������� corpus �ѥ�᡼����
-        (update_params0; update_params; update_params2��3)
-   * prepare.sh: ��������
-      ���Υѥå������μ����Ȥä� anthy ��ӥ�ɤ��뤿��ν����򤹤�
-      ������ץȡ�
-      ñ�ˡ�dict.args.in, corpus_info, weak_words ���ܲȤΤ������ؤ�
-      �Ƥ������
+        このパッケージの辞書を使って更新した corpus パラメータ。
+        (update_params0; update_params; update_params2×3)
+   * prepare.sh: 新規作成
+      このパッケージの辞書を使って anthy をビルドするための準備をする
+      スクリプト。
+      単に、dict.args.in, corpus_info, weak_words を本家のと入れ替え
+      てるだけ。
 
 Canna         : 246,385
 Anthy all     : 266,966
@@ -47,19 +47,19 @@ Anthy all     : 266,966
       (extra) :  26,237
 
 2009/09/21
- * �����ɲ�&����Ͽ����(G-HAL ����nosuke ����salvan �����ⳤ����
+ * 新語追加&誤登録修正(G-HAL さん、nosuke さん、salvan さん、内海さん、
    Anthy wiki)
- * sample/dict.args.in: JIS��3���������(gt-tankanji_hikanji-34.t)
-   ��ǥե���Ȥ� anthy.dic �˴ޤ��褦�ѹ�
- * README_euc.txt: �ե������������ gt_okuri.ctd ����AC��(Anthy, 
-   Canna ����)�ˤʤäƤ��ޤäƤ����Τ��C��(Canna ��)�˽�����
- * �����ɲ�
+ * sample/dict.args.in: JIS第3水準の非漢字(gt-tankanji_hikanji-34.t)
+   をデフォルトで anthy.dic に含めるよう変更
+ * README_euc.txt: ファイルの説明で gt_okuri.ctd が「AC」(Anthy, 
+   Canna 共用)になってしまっていたのを「C」(Canna 用)に修正。
+ * 新規追加
     extra/x-conv2self-std.t: 
-      scim-anthy ���༡�Ѵ���ǽ��Ȥä����˱ѿ����椬�졹�Ѵ�������
-      �򡢸����ܾ��Ѵ�����Ƥ��ʤ��褦�˸����뤿��μ���
+      scim-anthy の逐次変換機能を使った時に英数記号が一々変換されるの
+      を、見た目上変換されていないように見せるための辞書。
     extra/g-keiyousi_ie-std.t: 
-      ���ƻ쥤���ء������ؼ���(���Ѥˤ� alt-depgraph ��ɬ��)��
- * ���󡢥���ȥ���ν��פ�ְ㤨�Ƥ����Τ���
+      形容詞イ音便・エ音便辞書(利用には alt-depgraph が必要)。
+ * 前回、エントリ数の集計を間違えていたのを修正
 
 Canna         : 244,508
 Anthy all     : 265,089
@@ -67,15 +67,15 @@ Anthy all     : 265,089
       (extra) :  26,237
 
 2009/03/08
- * �����ɲ�&����Ͽ����(wiki �� canna �Υڡ�����Ž���դ��Ƥ��줿����
-   �ⳤ����G-HAL ����nosuke ����)
- * SKK-JISYO ���� web �Ǥ� hit ����¿���ä�ʪ�������(�����)
- * ���Ѵ���¿ȯ������Τǡֿ���ˤĤ���Ƭ��(NNPRE)�򳰤���(����פ�
-   �߻Ĥ���)
- * �����ɲ�
-    extra/gt-kuten-std.t, gt-kuten-34.t: ñ�������̶�������
- * ñ�����δ�����ʬ: ̾��(����̾��+��ͭ̾��)��Ʊ������ȥ꤬�����Τ�
-   �Ƥ��褦�ˤ����Τ�ߤ���ᤷ����
+ * 新語追加&誤登録修正(wiki の canna のページに貼り付けてくれた方、
+   内海さん、G-HAL さん、nosuke さん)
+ * SKK-JISYO から web での hit 数の多かった物を取り込み(作業中)
+ * 誤変換を多発させるので「数詞につく接頭辞(NNPRE)を外した(「第」の
+   み残した)
+ * 新規追加
+    extra/gt-kuten-std.t, gt-kuten-34.t: 単漢字の面句点辞書。
+ * 単漢字の漢字部分: 名詞(一般名詞+固有名詞)に同じエントリがあるものは
+   弾くようにしたのを止めて戻した。
 
 Canna         : 244,039
 Anthy all     : 262,618
@@ -83,16 +83,16 @@ Anthy all     : 262,618
       (extra) :  24,235
 
 2008/10/18
- * gcannaf.ctd: �ɤߤ��礱����Τ����ä��Τ���(��椵��˴���)
- * ñ����: ������ץȤΥߥ��Ǹ���ν�ʣ�������ä��Τ���
- * gt_okuri.t �� gt-tankanji_okuri-std.t �˥�͡��ष extra �ˡ�
-   �ޤ��������������Ⱦü�ʾ��֤��ä��Τ�1��1����ȥ�����˽�����
- * ñ�����δ�����ʬ: ̾��(����̾��+��ͭ̾��)��Ʊ������ȥ꤬�����Τ�
-   �Ƥ��褦�ˤ�����gtankan.ctd: 73.8KB �� 54.9KB �˥������å�
- * ����������ä����䤷��
- * ����ȥ���ν��פ��꡼���Ѽ��񤫤�Ԥ��褦���ѹ�(����ޤǤϥ���
-   �Ѥμ��񤫤齸�פ��Ƥ���)��
- * �ޤ���canna �� anthy �Ȥ�ʬ���ƽ��פ���褦�ˤ���
+ * gcannaf.ctd: 読みが欠けたものがあったのを修正(白井さんに感謝)
+ * 単漢字: スクリプトのミスで候補の重複や欠落があったのを修正
+ * gt_okuri.t を gt-tankanji_okuri-std.t にリネームし extra に。
+   また辞書形式が中途半端な状態だったのを1行1エントリ形式に修正。
+ * 単漢字の漢字部分: 名詞(一般名詞+固有名詞)に同じエントリがあるものは
+   弾くようにした。gtankan.ctd: 73.8KB → 54.9KB にダイエット
+ * 助数詞をちょっと増やした
+ * エントリ数の集計をリリース用辞書から行うように変更(これまではメンテ
+   用の辞書から集計していた)。
+ * また、canna と anthy とで分けて集計するようにした
 
 Canna         : 238,700
 Anthy all     : 246,321
@@ -100,176 +100,176 @@ Anthy all     : 246,321
      (extra)  :  13,042
 
 2008/10/12
- * �����ɲ�&����Ͽ����(�ⳤ������Ͽ��˾����nosuke����n/a����
-   2ch��ƿ̾��������Tonibi_ko����x����TAKADA Yoshihito����
-   G-HAL����)�������ϴ��դ��ޤ���
- * ư����¤ӽ礬���������ä��Τ�������ľ������
- * ��̾������ϸ��Ѵ��θ��ˤʤ뤳�Ȥ�¿���褦�ʤΤǡ��֤���ס��͡���
-   ��������Ū�ʤ�ΤΤߤ�Ĥ��Ƴ�������
- * UTUMI ����� hindo-gooblog-20080605 �� ippan/04-other-dousi.txt
-   ����ɬ�פʤ�Τ�����ߡ�
- * ñ�����˥���ե��٥åȤΡ����Ѣ���Ⱦ�ѡס���ʸ��������ʸ���פΥ���
-   �ȥ���ɲá�
- * g_fname.t �� EUC-JP �ˤ�����
- * extra �ѥå��������ѻߤ������ä������硣
- * dict.args.in �Υ���ץ���ɲá�
+ * 新語追加&誤登録修正(内海さん、登録希望さん、nosukeさん、n/aさん、
+   2chの匿名の方々、Tonibi_koさん、xさん、TAKADA Yoshihitoさん、
+   G-HALさん)。ご協力感謝します。
+ * 動詞の並び順がおかしかったのを全部見直した。
+ * 人名接尾語は誤変換の元になることが多いようなので、「さん」「様」等
+   ごく基本的なもののみを残して外した。
+ * UTUMI さんの hindo-gooblog-20080605 の ippan/04-other-dousi.txt
+   から必要なものを取り込み。
+ * 単漢字にアルファベットの「全角←→半角」「大文字←→小文字」のエン
+   トリを追加。
+ * g_fname.t を EUC-JP にした。
+ * extra パッケージは廃止し、こっちに統合。
+ * dict.args.in のサンプルを追加。
 
-   main   238,778 ����ȥ�
-   extra    9,467 ����ȥ�
-   Total: 248,245 ����ȥ�
+   main   238,778 エントリ
+   extra    9,467 エントリ
+   Total: 248,245 エントリ
 
-2007/10/23  �����ɲ�&����Ͽ����(��Ͽ��˾����n/a����denson����
-            ikuya����2ch��ƿ̾������)
-            anthy-9100c �����äƤ����ⳤ����� name.t ������ꡢ
-            �ե�͡����Ѽ���Ȥ���gcanna.ctd �ˤ��ä��ե�͡���
-            ��ʣ�������ˤ��Ƥ��ä������硣
-            Total: 236,883 ����ȥ�
-2007/09/18  �����ɲ�&����Ͽ����(�ⳤ������Ͽ��˾����nosuke����
-            n/a����2ch��ƿ̾������)
-            SKK-JISYO.wrong(v 1.141 2007/01/09 02:58:25)�򻲹ͤ�
-            ����Ͽ����(okuri-nasi�Τ��о�)
-            �ͻ��ϸ������ľ��������Ͽ����
-            Anthy Wiki �Ρ�ñ�����/̤ʬ���פ������������
-            Total: 233,813 ����ȥ�
-2007/08/05  �����ɲ�&����Ͽ����(�ⳤ���󡢰�⤵����Ͽ��˾����
-            Ishii����)
-            UTUMI ����� wiki-analyzed-20070303/analyzed-unknown
-            ����μ����ߤ�³��
-            Anthy Wiki �Ρ�ñ�����/̤ʬ���פ������������
-            ��̾���ʬ����λ
-            anthy-9100 �� base.t ����μ����ߴ�λ
-            gtankan-okuri.ctd �� extra �ѥå�������
-            Total: 233,037 ����ȥ�
-2007/06/21  �����ɲ�&����Ͽ����(��Ͽ��˾����Ishii�����ⳤ����)
-            UTUMI ����� wiki-analyzed-20070303/analyzed-unknown
-            ����μ����ߤ�³��
-            ��̾����ʬ��(�¤ӽ�������Ϥޤ�Ⱦʬ���餤)
-            Total: 230,454 ����ȥ�
-2007/05/13  �����ɲ�(��Ͽ��˾����Ishii����)
-            ��ICOT �����Ǽ���פ��̾��Υ���ȥ�����ߤ�³��
-            UTUMI ����� wiki-analyzed-20070303/analyzed-unknown
-            ����μ����߳���
-            Total: 229,582 ����ȥ�
-2007/04/06  ñ����������ʬ�����겾̾����/�ʤ���ʬ��(gtankan.ctd ��
+2007/10/23  新語追加&誤登録修正(登録希望さん、n/aさん、densonさん、
+            ikuyaさん、2chの匿名の方々)
+            anthy-9100c に入っている内海さんの name.t 引き取り、
+            フルネーム用辞書とし、gcanna.ctd にあったフルネーム
+            を複合語形式にしてこっちへ統合。
+            Total: 236,883 エントリ
+2007/09/18  新語追加&誤登録修正(内海さん、登録希望さん、nosukeさん、
+            n/aさん、2chの匿名の方々)
+            SKK-JISYO.wrong(v 1.141 2007/01/09 02:58:25)を参考に
+            誤登録修正(okuri-nasiのみ対象)
+            四字熟語一部見直し、誤登録修正
+            Anthy Wiki の「単語収集/未分類語」から一部取り込み
+            Total: 233,813 エントリ
+2007/08/05  新語追加&誤登録修正(内海さん、井汲さん、登録希望さん、
+            Ishiiさん)
+            UTUMI さんの wiki-analyzed-20070303/analyzed-unknown
+            からの取り込みの続き
+            Anthy Wiki の「単語収集/未分類語」から一部取り込み
+            人名ランク分け完了
+            anthy-9100 の base.t からの取り込み完了
+            gtankan-okuri.ctd は extra パッケージへ
+            Total: 233,037 エントリ
+2007/06/21  新語追加&誤登録修正(登録希望さん、Ishiiさん、内海さん)
+            UTUMI さんの wiki-analyzed-20070303/analyzed-unknown
+            からの取り込みの続き
+            人名をランク分け(並び順の補正はまだ半分くらい)
+            Total: 230,454 エントリ
+2007/05/13  新語追加(登録希望さん、Ishiiさん)
+            「ICOT 形態素辞書」より名詞のエントリ取り込みの続き
+            UTUMI さんの wiki-analyzed-20070303/analyzed-unknown
+            からの取り込み開始
+            Total: 229,582 エントリ
+2007/04/06  単漢字漢字部分を送り仮名あり/なしで分割(gtankan.ctd と
             gtankan-okuri.ctd)
-            Total: 227,580 ����ȥ�
-2007/04/03  ��Ω�����ʬ��(docu/freq.txt ����)
-            �����ɲ�(��Ͽ��˾����)
-            ����Ͽ����( 30 ���餤��ľ�����Ȼפ�)
-            Total: 227,476 ����ȥ�
-2007/02/28  ��ICOT �����Ǽ���פ��̾��Υ���ȥ�����ߤ�³��(�ޤ�
-            �ޤ�³��)
-            �����ɲ�(��Ͽ��˾����)
-            ����̾�������� Yahoo! Japan �Ǥ� hit ���� 300 �ʾ�
-            1000 ̤���Τ�Τ����٤� 50 �ˡ�1000 �ʾ� 10000 ̤����
-            ��Τ� 100 �˲�����
-            ����¾�⾯�����٤򤤤��ä�
-            ����̾��ˤҤ餬�ʸ����ɲ�(�����θ�Τ�)
-            Ϣ����� gmail ���ѹ�
-            Total: 226,053 ����ȥ�
-2007/01/31  ��ICOT �����Ǽ���פ��̾��Υ���ȥ�����ߤ�³��(�ޤ�
-            �ޤ�³��)
-            ñ���������������
-            �����̾����
-            �����ɲ�(��Ͽ��˾����)
-            ����Ͽ����
-            Total: 223,641 ����ȥ�
-2006/12/31  ��ICOT �����Ǽ���פ��̾��Υ���ȥ�����ߤ�³��
-            UTUMI ����� anthy_gcanna_ut-20061121.tar.bz2 ����
-            ������(http://www.geocities.jp/ep3797/snapshot
+            Total: 227,580 エントリ
+2007/04/03  自立語をランク分け(docu/freq.txt 参照)
+            新語追加(登録希望さん)
+            誤登録修正( 30 くらいは直したと思う)
+            Total: 227,476 エントリ
+2007/02/28  「ICOT 形態素辞書」より名詞のエントリ取り込みの続き(まだ
+            まだ続く)
+            新語追加(登録希望さん)
+            普通名詞と副詞で Yahoo! Japan での hit 数が 300 以上
+            1000 未満のものの頻度を 50 に、1000 以上 10000 未満の
+            ものを 100 に下げた
+            その他も少し頻度をいじった
+            普通名詞にひらがな候補追加(一部の語のみ)
+            連絡先を gmail に変更
+            Total: 226,053 エントリ
+2007/01/31  「ICOT 形態素辞書」より名詞のエントリ取り込みの続き(まだ
+            まだ続く)
+            単漢字の非漢字強化
+            外国人名強化
+            新語追加(登録希望さん)
+            誤登録修正
+            Total: 223,641 エントリ
+2006/12/31  「ICOT 形態素辞書」より名詞のエントリ取り込みの続き
+            UTUMI さんの anthy_gcanna_ut-20061121.tar.bz2 から
+            取り込み(http://www.geocities.jp/ep3797/snapshot
             /anthy_dict/anthy_gcanna_ut-20061121.tar.bz2)
-            ����ˤ� Yahoo! Japan �Ǥ� hit �����ղ�
-            ����̾�������� Yahoo! Japan �Ǥ� hit ���� 100 ̤����
-            ��Τ� 100 �ʾ� 300 ̤���Τ�Τ����٤򤽤줾�� 5 �� 20
-            �˲�����
-            �����ɲ�(��Ͽ��˾����)
-            ����Ͽ����
-            Total: 220,153 ����ȥ�
-2006/12/03  �ʻ���δ�����٤��Ѥ���
-            ñ�������ɤߤ���֡��פ��äƸ����ᤷ��
-2006/12/01  Yahoo! Japan �Ǥ� hit ���򻲹ͤˡ�����̾���ͥ���ͽ���
-            ��³��(�ޤ�Ⱦʬ̤��)
-            �����ɲ�(ishii ����)
-            ��ICOT �����Ǽ���פ��̾��Υ���ȥ�����ߤ�³��
-            Total: 216,387 ����ȥ�
-2006/10/31  Yahoo! Japan �Ǥ� hit ���򻲹ͤˡ�����̾�졢��̾��
-            ͥ���ͽ���(�ޤ�Ⱦʬ̤��)
-            �����ɲ�(denson ���󡢰�⤵����Ͽ��˾����
-            Anthy wiki �Ρ�ñ�������)
-            ����̾����濴�˸���Ͽ����
-            Total: 216,000 ����ȥ�
-2006/09/05  ��ICOT �����Ǽ���פ��̾��Υ���ȥ������
-            Total: 215,124 ����ȥ�
-2006/07/29  ʣ��ư��&Ʊ���ð�ɽ���Ƚ�(�����λ�Ȥ��ޤ�)
-            ñ��������ɤߡ��פǽФ��褦���ѹ�
-            Total: 214,879 ����ȥ�
-2006/06/15  ��ICOT �����Ǽ���פ��ư��Υ���ȥ������
-            (��λ)��
-            �Ĥ��Ǥ�ư���Ʊ���ð�ɽ���Ƚ�(�����)
-            denson ����Ikumi ���󤫤����ä�ĺ���� diff �ե�����
-            ������
-            Ikumi ����Τ���Ŧ������ơ��֤Ǥ���פ���³�����Τ�
-            T32�ˡ����ʤ���Τ�SX�ˡ��Ȥ������˻Ȥ�ʬ����Ԥä���
-            Total: 212,876 ����ȥ�
-2006/05/17  ��ICOT �����Ǽ���פ��ư��Υ���ȥ������
-            (����³�������)��
-            Ikumi ���󤫤�᡼������ä�ĺ���� diff �ե����������
-            Total: 209,693 ����ȥ�
-2006/05/13  ��ICOT �����Ǽ���פ��ư�졢̾��Υ���ȥ������
-            (�ޤ��������)��
-            ����¾�����ɲá����꽤����
-            Total: 208,035 ����ȥ�
-2006/04/30  denson ���󤫤�᡼������äƤ��������� diff �ե�
-            ����μ����ߡ�
-            UTUMI �� cannadic (20060221)����μ�����(�ޤ�
-            �������)��
-            ��ICOT �����Ǽ���פ��ư�졢̾��Υ���ȥ������
-            (�ޤ��������)��
-            ����¾�����ɲá����꽤����
-            Total: 206,010 ����ȥ�
-2006/02/28  �ָפη�פǻ�Ŧ�Τ��ä�����ɲ�/����(denson����)��
-            �ä��ơ�denson ���󤫤�᡼������äƤ��������� 
-            diff �ե�����μ����ߡ�
-            UTUMI �� cannadic (20060221)����μ�����(�ޤ�
-            �������)��
-            ����ޤǡ֤��٤ƤҤ餬�ʡפθ�������פ�Ƚ�Ǥ���
-            ���ˤϤɤ�ɤ��äƤ�����������Ǥϥޥ�����礬
-            ���뤳�Ȥ˵��Ť����Ȥꤢ������ư��ȷ��ƻ�ˤĤ���
-            ���ǡ֤��٤ƤҤ餬�ʡפθ�����ɲä�����¾���ʻ�
-            �ˤĤ��Ƥ��ɤäƺ�Ȥ���ͽ�ꡣ
-            Ʊ���ð�ɽ�������䤷����
-            ����¾�����ɲá����꽤����
-            Total: 204,238 ����ȥ�
-2006/01/29  �ֻ����pubdic+���פ���μ����߽�λ��
-            �ָפη�פǻ�Ŧ�Τ��ä�����ɲ�/����(denson����)��
-            ����¾�������������ɲ�(���̾��)��
-            Total: 197,801 ����ȥ�
-2005/12/30  �������������ɲ�(���̾��)��
-            Total: 195,677 ����ȥ�
-2005/11/29  ����placename.t�Υ���ȥ���������Ĥ�꤬��
-            �ɤ��Ǥɤ��ְ�ä��Τ�������ʬ�ä��Ƥ��ޤäƤ���
-            �Τ���ټ����ߡ�
-            10/30 �˺������ʬ�λĤ�򤹤٤Ƽ����ߡ�
-            ����¾�������������ɲá�
-            Total: 194,011 ����ȥ�
-2005/11/6   Anthy-7100b �� base.t, katakana.t, placename.t
-            �Υ���ȥ�򡢸���������Ĥļ������(â����
-            placename.t �α�̾���餪���Ρֱءפϼ�������)��
-            ����ɤ����󤫤��ֻ�����ʤ��褦�ʤΤǡ��饤����
-            �������꤬�Фʤ��褦�ֻ��ͤˤ���פȤ�������(��
-            �ԡ�/�ڡ����Ȥ�Ȥ鷺�ˡ��ܤǸ��Ƽ������)�줫
-            ����Ͽ��ľ������ʬ���ɲ�(10/30 �˺������ʬ����
-            �� 500 �ۤ�)��
-            ����¾���٤����������
-            Total: 190,978 ����ȥ�
-2005/10/30  �ֻ����pubdic+���פ�����������ʬ(2,300��)
-            ���������Ƹ�����
-            Anthy-7029 �� base.t, katakana,t �Υ���ȥ��
-            �������(���������㤤�Ȼפ����Τϼ�����
-            �Ǥ��ʤ�)��
-            How-to-use.txt �ˤ��ä��������
-2005/10/27  �ֻ����pubdic+���פΥ饤���󥹤������Ǥ��뤳��
-            �˵��Ť�����ö������ߡ�����ɤ�����˳�ǧ��
-2005/10/26  ��������
+            副詞にも Yahoo! Japan での hit 数を付加
+            普通名詞と副詞で Yahoo! Japan での hit 数が 100 未満の
+            ものと 100 以上 300 未満のものの頻度をそれぞれ 5 と 20
+            に下げた
+            新語追加(登録希望さん)
+            誤登録修正
+            Total: 220,153 エントリ
+2006/12/03  品詞毎の基準頻度を変えた
+            単漢字の読みから「：」を取って元に戻した
+2006/12/01  Yahoo! Japan での hit 数を参考に、普通名詞の優先値修正
+            の続き(まだ半分未満)
+            新語追加(ishii さん)
+            「ICOT 形態素辞書」より名詞のエントリ取り込みの続き
+            Total: 216,387 エントリ
+2006/10/31  Yahoo! Japan での hit 数を参考に、普通名詞、人名の
+            優先値修正(まだ半分未満)
+            新語追加(denson さん、井汲さん、登録希望さん、
+            Anthy wiki の「単語収集」)
+            普通名詞を中心に誤登録修正
+            Total: 216,000 エントリ
+2006/09/05  「ICOT 形態素辞書」より名詞のエントリ取り込み
+            Total: 215,124 エントリ
+2006/07/29  複合動詞&同語彙異表記拡充(一応完了とします)
+            単漢字を「読み：」で出すように変更
+            Total: 214,879 エントリ
+2006/06/15  「ICOT 形態素辞書」より動詞のエントリ取り込み
+            (完了)。
+            ついでに動詞の同語彙異表記拡充(作業中)
+            denson さん、Ikumi さんから送って頂いた diff ファイル
+            取り込み
+            Ikumi さんのご指摘を受けて、「できる」に接続するものは
+            T32に、しないものはSXに、という風に使い分けを行った。
+            Total: 212,876 エントリ
+2006/05/17  「ICOT 形態素辞書」より動詞のエントリ取り込み
+            (引き続き作業中)。
+            Ikumi さんからメールで送って頂いた diff ファイル取り込み
+            Total: 209,693 エントリ
+2006/05/13  「ICOT 形態素辞書」より動詞、名詞のエントリ取り込み
+            (まだ作業途中)。
+            その他新語追加、誤り修正。
+            Total: 208,035 エントリ
+2006/04/30  denson さんからメールで送っていただいた diff ファ
+            イルの取り込み。
+            UTUMI 版 cannadic (20060221)からの取り込み(まだ
+            作業途中)。
+            「ICOT 形態素辞書」より動詞、名詞のエントリ取り込み
+            (まだ作業途中)。
+            その他新語追加、誤り修正。
+            Total: 206,010 エントリ
+2006/02/28  「虎の穴」で指摘のあった語の追加/修正(densonさん)。
+            加えて、denson さんからメールで送っていただいた 
+            diff ファイルの取り込み。
+            UTUMI 版 cannadic (20060221)からの取り込み(まだ
+            作業途中)。
+            これまで「すべてひらがな」の候補は不要と判断した
+            場合にはどんどん削っていたが、それではマズい場合が
+            あることに気づき、とりあえず、動詞と形容詞について
+            一括で「すべてひらがな」の候補を追加した。他の品詞
+            については追って作業する予定。
+            同語彙異表記を増やした。
+            その他新語追加、誤り修正。
+            Total: 204,238 エントリ
+2006/01/29  「私家版pubdic+補遺」からの取り込み終了。
+            「虎の穴」で指摘のあった語の追加/修正(densonさん)。
+            その他微修正、新語追加(主に名詞)。
+            Total: 197,801 エントリ
+2005/12/30  微修正、新語追加(主に名詞)。
+            Total: 195,677 エントリ
+2005/11/29  前回、placename.tのエントリを取り込んだつもりが、
+            どこでどう間違ったのか、大部分消えてしまっていた
+            のを再度取り込み。
+            10/30 に削除した分の残りをすべて取り込み。
+            その他微修正、新語追加。
+            Total: 194,011 エントリ
+2005/11/6   Anthy-7100b の base.t, katakana.t, placename.t
+            のエントリを、誤りを修正しつつ取り込んだ(但し、
+            placename.t の駅名からお尻の「駅」は取り除いた)。
+            えんどうさんから返事が来ないようなので、ライセン
+            スに問題が出ないよう「参考にする」という形で(コ
+            ピー/ペーストを使わずに、目で見て手で入力)一か
+            ら登録し直しした分を追加(10/30 に削除した分の内
+            の 500 ほど)。
+            その他、細かい誤りを修正
+            Total: 190,978 エントリ
+2005/10/30  「私家版pubdic+補遺」から取り込んだ部分(2,300強)
+            を削除し、再公開。
+            Anthy-7029 の base.t, katakana,t のエントリを
+            取り込んだ(一般性が低いと思われるものは取り込ん
+            でいない)。
+            How-to-use.txt にあった誤りを修正
+2005/10/27  「私家版pubdic+補遺」のライセンスが不明であること
+            に気づき、一旦公開停止。えんどうさんに確認中
+2005/10/26  公開開始
 
 

@@ -1,5 +1,5 @@
 /* 
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2001
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2001
  * Copyright (C) 2001-2002 UGAWA Tomoharu
  */
 
@@ -22,7 +22,7 @@ enum {
 
 struct rk_option;
 
-/* rk_option¤Î½é´ü²½¤ÈÊÑ¹¹ */
+/* rk_optionã®åˆæœŸåŒ–ã¨å¤‰æ›´ */
 struct rk_option *anthy_input_create_rk_option(void);
 int anthy_input_free_rk_option(struct rk_option *opt);
 int anthy_input_do_edit_rk_option(struct rk_option* opt, int map,
@@ -30,7 +30,7 @@ int anthy_input_do_edit_rk_option(struct rk_option* opt, int map,
 int anthy_input_do_edit_toggle_option(struct rk_option *opt, char toggle);
 int anthy_input_do_clear_rk_option(struct rk_option *opt, int enable_default);
 
-/* rk_map¤ÎÀ¸À® */
+/* rk_mapã®ç”Ÿæˆ */
 struct rk_map* make_rkmap_ascii(struct rk_option* opt);
 struct rk_map* make_rkmap_wascii(struct rk_option* opt);
 struct rk_map* make_rkmap_shiftascii(struct rk_option* opt);

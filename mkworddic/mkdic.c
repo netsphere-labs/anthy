@@ -608,7 +608,7 @@ parse_modify_freq_command(const char *buf)
   cmd->type = type;
   cmd->yomi = anthy_cstr_to_xstr(yomi, ANTHY_UTF8_ENCODING);
   cmd->wt = get_wt_name(wt);
-  cmd->word = word;
+  cmd->word = strdup (word);
   return cmd;
 }
 

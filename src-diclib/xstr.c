@@ -481,7 +481,7 @@ anthy_xstrtoll(xstr *x)
   if (!x->len || x->len > 16) {
     return -1;
   }
-  if (!anthy_get_xstr_type(x) & (XCT_NUM | XCT_WIDENUM)) {
+  if (!(anthy_get_xstr_type(x) & (XCT_NUM | XCT_WIDENUM))) {
     return -1;
   }
   for (i = 0; i < x->len; i++) {
