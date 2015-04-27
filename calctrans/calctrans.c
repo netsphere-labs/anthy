@@ -532,7 +532,7 @@ flush_extract_stat(struct extract_stat *es, struct string_pool *sp)
       struct string_node *node;
       node = find_string_node(sp, es->info[i].indep);
       if (node->key == 0) {
-	xstr *xs = anthy_cstr_to_xstr(node->str, ANTHY_EUC_JP_ENCODING);
+	xstr *xs = anthy_cstr_to_xstr(node->str, ANTHY_UTF8_ENCODING);
 	node->key = anthy_xstr_hash(xs);
 	anthy_free_xstr(xs);
       }
