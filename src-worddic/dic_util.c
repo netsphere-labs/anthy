@@ -99,7 +99,7 @@ anthy_dic_util_init(void)
   }
   anthy_dic_set_personality("default");
   gIsInit = 1;
-  dic_util_encoding = ANTHY_EUC_JP_ENCODING;
+  dic_util_encoding = ANTHY_UTF8_ENCODING;
 }
 
 /** 辞書ライブラリを解放する */
