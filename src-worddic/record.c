@@ -1043,7 +1043,7 @@ out:
   if (s) {
     s[len] = '\0';
   }
-  *eol = (c == '\n');
+  *eol = (c == '\n' || c == EOF);
   return s;
 }
 
