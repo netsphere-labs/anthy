@@ -4,33 +4,33 @@
 #include <stdio.h>
 #include <anthy/xstr.h>
 
-/** Ã±¸ì */
+/** å˜èª */
 struct word_entry {
-  /** ÉÊ»ìÌ¾ */
+  /** å“è©å */
   const char *wt_name;
-  /** ÉÑÅÙ */
+  /** é »åº¦ */
   int raw_freq;
   int source_order;
   int freq;
-  /* ÁÇÀ­ */
+  /* ç´ æ€§ */
   int feature;
-  /** Ã±¸ì */
+  /** å˜èª */
   char *word_utf8;
-  /** ¼­½ñ¥Õ¥¡¥¤¥ëÃæ¤Î¥ª¥Õ¥»¥Ã¥È */
+  /** è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ä¸­ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ */
   int offset;
-  /** Â°¤¹yomi_entry*/
+  /** å±ã™yomi_entry*/
   struct yomi_entry* ye;
 };
 
-/** ¤¢¤ëÆÉ¤ß */
+/** ã‚ã‚‹èª­ã¿ */
 struct yomi_entry {
-  /* ÆÉ¤ß¤ÎÊ¸»úÎó */
+  /* èª­ã¿ã®æ–‡å­—åˆ— */
   xstr *index_xstr;
-  /* ÆÉ¤ß¤ÎÊ¸»úÎó(¼­½ñ¥Õ¥¡¥¤¥ëÆâ¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹) */
+  /* èª­ã¿ã®æ–‡å­—åˆ—(è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«å†…ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹) */
   char *index_str;
-  /* ¼­½ñ¥Õ¥¡¥¤¥ëÃæ¤Î¥Ú¡¼¥¸Ãæ¤Î¥ª¥Õ¥»¥Ã¥È */
+  /* è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ä¸­ã®ãƒšãƒ¼ã‚¸ä¸­ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ */
   int offset;
-  /* ³Æ¥¨¥ó¥È¥ê */
+  /* å„ã‚¨ãƒ³ãƒˆãƒª */
   int nr_entries;
   struct word_entry *entries;
   /**/
@@ -40,15 +40,15 @@ struct yomi_entry {
 
 #define YOMI_HASH (16384 * 16)
 
-/* ¼­½ñÁ´ÂÎ */
+/* è¾æ›¸å…¨ä½“ */
 struct yomi_entry_list {
-  /* ¸«½Ğ¤·¤Î¥ê¥¹¥È */
+  /* è¦‹å‡ºã—ã®ãƒªã‚¹ãƒˆ */
   struct yomi_entry *head;
-  /* ¼­½ñ¥Õ¥¡¥¤¥ëÃæ¤Î¸«½Ğ¤·¤Î¿ô */
+  /* è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ä¸­ã®è¦‹å‡ºã—ã®æ•° */
   int nr_entries;
-  /* ¸«½Ğ¤·¤ÎÃæ¤ÇÃ±¸ì¤ò»ı¤Ä¤â¤Î¤Î¿ô */
+  /* è¦‹å‡ºã—ã®ä¸­ã§å˜èªã‚’æŒã¤ã‚‚ã®ã®æ•° */
   int nr_valid_entries;
-  /* Ã±¸ì¤Î¿ô */
+  /* å˜èªã®æ•° */
   int nr_words;
   /**/
   struct yomi_entry *hash[YOMI_HASH];
@@ -62,7 +62,7 @@ struct yomi_entry_list {
 #define ADJUST_FREQ_DOWN 2
 #define ADJUST_FREQ_KILL 3
 
-/* ÉÑÅÙÊäÀµÍÑ¥³¥Ş¥ó¥É */
+/* é »åº¦è£œæ­£ç”¨ã‚³ãƒãƒ³ãƒ‰ */
 struct adjust_command {
   int type;
   xstr *yomi;
@@ -75,14 +75,14 @@ struct adjust_command {
 struct yomi_entry *find_yomi_entry(struct yomi_entry_list *yl,
 				   xstr *index, int create);
 
-/* ¼­½ñ½ñ¤­½Ğ¤·ÍÑ¤ÎÊä½õ */
+/* è¾æ›¸æ›¸ãå‡ºã—ç”¨ã®è£œåŠ© */
 void write_nl(FILE *fp, int i);
 
 /**/
 const char *get_wt_name(const char *name);
 
 /* mkudic.c
- * ÍÑÎã¼­½ñ¤òºî¤ë */
+ * ç”¨ä¾‹è¾æ›¸ã‚’ä½œã‚‹ */
 struct uc_dict *create_uc_dict(void);
 void read_uc_file(struct uc_dict *ud, const char *fn);
 void make_ucdict(FILE *out, struct uc_dict *uc);

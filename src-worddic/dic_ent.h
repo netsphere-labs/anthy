@@ -4,41 +4,41 @@
 #include <anthy/wtype.h>
 #include <anthy/dic.h>
 
-/* Ê¸»úÎó¤Î¥¿¥¤¥× (seq_ent->seq_type) */
+/* æ–‡å­—åˆ—ã®ã‚¿ã‚¤ãƒ— (seq_ent->seq_type) */
 #define ST_NONE 0
 /**/
 #define ST_REVERSE 8
 
-/** ¤¢¤ëÃ±¸ì */
+/** ã‚ã‚‹å˜èª */
 struct dic_ent {
-  wtype_t type; /** ÉÊ»ì */
-  int freq; /** ÉÑÅÙ */
+  wtype_t type; /** å“è© */
+  int freq; /** é »åº¦ */
   int feature;
   const char *wt_name;
   int is_compound;
-  xstr str; /** ÊÑ´¹·ë²Ì¤ÎÊ¸»úÎó */
-  /** Æ±°ìÉÊ»ì¤Î¾ì¹ç¤Î¼­½ñÃæ¤Î½çÈÖ(anthy_get_seq_ent_wtype_freq¤«¤é
-      anthy_wtype_include¤¬¸Æ¤Ğ¤ì¤ë²ó¿ô¤ò¸º¤é¤¹¤Î¤ËÍÑ¤¤¤ë */
+  xstr str; /** å¤‰æ›çµæœã®æ–‡å­—åˆ— */
+  /** åŒä¸€å“è©ã®å ´åˆã®è¾æ›¸ä¸­ã®é †ç•ª(anthy_get_seq_ent_wtype_freqã‹ã‚‰
+      anthy_wtype_includeãŒå‘¼ã°ã‚Œã‚‹å›æ•°ã‚’æ¸›ã‚‰ã™ã®ã«ç”¨ã„ã‚‹ */
   int order;
 };
 
-/**¤¢¤ëÊ¸»úÎó¤ÈÆ±²»°ÛµÁ¸ì¤ÎÇÛÎó
- * seq_ent_t ¤È¤·¤Æ»²¾È¤µ¤ì¤ë
+/**ã‚ã‚‹æ–‡å­—åˆ—ã¨åŒéŸ³ç•°ç¾©èªã®é…åˆ—
+ * seq_ent_t ã¨ã—ã¦å‚ç…§ã•ã‚Œã‚‹
  */
 struct seq_ent {
-  xstr str;/* ÆÉ¤ß */
+  xstr str;/* èª­ã¿ */
 
   int seq_type; /** ST_(type) */
 
-  /** dic_ent¤ÎÇÛÎó */
+  /** dic_entã®é…åˆ— */
   int nr_dic_ents;
   struct dic_ent **dic_ents;
-  /** compound_ent¤ÎÇÛÎó */
+  /** compound_entã®é…åˆ— */
   int nr_compound_ents;
 
-  /* Â°¤¹¤ë¥á¥â¥ê¼­½ñ */
+  /* å±ã™ã‚‹ãƒ¡ãƒ¢ãƒªè¾æ›¸ */
   struct mem_dic *md;
-  /* ¥á¥â¥ê¼­½ñÃæ¤Îhash chain */
+  /* ãƒ¡ãƒ¢ãƒªè¾æ›¸ä¸­ã®hash chain */
   struct seq_ent *next;
 };
 

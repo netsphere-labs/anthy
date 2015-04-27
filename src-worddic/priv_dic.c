@@ -1,8 +1,8 @@
 /*
- * ¸Ä¿Í¼­½ñ¤ò°·¤¦¤¿¤á¤Î¥³¡¼¥É
+ * å€‹äººè¾æ›¸ã‚’æ‰±ã†ãŸã‚ã®ã‚³ãƒ¼ãƒ‰
  *
- * ¥æ¡¼¥¶¤¬ÌÀ¼¨Åª¤ËÅĞÏ¿¤·¤¿Ã±¸ì¤À¤±¤Ç¤Ê¤¯¡¢
- * Ì¤ÃÎ¸ì¤ò¼«Æ°Åª¤Ë³Ø½¬¤·¤Æ´ÉÍı¤¹¤ëAPI¤â»ı¤Ä¡£
+ * ãƒ¦ãƒ¼ã‚¶ãŒæ˜ç¤ºçš„ã«ç™»éŒ²ã—ãŸå˜èªã ã‘ã§ãªãã€
+ * æœªçŸ¥èªã‚’è‡ªå‹•çš„ã«å­¦ç¿’ã—ã¦ç®¡ç†ã™ã‚‹APIã‚‚æŒã¤ã€‚
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  */
@@ -43,18 +43,18 @@
 #include "dic_main.h"
 #include "dic_ent.h"
 
-/* ¸Ä¿Í¼­½ñ */
+/* å€‹äººè¾æ›¸ */
 const char *anthy_private_text_dic;
 static const char *anthy_imported_text_dic;
 static char *imported_dic_dir;
-/* ¥í¥Ã¥¯ÍÑ¤ÎÊÑ¿ô */
+/* ãƒ­ãƒƒã‚¯ç”¨ã®å¤‰æ•° */
 static char *lock_fn;
 static int lock_depth;
 static int lock_fd;
 
 #define MAX_DICT_SIZE 100000000
 
-/* ¸Ä¿Í¼­½ñ¤Î¥Ç¥£¥ì¥¯¥È¥ê¤ÎÍ­Ìµ¤ò³ÎÇ§¤¹¤ë */
+/* å€‹äººè¾æ›¸ã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®æœ‰ç„¡ã‚’ç¢ºèªã™ã‚‹ */
 void
 anthy_check_user_dir(void)
 {
@@ -104,12 +104,12 @@ anthy_priv_dic_lock(void)
     return ;
   }
   if (!lock_fn) {
-    /* ½é´ü²½¤ò¥ß¥¹¤Ã¤Æ¤ë */
+    /* åˆæœŸåŒ–ã‚’ãƒŸã‚¹ã£ã¦ã‚‹ */
     lock_fd = -1;
     return ;
   }
 
-  /* ¥Õ¥¡¥¤¥ë¥í¥Ã¥¯¤ÎÊıË¡¤ÏÂ¿¿ô¤¢¤ë¤¬¡¢¤³¤ÎÊıË¡¤Ïcygwin¤Ç¤âÆ°¤¯¤Î¤ÇºÎÍÑ¤·¤¿ */
+  /* ãƒ•ã‚¡ã‚¤ãƒ«ãƒ­ãƒƒã‚¯ã®æ–¹æ³•ã¯å¤šæ•°ã‚ã‚‹ãŒã€ã“ã®æ–¹æ³•ã¯cygwinã§ã‚‚å‹•ãã®ã§æ¡ç”¨ã—ãŸ */
   lock_fd = open(lock_fn, O_CREAT|O_RDWR, S_IREAD|S_IWRITE);
   if (lock_fd == -1) {
     return ;
@@ -139,7 +139,7 @@ anthy_priv_dic_unlock(void)
   }
 }
 
-/* seq_ent¤ËÄÉ²Ã¤¹¤ë */
+/* seq_entã«è¿½åŠ ã™ã‚‹ */
 static void
 add_to_seq_ent(const char *line, int encoding, struct seq_ent *seq)
 {
@@ -184,7 +184,7 @@ anthy_parse_word_line(const char *line, struct word_line *res)
   res->wt[0] = 0;
   res->freq = 1;
   res->word = NULL;
-  /* ÉÊ»ì¤ÈÉÑÅÙ¤òparse */
+  /* å“è©ã¨é »åº¦ã‚’parse */
   for (i = 0; i < 9 && *buf && *buf != '*' && *buf != ' '; buf++, i++) {
     res->wt[i] = *buf;
   }
@@ -201,7 +201,7 @@ anthy_parse_word_line(const char *line, struct word_line *res)
     return -1;
   }
   buf++;
-  /* Ã±¸ì */
+  /* å˜èª */
   res->word = buf;
   return 0;
 }
@@ -248,7 +248,7 @@ anthy_ask_scan (void (*request_scan)(const char *, void *), void *arg)
 static void
 add_unknown_word(xstr *yomi, xstr *word)
 {
-  /* record¤ËÄÉ²Ã */
+  /* recordã«è¿½åŠ  */
   if (anthy_select_section("UNKNOWN_WORD", 1)) {
     return ;
   }
@@ -278,7 +278,7 @@ anthy_add_unknown_word(xstr *yomi, xstr *word)
 void
 anthy_forget_unused_unknown_word(xstr *xs)
 {
-  /* record¤Ëµ­Ï¿¤µ¤ì¤¿Êª¤ò¾Ã¤¹ */
+  /* recordã«è¨˜éŒ²ã•ã‚ŒãŸç‰©ã‚’æ¶ˆã™ */
   if (anthy_select_section("UNKNOWN_WORD", 0)) {
     return ;
   }

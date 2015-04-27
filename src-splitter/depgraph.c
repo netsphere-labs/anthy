@@ -1,7 +1,7 @@
 /*
- * Ê¸Àá¤Î¼«Î©¸ìÉô(ÀÜÆ¬¼­¡¢ÀÜÈø¼­´Ş¤à)¤ËÂ³¤¯
- * ½õ»ì¡¢½õÆ°»ì¤Ê¤É¤ÎÉÕÂ°¸ì¤Î¥Ñ¥¿¡¼¥ó¤ò¤¿¤É¤ë¡£
- * ¥Ñ¥¿¡¼¥ó¤Ï¥°¥é¥Õ¤È¤·¤ÆÀßÄê¥Õ¥¡¥¤¥ë¤ËÍÑ°Õ¤¹¤ë¡£
+ * æ–‡ç¯€ã®è‡ªç«‹èªéƒ¨(æ¥é ­è¾ã€æ¥å°¾è¾å«ã‚€)ã«ç¶šã
+ * åŠ©è©ã€åŠ©å‹•è©ãªã©ã®ä»˜å±èªã®ãƒ‘ã‚¿ãƒ¼ãƒ³ã‚’ãŸã©ã‚‹ã€‚
+ * ãƒ‘ã‚¿ãƒ¼ãƒ³ã¯ã‚°ãƒ©ãƒ•ã¨ã—ã¦è¨­å®šãƒ•ã‚¡ã‚¤ãƒ«ã«ç”¨æ„ã™ã‚‹ã€‚
  *
  *
  *  +------+
@@ -36,7 +36,7 @@
 #include <anthy/diclib.h>
 #include "wordborder.h"
 
-/* Á«°Ü¥°¥é¥Õ */
+/* é·ç§»ã‚°ãƒ©ãƒ• */
 static struct dep_dic ddic;
 
 
@@ -87,11 +87,11 @@ anthy_ondisk_xstr_len(ondisk_xstr *dxs)
 }
 
 /*
- * ³Æ¥Î¡¼¥É¤Ë¤ª¤±¤ëÁ«°Ü¾ò·ï¤ò¥Æ¥¹¥È¤¹¤ë
+ * å„ãƒãƒ¼ãƒ‰ã«ãŠã‘ã‚‹é·ç§»æ¡ä»¶ã‚’ãƒ†ã‚¹ãƒˆã™ã‚‹
  *
- * wl ¼«Î©¸ìÉô¤Îword_list
- * follow_str ¼«Î©¸ìÉô°Ê¹ß¤ÎÊ¸»úÎó
- * node ¥ë¡¼¥ë¤ÎÈÖ¹æ
+ * wl è‡ªç«‹èªéƒ¨ã®word_list
+ * follow_str è‡ªç«‹èªéƒ¨ä»¥é™ã®æ–‡å­—åˆ—
+ * node ãƒ«ãƒ¼ãƒ«ã®ç•ªå·
  */
 static void
 match_nodes(struct splitter_context *sc,
@@ -102,27 +102,27 @@ match_nodes(struct splitter_context *sc,
   struct dep_branch *db;
   int i,j;
 
-  /* ³Æ¥ë¡¼¥ë¤Î */
+  /* å„ãƒ«ãƒ¼ãƒ«ã® */
   for (i = 0; i < dn->nr_branch; i++) {
     ondisk_xstr *dep_xs;
     db = &dn->branch[i];
     dep_xs = db->xstrs;
 
-    /* ³ÆÁ«°Ü¾ò·ï */
+    /* å„é·ç§»æ¡ä»¶ */
     for (j = 0; j < db->nr_strs;
 	 j++, dep_xs = anthy_next_ondisk_xstr(dep_xs)) {
       xstr cond_xs;
-      /* ÉÕÂ°¸ì¤ÎÊı¤¬Á«°Ü¾ò·ï¤è¤êÄ¹¤¤¤³¤È¤¬É¬Í× */
+      /* ä»˜å±èªã®æ–¹ãŒé·ç§»æ¡ä»¶ã‚ˆã‚Šé•·ã„ã“ã¨ãŒå¿…è¦ */
       if (follow_str.len < anthy_ondisk_xstr_len(dep_xs)) {
 	continue;
       }
-      /* Á«°Ü¾ò·ï¤ÎÉôÊ¬¤òÀÚ¤ê½Ğ¤¹ */
+      /* é·ç§»æ¡ä»¶ã®éƒ¨åˆ†ã‚’åˆ‡ã‚Šå‡ºã™ */
       cond_xs.str = follow_str.str;
       cond_xs.len = anthy_ondisk_xstr_len(dep_xs);
 
-      /* Á«°Ü¾ò·ï¤ÈÈæ³Ó¤¹¤ë */
+      /* é·ç§»æ¡ä»¶ã¨æ¯”è¼ƒã™ã‚‹ */
       if (!anthy_xstrcmp_with_ondisk(&cond_xs, dep_xs)) {
-	/* Á«°Ü¾ò·ï¤Ëmatch¤·¤¿ */
+	/* é·ç§»æ¡ä»¶ã«matchã—ãŸ */
 	struct word_list new_wl = *wl;
 	struct part_info *part = &new_wl.part[PART_DEPWORD];
 	xstr new_follow;
@@ -130,7 +130,7 @@ match_nodes(struct splitter_context *sc,
 	part->len += cond_xs.len;
 	new_follow.str = &follow_str.str[cond_xs.len];
 	new_follow.len = follow_str.len - cond_xs.len;
-	/* Á«°Ü¤·¤Æ¤ß¤ë */
+	/* é·ç§»ã—ã¦ã¿ã‚‹ */
 	match_branch(sc, &new_wl, &new_follow, db);
       }
     }
@@ -138,11 +138,11 @@ match_nodes(struct splitter_context *sc,
 }
 
 /*
- * ³ÆÁ«°Ü¤ò¼Â¹Ô¤·¤Æ¤ß¤ë
+ * å„é·ç§»ã‚’å®Ÿè¡Œã—ã¦ã¿ã‚‹
  *
- * tmpl ¤³¤³¤Ş¤Ç¤Ë¹½À®¤·¤¿word_list
- * xs »Ä¤ê¤ÎÊ¸»úÎó
- * db ¸½ºßÄ´ººÃæ¤Îbranch
+ * tmpl ã“ã“ã¾ã§ã«æ§‹æˆã—ãŸword_list
+ * xs æ®‹ã‚Šã®æ–‡å­—åˆ—
+ * db ç¾åœ¨èª¿æŸ»ä¸­ã®branch
  */
 static void
 match_branch(struct splitter_context *sc,
@@ -152,21 +152,21 @@ match_branch(struct splitter_context *sc,
   struct part_info *part = &tmpl->part[PART_DEPWORD];
   int i;
 
-  /* Á«°ÜÀè¤ò½ç¤Ë¥È¥é¥¤¤¹¤ë */
+  /* é·ç§»å…ˆã‚’é †ã«ãƒˆãƒ©ã‚¤ã™ã‚‹ */
   for (i = 0; i < db->nr_transitions; i++) {
     /**/
-    int head_pos = tmpl->head_pos; /* ÉÊ»ì¤Î¾ğÊó */
+    int head_pos = tmpl->head_pos; /* å“è©ã®æƒ…å ± */
     int features = tmpl->mw_features;
     enum dep_class dc = part->dc;
     /**/
     struct dep_transition *transition = &db->transition[i];
 
     tmpl->tail_ct = anthy_dic_ntohl(transition->ct);
-    /* Á«°Ü¤Î³èÍÑ·Á¤ÈÉÊ»ì */
+    /* é·ç§»ã®æ´»ç”¨å½¢ã¨å“è© */
     if (anthy_dic_ntohl(transition->dc) != DEP_NONE) {
       part->dc = anthy_dic_ntohl(transition->dc);
     }
-    /* Ì¾»ì²½¤¹¤ëÆ°»ìÅù¤ÇÉÊ»ìÌ¾¤ò¾å½ñ¤­ */
+    /* åè©åŒ–ã™ã‚‹å‹•è©ç­‰ã§å“è©åã‚’ä¸Šæ›¸ã */
     if (anthy_dic_ntohl(transition->head_pos) != POS_NONE) {
       tmpl->head_pos = anthy_dic_ntohl(transition->head_pos);
     }
@@ -174,16 +174,16 @@ match_branch(struct splitter_context *sc,
       tmpl->mw_features |= MW_FEATURE_WEAK_CONN;
     }
 
-    /* Á«°Ü¤«½ªÃ¼¤« */
+    /* é·ç§»ã‹çµ‚ç«¯ã‹ */
     if (anthy_dic_ntohl(transition->next_node)) {
-      /* Á«°Ü */
+      /* é·ç§» */
       match_nodes(sc, tmpl, *xs, anthy_dic_ntohl(transition->next_node));
     } else {
       struct word_list *wl;
 
       /* 
-       * ½ªÃ¼¥Î¡¼¥É¤ËÅşÃ£¤·¤¿¤Î¤Ç¡¢
-       * ¤½¤ì¤òword_list¤È¤·¤Æ¥³¥ß¥Ã¥È
+       * çµ‚ç«¯ãƒãƒ¼ãƒ‰ã«åˆ°é”ã—ãŸã®ã§ã€
+       * ãã‚Œã‚’word_listã¨ã—ã¦ã‚³ãƒŸãƒƒãƒˆ
        */
       wl = anthy_alloc_word_list(sc);
       *wl = *tmpl;
@@ -192,21 +192,21 @@ match_branch(struct splitter_context *sc,
       /**/
       anthy_commit_word_list(sc, wl);
     }
-    /* ½ñ¤­Ìá¤· */
+    /* æ›¸ãæˆ»ã— */
     part->dc = dc;
     tmpl->head_pos = head_pos;
     tmpl->mw_features = features;
   }
 }
 
-/** ¸¡º÷³«»Ï
+/** æ¤œç´¢é–‹å§‹
  */
 void
 anthy_scan_node(struct splitter_context *sc,
 		struct word_list *tmpl,
 		xstr *follow, int node)
 {
-  /* ÉÕÂ°¸ì¤ÎÉÕ¤¤¤Æ¤¤¤Ê¤¤¾õÂÖ¤«¤é¸¡º÷¤ò³«»Ï¤¹¤ë */
+  /* ä»˜å±èªã®ä»˜ã„ã¦ã„ãªã„çŠ¶æ…‹ã‹ã‚‰æ¤œç´¢ã‚’é–‹å§‹ã™ã‚‹ */
   match_nodes(sc, tmpl, *follow, node);
 }
 
@@ -226,10 +226,10 @@ read_branch(struct dep_dic* ddic, struct dep_branch* branch, int* offset)
 {
   int i;
 
-  /* Á«°Ü¾ò·ï¤Î¿ô¤òÆÉ¤à */
+  /* é·ç§»æ¡ä»¶ã®æ•°ã‚’èª­ã‚€ */
   branch->nr_strs = anthy_dic_ntohl(*(int*)&ddic->file_ptr[*offset]);
   *offset += sizeof(int);
-  /* Á«°Ü¾ò·ï¤ÎÊ¸»úÎó¤òÆÉ¤ß¼è¤ë */
+  /* é·ç§»æ¡ä»¶ã®æ–‡å­—åˆ—ã‚’èª­ã¿å–ã‚‹ */
   branch->xstrs = (ondisk_xstr *)&ddic->file_ptr[*offset];
 
   for (i = 0; i < branch->nr_strs; ++i) {
@@ -264,18 +264,18 @@ read_file(void)
 
   ddic.file_ptr = anthy_file_dic_get_section("dep_dic");
 
-  /* ºÇ½é¤Ë¥ë¡¼¥ë¤Î¿ô */
+  /* æœ€åˆã«ãƒ«ãƒ¼ãƒ«ã®æ•° */
   ddic.nrRules = anthy_dic_ntohl(*(int*)&ddic.file_ptr[offset]);
   offset += sizeof(int);
 
-  /* ³Æ¥ë¡¼¥ë¤ÎÄêµÁ */
+  /* å„ãƒ«ãƒ¼ãƒ«ã®å®šç¾© */
   ddic.rules = (struct ondisk_wordseq_rule*)&ddic.file_ptr[offset];
   offset += sizeof(struct ondisk_wordseq_rule) * ddic.nrRules;
-  /* ¥Î¡¼¥É¤Î¿ô */
+  /* ãƒãƒ¼ãƒ‰ã®æ•° */
   ddic.nrNodes = anthy_dic_ntohl(*(int*)&ddic.file_ptr[offset]);
   offset += sizeof(int);
 
-  /* ³Æ¥Î¡¼¥É¤òÆÉ¤ß¹ş¤à */
+  /* å„ãƒãƒ¼ãƒ‰ã‚’èª­ã¿è¾¼ã‚€ */
   ddic.nodes = malloc(sizeof(struct dep_node) * ddic.nrNodes);
   for (i = 0; i < ddic.nrNodes; ++i) {
     read_node(&ddic, &ddic.nodes[i], &offset);
@@ -291,7 +291,7 @@ anthy_get_nr_dep_rule()
 void
 anthy_get_nth_dep_rule(int index, struct wordseq_rule *rule)
 {
-  /* ¥Õ¥¡¥¤¥ë¾å¤Î¾ğÊó¤«¤é¥Ç¡¼¥¿¤ò¼è¤ê½Ğ¤¹ */
+  /* ãƒ•ã‚¡ã‚¤ãƒ«ä¸Šã®æƒ…å ±ã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’å–ã‚Šå‡ºã™ */
   struct ondisk_wordseq_rule *r = &ddic.rules[index];
   anthy_type_to_wtype (r->wt, &rule->wt);
   rule->node_id = anthy_dic_ntohl(r->node_id);

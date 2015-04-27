@@ -1,12 +1,12 @@
 /*
- * ¸õÊä¤Î¸ò´¹¤Î¥Ò¥¹¥È¥ê¤ò´ÉÍı¤¹¤ë¡£
+ * å€™è£œã®äº¤æ›ã®ãƒ’ã‚¹ãƒˆãƒªã‚’ç®¡ç†ã™ã‚‹ã€‚
  *
- * anthy_swap_cand_ent() ¤Ç³Ø½¬¤¹¤ë
- * anthy_proc_swap_candidate() ¤Ç³Ø½¬·ë²Ì¤òÍÑ¤¤¤ë
+ * anthy_swap_cand_ent() ã§å­¦ç¿’ã™ã‚‹
+ * anthy_proc_swap_candidate() ã§å­¦ç¿’çµæœã‚’ç”¨ã„ã‚‹
  *
- *  ¡ÖÅÄÃ¼¤¬¡×¤È¤¤¤¦¸õÊä¤ò¥È¥Ã¥×¤Ë½Ğ¤·¤Æ¡ÖÅÄÈª¤¬¡×¤Ç³ÎÄê¤µ¤ì¤¿¾ì¹ç¤Ï
- *  ¼«Î©¸ìÉô:¡ÖÅÄÃ¼¡×->¡ÖÅÄÈª¡×
- *    ¤ÎÆó¤Ä¤Î¥¨¥ó¥È¥ê¤òÄÉ²Ã¤¹¤ë
+ *  ã€Œç”°ç«¯ãŒã€ã¨ã„ã†å€™è£œã‚’ãƒˆãƒƒãƒ—ã«å‡ºã—ã¦ã€Œç”°ç•‘ãŒã€ã§ç¢ºå®šã•ã‚ŒãŸå ´åˆã¯
+ *  è‡ªç«‹èªéƒ¨:ã€Œç”°ç«¯ã€->ã€Œç”°ç•‘ã€
+ *    ã®äºŒã¤ã®ã‚¨ãƒ³ãƒˆãƒªã‚’è¿½åŠ ã™ã‚‹
  *
  */
 #include <stdlib.h>
@@ -19,7 +19,7 @@
 
 #define MAX_INDEP_PAIR_ENTRY 100
 
-/* ¸õÊä¤Î¼«Î©¸ìÉô¤ò³Ø½¬¤¹¤ë */
+/* å€™è£œã®è‡ªç«‹èªéƒ¨ã‚’å­¦ç¿’ã™ã‚‹ */
 static void
 learn_swap_cand_indep(struct cand_ent *o, struct cand_ent *n)
 {
@@ -28,7 +28,7 @@ learn_swap_cand_indep(struct cand_ent *o, struct cand_ent *n)
   int o_idx = o->core_elm_index;
   int n_idx = n->core_elm_index;
 
-  /* ¼«Î©¸ìÉô¤ò´Ş¤àÊ¸Àá¤·¤«³Ø½¬¤·¤Ê¤¤ */
+  /* è‡ªç«‹èªéƒ¨ã‚’å«ã‚€æ–‡ç¯€ã—ã‹å­¦ç¿’ã—ãªã„ */
   if (o_idx < 0 || n_idx < 0) {
     return ;
   }
@@ -59,28 +59,28 @@ learn_swap_cand_indep(struct cand_ent *o, struct cand_ent *n)
 }
 
 /*
- * ¸õÊäo ¤ò½Ğ¤·¤¿¤én ¤¬¥³¥ß¥Ã¥È¤µ¤ì¤¿¤Î¤Ç
- * o -> n ¤òrecord¤Ë¥»¥Ã¥È¤¹¤ë
+ * å€™è£œo ã‚’å‡ºã—ãŸã‚‰n ãŒã‚³ãƒŸãƒƒãƒˆã•ã‚ŒãŸã®ã§
+ * o -> n ã‚’recordã«ã‚»ãƒƒãƒˆã™ã‚‹
  */
 void
 anthy_swap_cand_ent(struct cand_ent *o, struct cand_ent *n)
 {
   if (o == n) {
-    /* Æ±¤¸¸õÊä */
+    /* åŒã˜å€™è£œ */
     return ;
   }
   if (n->flag & CEF_USEDICT) {
-    /* ÍÑÎã¼­½ñ¤«¤é½Ğ¤Æ¤­¤¿¸õÊä */
+    /* ç”¨ä¾‹è¾æ›¸ã‹ã‚‰å‡ºã¦ããŸå€™è£œ */
     return ;
   }
-  /* ¼«Î©¸ìÉô */
+  /* è‡ªç«‹èªéƒ¨ */
   learn_swap_cand_indep(o, n);
 }
 
 
 /*
- * ÊÑ´¹»ş¤ËÀ¸À®¤·¤¿¸õÊä¤òÊÂ¤Ù¤¿¾õÂÖ¤ÇºÇÍ¥Àè¤Î¸õÊä¤ò·è¤á¤ë
- * ¥ë¡¼¥×¤Î½üµî¤Ê¤É¤â¹Ô¤¦
+ * å¤‰æ›æ™‚ã«ç”Ÿæˆã—ãŸå€™è£œã‚’ä¸¦ã¹ãŸçŠ¶æ…‹ã§æœ€å„ªå…ˆã®å€™è£œã‚’æ±ºã‚ã‚‹
+ * ãƒ«ãƒ¼ãƒ—ã®é™¤å»ãªã©ã‚‚è¡Œã†
  */
 static xstr *
 prepare_swap_candidate(xstr *target)
@@ -93,10 +93,10 @@ prepare_swap_candidate(xstr *target)
   if (!xs) {
     return NULL;
   }
-  /* Âè°ì¸õÊä -> xs ¤È¤Ê¤ë¤Î¤òÈ¯¸« */
+  /* ç¬¬ä¸€å€™è£œ -> xs ã¨ãªã‚‹ã®ã‚’ç™ºè¦‹ */
   anthy_mark_row_used();
   if (anthy_select_row(xs, 0) != 0){
-    /* xs -> ¢İ */
+    /* xs -> âŠ¥ */
     return xs;
   }
   /* xs -> n */
@@ -106,16 +106,16 @@ prepare_swap_candidate(xstr *target)
   }
 
   if (!anthy_xstrcmp(target, n)) {
-    /* Âè°ì¸õÊä -> xs -> n ¤Ç n = Âè°ì¸õÊä¤Î¥ë¡¼¥× */
+    /* ç¬¬ä¸€å€™è£œ -> xs -> n ã§ n = ç¬¬ä¸€å€™è£œã®ãƒ«ãƒ¼ãƒ— */
     anthy_select_row(target, 0);
     anthy_release_row();
     anthy_select_row(xs, 0);
     anthy_release_row();
-    /* Âè°ì¸õÊä -> xs ¤ò¾Ã¤·¤Æ¡¢¸ò´¹¤ÎÉ¬Í×¤ÏÌµ¤· */
+    /* ç¬¬ä¸€å€™è£œ -> xs ã‚’æ¶ˆã—ã¦ã€äº¤æ›ã®å¿…è¦ã¯ç„¡ã— */
     return NULL;
   }
-  /* Âè°ì¸õÊä -> xs -> n ¤Ç n != Âè°ì¸õÊä¤Ê¤Î¤Ç
-   * Âè°ì¸õÊä -> n¤òÀßÄê
+  /* ç¬¬ä¸€å€™è£œ -> xs -> n ã§ n != ç¬¬ä¸€å€™è£œãªã®ã§
+   * ç¬¬ä¸€å€™è£œ -> nã‚’è¨­å®š
    */
   if (anthy_select_row(target, 0) == 0){
     anthy_set_nth_xstr(0, n);
@@ -126,7 +126,7 @@ prepare_swap_candidate(xstr *target)
 #include <src-worddic/dic_ent.h>
 
 /*
- * ¼«Î©¸ì¤Î¤ß
+ * è‡ªç«‹èªã®ã¿
  */
 static void
 proc_swap_candidate_indep(struct seg_ent *se)
@@ -143,7 +143,7 @@ proc_swap_candidate_indep(struct seg_ent *se)
     return ;
   }
 
-  /* 0ÈÖÌÜ¤Î¸õÊä¤ÎÊ¸»úÎó¤ò¼è¤ê½Ğ¤¹ */
+  /* 0ç•ªç›®ã®å€™è£œã®æ–‡å­—åˆ—ã‚’å–ã‚Šå‡ºã™ */
   core_elm = &se->cands[0]->elm[core_elm_idx];
   if (core_elm->nth < 0) {
     return ;
@@ -164,7 +164,7 @@ proc_swap_candidate_indep(struct seg_ent *se)
     return ;
   }
 
-  /* Âè°ì¸õÊä -> xs ¤Ê¤Î¤Ç xs¤Î¸õÊä¤òÃµ¤¹ */
+  /* ç¬¬ä¸€å€™è£œ -> xs ãªã®ã§ xsã®å€™è£œã‚’æ¢ã™ */
   for (i = 1; i < se->nr_cands; i++) {
     if (se->cands[i]->nr_words == se->cands[0]->nr_words &&
 	se->cands[i]->core_elm_index == core_elm_idx) {
@@ -176,7 +176,7 @@ proc_swap_candidate_indep(struct seg_ent *se)
       if (res == 0 &&
 	  !anthy_xstrcmp(&cand, xs)) {
 	free(cand.str);
-	/* ¤ß¤Ä¤±¤¿¤Î¤Ç¤½¤Î¸õÊä¤Î¥¹¥³¥¢¤ò¥¢¥Ã¥× */
+	/* ã¿ã¤ã‘ãŸã®ã§ãã®å€™è£œã®ã‚¹ã‚³ã‚¢ã‚’ã‚¢ãƒƒãƒ— */
 	se->cands[i]->score = se->cands[0]->score + 1;
 	return ;
       }
@@ -186,17 +186,17 @@ proc_swap_candidate_indep(struct seg_ent *se)
 }
 
 /*
- * ÊÑ´¹»ş¤ËÀ¸À®¤·¤¿¸õÊä¤òÊÂ¤Ù¤¿¾õÂÖ¤ÇºÇÍ¥Àè¤Î¸õÊä¤ò·è¤á¤ë
+ * å¤‰æ›æ™‚ã«ç”Ÿæˆã—ãŸå€™è£œã‚’ä¸¦ã¹ãŸçŠ¶æ…‹ã§æœ€å„ªå…ˆã®å€™è£œã‚’æ±ºã‚ã‚‹
  */
 void
 anthy_proc_swap_candidate(struct seg_ent *seg)
 {
-  if (NULL == seg->cands) { /* ¼­½ñ¤â¤·¤¯¤Ï³Ø½¬¥Ç¡¼¥¿¤¬²õ¤ì¤Æ¤¤¤¿»ş¤ÎÂĞºö */
+  if (NULL == seg->cands) { /* è¾æ›¸ã‚‚ã—ãã¯å­¦ç¿’ãƒ‡ãƒ¼ã‚¿ãŒå£Šã‚Œã¦ã„ãŸæ™‚ã®å¯¾ç­– */
     return;
   }
 
   if (seg->cands[0]->score >= OCHAIRE_SCORE) {
-    /* cands[0] ¤ÏÆÃÊÌ¤ÊÅÀ¿ô¤ò»ı¤Ã¤Æ¤¤¤ë */
+    /* cands[0] ã¯ç‰¹åˆ¥ãªç‚¹æ•°ã‚’æŒã£ã¦ã„ã‚‹ */
     return ;
   }
   if (seg->cands[0]->flag & CEF_USEDICT) {
@@ -206,7 +206,7 @@ anthy_proc_swap_candidate(struct seg_ent *seg)
   proc_swap_candidate_indep(seg);
 }
 
-/* ¸õÊä¸ò´¹¤Î¸Å¤¤¥¨¥ó¥È¥ê¤ò¾Ã¤¹ */
+/* å€™è£œäº¤æ›ã®å¤ã„ã‚¨ãƒ³ãƒˆãƒªã‚’æ¶ˆã™ */
 void
 anthy_cand_swap_ageup(void)
 {

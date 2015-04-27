@@ -1,8 +1,8 @@
 /*
- * ³ÎÄê(¥³¥ß¥Ã¥È)¸å¤Î½èÍı¤ò¤¹¤ë¡£
- * ³Æ¼ï¤Î³Ø½¬½èÍı¤ò¸Æ¤Ó½Ğ¤¹
+ * ç¢ºå®š(ã‚³ãƒŸãƒƒãƒˆ)å¾Œã®å‡¦ç†ã‚’ã™ã‚‹ã€‚
+ * å„ç¨®ã®å­¦ç¿’å‡¦ç†ã‚’å‘¼ã³å‡ºã™
  *
- * anthy_proc_commit() ¤¬³°Éô¤«¤é¸Æ¤Ğ¤ì¤ë
+ * anthy_proc_commit() ãŒå¤–éƒ¨ã‹ã‚‰å‘¼ã°ã‚Œã‚‹
  */
 #include <stdlib.h>
 #include <time.h>
@@ -19,7 +19,7 @@
 
 #define MAX_UNKNOWN_WORD 100
 
-/* ¸ò´¹¤µ¤ì¤¿¸õÊä¤òÃµ¤¹ */
+/* äº¤æ›ã•ã‚ŒãŸå€™è£œã‚’æ¢ã™ */
 static void
 learn_swapped_candidates(struct segment_list *sl)
 {
@@ -28,7 +28,7 @@ learn_swapped_candidates(struct segment_list *sl)
   for (i = 0; i < sl->nr_segments; i++) {
     seg = anthy_get_nth_segment(sl, i);
     if (seg->committed != 0) {
-      /* ºÇ½é¤Î¸õÊä(0ÈÖÌÜ)¤Ç¤Ê¤¤¸õÊä(seg->committedÈÖÌÜ)¤¬¥³¥ß¥Ã¥È¤µ¤ì¤¿ */
+      /* æœ€åˆã®å€™è£œ(0ç•ªç›®)ã§ãªã„å€™è£œ(seg->committedç•ªç›®)ãŒã‚³ãƒŸãƒƒãƒˆã•ã‚ŒãŸ */
       anthy_swap_cand_ent(seg->cands[0],
 			  seg->cands[seg->committed]);
     }
@@ -36,7 +36,7 @@ learn_swapped_candidates(struct segment_list *sl)
   anthy_cand_swap_ageup();
 }
 
-/* Ä¹¤µ¤¬ÊÑ¤ï¤Ã¤¿Ê¸Àá¤ÎÊÑ¹¹¸å¤ËÂĞ¤·¤Æ */
+/* é•·ã•ãŒå¤‰ã‚ã£ãŸæ–‡ç¯€ã®å¤‰æ›´å¾Œã«å¯¾ã—ã¦ */
 static void
 learn_resized_segment(struct splitter_context *sc,
 		      struct segment_list *sl)
@@ -48,7 +48,7 @@ learn_resized_segment(struct splitter_context *sc,
   int *len_array
     = alloca(sizeof(int) * sl->nr_segments);
 
-  /* ³ÆÊ¸Àá¤ÎÄ¹¤µ¤ÎÇÛÎó¤Èmeta_word¤ÎÇÛÎó¤òÍÑ°Õ¤¹¤ë */
+  /* å„æ–‡ç¯€ã®é•·ã•ã®é…åˆ—ã¨meta_wordã®é…åˆ—ã‚’ç”¨æ„ã™ã‚‹ */
   for (i = 0; i < sl->nr_segments; i++) {
     struct seg_ent *se = anthy_get_nth_segment(sl, i);
     mw[i] = se->cands[se->committed]->mw;
@@ -58,7 +58,7 @@ learn_resized_segment(struct splitter_context *sc,
   anthy_commit_border(sc, sl->nr_segments, mw, len_array);
 }
 
-/* Ä¹¤µ¤¬ÊÑ¤ï¤Ã¤¿Ê¸Àá¤ÎÊÑ¹¹Á°¤ËÂĞ¤·¤Æ */
+/* é•·ã•ãŒå¤‰ã‚ã£ãŸæ–‡ç¯€ã®å¤‰æ›´å‰ã«å¯¾ã—ã¦ */
 static void
 clear_resized_segment(struct splitter_context *sc,
 		      struct segment_list *sl)
@@ -69,7 +69,7 @@ clear_resized_segment(struct splitter_context *sc,
   for (i = 0; i < sc->char_count; i++) {
     mark[i] = 0;
   }
-  /* ¼Âºİ¤Ë³ÎÄê¤µ¤ì¤¿Ê¸Àá¤ÎÄ¹¤µ¤ò¥Ş¡¼¥¯¤¹¤ë */
+  /* å®Ÿéš›ã«ç¢ºå®šã•ã‚ŒãŸæ–‡ç¯€ã®é•·ã•ã‚’ãƒãƒ¼ã‚¯ã™ã‚‹ */
   from = 0;
   for (i = 0; i < sl->nr_segments; i++) {
     seg = anthy_get_nth_segment(sl, i);
@@ -78,8 +78,8 @@ clear_resized_segment(struct splitter_context *sc,
   }
   for (i = 0; i < sc->char_count; i++) {
     int len = sc->ce[i].initial_seg_len;
-    /* ºÇ½é¤ÎÄ¹¤µ¤È³ÎÄê¤µ¤ì¤¿Ä¹¤µ¤¬°Û¤Ê¤ì¤Ğ¡¢
-       »È¤ï¤ì¤Ê¤«¤Ã¤¿Ì¤ÃÎ¸ì¤Î²ÄÇ½À­¤¬¤¢¤ë */
+    /* æœ€åˆã®é•·ã•ã¨ç¢ºå®šã•ã‚ŒãŸé•·ã•ãŒç•°ãªã‚Œã°ã€
+       ä½¿ã‚ã‚Œãªã‹ã£ãŸæœªçŸ¥èªã®å¯èƒ½æ€§ãŒã‚ã‚‹ */
     if (len && len != mark[i]) {
       xstr xs;
       xs.str = sc->ce[i].c;
@@ -92,7 +92,7 @@ clear_resized_segment(struct splitter_context *sc,
   }
 }
 
-/* record¤Ë¤ªÃãÆş¤ì³Ø½¬¤Î·ë²Ì¤ò½ñ¤­¹ş¤à */
+/* recordã«ãŠèŒ¶å…¥ã‚Œå­¦ç¿’ã®çµæœã‚’æ›¸ãè¾¼ã‚€ */
 static void
 commit_ochaire(struct seg_ent *seg, int count, xstr* xs)
 {
@@ -110,8 +110,8 @@ commit_ochaire(struct seg_ent *seg, int count, xstr* xs)
   }
 }
 
-/* record¤ÎÎÎ°è¤òÀáÌó¤¹¤ë¤¿¤á¤Ë¡¢¤ªÃãÆş¤ì³Ø½¬¤Î¥Í¥¬¥Æ¥£¥Ö¤Ê
-   ¥¨¥ó¥È¥ê¤ò¾Ã¤¹ */
+/* recordã®é ˜åŸŸã‚’ç¯€ç´„ã™ã‚‹ãŸã‚ã«ã€ãŠèŒ¶å…¥ã‚Œå­¦ç¿’ã®ãƒã‚¬ãƒ†ã‚£ãƒ–ãª
+   ã‚¨ãƒ³ãƒˆãƒªã‚’æ¶ˆã™ */
 static void
 release_negative_ochaire(struct splitter_context *sc,
 			 struct segment_list *sl)
@@ -119,11 +119,11 @@ release_negative_ochaire(struct splitter_context *sc,
   int start, len;
   xstr xs;
   (void)sl;
-  /* ÊÑ´¹Á°¤Î¤Ò¤é¤¬¤ÊÊ¸»úÎó */
+  /* å¤‰æ›å‰ã®ã²ã‚‰ãŒãªæ–‡å­—åˆ— */
   xs.len = sc->char_count;
   xs.str = sc->ce[0].c;
 
-  /* xs¤ÎÉôÊ¬Ê¸»úÎó¤ËÂĞ¤·¤Æ */
+  /* xsã®éƒ¨åˆ†æ–‡å­—åˆ—ã«å¯¾ã—ã¦ */
   for (start = 0; start < xs.len; start ++) {
     for (len = 1; len <= xs.len - start && len < MAX_OCHAIRE_LEN; len ++) {
       xstr part;
@@ -136,7 +136,7 @@ release_negative_ochaire(struct splitter_context *sc,
   }
 }
 
-/* ¤ªÃãÆş¤ì³Ø½¬¤ò¹Ô¤¦ */
+/* ãŠèŒ¶å…¥ã‚Œå­¦ç¿’ã‚’è¡Œã† */
 static void
 learn_ochaire(struct splitter_context *sc,
 	      struct segment_list *sl)
@@ -148,12 +148,12 @@ learn_ochaire(struct splitter_context *sc,
     return ;
   }
 
-  /* ¤ªÃãÆş¤ì³Ø½¬¤Î¥Í¥¬¥Æ¥£¥Ö¤Ê¥¨¥ó¥È¥ê¤ò¾Ã¤¹ */
+  /* ãŠèŒ¶å…¥ã‚Œå­¦ç¿’ã®ãƒã‚¬ãƒ†ã‚£ãƒ–ãªã‚¨ãƒ³ãƒˆãƒªã‚’æ¶ˆã™ */
   release_negative_ochaire(sc, sl);
 
-  /* ¤ªÃãÆş¤ì³Ø½¬¤ò¤¹¤ë */
+  /* ãŠèŒ¶å…¥ã‚Œå­¦ç¿’ã‚’ã™ã‚‹ */
   for (count = 2; count <= sl->nr_segments && count < 5; count++) {
-    /* 2Ê¸Àá°Ê¾å¤ÎÄ¹¤µ¤ÎÊ¸ÀáÎó¤ËÂĞ¤·¤Æ */
+    /* 2æ–‡ç¯€ä»¥ä¸Šã®é•·ã•ã®æ–‡ç¯€åˆ—ã«å¯¾ã—ã¦ */
 
     for (i = 0; i <= sl->nr_segments - count; i++) {
       struct seg_ent *head = anthy_get_nth_segment(sl, i);
@@ -162,11 +162,11 @@ learn_ochaire(struct splitter_context *sc,
       int j;
       xs = head->str;
       if (xs.len < 2 && count < 3) {
-	/* ºÙÀÚ¤ì¤ÎÊ¸Àá¤ò³Ø½¬¤¹¤ë¤³¤È¤òÈò¤±¤ë¡¢
-	 * ¤¤¤¤²Ã¸º¤Êheuristics */
+	/* ç´°åˆ‡ã‚Œã®æ–‡ç¯€ã‚’å­¦ç¿’ã™ã‚‹ã“ã¨ã‚’é¿ã‘ã‚‹ã€
+	 * ã„ã„åŠ æ¸›ãªheuristics */
 	continue;
       }
-      /* Ê¸ÀáÎó¤ò¹½À®¤¹¤ëÊ¸»úÎó¤òºî¤ë */
+      /* æ–‡ç¯€åˆ—ã‚’æ§‹æˆã™ã‚‹æ–‡å­—åˆ—ã‚’ä½œã‚‹ */
       for (j = 1, s = head->next; j < count; j++, s = s->next) {
 	xs.len += s->str.len;
       }
@@ -191,7 +191,7 @@ learn_prediction_str(xstr *idx, xstr *xs)
   }
   nr_predictions = anthy_get_nr_values();
 
-  /* ´û¤ËÍúÎò¤Ë¤¢¤ë¾ì¹ç¤Ï¥¿¥¤¥à¥¹¥¿¥ó¥×¤À¤±¹¹¿· */
+  /* æ—¢ã«å±¥æ­´ã«ã‚ã‚‹å ´åˆã¯ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã ã‘æ›´æ–° */
   for (i = 0; i < nr_predictions; i += 2) {
     xstr *log = anthy_get_nth_xstr(i + 1);
     if (!log) {
@@ -203,7 +203,7 @@ learn_prediction_str(xstr *idx, xstr *xs)
     }
   }
 
-  /* ¤Ê¤¤¾ì¹ç¤ÏËöÈø¤ËÄÉ²Ã */
+  /* ãªã„å ´åˆã¯æœ«å°¾ã«è¿½åŠ  */
   if (i == nr_predictions) {
     anthy_set_nth_value(nr_predictions, t);
     anthy_set_nth_xstr(nr_predictions + 1, xs);      
@@ -264,7 +264,7 @@ void
 anthy_proc_commit(struct segment_list *sl,
 		  struct splitter_context *sc)
 {
-  /* ³Æ¼ï¤Î³Ø½¬¤ò¹Ô¤¦ */
+  /* å„ç¨®ã®å­¦ç¿’ã‚’è¡Œã† */
   learn_swapped_candidates(sl);
   learn_resized_segment(sc, sl);
   clear_resized_segment(sc, sl);

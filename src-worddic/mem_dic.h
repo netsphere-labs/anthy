@@ -5,9 +5,9 @@
 #include "dic_ent.h"
 
 
-#define HASH_SIZE 64 /*¥Ï¥Ã¥·¥å¥Æ¡¼¥Ö¥ë¤Î¥µ¥¤¥º¡Ä64(¤Ê¤ó¤È¤Ê¤¯)*/
+#define HASH_SIZE 64 /*ãƒãƒƒã‚·ãƒ¥ãƒ†ãƒ¼ãƒ–ãƒ«ã®ã‚µã‚¤ã‚ºâ€¦64(ãªã‚“ã¨ãªã)*/
 
-/** ¥á¥â¥ê¼­½ñ */
+/** ãƒ¡ãƒ¢ãƒªè¾æ›¸ */
 struct mem_dic {
   struct seq_ent *seq_ent_hash[HASH_SIZE];
   allocator seq_ent_allocator;

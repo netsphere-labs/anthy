@@ -1,6 +1,6 @@
 /*
- * ÎãÊ¸¤ÎÃæ¤ò¸¡º÷¤Ç¤­¤ë¥Ç¡¼¥¿¹½Â¤¤òºî¤ë
- * ¸½»þÅÀ¤Ç¤ÏÎãÊ¸¤ò¤¹¤Ù¤ÆÆþ¤ì¤Æ¤¤¤ë¤¬¡¢¤½¤Î¤¦¤Á¥Õ¥£¥ë¥¿¡¼¤¹¤ë¤³¤È¤â¹Í¤¨¤é¤ì¤ë
+ * ä¾‹æ–‡ã®ä¸­ã‚’æ¤œç´¢ã§ãã‚‹ãƒ‡ãƒ¼ã‚¿æ§‹é€ ã‚’ä½œã‚‹
+ * ç¾æ™‚ç‚¹ã§ã¯ä¾‹æ–‡ã‚’ã™ã¹ã¦å…¥ã‚Œã¦ã„ã‚‹ãŒã€ãã®ã†ã¡ãƒ•ã‚£ãƒ«ã‚¿ãƒ¼ã™ã‚‹ã“ã¨ã‚‚è€ƒãˆã‚‰ã‚Œã‚‹
  *
  * Copyright (C) 2007 TABATA Yusuke
  *
@@ -39,11 +39,11 @@ struct node {
 
 /* word feature in corpus file */
 struct element {
-  /* hashÃÍ */
+  /* hashå€¤ */
   int val;
-  /* Í­¸ú¤Ê(ELM_INVALID¤ÎÌµ¤¤)¥¨¥ó¥È¥ê¤È¤·¤Æ¤Îindex */
+  /* æœ‰åŠ¹ãª(ELM_INVALIDã®ç„¡ã„)ã‚¨ãƒ³ãƒˆãƒªã¨ã—ã¦ã®index */
   int idx;
-  /* ¤³¤ÎhashÃÍ¤Î¼¡¤Î½Ð¸½¾ì½ê */
+  /* ã“ã®hashå€¤ã®æ¬¡ã®å‡ºç¾å ´æ‰€ */
   int next_idx;
   /**/
   int flags;
@@ -51,9 +51,9 @@ struct element {
 
 /* index */
 struct bucket {
-  /* ¸¡º÷¤Î¥­¡¼ */
+  /* æ¤œç´¢ã®ã‚­ãƒ¼ */
   int key;
-  /* ºÇ½é¤Î½Ð¸½¾ì½ê */
+  /* æœ€åˆã®å‡ºç¾å ´æ‰€ */
   int first_idx;
   /**/
   int last_idx;
@@ -207,7 +207,7 @@ corpus_build_link(struct corpus *c)
       continue;
     }
     if (bkt->first_idx < 0) {
-      /* ºÇ½é¤Î½Ð¸½ */
+      /* æœ€åˆã®å‡ºç¾ */
       bkt->first_idx = c->elms[i].idx;
     } else {
       c->elms[bkt->last_idx].next_idx = c->elms[i].idx;

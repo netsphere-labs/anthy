@@ -1,7 +1,7 @@
 /*
- * "123" "ABC" ¤Î¤è¤¦¤Ê¼­½ñ¤Ë¤Î¤Ã¤Æ¤Ê¤¤
- * Ê¸»úÎó¤ËÂĞ¤¹¤ëÌä¹ç¤»¤Î¾ì¹ç¤ÏÁ´¤Æ¤Î¸õÊä¤ò¤³¤³¤ÇÀ¸À®¤¹¤ë
- * ¾åµ­¤ÎÂ¾¤ËÍ¹ÊØÈÖ¹æ¤Ø¤Î¥¢¥¯¥»¥¹¤â¹Ô¤Ê¤¦
+ * "123" "ABC" ã®ã‚ˆã†ãªè¾æ›¸ã«ã®ã£ã¦ãªã„
+ * æ–‡å­—åˆ—ã«å¯¾ã™ã‚‹å•åˆã›ã®å ´åˆã¯å…¨ã¦ã®å€™è£œã‚’ã“ã“ã§ç”Ÿæˆã™ã‚‹
+ * ä¸Šè¨˜ã®ä»–ã«éƒµä¾¿ç•ªå·ã¸ã®ã‚¢ã‚¯ã‚»ã‚¹ã‚‚è¡Œãªã†
  *
  * Copyright (C) 2001-2005 TABATA Yusuke
  * Copyright (C) 2004-2005 YOSHIDA Yuichi
@@ -33,9 +33,9 @@
 #include "dic_ent.h"
 
 /* ext entry */
-static struct seq_ent unkseq_ent;/*Ì¤ÃÎÊ¸»úÎó¤¿¤È¤¨¤Ğ±ÑÊ¸»úÎó¤È¤«*/
-static struct seq_ent num_ent;/*¿ô»ú¤Ê¤É*/
-static struct seq_ent sep_ent;/*¥»¥Ñ¥ì¡¼¥¿¤Ê¤É¡£*/
+static struct seq_ent unkseq_ent;/*æœªçŸ¥æ–‡å­—åˆ—ãŸã¨ãˆã°è‹±æ–‡å­—åˆ—ã¨ã‹*/
+static struct seq_ent num_ent;/*æ•°å­—ãªã©*/
+static struct seq_ent sep_ent;/*ã‚»ãƒ‘ãƒ¬ãƒ¼ã‚¿ãªã©ã€‚*/
 
 static xchar narrow_wide_tab[]= {WIDE_0, WIDE_1, WIDE_2,
 				 WIDE_3, WIDE_4, WIDE_5,
@@ -48,7 +48,7 @@ struct zipcode_line {
   xstr **strs;
 };
 
-/* ÃÏÌ¾¤òÄÉ²Ã¤¹¤ë */
+/* åœ°åã‚’è¿½åŠ ã™ã‚‹ */
 static void
 pushback_place_name(struct zipcode_line *zl, char *pn)
 {
@@ -69,7 +69,7 @@ pushback_place_name(struct zipcode_line *zl, char *pn)
  */
 #define MAX_LINE_LEN 2048	/* XXX: Please kill this limit too */
 
-/* Í¹ÊØÈÖ¹æ¼­½ñ¤ò¥Ñ¡¼¥¹¤·¤Æ¥¹¥Ú¡¼¥¹¶èÀÚ¤ê¤ò¸¡½Ğ¤¹¤ë */
+/* éƒµä¾¿ç•ªå·è¾æ›¸ã‚’ãƒ‘ãƒ¼ã‚¹ã—ã¦ã‚¹ãƒšãƒ¼ã‚¹åŒºåˆ‡ã‚Šã‚’æ¤œå‡ºã™ã‚‹ */
 static void
 parse_zipcode_line(struct zipcode_line *zl, char *ln)
 {
@@ -97,7 +97,7 @@ parse_zipcode_line(struct zipcode_line *zl, char *ln)
   pushback_place_name(zl, buf);
 }
 
-/* Í¹ÊØÈÖ¹æ¼­½ñ¤«¤éÃµ¤¹ */
+/* éƒµä¾¿ç•ªå·è¾æ›¸ã‹ã‚‰æ¢ã™ */
 static void
 search_zipcode_dict(struct zipcode_line *zl, xstr* xs)
 {
@@ -114,26 +114,26 @@ search_zipcode_dict(struct zipcode_line *zl, xstr* xs)
     return ;
   }
   
-  /* È¾³Ñ¡¢Á´³Ñ¤òµÛ¼ı¤¹¤ë */
+  /* åŠè§’ã€å…¨è§’ã‚’å¸åã™ã‚‹ */
   temp = anthy_xstr_wide_num_to_num(xs);
   index = anthy_xstr_to_cstr(temp, 0);
   len = strlen(index);
 
-  /* Á´Éôgrep¤¹¤ë */
+  /* å…¨éƒ¨grepã™ã‚‹ */
   while (fgets(buf, MAX_LINE_LEN, fp)) {
-    /* 3Ê¸»ú¤ÎÍ¹ÊØÈÖ¹æ¤¬7Ê¸»ú¤ÎÍ¹ÊØÈÖ¹æ¤ÎÆ¬¤Ë¥Ş¥Ã¥Á¤·¤Ê¤¤¤è¤¦¤Ë */
+    /* 3æ–‡å­—ã®éƒµä¾¿ç•ªå·ãŒ7æ–‡å­—ã®éƒµä¾¿ç•ªå·ã®é ­ã«ãƒãƒƒãƒã—ãªã„ã‚ˆã†ã« */
     if (!strncmp(buf, index, len) && buf[len] == ' ') {
-      /* ²ş¹Ô¤ò¾Ã¤¹ */
+      /* æ”¹è¡Œã‚’æ¶ˆã™ */
       buf[strlen(buf) - 1] = 0;
       parse_zipcode_line(zl, &buf[len + 1]);
     }
   }
-  anthy_free_xstr(temp);    /* ¥á¥â¥ê¥ê¡¼¥¯¤Î½¤Àµ */
+  anthy_free_xstr(temp);    /* ãƒ¡ãƒ¢ãƒªãƒªãƒ¼ã‚¯ã®ä¿®æ­£ */
   free(index);
   fclose(fp);
 }
 
-/* Í¹ÊØÈÖ¹æ¼­½ñ¤Î¾ğÊó¤ò²òÊü¤¹¤ë */
+/* éƒµä¾¿ç•ªå·è¾æ›¸ã®æƒ…å ±ã‚’è§£æ”¾ã™ã‚‹ */
 static void
 free_zipcode_line(struct zipcode_line *zl)
 {
@@ -149,10 +149,10 @@ gen_zipcode(xstr* xs, xstr *dest, int nth)
 {
   struct zipcode_line zl;
 
-  /* Í¹ÊØÈÖ¹æ¼­½ñ¤«¤éÃÏÌ¾¤òÆÉ¤ß¼è¤ë */
+  /* éƒµä¾¿ç•ªå·è¾æ›¸ã‹ã‚‰åœ°åã‚’èª­ã¿å–ã‚‹ */
   search_zipcode_dict(&zl, xs);
 
-  /* ¸õÊä¤ò¼èÆÀ¤¹¤ë */
+  /* å€™è£œã‚’å–å¾—ã™ã‚‹ */
   if (zl.nr > nth) {
     dest->len = zl.strs[nth]->len;
     dest->str = anthy_xstr_dup_str(zl.strs[nth]);
@@ -166,7 +166,7 @@ gen_zipcode(xstr* xs, xstr *dest, int nth)
 
 
 
-/* È¾³Ñ¤Î¿ô»ú¤«¤éÁ´³Ñ¤Î¿ô»ú¤òµá¤á¤ë */
+/* åŠè§’ã®æ•°å­—ã‹ã‚‰å…¨è§’ã®æ•°å­—ã‚’æ±‚ã‚ã‚‹ */
 static xchar
 narrow_num_to_wide_num(xchar xc)
 {
@@ -176,7 +176,7 @@ narrow_num_to_wide_num(xchar xc)
   return narrow_wide_tab[(int)(xc - '0')];
 }
 
-/* Á´³Ñ¤Î¿ô»ú¤«¤éÈ¾³Ñ¤Î¿ô»ú¤òµá¤á¤ë */
+/* å…¨è§’ã®æ•°å­—ã‹ã‚‰åŠè§’ã®æ•°å­—ã‚’æ±‚ã‚ã‚‹ */
 static xchar
 wide_num_to_narrow_num(xchar xc)
 {
@@ -189,7 +189,7 @@ wide_num_to_narrow_num(xchar xc)
   return '0';
 }
 /*
- * °ì·å¤ÎÀ°¿ô¤ò´Á¿ô»ú¤ËÊÑ´¹¤¹¤ë
+ * ä¸€æ¡ã®æ•´æ•°ã‚’æ¼¢æ•°å­—ã«å¤‰æ›ã™ã‚‹
  */
 static xchar
 get_kj_num(int n)
@@ -201,7 +201,7 @@ get_kj_num(int n)
 }
 
 /*
- * 4·åÊ¬¤ÎÀ°¿ô¤ò´Á»úÊ¸»úÎó¤È¤·¤Æ¤òÀ¸À®¤¹¤ë
+ * 4æ¡åˆ†ã®æ•´æ•°ã‚’æ¼¢å­—æ–‡å­—åˆ—ã¨ã—ã¦ã‚’ç”Ÿæˆã™ã‚‹
  */
 static void
 compose_num_component(xstr *xs, long long num)
@@ -212,7 +212,7 @@ compose_num_component(xstr *xs, long long num)
     n[i] = num-(num/10)*10;
     num /= 10;
   }
-  /* 10,100,1000¤Î°Ì */
+  /* 10,100,1000ã®ä½ */
   for (i = 3; i > 0; i--) {
     if (n[i] > 0) {
       if (n[i] > 1) {
@@ -221,13 +221,13 @@ compose_num_component(xstr *xs, long long num)
       anthy_xstrappend(xs, a[i]);
     }
   }
-  /* 1¤Î°Ì */
+  /* 1ã®ä½ */
   if (n[0]) {
     anthy_xstrappend(xs, get_kj_num(n[0]));
   }
 }
 
-/** ´Á¿ô»ú¤ÎÊ¸»úÎó¤òºî¤ë */
+/** æ¼¢æ•°å­—ã®æ–‡å­—åˆ—ã‚’ä½œã‚‹ */
 static int
 gen_kanji_num(long long num, xstr *dest)
 {
@@ -236,7 +236,7 @@ gen_kanji_num(long long num, xstr *dest)
   if (num < 1 || num >= 10000000000000000LL) {
     return -1;
   }
-  /* 4·å¤º¤ÄÇÛÎón¤Ë¤Ä¤á¤ë */
+  /* 4æ¡ãšã¤é…åˆ—nã«ã¤ã‚ã‚‹ */
   for (i = 0; i < 10; i ++) {
     n[i] = num-(num/10000)*10000;
     num = num/10000;
@@ -244,17 +244,17 @@ gen_kanji_num(long long num, xstr *dest)
   /**/
   dest->len = 0;
   dest->str = 0;
-  /* µş¤Î°Ì¤ò¤Ä¤¯¤ë */
+  /* äº¬ã®ä½ã‚’ã¤ãã‚‹ */
   if (n[3]) {
     compose_num_component(dest, n[3]);
     anthy_xstrappend(dest, KJ_1000000000000);
   }
-  /* ²¯¤Î°Ì¤ò¤Ä¤¯¤ë */
+  /* å„„ã®ä½ã‚’ã¤ãã‚‹ */
   if (n[2]) {
     compose_num_component(dest, n[2]);
     anthy_xstrappend(dest, KJ_100000000);
   }
-  /* Ëü¤Î°Ì¤ò¤Ä¤¯¤ë */
+  /* ä¸‡ã®ä½ã‚’ã¤ãã‚‹ */
   if (n[1]) {
     compose_num_component(dest, n[1]);
     anthy_xstrappend(dest, KJ_10000);
@@ -272,7 +272,7 @@ get_nr_zipcode(xstr* xs)
   if (xs->len != 3 && xs->len != 7) {
     return 0;
   }
-  /* Í¹ÊØÈÖ¹æ¼­½ñ¤«¤éÃÏÌ¾¤òÆÉ¤ß¼è¤ë */
+  /* éƒµä¾¿ç•ªå·è¾æ›¸ã‹ã‚‰åœ°åã‚’èª­ã¿å–ã‚‹ */
   search_zipcode_dict(&zl, xs);
 
   nr = zl.nr;
@@ -285,22 +285,22 @@ get_nr_num_ents(long long num)
 {
   if (num > 0 && num < 10000000000000000LL) {
     if (num > 999) {
-      /* ¥¢¥é¥Ó¥¢¿ô»ú(¤½¤Î¤Ş¤Ş)¡¢¥¢¥é¥Ó¥¢¿ô»ú(Á´³ÑÈ¾³ÑÀÚÂØ¤¨)¡¢
-	 ´Á¿ô»ú¡¢3·å¶èÀÚ¤ê(Á´³Ñ¡¢È¾³Ñ) */
+      /* ã‚¢ãƒ©ãƒ“ã‚¢æ•°å­—(ãã®ã¾ã¾)ã€ã‚¢ãƒ©ãƒ“ã‚¢æ•°å­—(å…¨è§’åŠè§’åˆ‡æ›¿ãˆ)ã€
+	 æ¼¢æ•°å­—ã€3æ¡åŒºåˆ‡ã‚Š(å…¨è§’ã€åŠè§’) */
       return 5;
     } else {
-      /* ¥¢¥é¥Ó¥¢¿ô»ú(¤½¤Î¤Ş¤Ş)¡¢Á´³ÑÈ¾³ÑÀÚÂØ¤¨¡¢´Á¿ô»ú */
+      /* ã‚¢ãƒ©ãƒ“ã‚¢æ•°å­—(ãã®ã¾ã¾)ã€å…¨è§’åŠè§’åˆ‡æ›¿ãˆã€æ¼¢æ•°å­— */
       return 3;
     }
   } else {
-    /* ¥¢¥é¥Ó¥¢¿ô»ú(¤½¤Î¤Ş¤Ş)¡¢Á´³ÑÈ¾³ÑÀÚÂØ¤¨ */
+    /* ã‚¢ãƒ©ãƒ“ã‚¢æ•°å­—(ãã®ã¾ã¾)ã€å…¨è§’åŠè§’åˆ‡æ›¿ãˆ */
     return 2;
   }
 }
 
 
 /*
- * ¤¤¤¯¤Ä¤Î¹çÀ®¤Î¥¨¥ó¥È¥ê¡¼¤¬¤¢¤ë¤«
+ * ã„ãã¤ã®åˆæˆã®ã‚¨ãƒ³ãƒˆãƒªãƒ¼ãŒã‚ã‚‹ã‹
  */
 int
 anthy_get_nr_dic_ents_of_ext_ent(seq_ent_t se, xstr *xs)
@@ -315,7 +315,7 @@ anthy_get_nr_dic_ents_of_ext_ent(seq_ent_t se, xstr *xs)
   return 0;
 }
 
-/* Ê¸»úÎó¤ÎÁ´³ÑÈ¾³Ñ¤ò¸ò´¹¤¹¤ë */
+/* æ–‡å­—åˆ—ã®å…¨è§’åŠè§’ã‚’äº¤æ›ã™ã‚‹ */
 static void
 toggle_wide_narrow(xstr *dest, xstr *src)
 {
@@ -332,7 +332,7 @@ toggle_wide_narrow(xstr *dest, xstr *src)
   }
 }
 
-/* 3·å¤Ë¶èÀÚ¤Ã¤¿¿ô»ú¤òÀ¸À®¤¹¤ë */
+/* 3æ¡ã«åŒºåˆ‡ã£ãŸæ•°å­—ã‚’ç”Ÿæˆã™ã‚‹ */
 static int
 gen_separated_num(long long num, xstr *dest, int full)
 {
@@ -344,20 +344,20 @@ gen_separated_num(long long num, xstr *dest, int full)
     return -1;
   }
 
-  /* ·å¿ô¤ò¿ô¤¨¤ë */
+  /* æ¡æ•°ã‚’æ•°ãˆã‚‹ */
   for (tmp = num; tmp != 0; tmp /= 10) {
     width ++;
   }
-  /* ÅÀ¤Î¿ô */
+  /* ç‚¹ã®æ•° */
   dot_count = (width - 1) / 3;
-  /* ³ÊÇ¼¤¹¤ë¤Î¤ËÉ¬Í×¤ÊÊ¸»úÎó¤òÍÑ°Õ¤¹¤ë */
+  /* æ ¼ç´ã™ã‚‹ã®ã«å¿…è¦ãªæ–‡å­—åˆ—ã‚’ç”¨æ„ã™ã‚‹ */
   dest->len = dot_count + width;
   dest->str = malloc(sizeof(xchar)*dest->len);
 
-  /* ±¦¤Î·å¤«¤é½ç¤Ë·è¤á¤Æ¤¤¤¯ */
+  /* å³ã®æ¡ã‹ã‚‰é †ã«æ±ºã‚ã¦ã„ã */
   for (i = 0, pos = dest->len - 1; i < width; i++, pos --) {
     int n = num % 10;
-    /* ¥«¥ó¥Ş¤òÄÉ²Ã */
+    /* ã‚«ãƒ³ãƒã‚’è¿½åŠ  */
     if (i > 0 && (i % 3) == 0) {
       if (full) {
 	dest->str[pos] = WIDE_COMMA;
@@ -367,10 +367,10 @@ gen_separated_num(long long num, xstr *dest, int full)
       pos --;
     }
     if (full) {
-      /* Á´³Ñ¿ô»ú */
+      /* å…¨è§’æ•°å­— */
       dest->str[pos] = narrow_wide_tab[n];
     } else {
-      /* ASCII¿ô»ú */
+      /* ASCIIæ•°å­— */
       dest->str[pos] = 48 + n;
     }
     num /= 10;
@@ -379,16 +379,16 @@ gen_separated_num(long long num, xstr *dest, int full)
 }
 
 /*
- * nth¸Ä¤á¤Î¸õÊä¤ò¼è¤ê½Ğ¤¹
+ * nthå€‹ã‚ã®å€™è£œã‚’å–ã‚Šå‡ºã™
  */
 int
 anthy_get_nth_dic_ent_str_of_ext_ent(seq_ent_t se, xstr *xs,
 				     int nth, xstr *dest)
 {
-  dest->str = NULL;     /* ÉÔÀµ¤Ê¥á¥â¥ê¥¢¥¯¥»¥¹¤ä¥á¥â¥ê¤ÎÂ¿½Å²òÊü¤ò¤¹¤ë¥Ğ¥°¤Î½¤Àµ */
+  dest->str = NULL;     /* ä¸æ­£ãªãƒ¡ãƒ¢ãƒªã‚¢ã‚¯ã‚»ã‚¹ã‚„ãƒ¡ãƒ¢ãƒªã®å¤šé‡è§£æ”¾ã‚’ã™ã‚‹ãƒã‚°ã®ä¿®æ­£ */
   dest->len = 0;
   if (nth == 0) {
-    /* ÌµÊÑ´¹Ê¸»úÎó */
+    /* ç„¡å¤‰æ›æ–‡å­—åˆ— */
     dest->len = xs->len;
     dest->str = anthy_xstr_dup_str(xs);
     return 0;
@@ -396,42 +396,42 @@ anthy_get_nth_dic_ent_str_of_ext_ent(seq_ent_t se, xstr *xs,
   if (se == &unkseq_ent) {
     switch(nth) {
     case 1:
-      /* Á´³Ñ¡¢È¾³Ñ¤Î¥È¥°¥ë */
+      /* å…¨è§’ã€åŠè§’ã®ãƒˆã‚°ãƒ« */
       return 0;
     }
   }
   if (anthy_get_xstr_type(xs) & (XCT_NUM|XCT_WIDENUM)) {
     long long num = anthy_xstrtoll(xs);
-    const int base_ents = get_nr_num_ents(num); /* £³·åÍ¹ÊØÈÖ¹æ¤Ø¤ÎÂĞ±ş */
-    /* ´Á¿ô»ú¡¢¥¢¥é¥Ó¥¢¿ô»ú¡¢Á´³ÑÈ¾³ÑÀÚÂØ¤¨ */
+    const int base_ents = get_nr_num_ents(num); /* ï¼“æ¡éƒµä¾¿ç•ªå·ã¸ã®å¯¾å¿œ */
+    /* æ¼¢æ•°å­—ã€ã‚¢ãƒ©ãƒ“ã‚¢æ•°å­—ã€å…¨è§’åŠè§’åˆ‡æ›¿ãˆ */
     switch(nth) {
     case 1:
-      /* Á´³ÑÈ¾³Ñ¤òÆş¤ì´¹¤¨¤¿¤â¤Î */
+      /* å…¨è§’åŠè§’ã‚’å…¥ã‚Œæ›ãˆãŸã‚‚ã® */
       toggle_wide_narrow(dest, xs);
       return 0;
     case 2:
-      /* ´Á¿ô»ú */
+      /* æ¼¢æ•°å­— */
       if (!gen_kanji_num(num, dest)) {
 	return 0;
       }
-      /* breakÌµ¤· */
+      /* breakç„¡ã— */
     case 3:
-      /* 3·å¤Ç¶èÀÚ¤Ã¤¿¿ô»ú */
+      /* 3æ¡ã§åŒºåˆ‡ã£ãŸæ•°å­— */
       if (!gen_separated_num(num, dest, 0)) {
 	return 0;
       }
-      /* breakÌµ¤· */
+      /* breakç„¡ã— */
     case 4:
-      /* 3·å¤Ç¶èÀÚ¤Ã¤¿¿ô»ú(Á´³Ñ) */
+      /* 3æ¡ã§åŒºåˆ‡ã£ãŸæ•°å­—(å…¨è§’) */
       if (!gen_separated_num(num, dest, 1)) {
 	return 0;
       }
-      /* breakÌµ¤· */
+      /* breakç„¡ã— */
     default:
-      /* Í¹ÊØÈÖ¹æ */
-      if (base_ents <= nth) {   /* £³·åÍ¹ÊØÈÖ¹æ¤Ø¤ÎÂĞ±ş */
+      /* éƒµä¾¿ç•ªå· */
+      if (base_ents <= nth) {   /* ï¼“æ¡éƒµä¾¿ç•ªå·ã¸ã®å¯¾å¿œ */
 	if (xs->len == 3 || xs->len == 7) {
-	  if (!gen_zipcode(xs, dest, nth - base_ents)) {    /* £³·åÍ¹ÊØÈÖ¹æ¤Ø¤ÎÂĞ±ş */
+	  if (!gen_zipcode(xs, dest, nth - base_ents)) {    /* ï¼“æ¡éƒµä¾¿ç•ªå·ã¸ã®å¯¾å¿œ */
 	    return 0;
 	  }
 	}
@@ -452,23 +452,23 @@ anthy_get_ext_seq_ent_indep(struct seq_ent *se)
   return 0;
 }
 
-/* ³èÍÑ·Á¤òÆÀ¤ë */
+/* æ´»ç”¨å½¢ã‚’å¾—ã‚‹ */
 int
 anthy_get_ext_seq_ent_ct(struct seq_ent *se, int pos, int ct)
 {
   if (anthy_get_ext_seq_ent_pos(se, pos) && ct == CT_NONE) {
-    /* ÉÊ»ì¤¬¹ç¤Ã¤Æ¤¤¤Æ¤«¤ÄÌµ³èÍÑ¤Î¾ì¹ç 
-       (ext_ent¤Ï³èÍÑ¤·¤Ê¤¤) */
+    /* å“è©ãŒåˆã£ã¦ã„ã¦ã‹ã¤ç„¡æ´»ç”¨ã®å ´åˆ 
+       (ext_entã¯æ´»ç”¨ã—ãªã„) */
     return 10;
   }
   return 0;
 }
 
-/* ÉÊ»ì¤ò¼èÆÀ¤¹¤ë */
+/* å“è©ã‚’å–å¾—ã™ã‚‹ */
 int
 anthy_get_ext_seq_ent_pos(struct seq_ent *se, int pos)
 {
-  /* ext_ent¤ÏÌ¾»ì¤Î¤ß */
+  /* ext_entã¯åè©ã®ã¿ */
   if (se == &num_ent && pos == POS_NOUN) {
     return 10;
   }
@@ -479,18 +479,18 @@ anthy_get_ext_seq_ent_pos(struct seq_ent *se, int pos)
 }
 
 /*
- * ¼­½ñ¤Ë¤Î¤Ã¤Æ¤¤¤Ê¤¤¥·¡¼¥±¥ó¥¹¤ò²òÀÏ
+ * è¾æ›¸ã«ã®ã£ã¦ã„ãªã„ã‚·ãƒ¼ã‚±ãƒ³ã‚¹ã‚’è§£æ
  */
 seq_ent_t
 anthy_get_ext_seq_ent_from_xstr(xstr *x, int is_reverse)
 {
   int t = anthy_get_xstr_type(x);
 
-  /* ¿ô»ú¤Î¤ß¤Ç¹½À®¤µ¤ì¤Æ¤¤¤ì¤Ğ num_ent */
+  /* æ•°å­—ã®ã¿ã§æ§‹æˆã•ã‚Œã¦ã„ã‚Œã° num_ent */
   if (t & (XCT_NUM | XCT_WIDENUM)) {
     return &num_ent;
   }
-  /* ±Ñ¿ô¤Ê¤éunkseq */
+  /* è‹±æ•°ãªã‚‰unkseq */
   if (t & XCT_ASCII) {
     return &unkseq_ent;
   }
@@ -498,13 +498,13 @@ anthy_get_ext_seq_ent_from_xstr(xstr *x, int is_reverse)
     return &unkseq_ent;
   }
   if (!is_reverse) {
-    /* µÕÊÑ´¹Ãæ¤Ï´Á»ú¸õÊä¤Ïºî¤é¤Ê¤¤ */
+    /* é€†å¤‰æ›ä¸­ã¯æ¼¢å­—å€™è£œã¯ä½œã‚‰ãªã„ */
     if (t & XCT_KANJI) {
       return &unkseq_ent;
     }
   }
   if (x->len == 1) {
-    /* ¼­½ñ¤Ë¤Î¤Ã¤Æ¤Ê¤¯¤Æ1Ê¸»ú¤Ê¤é¥»¥Ñ¥ì¡¼¥¿ */
+    /* è¾æ›¸ã«ã®ã£ã¦ãªãã¦1æ–‡å­—ãªã‚‰ã‚»ãƒ‘ãƒ¬ãƒ¼ã‚¿ */
     return &sep_ent;
   }
   return 0;
@@ -532,7 +532,7 @@ anthy_get_ext_seq_ent_wtype(struct seq_ent *se, wtype_t w)
 {
   if (se == &num_ent) {
     if (anthy_wtype_get_pos (w) == POS_NUMBER) {
-      /* ¿ô»ú¤Î¾ì¹ç */
+      /* æ•°å­—ã®å ´åˆ */
       return 10;
     }
     return 0;
@@ -540,7 +540,7 @@ anthy_get_ext_seq_ent_wtype(struct seq_ent *se, wtype_t w)
   if (anthy_wtype_get_pos(w) == POS_NOUN &&
       anthy_wtype_get_cos(w) == COS_NONE &&
       anthy_wtype_get_scos(w) == SCOS_NONE) {
-    /* Ì¾»ì¡¢ÉûÉÊ»ì¤Ê¤·¡¢Éû¡¹ÉÊ»ìÌµ¤·¤Ë¥Ş¥Ã¥Á */
+    /* åè©ã€å‰¯å“è©ãªã—ã€å‰¯ã€…å“è©ç„¡ã—ã«ãƒãƒƒãƒ */
     return 10;
   }
   return 0;

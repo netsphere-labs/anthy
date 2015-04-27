@@ -1,6 +1,6 @@
 /*
- * �ʻ췿���������
- * ��Ȥ�wtype_t�������Υ쥤�����Ȥ˶�����¸���롣
+ * 品詞型を管理する
+ * 中身はwtype_tの内部のレイアウトに強く依存する。
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  */
@@ -36,11 +36,11 @@ struct wttable {
   int cos;
   int scos;
   int cc;
-  int ct;/*���Ѥʤ�*/
+  int ct;/*カ変など*/
   int flags;
 };
 
-/* ��������ʻ��̾�����ʻ���Ѵ�����ơ��֥� */
+/* 辞書中の品詞の名前を品詞に変換するテーブル */
 static struct wttable wt_name_tab[]= {
 #include "wtab.h"
 };
@@ -86,20 +86,20 @@ anthy_init_wtypes(void)
   anthy_wt_none = anthy_get_wtype (POS_INVAL, COS_NONE, SCOS_NONE,
 				   CC_NONE, CT_NONE, WF_NONE);
 
-  /* {"̾��35",POS_NOUN,COS_NONE,SCOS_T35,CC_NONE,CT_NONE,WF_INDEP} */
+  /* {"名詞35",POS_NOUN,COS_NONE,SCOS_T35,CC_NONE,CT_NONE,WF_INDEP} */
   anthy_type_to_wtype ("#T", &anthy_wtype_noun);
 
-  /* {"����",POS_NUMBER,COS_NN,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP} */
+  /* {"数詞",POS_NUMBER,COS_NN,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP} */
   anthy_type_to_wtype ("#NN", &anthy_wtype_num_noun); /* exported for ext_ent.c */
 
-  /* {"���ƻ첽������",POS_D2KY,COS_NONE,SCOS_A1,CC_NONE,CT_HEAD,WF_INDEP} */
-  /* {"#D2KY",POS_D2KY,COS_SUFFIX,SCOS_A1,CC_A_KU,CT_HEAD,WF_INDEP} # "���ƻ첽������(���Ť餤,������)" */
+  /* {"形容詞化接尾語",POS_D2KY,COS_NONE,SCOS_A1,CC_NONE,CT_HEAD,WF_INDEP} */
+  /* {"#D2KY",POS_D2KY,COS_SUFFIX,SCOS_A1,CC_A_KU,CT_HEAD,WF_INDEP} # "形容詞化接尾語(しづらい,がたい)" */
   anthy_type_to_wtype ("#D2KY", &anthy_wtype_a_tail_of_v_renyou); /* exported for metaword.c */
 }
 
 /*
- * �֤��ͤˤ��ʻ��̾��
- * t�ˤ��ʻ줬�֤����
+ * 返り値には品詞の名前
+ * tには品詞が返される
  */
 const char *
 anthy_type_to_wtype(const char *s, wtype_t *t)
@@ -118,7 +118,7 @@ anthy_type_to_wtype(const char *s, wtype_t *t)
   return w->name;
 }
 
-/* ��Ĥ��ʻ줬�����˰��פ��Ƥ��뤫�ɤ��� */
+/* 二つの品詞が完全に一致しているかどうか */
 int
 anthy_wtype_equal(wtype_t lhs, wtype_t rhs)
 {

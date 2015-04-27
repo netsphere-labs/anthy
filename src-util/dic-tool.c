@@ -135,7 +135,7 @@ print_usage_text(void)
   }
   /* そのままファイルの内容を出力 */
   while (fgets(buf, 256, fp)) {
-    if (encoding == ANTHY_UTF8_ENCODING) {
+    if (encoding == ANTHY_EUC_JP_ENCODING) {
       char *s;
       s = anthy_conv_euc_to_utf8(buf);
       printf("%s", s);
@@ -181,7 +181,7 @@ read_typetab_var(struct var *head, FILE *fp, int table)
   }
 
   v = malloc(sizeof(struct var));
-  if (encoding == ANTHY_UTF8_ENCODING && table) {
+  if (encoding == ANTHY_EUC_JP_ENCODING && table) {
     /* UTF-8 */
     v->var_name = anthy_conv_euc_to_utf8(var);
     v->val = anthy_conv_euc_to_utf8(val);
