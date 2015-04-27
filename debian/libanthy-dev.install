@@ -2,7 +2,6 @@ anthy/xstr.h                    usr/include/anthy/
 anthy/wtype.h                   usr/include/anthy
 usr/include/anthy/*.h		usr/include/anthy/
 usr/lib/libanthy*.a		usr/lib/
-usr/lib/libanthy*.la		usr/lib/
 usr/lib/pkgconfig/anthy.pc	usr/lib/pkgconfig/
 usr/lib/lib*.so			usr/lib/
 
