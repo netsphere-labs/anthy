@@ -4,10 +4,10 @@
  * (many Japanese gramatical terms will appear.)
  *
  * Kana-Kanji conversion engine Anthy.
- * ²¾Ì¾´Á»úÊÑ´¹¥¨¥ó¥¸¥óAnthy(¥¢¥ó¥·¡¼)
+ * ä»®åæ¼¢å­—å¤‰æ›ã‚¨ãƒ³ã‚¸ãƒ³Anthy(ã‚¢ãƒ³ã‚·ãƒ¼)
  *
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2001 9/22
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2005
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2001 9/22
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2005
  * Copyright (C) 2000-2007 TABATA Yusuke, UGAWA Tomoharu
  * Copyright (C) 2004-2006 YOSHIDA Yuichi
  * Copyright (C) 2000-2007 KMC(Kyoto University Micro Computer Club)
@@ -30,17 +30,17 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 /*
- * Anthy¤ÎÊÑ´¹µ¡Ç½¤Ï¥é¥¤¥Ö¥é¥ê¤È¤·¤Æ¹½À®¤µ¤ì¤Æ¤ª¤ê¡¢¤³¤Î
- * ¥Õ¥¡¥¤¥ë¤Ë¤Ï¥é¥¤¥Ö¥é¥ê¤ÎÄó¶¡¤¹¤ë´Ø¿ô(API)¤¬µ­½Ò¤µ¤ì¤Æ¤¤¤Ş¤¹¡£
+ * Anthyã®å¤‰æ›æ©Ÿèƒ½ã¯ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã¨ã—ã¦æ§‹æˆã•ã‚Œã¦ãŠã‚Šã€ã“ã®
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã«ã¯ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®æä¾›ã™ã‚‹é–¢æ•°(API)ãŒè¨˜è¿°ã•ã‚Œã¦ã„ã¾ã™ã€‚
  *
- * ¥é¥¤¥Ö¥é¥ê¤ÎÄó¶¡¤¹¤ë´Ø¿ô¤Ï²¼µ­¤Î¤è¤¦¤Ê¤â¤Î¤¬¤¢¤ê¤Ş¤¹
- * (1)¥é¥¤¥Ö¥é¥êÁ´ÂÎ¤Î½é´ü²½¡¢½ªÎ»¡¢ÀßÄê
- * (2)ÊÑ´¹¥³¥ó¥Æ¥­¥¹¥È¤ÎºîÀ®¡¢²òÊü
- * (3)ÊÑ´¹¥³¥ó¥Æ¥­¥¹¥È¤ËÂĞ¤¹¤ëÊ¸»úÎó¤ÎÀßÄê¡¢Ê¸ÀáÄ¹¤ÎÊÑ¹¹¡¢¸õÊä¤Î¼èÆÀÅù
+ * ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®æä¾›ã™ã‚‹é–¢æ•°ã¯ä¸‹è¨˜ã®ã‚ˆã†ãªã‚‚ã®ãŒã‚ã‚Šã¾ã™
+ * (1)ãƒ©ã‚¤ãƒ–ãƒ©ãƒªå…¨ä½“ã®åˆæœŸåŒ–ã€çµ‚äº†ã€è¨­å®š
+ * (2)å¤‰æ›ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®ä½œæˆã€è§£æ”¾
+ * (3)å¤‰æ›ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã«å¯¾ã™ã‚‹æ–‡å­—åˆ—ã®è¨­å®šã€æ–‡ç¯€é•·ã®å¤‰æ›´ã€å€™è£œã®å–å¾—ç­‰
  *
- * ¥¤¥ó¥¿¡¼¥Õ¥§¥¤¥¹¤Ë´Ø¤·¤Æ¤Ï doc/LIB¤ò»²¾È¤·¤Æ¤¯¤À¤µ¤¤
- * Anthy¤Î¥³¡¼¥É¤òÍı²ò¤·¤è¤¦¤È¤¹¤ë¾ì¹ç¤Ï
- * doc/GLOSSARY ¤ÇÍÑ¸ì¤òÇÄ°®¤¹¤ë¤³¤È¤ò´«¤á¤Ş¤¹
+ * ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ã‚¤ã‚¹ã«é–¢ã—ã¦ã¯ doc/LIBã‚’å‚ç…§ã—ã¦ãã ã•ã„
+ * Anthyã®ã‚³ãƒ¼ãƒ‰ã‚’ç†è§£ã—ã‚ˆã†ã¨ã™ã‚‹å ´åˆã¯
+ * doc/GLOSSARY ã§ç”¨èªã‚’æŠŠæ¡ã™ã‚‹ã“ã¨ã‚’å‹§ã‚ã¾ã™
  */
 #include <string.h>
 #include <stdlib.h>
@@ -59,24 +59,24 @@
 #include "config.h"
 
 
-/** Anthy¤Î½é´ü²½¤¬´°Î»¤·¤¿¤«¤É¤¦¤«¤Î¥Õ¥é¥° */
+/** Anthyã®åˆæœŸåŒ–ãŒå®Œäº†ã—ãŸã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚° */
 static int is_init_ok;
-/** ¥³¥ó¥Æ¥­¥¹¥ÈÀ¸À®»ş¤Î¥¨¥ó¥³¡¼¥Ç¥£¥ó¥° */
+/** ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆç”Ÿæˆæ™‚ã®ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚° */
 static int default_encoding;
 /***/
 static char *history_file;
 
-/** (API) Á´ÂÎ¤Î½é´ü²½ */
+/** (API) å…¨ä½“ã®åˆæœŸåŒ– */
 int
 anthy_init(void)
 {
   char *hfn;
   if (is_init_ok) {
-    /* 2ÅÙ½é´ü²½¤·¤Ê¤¤¤è¤¦¤Ë */
+    /* 2åº¦åˆæœŸåŒ–ã—ãªã„ã‚ˆã†ã« */
     return 0;
   }
 
-  /* ³Æ¥µ¥Ö¥·¥¹¥Æ¥à¤ò½ç¤Ë½é´ü²½¤¹¤ë */
+  /* å„ã‚µãƒ–ã‚·ã‚¹ãƒ†ãƒ ã‚’é †ã«åˆæœŸåŒ–ã™ã‚‹ */
   if (anthy_init_dic()) {
     anthy_log(0, "Failed to initialize dictionary.\n");
     return -1;
@@ -105,7 +105,7 @@ anthy_init(void)
   return 0;
 }
 
-/** (API) Á´¥Ç¡¼¥¿¤Î²òÊü */
+/** (API) å…¨ãƒ‡ãƒ¼ã‚¿ã®è§£æ”¾ */
 void
 anthy_quit(void)
 {
@@ -115,7 +115,7 @@ anthy_quit(void)
   anthy_quit_contexts();
   anthy_quit_personality();
   anthy_quit_splitter();
-  /* Â¿¤¯¤Î¥Ç¡¼¥¿¹½Â¤¤Ï¤³¤³¤Çallocator¤Ë¤è¤Ã¤Æ²òÊü¤µ¤ì¤ë */
+  /* å¤šãã®ãƒ‡ãƒ¼ã‚¿æ§‹é€ ã¯ã“ã“ã§allocatorã«ã‚ˆã£ã¦è§£æ”¾ã•ã‚Œã‚‹ */
   anthy_quit_dic();
 
   is_init_ok = 0;
@@ -126,21 +126,21 @@ anthy_quit(void)
   history_file = NULL;
 }
 
-/** (API) ÀßÄê¹àÌÜ¤Î¾å½ñ¤­ */
+/** (API) è¨­å®šé …ç›®ã®ä¸Šæ›¸ã */
 void
 anthy_conf_override(const char *var, const char *val)
 {
   anthy_do_conf_override(var, val);
 }
 
-/** (API) personality¤ÎÀßÄê */
+/** (API) personalityã®è¨­å®š */
 int
 anthy_set_personality(const char *id)
 {
   return anthy_do_set_personality(id);
 }
 
-/** (API) ÊÑ´¹context¤ÎºîÀ® */
+/** (API) å¤‰æ›contextã®ä½œæˆ */
 struct anthy_context *
 anthy_create_context(void)
 {
@@ -150,14 +150,14 @@ anthy_create_context(void)
   return anthy_do_create_context(default_encoding);
 }
 
-/** (API) ÊÑ´¹context¤Î¥ê¥»¥Ã¥È */
+/** (API) å¤‰æ›contextã®ãƒªã‚»ãƒƒãƒˆ */
 void
 anthy_reset_context(struct anthy_context *ac)
 {
   anthy_do_reset_context(ac);
 }
 
-/** (API) ÊÑ´¹context¤Î²òÊü */
+/** (API) å¤‰æ›contextã®è§£æ”¾ */
 void
 anthy_release_context(struct anthy_context *ac)
 {
@@ -165,7 +165,7 @@ anthy_release_context(struct anthy_context *ac)
 }
 
 /** 
- * ºÆÊÑ´¹¤¬É¬Í×¤«¤É¤¦¤«¤ÎÈ½Äê
+ * å†å¤‰æ›ãŒå¿…è¦ã‹ã©ã†ã‹ã®åˆ¤å®š
  */
 static int
 need_reconvert(struct anthy_context *ac, xstr *xs)
@@ -183,9 +183,9 @@ need_reconvert(struct anthy_context *ac, xstr *xs)
     xchar xc = xs->str[i];
     int type = anthy_get_xchar_type(xc);
 
-    /* ¤³¤ì¤é¤ÎÊ¸»ú¼ï¤Î¾ì¹ç¤ÏµÕÊÑ´¹¤¹¤ë
-     * ¡Ö¥ô¡×¤Ï¥Õ¥í¥ó¥È¥¨¥ó¥É¤¬Ê¿²¾Ì¾¥â¡¼¥É¤ÎÊ¸»úÎó¤È¤·¤ÆÁ÷¤Ã¤Æ¤¯¤ë¤Î¤Ç¡¢
-     * µÕÊÑ´¹¤ÎÂĞ¾İ¤È¤Ï¤·¤Ê¤¤
+    /* ã“ã‚Œã‚‰ã®æ–‡å­—ç¨®ã®å ´åˆã¯é€†å¤‰æ›ã™ã‚‹
+     * ã€Œãƒ´ã€ã¯ãƒ•ãƒ­ãƒ³ãƒˆã‚¨ãƒ³ãƒ‰ãŒå¹³ä»®åãƒ¢ãƒ¼ãƒ‰ã®æ–‡å­—åˆ—ã¨ã—ã¦é€ã£ã¦ãã‚‹ã®ã§ã€
+     * é€†å¤‰æ›ã®å¯¾è±¡ã¨ã¯ã—ãªã„
      */
     if (!(type & (XCT_HIRA | XCT_SYMBOL | XCT_NUM |
 		  XCT_WIDENUM | XCT_OPEN | XCT_CLOSE |
@@ -198,7 +198,7 @@ need_reconvert(struct anthy_context *ac, xstr *xs)
 }
 
 
-/** (API) ÊÑ´¹Ê¸»úÎó¤ÎÀßÄê */
+/** (API) å¤‰æ›æ–‡å­—åˆ—ã®è¨­å®š */
 int
 anthy_set_string(struct anthy_context *ac, const char *s)
 {
@@ -209,10 +209,10 @@ anthy_set_string(struct anthy_context *ac, const char *s)
     return -1;
   }
 
-  /*½é´ü²½*/
+  /*åˆæœŸåŒ–*/
   anthy_do_reset_context(ac);
 
-  /* ¼­½ñ¥»¥Ã¥·¥ç¥ó¤Î³«»Ï */
+  /* è¾æ›¸ã‚»ãƒƒã‚·ãƒ§ãƒ³ã®é–‹å§‹ */
   if (!ac->dic_session) {
     ac->dic_session = anthy_dic_create_session();
     if (!ac->dic_session) {
@@ -221,31 +221,31 @@ anthy_set_string(struct anthy_context *ac, const char *s)
   }
 
   anthy_dic_activate_session(ac->dic_session);
-  /* ÊÑ´¹¤ò³«»Ï¤¹¤ëÁ°¤Ë¸Ä¿Í¼­½ñ¤òreload¤¹¤ë */
+  /* å¤‰æ›ã‚’é–‹å§‹ã™ã‚‹å‰ã«å€‹äººè¾æ›¸ã‚’reloadã™ã‚‹ */
   anthy_reload_record();
 
   xs = anthy_cstr_to_xstr(s, ac->encoding);
   /**/
   if (!need_reconvert(ac, xs)) {
-    /* ÉáÄÌ¤ËÊÑ´¹¤¹¤ë */
+    /* æ™®é€šã«å¤‰æ›ã™ã‚‹ */
     retval = anthy_do_context_set_str(ac, xs, 0);
   } else {
-    /* ´Á»ú¤ä¥«¥¿¥«¥Ê¤¬º®¤¸¤Ã¤Æ¤¤¤¿¤éºÆÊÑ´¹¤·¤Æ¤ß¤ë */
+    /* æ¼¢å­—ã‚„ã‚«ã‚¿ã‚«ãƒŠãŒæ··ã˜ã£ã¦ã„ãŸã‚‰å†å¤‰æ›ã—ã¦ã¿ã‚‹ */
     struct anthy_conv_stat stat;
     struct seg_ent *seg;
     int i;
     xstr* hira_xs;
-    /* Í¿¤¨¤é¤ì¤¿Ê¸»úÎó¤ËÊÑ´¹¤ò¤«¤±¤ë */
+    /* ä¸ãˆã‚‰ã‚ŒãŸæ–‡å­—åˆ—ã«å¤‰æ›ã‚’ã‹ã‘ã‚‹ */
     retval = anthy_do_context_set_str(ac, xs, 1);
 
-    /* ³ÆÊ¸Àá¤ÎÂè°ì¸õÊä¤ò¼èÆÀ¤·¤ÆÊ¿²¾Ì¾Îó¤òÆÀ¤ë */
+    /* å„æ–‡ç¯€ã®ç¬¬ä¸€å€™è£œã‚’å–å¾—ã—ã¦å¹³ä»®ååˆ—ã‚’å¾—ã‚‹ */
     anthy_get_stat(ac, &stat);
     hira_xs = NULL;
     for (i = 0; i < stat.nr_segment; ++i) {
       seg = anthy_get_nth_segment(&ac->seg_list, i);
       hira_xs = anthy_xstrcat(hira_xs, &seg->cands[0]->str);
     }
-    /* ²ş¤á¤ÆÊÑ´¹¤ò¹Ô¤Ê¤¦ */
+    /* æ”¹ã‚ã¦å¤‰æ›ã‚’è¡Œãªã† */
     anthy_release_segment_list(ac);
     retval = anthy_do_context_set_str(ac, hira_xs, 0);
     anthy_free_xstr(hira_xs);
@@ -255,7 +255,7 @@ anthy_set_string(struct anthy_context *ac, const char *s)
   return retval;
 }
 
-/** (API) Ê¸ÀáÄ¹¤ÎÊÑ¹¹ */
+/** (API) æ–‡ç¯€é•·ã®å¤‰æ›´ */
 void
 anthy_resize_segment(struct anthy_context *ac, int nth, int resize)
 {
@@ -263,7 +263,7 @@ anthy_resize_segment(struct anthy_context *ac, int nth, int resize)
   anthy_do_resize_segment(ac, nth, resize);
 }
 
-/** (API) ÊÑ´¹¤Î¾õÂÖ¤Î¼èÆÀ */
+/** (API) å¤‰æ›ã®çŠ¶æ…‹ã®å–å¾— */
 int
 anthy_get_stat(struct anthy_context *ac, struct anthy_conv_stat *s)
 {
@@ -271,7 +271,7 @@ anthy_get_stat(struct anthy_context *ac, struct anthy_conv_stat *s)
   return 0;
 }
 
-/** (API) Ê¸Àá¤Î¾õÂÖ¤Î¼èÆÀ */
+/** (API) æ–‡ç¯€ã®çŠ¶æ…‹ã®å–å¾— */
 int
 anthy_get_segment_stat(struct anthy_context *ac, int n,
 		       struct anthy_segment_stat *s)
@@ -311,7 +311,7 @@ get_special_candidate_index(int nth, struct seg_ent *seg)
   return NTH_UNCONVERTED_CANDIDATE;
 }
 
-/** (API) Ê¸Àá¤Î¼èÆÀ */
+/** (API) æ–‡ç¯€ã®å–å¾— */
 int
 anthy_get_segment(struct anthy_context *ac, int nth_seg,
 		  int nth_cand, char *buf, int buflen)
@@ -320,13 +320,13 @@ anthy_get_segment(struct anthy_context *ac, int nth_seg,
   char *p;
   int len;
 
-  /* Ê¸Àá¤ò¼è¤ê½Ğ¤¹ */
+  /* æ–‡ç¯€ã‚’å–ã‚Šå‡ºã™ */
   if (nth_seg < 0 || nth_seg >= ac->seg_list.nr_segments) {
     return -1;
   }
   seg = anthy_get_nth_segment(&ac->seg_list, nth_seg);
 
-  /* Ê¸Àá¤«¤é¸õÊä¤ò¼è¤ê½Ğ¤¹ */
+  /* æ–‡ç¯€ã‹ã‚‰å€™è£œã‚’å–ã‚Šå‡ºã™ */
   p = NULL;
   if (nth_cand < 0) {
     nth_cand = get_special_candidate_index(nth_cand, seg);
@@ -336,7 +336,7 @@ anthy_get_segment(struct anthy_context *ac, int nth_seg,
     p = anthy_xstr_to_cstr(xs, ac->encoding);
     anthy_free_xstr(xs);
   } else if (nth_cand == NTH_UNCONVERTED_CANDIDATE) {
-    /* ÊÑ´¹Á°¤ÎÊ¸»úÎó¤ò¼èÆÀ¤¹¤ë */
+    /* å¤‰æ›å‰ã®æ–‡å­—åˆ—ã‚’å–å¾—ã™ã‚‹ */
     p = anthy_xstr_to_cstr(&seg->str, ac->encoding);
   } else if (nth_cand >= 0 && nth_cand < seg->nr_cands) {
     p = anthy_xstr_to_cstr(&seg->cands[nth_cand]->str, ac->encoding);
@@ -345,14 +345,14 @@ anthy_get_segment(struct anthy_context *ac, int nth_seg,
     return -1;
   }
 
-  /* ¥Ğ¥Ã¥Õ¥¡¤Ë½ñ¤­¹ş¤à */
+  /* ãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ */
   len = strlen(p);
   if (!buf) {
     free(p);
     return len;
   }
   if (len + 1 > buflen) {
-    /* ¥Ğ¥Ã¥Õ¥¡¤¬Â­¤ê¤Ş¤»¤ó */
+    /* ãƒãƒƒãƒ•ã‚¡ãŒè¶³ã‚Šã¾ã›ã‚“ */
     free(p);
     return -1;
   }
@@ -361,7 +361,7 @@ anthy_get_segment(struct anthy_context *ac, int nth_seg,
   return len;
 }
 
-/* ¤¹¤Ù¤Æ¤ÎÊ¸Àá¤¬¥³¥ß¥Ã¥È¤µ¤ì¤¿¤«check¤¹¤ë */
+/* ã™ã¹ã¦ã®æ–‡ç¯€ãŒã‚³ãƒŸãƒƒãƒˆã•ã‚ŒãŸã‹checkã™ã‚‹ */
 static int
 commit_all_segment_p(struct anthy_context *ac)
 {
@@ -376,7 +376,7 @@ commit_all_segment_p(struct anthy_context *ac)
   return 1;
 }
 
-/** (API) Ê¸Àá¤Î³ÎÄê */
+/** (API) æ–‡ç¯€ã®ç¢ºå®š */
 int
 anthy_commit_segment(struct anthy_context *ac, int s, int c)
 {
@@ -388,7 +388,7 @@ anthy_commit_segment(struct anthy_context *ac, int s, int c)
     return -1;
   }
   if (commit_all_segment_p(ac)) {
-    /* ¤¹¤Ç¤ËÁ´¤Æ¤Î¥»¥°¥á¥ó¥È¤¬¥³¥ß¥Ã¥È¤µ¤ì¤Æ¤¤¤ë */
+    /* ã™ã§ã«å…¨ã¦ã®ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãŒã‚³ãƒŸãƒƒãƒˆã•ã‚Œã¦ã„ã‚‹ */
     return -1;
   }
 
@@ -399,7 +399,7 @@ anthy_commit_segment(struct anthy_context *ac, int s, int c)
   }
   if (c == NTH_UNCONVERTED_CANDIDATE) {
     /*
-     * ÊÑ´¹Á°¤ÎÊ¸»úÎó¤¬¥³¥ß¥Ã¥È¤µ¤ì¤¿¤Î¤Ç¡¤¤½¤ì¤ËÂĞ±ş¤¹¤ë¸õÊä¤ÎÈÖ¹æ¤òÃµ¤¹
+     * å¤‰æ›å‰ã®æ–‡å­—åˆ—ãŒã‚³ãƒŸãƒƒãƒˆã•ã‚ŒãŸã®ã§ï¼Œãã‚Œã«å¯¾å¿œã™ã‚‹å€™è£œã®ç•ªå·ã‚’æ¢ã™
      */
     int i;
     for (i = 0; i < seg->nr_cands; i++) {
@@ -414,7 +414,7 @@ anthy_commit_segment(struct anthy_context *ac, int s, int c)
   seg->committed = c;
 
   if (commit_all_segment_p(ac)) {
-    /* º£¡¢¤¹¤Ù¤Æ¤Î¥»¥°¥á¥ó¥È¤¬¥³¥ß¥Ã¥È¤µ¤ì¤¿ */
+    /* ä»Šã€ã™ã¹ã¦ã®ã‚»ã‚°ãƒ¡ãƒ³ãƒˆãŒã‚³ãƒŸãƒƒãƒˆã•ã‚ŒãŸ */
     anthy_proc_commit(&ac->seg_list, &ac->split_info);
     /**/
     anthy_save_history(history_file, ac);
@@ -422,7 +422,7 @@ anthy_commit_segment(struct anthy_context *ac, int s, int c)
   return 0;
 }
 
-/** (API) Í½Â¬¤·¤Æ¤Û¤·¤¤Ê¸»úÎó¤ÎÀßÄê */
+/** (API) äºˆæ¸¬ã—ã¦ã»ã—ã„æ–‡å­—åˆ—ã®è¨­å®š */
 int
 anthy_set_prediction_string(struct anthy_context *ac, const char* s)
 {
@@ -430,7 +430,7 @@ anthy_set_prediction_string(struct anthy_context *ac, const char* s)
   xstr *xs;
 
   anthy_dic_activate_session(ac->dic_session);
-  /* Í½Â¬¤ò³«»Ï¤¹¤ëÁ°¤Ë¸Ä¿Í¼­½ñ¤òreload¤¹¤ë */
+  /* äºˆæ¸¬ã‚’é–‹å§‹ã™ã‚‹å‰ã«å€‹äººè¾æ›¸ã‚’reloadã™ã‚‹ */
   anthy_reload_record();
 
 
@@ -443,7 +443,7 @@ anthy_set_prediction_string(struct anthy_context *ac, const char* s)
   return retval;
 }
 
-/** (API) Í½Â¬ÊÑ´¹¤Î¾õÂÖ¤Î¼èÆÀ */
+/** (API) äºˆæ¸¬å¤‰æ›ã®çŠ¶æ…‹ã®å–å¾— */
 int 
 anthy_get_prediction_stat(struct anthy_context *ac, struct anthy_prediction_stat * ps)
 {
@@ -451,7 +451,7 @@ anthy_get_prediction_stat(struct anthy_context *ac, struct anthy_prediction_stat
   return 0;
 }
 
-/** (API) Í½Â¬ÊÑ´¹¤Î¸õÊä¤Î¼èÆÀ */
+/** (API) äºˆæ¸¬å¤‰æ›ã®å€™è£œã®å–å¾— */
 int
 anthy_get_prediction(struct anthy_context *ac, int nth, char* buf, int buflen)
 {
@@ -466,7 +466,7 @@ anthy_get_prediction(struct anthy_context *ac, int nth, char* buf, int buflen)
 
   p = anthy_xstr_to_cstr(prediction->predictions[nth].str, ac->encoding);
 
-  /* ¥Ğ¥Ã¥Õ¥¡¤Ë½ñ¤­¹ş¤à */
+  /* ãƒãƒƒãƒ•ã‚¡ã«æ›¸ãè¾¼ã‚€ */
   len = strlen(p);
   if (!buf) {
     free(p);
@@ -482,7 +482,7 @@ anthy_get_prediction(struct anthy_context *ac, int nth, char* buf, int buflen)
   }
 }
 
-/** (API) Í½Â¬¤Î·ë²Ì¤ò³ÎÄê¤¹¤ë
+/** (API) äºˆæ¸¬ã®çµæœã‚’ç¢ºå®šã™ã‚‹
  */
 int
 anthy_commit_prediction(struct anthy_context *ac, int nth)
@@ -496,15 +496,15 @@ anthy_commit_prediction(struct anthy_context *ac, int nth)
   return 0;
 }
 
-/** (API) ³«È¯ÍÑ */
+/** (API) é–‹ç™ºç”¨ */
 void
 anthy_print_context(struct anthy_context *ac)
 {
   anthy_do_print_context(ac, default_encoding);
 }
 
-/** (API) Anthy ¥é¥¤¥Ö¥é¥ê¤Î¥Ğ¡¼¥¸¥ç¥ó¤òÉ½¤¹Ê¸»úÎó¤òÊÖ¤¹
- * ¶¦Í­¥é¥¤¥Ö¥é¥ê¤Ç¤Ï³°ÉôÊÑ¿ô¤Î¥¨¥¯¥¹¥İ¡¼¥È¤Ï¹¥¤Ş¤·¤¯¤Ê¤¤¤Î¤Ç´Ø¿ô¤Ë¤·¤Æ¤¢¤ë
+/** (API) Anthy ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®ãƒãƒ¼ã‚¸ãƒ§ãƒ³ã‚’è¡¨ã™æ–‡å­—åˆ—ã‚’è¿”ã™
+ * å…±æœ‰ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã§ã¯å¤–éƒ¨å¤‰æ•°ã®ã‚¨ã‚¯ã‚¹ãƒãƒ¼ãƒˆã¯å¥½ã¾ã—ããªã„ã®ã§é–¢æ•°ã«ã—ã¦ã‚ã‚‹
  */
 const char *
 anthy_get_version_string (void)

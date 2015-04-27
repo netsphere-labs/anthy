@@ -1,18 +1,18 @@
 /*
- * ¸Ä¿Í¼­½ñ´ÉÍıÍÑ¤Î´Ø¿ô·²
+ * å€‹äººè¾æ›¸ç®¡ç†ç”¨ã®é–¢æ•°ç¾¤
  *
- * ¸ß´¹À­¤ÎÅÔ¹ç¤Ç
- *  utf8¤Î¼­½ñ¤Ïtextdic
- *  ¤ª¤è¤Órecord¤ò»È¤Ã¤Æ¤Æº®Íğ¤·¤Ş¤¯¤ê
- * textdic¤Ø°Ü¹Ô¤¹¤ë
+ * äº’æ›æ€§ã®éƒ½åˆã§
+ *  utf8ã®è¾æ›¸ã¯textdic
+ *  ãŠã‚ˆã³recordã‚’ä½¿ã£ã¦ã¦æ··ä¹±ã—ã¾ãã‚Š
+ * textdicã¸ç§»è¡Œã™ã‚‹
  *
- * ³«È¯Í½Äê
+ * é–‹ç™ºäºˆå®š
  *
- *  ¿·µ¬ÅĞÏ¿¤Ïtextdic¤ËÂĞ¤·¤Æ¹Ô¤¦¤è¤¦¤Ë¤¹¤ë <- todo
- *  record´Ø·¸¤Ï¾Ã¤¹
+ *  æ–°è¦ç™»éŒ²ã¯textdicã«å¯¾ã—ã¦è¡Œã†ã‚ˆã†ã«ã™ã‚‹ <- todo
+ *  recordé–¢ä¿‚ã¯æ¶ˆã™
  *
  *
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2001 10/24
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2001 10/24
  *
  * Copyright (C) 2001-2007 TABATA Yusuke
  *
@@ -45,16 +45,16 @@
 #include "dic_main.h"
 #include "dic_personality.h"
 
-/* UTF8¤Ç32Ê¸»ú x 3bytes */
+/* UTF8ã§32æ–‡å­— x 3bytes */
 #define MAX_KEY_LEN 96
 
 static int gIsInit;
 static int dic_util_encoding;
 
 extern const char *anthy_private_text_dic;
-/* ¸½ºßÁªÂò¤µ¤ì¤Æ¤¤¤ëÆÉ¤ß */
+/* ç¾åœ¨é¸æŠã•ã‚Œã¦ã„ã‚‹èª­ã¿ */
 static struct iterate_contex {
-  /* textdic¤Î¸¡º÷ÍÑ */
+  /* textdicã®æ¤œç´¢ç”¨ */
   int dicfile_offset;
   char *current_index;
   char *current_line;
@@ -87,7 +87,7 @@ set_current_line(const char *index, const char *line)
   }
 }
 
-/** ¸Ä¿Í¼­½ñ¥é¥¤¥Ö¥é¥ê¤ò½é´ü²½¤¹¤ë */
+/** å€‹äººè¾æ›¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’åˆæœŸåŒ–ã™ã‚‹ */
 void
 anthy_dic_util_init(void)
 {
@@ -102,7 +102,7 @@ anthy_dic_util_init(void)
   dic_util_encoding = ANTHY_UTF8_ENCODING;
 }
 
-/** ¼­½ñ¥é¥¤¥Ö¥é¥ê¤ò²òÊü¤¹¤ë */
+/** è¾æ›¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’è§£æ”¾ã™ã‚‹ */
 void
 anthy_dic_util_quit(void)
 {
@@ -113,7 +113,7 @@ anthy_dic_util_quit(void)
   gIsInit = 0;
 }
 
-/** ¼­½ñ¥æ¡¼¥Æ¥£¥ê¥Æ¥£API¤Î¥¨¥ó¥³¡¼¥Ç¥£¥ó¥°¤òÀßÄê¤¹¤ë */
+/** è¾æ›¸ãƒ¦ãƒ¼ãƒ†ã‚£ãƒªãƒ†ã‚£APIã®ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã‚’è¨­å®šã™ã‚‹ */
 int
 anthy_dic_util_set_encoding(int enc)
 {
@@ -130,7 +130,7 @@ anthy_dic_util_set_personality(const char *id)
   anthy_dic_set_personality(id);
 }
 
-/** (API) ¸Ä¿Í¼­½ñ¤òÁ´Éô¾Ã¤¹ */
+/** (API) å€‹äººè¾æ›¸ã‚’å…¨éƒ¨æ¶ˆã™ */
 void
 anthy_priv_dic_delete(void)
 {
@@ -158,18 +158,18 @@ select_first_entry_in_textdic(void)
   if (word_iterator.current_line) {
     return 0;
   }
-  /* Ã±¸ì¤¬Ìµ¤¤ */
+  /* å˜èªãŒç„¡ã„ */
   return ANTHY_DIC_UTIL_ERROR;
 }
 
-/** (API) ºÇ½é¤ÎÃ±¸ì¤òÁªÂò¤¹¤ë */
+/** (API) æœ€åˆã®å˜èªã‚’é¸æŠã™ã‚‹ */
 int
 anthy_priv_dic_select_first_entry(void)
 {
   return select_first_entry_in_textdic();
 }
 
-/** (API) ¸½ºßÁªÂò¤µ¤ì¤Æ¤¤¤ëÃ±¸ì¤Î¼¡¤ÎÃ±¸ì¤òÁªÂò¤¹¤ë */
+/** (API) ç¾åœ¨é¸æŠã•ã‚Œã¦ã„ã‚‹å˜èªã®æ¬¡ã®å˜èªã‚’é¸æŠã™ã‚‹ */
 int
 anthy_priv_dic_select_next_entry(void)
 {
@@ -182,7 +182,7 @@ anthy_priv_dic_select_next_entry(void)
   return ANTHY_DIC_UTIL_ERROR;
 }
 
-/** Ì¤¼ÂÁõ */
+/** æœªå®Ÿè£… */
 int
 anthy_priv_dic_select_entry(const char *index)
 {
@@ -190,7 +190,7 @@ anthy_priv_dic_select_entry(const char *index)
   return 0;
 }
 
-/** ¸½ºßÁªÂò¤µ¤ì¤Æ¤¤¤ëÃ±¸ì¤ÎÆÉ¤ß¤ò¤ò¼èÆÀ¤¹¤ë */
+/** ç¾åœ¨é¸æŠã•ã‚Œã¦ã„ã‚‹å˜èªã®èª­ã¿ã‚’ã‚’å–å¾—ã™ã‚‹ */
 char *
 anthy_priv_dic_get_index(char *buf, int len)
 {
@@ -203,7 +203,7 @@ anthy_priv_dic_get_index(char *buf, int len)
   } else {
     src_buf = strdup(src_buf);
   }
-  /* ºÇ½é¤Î¶õÇò¤«\0¤Ş¤Ç¤ò¥³¥Ô¡¼¤¹¤ë */
+  /* æœ€åˆã®ç©ºç™½ã‹\0ã¾ã§ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹ */
   for (i = 0; src_buf[i] && src_buf[i] != ' '; i++) {
     if (i >= len - 1) {
       free(src_buf);
@@ -216,7 +216,7 @@ anthy_priv_dic_get_index(char *buf, int len)
   return buf;
 }
 
-/** ¸½ºßÁªÂò¤µ¤ì¤Æ¤¤¤ëÃ±¸ì¤ÎÉÑÅÙ¤ò¼èÆÀ¤¹¤ë */
+/** ç¾åœ¨é¸æŠã•ã‚Œã¦ã„ã‚‹å˜èªã®é »åº¦ã‚’å–å¾—ã™ã‚‹ */
 int
 anthy_priv_dic_get_freq(void)
 {
@@ -225,7 +225,7 @@ anthy_priv_dic_get_freq(void)
   return res.freq;
 }
 
-/** ¸½ºßÁªÂò¤µ¤ì¤Æ¤¤¤ëÃ±¸ì¤ÎÉÊ»ì¤ò¼èÆÀ¤¹¤ë */
+/** ç¾åœ¨é¸æŠã•ã‚Œã¦ã„ã‚‹å˜èªã®å“è©ã‚’å–å¾—ã™ã‚‹ */
 char *
 anthy_priv_dic_get_wtype(char *buf, int len)
 {
@@ -238,7 +238,7 @@ anthy_priv_dic_get_wtype(char *buf, int len)
   return buf;
 }
 
-/** ¸½ºßÁªÂò¤µ¤ì¤Æ¤¤¤ëÃ±¸ì¤ò¼èÆÀ¤¹¤ë */
+/** ç¾åœ¨é¸æŠã•ã‚Œã¦ã„ã‚‹å˜èªã‚’å–å¾—ã™ã‚‹ */
 char *
 anthy_priv_dic_get_word(char *buf, int len)
 {
@@ -248,7 +248,7 @@ anthy_priv_dic_get_word(char *buf, int len)
   if (!v) {
     return NULL;
   }
-  /* ÉÊ»ì¤Î¸å¤í¤Ë¤¢¤ëÃ±¸ì¤ò¼è¤ê½Ğ¤¹ */
+  /* å“è©ã®å¾Œã‚ã«ã‚ã‚‹å˜èªã‚’å–ã‚Šå‡ºã™ */
   s = strchr(v, ' ');
   s++;
   if (dic_util_encoding == ANTHY_EUC_JP_ENCODING) {
@@ -293,7 +293,7 @@ order_cb(void *p, long next_offset, const char *key, const char *n)
   return 0;
 }
 
-/* °ú¿ô¤Ïutf8 */
+/* å¼•æ•°ã¯utf8 */
 static int
 do_add_word_to_textdic(const char *td, int offset,
 		       const char *yomi, const char *word,
@@ -319,7 +319,7 @@ dup_word_check(const char *v, const char *word, const char *wt)
     return 0;
   }
 
-  /* ÆÉ¤ß¤ÈÃ±¸ì¤òÈæ³Ó¤¹¤ë */
+  /* èª­ã¿ã¨å˜èªã‚’æ¯”è¼ƒã™ã‚‹ */
   if (!strcmp(res.wt, wt) &&
       !strcmp(res.word, word)) {
     return 1;
@@ -343,7 +343,7 @@ add_word_to_textdic(const char *yomi, const char *word,
     return ANTHY_DIC_UTIL_ERROR;
   }
 
-  /* Æ±¤¸Êª¤¬¤¢¤Ã¤¿¤é¾Ã¤¹ */
+  /* åŒã˜ç‰©ãŒã‚ã£ãŸã‚‰æ¶ˆã™ */
   sc.yomi = yomi;
   sc.word = word;
   sc.wt_name = wt_name;
@@ -357,11 +357,11 @@ add_word_to_textdic(const char *yomi, const char *word,
   if (freq == 0) {
     return ANTHY_DIC_UTIL_OK;
   }
-  /* ÄÉ²Ã¤¹¤ë¾ì½ê¤òÃµ¤¹ */
+  /* è¿½åŠ ã™ã‚‹å ´æ‰€ã‚’æ¢ã™ */
   sc.offset = 0;
   sc.found_word = 0;
   anthy_textdic_scan(anthy_private_text_dic, 0, &sc, order_cb);
-  /* ÄÉ²Ã¤¹¤ë */
+  /* è¿½åŠ ã™ã‚‹ */
   rv = do_add_word_to_textdic(anthy_private_text_dic, sc.offset,
 			      yomi, word, wt_name, freq);
   if (!rv) {
@@ -370,8 +370,8 @@ add_word_to_textdic(const char *yomi, const char *word,
   return ANTHY_DIC_UTIL_ERROR;
 }
 
-/** Ã±¸ì¤òÅĞÏ¿¤¹¤ë
- * ÉÑÅÙ¤¬0¤Î¾ì¹ç¤Ïºï½ü
+/** å˜èªã‚’ç™»éŒ²ã™ã‚‹
+ * é »åº¦ãŒ0ã®å ´åˆã¯å‰Šé™¤
  */
 int
 anthy_priv_dic_add_entry(const char *yomi, const char *word,
