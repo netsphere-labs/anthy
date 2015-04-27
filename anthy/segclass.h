@@ -1,21 +1,21 @@
-/** ʸ��Υ��饹 */
+/** 文節のクラス */
 #ifndef _segclass_h_included_
 #define _segclass_h_included_
 
 enum dep_class {
-  /* ��°��ʤ� */
+  /* 付属語なし */
   DEP_NONE,
-  /* ��°����� */
+  /* 付属語一般 */
   DEP_FUZOKUGO,
-  /* �ʽ��� */
+  /* 格助詞 */
   DEP_KAKUJOSHI,
-  /* Ϣ�� */
+  /* 連用 */
   DEP_RENYOU,
-  /* Ϣ�� */
+  /* 連体 */
   DEP_RENTAI,
-  /* ��ü */
+  /* 終端 */
   DEP_END,
-  /* ̾��ñ�� */
+  /* 名詞単独 */
   DEP_RAW
 };
 

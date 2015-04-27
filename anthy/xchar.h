@@ -1,10 +1,10 @@
-/* ³Æ¼ï¥«¥Ê¤äÊ¸»ú¤Î¥³¡¼¥É¤È¼±ÊÌ´Ø¿ô */
+/* å„ç¨®ã‚«ãƒŠã‚„æ–‡å­—ã®ã‚³ãƒ¼ãƒ‰ã¨è­˜åˆ¥é–¢æ•° */
 #ifndef _xchar_h_included_
 #define _xhcar_h_included_
 
 #include <anthy/xstr.h>
 
-/* Ê¿²¾Ì¾¤ä³Æ¼ïÊ¸»ú¤ÎÊ¸»ú¥³¡¼¥É */
+/* å¹³ä»®åã‚„å„ç¨®æ–‡å­—ã®æ–‡å­—ã‚³ãƒ¼ãƒ‰ */
 
  /* UCS4 */
 #define HK_A 0x3042
@@ -108,14 +108,14 @@
 #define HK_XYO 0x3087
 
 #define HK_XWA 0x308e
-/*¡Ö¡«¡×*/
+/*ã€Œã‚›ã€*/
 #define HK_DDOT 0x309b
-/* ¡Ö¡¼¡× */
+/* ã€Œãƒ¼ã€ */
 #define HK_BAR 0x30fc
 #define KK_VU 0x30f4
 #define WIDE_COMMA 0xff0c
 
-/* ´Á¿ô»ú */
+/* æ¼¢æ•°å­— */
 #define KJ_1 0x4e00
 #define KJ_2 0x4e8c
 #define KJ_3 0x4e09
@@ -125,7 +125,7 @@
 #define KJ_7 0x4e03
 #define KJ_8 0x516b
 #define KJ_9 0x4e5d
-/* Îí */
+/* é›¶ */
 #define KJ_0 0x96f6
 #define KJ_10 0x5341
 #define KJ_100 0x767e
@@ -135,7 +135,7 @@
 #define KJ_1000000000000 0x5146
 #define KJ_10000000000000000 0x4eac
 
-/* Á´³Ñ¿ô»ú */
+/* å…¨è§’æ•°å­— */
 #define WIDE_0 0xff10
 #define WIDE_1 0xff11
 #define WIDE_2 0xff12

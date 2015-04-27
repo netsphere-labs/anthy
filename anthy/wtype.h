@@ -1,61 +1,61 @@
 /*
- * ÉÊ»ì¤Î·¿ wtype_t ¤ò°·¤¦
+ * å“è©ã®å‹ wtype_t ã‚’æ‰±ã†
  *
- * Ã±¸ì¤ÎÉÊ»ì¤ò°·¤¦
- * Ã±¸ì¤Ï¼¡¤ÎÍ×ÁÇ¤ò»ı¤Ä¡£
- * *ÉÊ»ì
- * *ÉÊ»ì¥µ¥Ö¥¿¥¤¥×
- * *ÉÊ»ì¥µ¥Ö¥µ¥Ö¥¿¥¤¥×
- * *³èÍÑ¥¯¥é¥¹(CC)
- * *³èÍÑ·Á
- * *¼«Î©¸ì¤«¤É¤¦¤«¤Î¥Õ¥é¥°
- * wtype_t¤Ï¾åµ­¤Î¾ğÊó¤ò¤¹¤Ù¤Æ´Ş¤à¡£
+ * å˜èªã®å“è©ã‚’æ‰±ã†
+ * å˜èªã¯æ¬¡ã®è¦ç´ ã‚’æŒã¤ã€‚
+ * *å“è©
+ * *å“è©ã‚µãƒ–ã‚¿ã‚¤ãƒ—
+ * *å“è©ã‚µãƒ–ã‚µãƒ–ã‚¿ã‚¤ãƒ—
+ * *æ´»ç”¨ã‚¯ãƒ©ã‚¹(CC)
+ * *æ´»ç”¨å½¢
+ * *è‡ªç«‹èªã‹ã©ã†ã‹ã®ãƒ•ãƒ©ã‚°
+ * wtype_tã¯ä¸Šè¨˜ã®æƒ…å ±ã‚’ã™ã¹ã¦å«ã‚€ã€‚
  *
- * ³ÆÍ×ÁÇ¤Î¾ÜºÙ¤Ë¤Ä¤¤¤Æ¤Ï doc/POS¤ò»²¾È¤¹¤Ù¤·
+ * å„è¦ç´ ã®è©³ç´°ã«ã¤ã„ã¦ã¯ doc/POSã‚’å‚ç…§ã™ã¹ã—
  */
 #ifndef _wtype_h_included_
 #define _wtype_h_included_
 
-/*ÉÊ»ì Part Of Speech */
+/*å“è© Part Of Speech */
 #define POS_NONE 0
- /* Ì¾»ì */
+ /* åè© */
 #define POS_NOUN 1
- /* ½õ»ì(ÉÔ»ÈÍÑ?) */
+ /* åŠ©è©(ä¸ä½¿ç”¨?) */
 #define POS_PRT 2
 #define POS_XV 3
- /* Æ°»ì */
+ /* å‹•è© */
 #define POS_V 4
- /* ·ÁÍÆ»ì */
+ /* å½¢å®¹è© */
 #define POS_A 5
- /* ·ÁÍÆÆ°»ì */
+ /* å½¢å®¹å‹•è© */
 #define POS_AJV 6
- /* Éû»ì */
+ /* å‰¯è© */
 #define POS_AV 7
- /* Ï¢ÂÎ»ì */
+ /* é€£ä½“è© */
 #define POS_ME 8
- /* ÀÜÂ³»ì */
+ /* æ¥ç¶šè© */
 #define POS_CONJ 9
- /* (ÉÔÌÀ) */
+ /* (ä¸æ˜) */
 #define POS_IJ 10
- /* ÀÜÆ¬¼­ */
+ /* æ¥é ­è¾ */
 #define POS_PRE 11
- /* ÀÜÈø¼­ */
+ /* æ¥å°¾è¾ */
 #define POS_SUC 12
- /* Ã±´Á»ú */
+ /* å˜æ¼¢å­— */
 #define POS_TANKANJI 13
- /* Ì¾»ì¤ËÉÕ¤¯Ì¾»ì²½ÀÜÈø¼­ */
+ /* åè©ã«ä»˜ãåè©åŒ–æ¥å°¾è¾ */
 #define POS_N2T 14
- /* Æ°»ìÏ¢ÍÑ·Á¤ËÉÕ¤¯·ÁÍÆ»ì²½ÀÜÈø¼­ */
+ /* å‹•è©é€£ç”¨å½¢ã«ä»˜ãå½¢å®¹è©åŒ–æ¥å°¾è¾ */
 #define POS_D2KY 15
- /* ¿ô»ì */
+ /* æ•°è© */
 #define POS_NUMBER 16
 #define POS_INVAL 17
- /* ³«¤­³ç¸Ì */
+ /* é–‹ãæ‹¬å¼§ */
 #define POS_OPEN 18
- /* ÊÄ¤¸³ç¸Ì */
+ /* é–‰ã˜æ‹¬å¼§ */
 #define POS_CLOSE 19
 
-/* ³èÍÑ·Á Conjugate Type */
+/* æ´»ç”¨å½¢ Conjugate Type */
 #define CT_NONE 0
 #define CT_SYUSI 1
 #define CT_MIZEN 2
@@ -63,93 +63,93 @@
 #define CT_RENTAI 4
 #define CT_KATEI 5
 #define CT_MEIREI 6
- /* ¸ì´´ */
+ /* èªå¹¹ */
 #define CT_HEAD 7
 
-/* Æ°»ì¤Î³èÍÑ¥¯¥é¥¹ Conjugate Class */
+/* å‹•è©ã®æ´»ç”¨ã‚¯ãƒ©ã‚¹ Conjugate Class */
 #define CC_NONE 0
- /* ¥«¹Ô¸ŞÃÊ */
+ /* ã‚«è¡Œäº”æ®µ */
 #define CC_K5 1
- /* ¥«¹Ô¸ŞÃÊ(¹Ô¤¯) */
+ /* ã‚«è¡Œäº”æ®µ(è¡Œã) */
 #define CC_C5 2
- /* ¥¬¹Ô¸ŞÃÊ */
+ /* ã‚¬è¡Œäº”æ®µ */
 #define CC_G5 3
- /* ¥µ¹Ô¸ŞÃÊ */
+ /* ã‚µè¡Œäº”æ®µ */
 #define CC_S5 4
- /* ¥¿¹Ô¸ŞÃÊ */
+ /* ã‚¿è¡Œäº”æ®µ */
 #define CC_T5 5
- /* ¥Ê¹Ô¸ŞÃÊ */
+ /* ãƒŠè¡Œäº”æ®µ */
 #define CC_N5 6
- /* ¥Ş¹Ô¸ŞÃÊ */
+ /* ãƒè¡Œäº”æ®µ */
 #define CC_M5 7
- /* ¥Ğ¹Ô¸ŞÃÊ */
+ /* ãƒè¡Œäº”æ®µ */
 #define CC_B5 8
- /* ¥é¹Ô¸ŞÃÊ */
+ /* ãƒ©è¡Œäº”æ®µ */
 #define CC_R5 9
- /* ¥é¹Ô¸ŞÃÊ(¤¤¤é¤Ã¤·¤ã¤ë) */
+ /* ãƒ©è¡Œäº”æ®µ(ã„ã‚‰ã£ã—ã‚ƒã‚‹) */
 #define CC_L5 10
- /* ¥ï¹Ô¸ŞÃÊ */
+ /* ãƒ¯è¡Œäº”æ®µ */
 #define CC_W5 11
- /* ¥ï¹Ô¸ŞÃÊ(¸ğ¤¦) */
+ /* ãƒ¯è¡Œäº”æ®µ(ä¹ã†) */
 #define CC_U5 12
- /* ¾å²¼°ìÃÊ */
+ /* ä¸Šä¸‹ä¸€æ®µ */
 #define CC_KS1 13
- /* ¥éÊÑ */
+ /* ãƒ©å¤‰ */
 #define CC_RV 14
- /* ¥«ÊÑ */
+ /* ã‚«å¤‰ */
 #define CC_KV 15
- /* ¥µÊÑ(¡Ö¤¹¤ë¡×°Ê³°) */
+ /* ã‚µå¤‰(ã€Œã™ã‚‹ã€ä»¥å¤–) */
 #define CC_SV 16
- /* ¥¶ÊÑ */
+ /* ã‚¶å¤‰ */
 #define CC_ZV 17
- /* ¥µÊÑ(¤¹¤ë) */
+ /* ã‚µå¤‰(ã™ã‚‹) */
 #define CC_SRV 18
- /* ¥«ÊÑ¤È¡Ö¤¹¤ë¡×¤Ï¡¢³èÍÑ·Á¤Î·Á¤Ç¼­½ñ¤ËÅĞÏ¿¤µ¤ì¤Æ¤ª¤ê¡¢¤«¤Ä¡¢
-  * Æ±¤¸³èÍÑ·Á¤ËÊ£¿ô¤ÎÆÉ¤ß¤¬¤¢¤ë¤â¤Î¤¬¤¢¤ë¡£¤½¤ì¤é¤ò¶èÊÌ¤·¤Æ
-  * °·¤¦¤¿¤á¤Ë¡Ö¤½¤Î2¡×¤òºî¤ë¡£
-  * (¡ÖÉûÉÊ»ì¡×¤ä¡ÖFLAGS¡×Åù¤Ç¤Ï¶èÊÌ¤Ç¤­¤Ê¤«¤Ã¤¿) by vagus */
- /* ¥µÊÑ(¤¹¤ë) ¤½¤Î2  add by vagus */
+ /* ã‚«å¤‰ã¨ã€Œã™ã‚‹ã€ã¯ã€æ´»ç”¨å½¢ã®å½¢ã§è¾æ›¸ã«ç™»éŒ²ã•ã‚Œã¦ãŠã‚Šã€ã‹ã¤ã€
+  * åŒã˜æ´»ç”¨å½¢ã«è¤‡æ•°ã®èª­ã¿ãŒã‚ã‚‹ã‚‚ã®ãŒã‚ã‚‹ã€‚ãã‚Œã‚‰ã‚’åŒºåˆ¥ã—ã¦
+  * æ‰±ã†ãŸã‚ã«ã€Œãã®2ã€ã‚’ä½œã‚‹ã€‚
+  * (ã€Œå‰¯å“è©ã€ã‚„ã€ŒFLAGSã€ç­‰ã§ã¯åŒºåˆ¥ã§ããªã‹ã£ãŸ) by vagus */
+ /* ã‚µå¤‰(ã™ã‚‹) ãã®2  add by vagus */
 #define CC_SRV2 19
- /* ¥«ÊÑ ¤½¤Î2  add by vagus */
+ /* ã‚«å¤‰ ãã®2  add by vagus */
 #define CC_KV2 20
- /* ·ÁÍÆÆ°»ì */
+ /* å½¢å®¹å‹•è© */
 #define CC_AJV 21
- /* ·ÁÍÆ»ì¥¯³èÍÑ  add by vagus */
+ /* å½¢å®¹è©ã‚¯æ´»ç”¨  add by vagus */
 #define CC_A_KU 22
- /* ·ÁÍÆ»ì¥·¥¯³èÍÑ  add by vagus */
+ /* å½¢å®¹è©ã‚·ã‚¯æ´»ç”¨  add by vagus */
 #define CC_A_SIKU 23
- /* ·ÁÍÆ»ì¥¦²»ÊØ */
+ /* å½¢å®¹è©ã‚¦éŸ³ä¾¿ */
 #define CC_A_U 24
- /* ·ÁÍÆ»ì¥¨²»ÊØ  add by vagus */
+ /* å½¢å®¹è©ã‚¨éŸ³ä¾¿  add by vagus */
 #define CC_A_E 25
- /* ·ÁÍÆ»ì¥¤²»ÊØ  add by vagus */
+ /* å½¢å®¹è©ã‚¤éŸ³ä¾¿  add by vagus */
 #define CC_A_I 26
- /* ·ÁÍÆ»ì¡Ö¤¤¤¤¡× add by vagus */
+ /* å½¢å®¹è©ã€Œã„ã„ã€ add by vagus */
 #define CC_A_ii 27
- /* ·ÁÍÆ»ì¡Ö¤Ê¤¤¡× add by vagus */
+ /* å½¢å®¹è©ã€Œãªã„ã€ add by vagus */
 #define CC_A_nai 28
- /* ·ÁÍÆ»ì¡Ö¤è¤¤¡× add by vagus */
+ /* å½¢å®¹è©ã€Œã‚ˆã„ã€ add by vagus */
 #define CC_A_yoi 29
- /* Ï¢¸ì¡ÖÈó¤º¡× add by vagus */
+ /* é€£èªã€Œéãšã€ add by vagus */
 #define CC_RZ 30
 
-/* ÉûÉÊ»ì Class Of Speech */
+/* å‰¯å“è© Class Of Speech */
 #define COS_NONE 0
- /* ÃÏÌ¾ */
+ /* åœ°å */
 #define COS_CN 1
- /* ¿ô»ì */
+ /* æ•°è© */
 #define COS_NN 2
- /* ¿ÍÌ¾ */
+ /* äººå */
 #define COS_JN 3
- /* ÃÄÂÎÌ¾ */
+ /* å›£ä½“å */
 #define COS_KK 4
- /* °ìÈÌÀÜÆ¬¼­¡¦ÀÜÈø¼­ */
+ /* ä¸€èˆ¬æ¥é ­è¾ãƒ»æ¥å°¾è¾ */
 #define COS_SUFFIX 5
- /* ¥µÊÑ¤ÎÀÜÈø¼­ */
+ /* ã‚µå¤‰ã®æ¥å°¾è¾ */
 #define COS_SVSUFFIX 6
 /**/
 
-/* Éû¡¹ÉÊ»ì Sub Class Of Speech*/
+/* å‰¯ã€…å“è© Sub Class Of Speech*/
 #define SCOS_NONE 0
 #define SCOS_FAMNAME 1
 #define SCOS_FSTNAME 2
@@ -210,7 +210,7 @@
 #define SCOS_F13 73
 #define SCOS_F14 74
 #define SCOS_A0 80
- /* ·ÁÍÆ»ì²½ÀÜÈø¸ì */
+ /* å½¢å®¹è©åŒ–æ¥å°¾èª */
 #define SCOS_A1 81
 #define SCOS_N1 90
 #define SCOS_N10 91
@@ -220,16 +220,16 @@
 
 /* FLAGS */
 #define WF_NONE 0
- /* ¤³¤ÎÆ°»ì¤ÏÏ¢ÍÑ·Á¤¬Ì¾»ì²½¤¹¤ë */
+ /* ã“ã®å‹•è©ã¯é€£ç”¨å½¢ãŒåè©åŒ–ã™ã‚‹ */
 #define WF_MEISI 1
- /* ¥µÊÑÌ¾»ì */
+ /* ã‚µå¤‰åè© */
 #define WF_SV 2
- /* ¼«Î©¸ì¡¢Ê¸Àá¤Î¥³¥¢¤È¤Ê¤ë */
+ /* è‡ªç«‹èªã€æ–‡ç¯€ã®ã‚³ã‚¢ã¨ãªã‚‹ */
 #define WF_INDEP 4
- /* ·ÁÍÆÆ°»ì */
+ /* å½¢å®¹å‹•è© */
 #define WF_AJV 8
 
-/* wtype_tÃæ¤Î¥ª¥Õ¥»¥Ã¥È */
+/* wtype_tä¸­ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ */
 #define WT_POS 0
 #define WT_COS 1
 #define WT_SCOS 2
@@ -237,7 +237,7 @@
 #define WT_CT 4
 #define WT_FLAGS 5
 
-/* ³Æbit field¤ÎÉı */
+/* å„bit fieldã®å¹… */
 #define POS_BITS 5
 #define COS_BITS 4
 #define SCOS_BITS 7
@@ -246,7 +246,7 @@
 #define WF_BITS 4
 /* 29bits */
 
-/** ÉÊ»ì */
+/** å“è© */
 struct wtype{
   unsigned int pos  : POS_BITS;
   unsigned int cos  : COS_BITS;
@@ -258,13 +258,13 @@ struct wtype{
 
 typedef struct wtype wtype_t;
 
-/* Æó¤Ä¤ÎÉÊ»ì¤¬´°Á´¤Ë°ìÃ×¤¹¤ë¤«¤É¤¦¤«¤ò¸«¤ë */
+/* äºŒã¤ã®å“è©ãŒå®Œå…¨ã«ä¸€è‡´ã™ã‚‹ã‹ã©ã†ã‹ã‚’è¦‹ã‚‹ */
 int anthy_wtype_equal(wtype_t lhs, wtype_t rhs);
 
 void anthy_print_wtype(wtype_t w);
-/* ¼­½ñ¥Õ¥¡¥¤¥ëÃæ¤ÎÌ¾Á°¤«¤éÉÊ»ì¤òÆÀ¤ë(´Ø¿ôÌ¾¤¬°­¤¤) */
+/* è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ä¸­ã®åå‰ã‹ã‚‰å“è©ã‚’å¾—ã‚‹(é–¢æ•°åãŒæ‚ªã„) */
 const char *anthy_type_to_wtype(const char *name, wtype_t *w);
-/* ÉÊ»ì¤ÎÌ¾Á°¤«¤éÉÊ»ì¤òÆÀ¤ë */
+/* å“è©ã®åå‰ã‹ã‚‰å“è©ã‚’å¾—ã‚‹ */
 wtype_t anthy_init_wtype_by_name(const char *str);
 
 int anthy_wtype_get_pos(wtype_t w);
@@ -274,14 +274,14 @@ int anthy_wtype_get_cos(wtype_t w);
 int anthy_wtype_get_scos(wtype_t w);
 int anthy_wtype_get_wf(wtype_t w);
 
-/* ¥Õ¥é¥°¤Î¼èÆÀ */
+/* ãƒ•ãƒ©ã‚°ã®å–å¾— */
 int anthy_wtype_get_indep(wtype_t w);
 int anthy_wtype_get_sv(wtype_t w);
 
 void anthy_init_wtypes(void);
 
-extern wtype_t anthy_wt_all;/* ¤¹¤Ù¤Æ¤Ë¥Ş¥Ã¥Á¤¹¤ë¼«Î©¸ì */
-extern wtype_t anthy_wt_none;/* ÉÊ»ìÌµ¤·POS_INVAL */
+extern wtype_t anthy_wt_all;/* ã™ã¹ã¦ã«ãƒãƒƒãƒã™ã‚‹è‡ªç«‹èª */
+extern wtype_t anthy_wt_none;/* å“è©ç„¡ã—POS_INVAL */
 
 extern wtype_t anthy_wtype_noun;
 extern wtype_t anthy_wtype_num_noun;
