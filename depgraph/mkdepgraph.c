@@ -196,7 +196,7 @@ parse_dep(char **tokens, int nr)
     char *s;
     s = strdup(&tokens[row][1]);
     s[strlen(s)-1] =0;
-    strs[nr_strs] = anthy_cstr_to_xstr(s, ANTHY_EUC_JP_ENCODING);
+    strs[nr_strs] = anthy_cstr_to_xstr(s, ANTHY_UTF8_ENCODING);
     nr_strs ++;
     free(s);
   }
@@ -208,7 +208,7 @@ parse_dep(char **tokens, int nr)
     fprintf (stderr, "node %s has a branch without any transition condition.\n",
 	     tokens[0]);
     s = strdup("");
-    strs[0] = anthy_cstr_to_xstr(s, ANTHY_EUC_JP_ENCODING);
+    strs[0] = anthy_cstr_to_xstr(s, ANTHY_UTF8_ENCODING);
     nr_strs = 1;
     free(s);
   }
@@ -343,7 +343,7 @@ parse_indep (char **tokens, int nr, int lineno)
 
       node = get_node_id_by_name (tokens[0]); /* New node */
       dn = &gNodes[node];
-      strs[0] = anthy_cstr_to_xstr ("", ANTHY_EUC_JP_ENCODING);
+      strs[0] = anthy_cstr_to_xstr ("", ANTHY_UTF8_ENCODING);
       db = find_branch (dn, strs, 1);
 
       db->transition = (struct dep_transition *)realloc (db->transition,
