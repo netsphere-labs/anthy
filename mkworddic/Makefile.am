@@ -3,7 +3,7 @@ noinst_SCRIPTS =
 EXTRA_DICS = extra.t compound.t adjust.t utf8.t
 ZIPCODE_DICT = zipcode.t
 CANNADIC_DIST = gcanna.t gcannaf.ctd
-INCLUDES = -I$(top_srcdir)/
+AM_CPPFLAGS = -I$(top_srcdir)/
 # HOKUTODIC_DIST = hokuto.t
 # You can get it from
 # http://winnie.kuis.kyoto-u.ac.jp/members/ri/hokuto/dic/index.html

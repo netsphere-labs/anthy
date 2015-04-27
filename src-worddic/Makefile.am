@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/ -DCONF_DIR=\"$(sysconfdir)\"
+AM_CPPFLAGS = -I$(top_srcdir)/ -DCONF_DIR=\"$(sysconfdir)\"
 
 libanthydic_la_SOURCES = \
 	word_dic.c dic_util.c \

@@ -1,6 +1,6 @@
 # Files
 noinst_SCRIPTS =
-INCLUDES = -I$(top_srcdir)/ -DSRCDIR=\"$(srcdir)\"
+AM_CPPFLAGS = -I$(top_srcdir)/ -DSRCDIR=\"$(srcdir)\"
 
 noinst_PROGRAMS = mkfiledic
 mkfiledic_SOURCES = mkfiledic.c

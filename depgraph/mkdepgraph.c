@@ -260,7 +260,9 @@ get_tokens (char *buf, char **tokens, int n)
 #define MAX_TOKEN 256
 #define BUFSIZE 1024
 #define DEPWORD_INPUT_FILENAME "all.depword"
+#ifndef INDEPWORD_INPUT_FILENAME
 #define INDEPWORD_INPUT_FILENAME "indepword-wt.txt"
+#endif
 
 static void
 init_depword_tab(void)

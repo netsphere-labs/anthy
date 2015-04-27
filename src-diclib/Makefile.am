@@ -1,4 +1,4 @@
-INCLUDES = -I$(top_srcdir)/ -DCONF_DIR=\"$(sysconfdir)\"
+AM_CPPFLAGS = -I$(top_srcdir)/ -DCONF_DIR=\"$(sysconfdir)\"
 
 libdiclib_la_SOURCES = \
 	diclib.c \

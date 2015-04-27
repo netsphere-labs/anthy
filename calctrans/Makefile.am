@@ -4,7 +4,7 @@
 #  corpus_info weak_words
 
 noinst_PROGRAMS = calctrans proccorpus
-INCLUDES = -I$(top_srcdir)/
+AM_CPPFLAGS = -I$(top_srcdir)/
 
 calctrans_SOURCES = calctrans.c input_set.c input_set.h corpus.c
 calctrans_LDADD = ../src-main/libanthy.la ../src-worddic/libanthydic.la -lm
