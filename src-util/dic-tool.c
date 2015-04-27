@@ -60,7 +60,7 @@
 
 
 static int command = UNSPEC;
-static int encoding = ANTHY_EUC_JP_ENCODING;
+static int encoding = ANTHY_UTF8_ENCODING;
 static FILE *fp_in;
 static char *fn;
 static const char *personality = "";
