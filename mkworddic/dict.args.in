@@ -1,12 +1,15 @@
 #
-# ¼­½ñ¥Õ¥¡¥¤¥ë¤òÀ¸À®¤¹¤ë¤¿¤á¤Î¥¹¥¯¥ê¥×¥È
+# è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç”Ÿæˆã™ã‚‹ãŸã‚ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆ
 #
 # ./mkworddic -f dict.args
 # 
-# ÊÌ¤Î¥¹¥¯¥ê¥×¥È¤«¤é¤³¤Î¥Õ¥¡¥¤¥ë¤òecho¤äcat¡¢sedÅù¤ò
-# ¶î»È¤·¤ÆÀ¸À®¤¹¤ë¤³¤È¤âÁÛÄê
+# åˆ¥ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã‹ã‚‰ã“ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’echoã‚„catã€sedç­‰ã‚’
+# é§†ä½¿ã—ã¦ç”Ÿæˆã™ã‚‹ã“ã¨ã‚‚æƒ³å®š
 #
-set_input_encoding eucjp
+# this command will make dictionary body in utf8
+set_dict_encoding utf8
+#
+set_input_encoding utf8
 read @top_srcdir@/alt-cannadic/gcanna.t
 #
 read @top_srcdir@/alt-cannadic/gcannaf.ctd
@@ -17,13 +20,10 @@ read @top_srcdir@/mkworddic/adjust.t
 read @top_srcdir@/mkworddic/compound.t
 read @top_srcdir@/mkworddic/extra.t
 #
-set_input_encoding utf8
 read @top_srcdir@/mkworddic/utf8.t
 #
 # this command will make reverse dictionary
 build_reverse_dict
-# this command will make dictionary body in utf8
-set_dict_encoding utf8
 read_uc @top_srcdir@/mkworddic/udict
 write anthy.wdic
 done

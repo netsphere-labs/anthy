@@ -1,105 +1,105 @@
-# Cannadic¤È¤ÏÈó¸ß´¹¤ÎÉÊ»ì¤ò»ý¤Ä¼­½ñ
+# Cannadicã¨ã¯éžäº’æ›ã®å“è©žã‚’æŒã¤è¾žæ›¸
 #
-# Anthy¤Ï°ìÉô¤ÎÉÕÂ°¸ì¤ò¼­½ñ¤Ë»ý¤Ä¤Î¤Ç
-# cannadic¤ËÆþ¤Ã¤Æ¤¤¤Ê¤¤Ã±¸ì¤ò½ñ¤¤¤Æ¤¤¤Þ¤¹¡£
-#
-#
-#¤Æ¤¹¤Ä #T35*100 A\ A
-#¤Þ¤¯¤ë
-#¤Þ¤ï¤ë
+# Anthyã¯ä¸€éƒ¨ã®ä»˜å±žèªžã‚’è¾žæ›¸ã«æŒã¤ã®ã§
+# cannadicã«å…¥ã£ã¦ã„ãªã„å˜èªžã‚’æ›¸ã„ã¦ã„ã¾ã™ã€‚
 #
 #
-¤Á¤å¤¦ #SVSUC*10 Ãæ
-#¤·¤ã #SVSUC*10 ¼Ô
-¤¸ #SVSUC*10 »þ
-#¤´ #SVSUC*10 ¸å
-#¤Þ¤¨ #SVSUC*10 Á°
-#¤´¤È #SVSUC*10 ¤´¤È Ëè
-#¤­ #SVSUC*10 µ¡ ´ï
-#¤º¤ß #SVSUC*10 ºÑ¤ß
-#¤ê¤Ä #SVSUC*10 Î¨
-#¤Ä #JS ¤Ä
-#¤«¤¿ #D2T35 Êý
-#
-\mofidy_freq ¤¬¤ï #T35 Â¦ kill
-¤¬¤ï #SUC*250 Â¦
-\mofidy_freq ¤«¤ó #T35 ´Ö kill
-¤«¤ó #SUC*250 ´Ö
-¤Ê¤¤ #SUC*250 Æâ
-¤´¤È #SUC*250 ¤´¤È #SUC*200 Ëè
+#ã¦ã™ã¤ #T35*100 A\ A
+#ã¾ãã‚‹
+#ã¾ã‚ã‚‹
 #
 #
-¤¤¤Á #N04 °ì
-¤Ë #N04 Æó
-¤µ¤ó #N04 »°
-¤è¤ó #N04 »Í
-¤´ #N04 ¸Þ
-¤í¤¯ #N04 Ï»
-¤Ê¤Ê #N04 ¼·
-¤Ï¤Á #N04 È¬
-¤­¤å¤¦ #N04 ¶å
+ã¡ã‚…ã† #SVSUC*10 ä¸­
+#ã—ã‚ƒ #SVSUC*10 è€…
+ã˜ #SVSUC*10 æ™‚
+#ã” #SVSUC*10 å¾Œ
+#ã¾ãˆ #SVSUC*10 å‰
+#ã”ã¨ #SVSUC*10 ã”ã¨ æ¯Ž
+#ã #SVSUC*10 æ©Ÿ å™¨
+#ãšã¿ #SVSUC*10 æ¸ˆã¿
+#ã‚Šã¤ #SVSUC*10 çŽ‡
+#ã¤ #JS ã¤
+#ã‹ãŸ #D2T35 æ–¹
 #
-¤Ò¤ã¤¯ #N05 É´
-¤Ë¤Ò¤ã¤¯ #N05 ÆóÉ´
-¤µ¤ó¤Ó¤ã¤¯ #N05 »°É´
-¤è¤ó¤Ò¤ã¤¯ #N05 »ÍÉ´
-¤´¤Ò¤ã¤¯ #N05 ¸ÞÉ´
-¤í¤Ã¤Ô¤ã¤¯ #N05 Ï»É´
-¤Ê¤Ê¤Ò¤ã¤¯ #N05 ¼·É´
-¤Ï¤Ã¤Ô¤ã¤¯ #N05 È¬É´
-¤­¤å¤¦¤Ò¤ã¤¯ #N05 ¶åÉ´
-#
-¤¢¤½¤¦¤® #N00 °¤ÁÎµÀ
-¤´¤¦¤¬¤·¤ã #N00 ¹±²Ïº»
-¤Ê¤æ¤¿ #N00 ÆáÍ³Â¿ ÆáÍ³Â¾ ÆàÍ³ÂÀ
-#
-¤¬¤¿ #D2KY Æñ #D2KY*6 ¤¬¤¿
-¤Å¤é #D2KY ¤Å¤é #D2KY*6 ¿É
-¤ä¤¹ #D2KY °× #D2KY*645 ¤ä¤¹
-#
-¤«¤ó¤¸¤¬ #SX ´¶¤¸¤¬
-¤¸ #JS*2 »þ
-#
-¤· #sxi2*400 ¤·
-¤¯¤ó #kxuru2*300 Íè¤ó
-¤Í #KYE*300 ¤Í
-¤¢¤Á #KYI*150 ¤¢¤Á
-#
-# ¤½¤ÎÂ¾
+\mofidy_freq ãŒã‚ #T35 å´ kill
+ãŒã‚ #SUC*250 å´
+\mofidy_freq ã‹ã‚“ #T35 é–“ kill
+ã‹ã‚“ #SUC*250 é–“
+ãªã„ #SUC*250 å†…
+ã”ã¨ #SUC*250 ã”ã¨ #SUC*200 æ¯Ž
 #
 #
-¤½¤¦¤¾¤¦¤À¤Ë #T30 ÁÛÁü¤À¤Ë
-¤è¤½¤¦¤À¤Ë #T30 Í½ÁÛ¤À¤Ë
+ã„ã¡ #N04 ä¸€
+ã« #N04 äºŒ
+ã•ã‚“ #N04 ä¸‰
+ã‚ˆã‚“ #N04 å››
+ã” #N04 äº”
+ã‚ã #N04 å…­
+ãªãª #N04 ä¸ƒ
+ã¯ã¡ #N04 å…«
+ãã‚…ã† #N04 ä¹
 #
-¡ª #KJ !
-¡É #OPEN " #CLOSE "
-#¡ô #KJ # #¤ÏÉÊ»ì¤È²ò¼á¤µ¤ì¤ë¤Î¤Ç¥¨¥¹¥±¡¼¥×¤¹¤ëÊýË¡¤ò¹Í¤¨¤ë
-¡ð #KJ $
-¡ó #KJ %
-¡õ #KJ &
-¡Ç #KJ '
-¡¢ #KJ*10 ¡¢ ¡¤ , ¡¤
-¡¼ #KJ -
-¡£ #KJ ¡£ ¡¥ .
-¡§ #KJ :
-¡¨ #KJ ;
-¡á #KJ =
-¡© #KJ ?
-¡÷ #KJ @
-¡À #KJ \\ ¡ï
-¡× #KJ ]
-¡° #KJ ^
-¡² #KJ _
-¡Æ #KJ `
-¡Ã #KJ |
-¡ã #OPEN <
-¡ä #CLOSE >
-¡Ê #OPEN (
-¡Ë #CLOSE )
-¡Ð #OPEN {
-¡Ñ #CLOSE }
-¡Á #KJ ~
-¡Ö #OPEN ¡Ö ¡Ø ¡Ò ¡Ô ¡Ú
-¡× #CLOSE ¡× ¡Ù ¡Ó ¡Õ ¡Û
-¡£¡£¡£ #KJ ¡Ä
-¡ó #JS %
+ã²ã‚ƒã #N05 ç™¾
+ã«ã²ã‚ƒã #N05 äºŒç™¾
+ã•ã‚“ã³ã‚ƒã #N05 ä¸‰ç™¾
+ã‚ˆã‚“ã²ã‚ƒã #N05 å››ç™¾
+ã”ã²ã‚ƒã #N05 äº”ç™¾
+ã‚ã£ã´ã‚ƒã #N05 å…­ç™¾
+ãªãªã²ã‚ƒã #N05 ä¸ƒç™¾
+ã¯ã£ã´ã‚ƒã #N05 å…«ç™¾
+ãã‚…ã†ã²ã‚ƒã #N05 ä¹ç™¾
+#
+ã‚ãã†ãŽ #N00 é˜¿åƒ§ç¥‡
+ã”ã†ãŒã—ã‚ƒ #N00 æ’æ²³æ²™
+ãªã‚†ãŸ #N00 é‚£ç”±å¤š é‚£ç”±ä»– å¥ˆç”±å¤ª
+#
+ãŒãŸ #D2KY é›£ #D2KY*6 ãŒãŸ
+ã¥ã‚‰ #D2KY ã¥ã‚‰ #D2KY*6 è¾›
+ã‚„ã™ #D2KY æ˜“ #D2KY*645 ã‚„ã™
+#
+ã‹ã‚“ã˜ãŒ #SX æ„Ÿã˜ãŒ
+ã˜ #JS*2 æ™‚
+#
+ã— #sxi2*400 ã—
+ãã‚“ #kxuru2*300 æ¥ã‚“
+ã­ #KYE*300 ã­
+ã‚ã¡ #KYI*150 ã‚ã¡
+#
+# ãã®ä»–
+#
+#
+ãã†ãžã†ã ã« #T30 æƒ³åƒã ã«
+ã‚ˆãã†ã ã« #T30 äºˆæƒ³ã ã«
+#
+ï¼ #KJ !
+â€ #OPEN " #CLOSE "
+#ï¼ƒ #KJ # #ã¯å“è©žã¨è§£é‡ˆã•ã‚Œã‚‹ã®ã§ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã™ã‚‹æ–¹æ³•ã‚’è€ƒãˆã‚‹
+ï¼„ #KJ $
+ï¼… #KJ %
+ï¼† #KJ &
+â€™ #KJ '
+ã€ #KJ*10 ã€ ï¼Œ , ï¼Œ
+ãƒ¼ #KJ -
+ã€‚ #KJ ã€‚ ï¼Ž .
+ï¼š #KJ :
+ï¼› #KJ ;
+ï¼ #KJ =
+ï¼Ÿ #KJ ?
+ï¼  #KJ @
+ï¼¼ #KJ \\ ï¿¥
+ã€ #KJ ]
+ï¼¾ #KJ ^
+ï¼¿ #KJ _
+â€˜ #KJ `
+ï½œ #KJ |
+ï¼œ #OPEN <
+ï¼ž #CLOSE >
+ï¼ˆ #OPEN (
+ï¼‰ #CLOSE )
+ï½› #OPEN {
+ï½ #CLOSE }
+ã€œ #KJ ~
+ã€Œ #OPEN ã€Œ ã€Ž ã€ˆ ã€Š ã€
+ã€ #CLOSE ã€ ã€ ã€‰ ã€‹ ã€‘
+ã€‚ã€‚ã€‚ #KJ â€¦
+ï¼… #JS %

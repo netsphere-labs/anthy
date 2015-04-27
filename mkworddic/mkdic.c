@@ -606,9 +606,9 @@ parse_modify_freq_command(const char *buf)
   }
   cmd = malloc(sizeof(struct adjust_command));
   cmd->type = type;
-  cmd->yomi = anthy_cstr_to_xstr(yomi, ANTHY_EUC_JP_ENCODING);
+  cmd->yomi = anthy_cstr_to_xstr(yomi, ANTHY_UTF8_ENCODING);
   cmd->wt = get_wt_name(wt);
-  cmd->word = anthy_conv_euc_to_utf8(word);
+  cmd->word = word;
   return cmd;
 }
 
@@ -1144,11 +1144,11 @@ init_mds(struct mkdic_stat *mds)
     mds->yl.hash[i] = NULL;
   }
   mds->yl.index_encoding = ANTHY_UTF8_ENCODING;
-  mds->yl.body_encoding = ANTHY_EUC_JP_ENCODING;
+  mds->yl.body_encoding = ANTHY_UTF8_ENCODING;
   /**/
   mds->ac_list.next = NULL;
   /**/
-  mds->input_encoding = ANTHY_EUC_JP_ENCODING;
+  mds->input_encoding = ANTHY_UTF8_ENCODING;
   /**/
   mds->nr_excluded = 0;
   mds->excluded_wtypes = NULL;
