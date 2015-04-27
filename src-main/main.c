@@ -93,7 +93,7 @@ anthy_init(void)
   anthy_relation_init();
 
   /**/
-  default_encoding = ANTHY_EUC_JP_ENCODING;
+  default_encoding = ANTHY_UTF8_ENCODING;
   is_init_ok = 1;
   history_file = NULL;
   hfn = getenv("ANTHY_HISTORY_FILE");
@@ -521,7 +521,7 @@ int
 anthy_context_set_encoding(struct anthy_context *ac, int encoding)
 {
   if (!ac) {
-    return ANTHY_EUC_JP_ENCODING;
+    return ANTHY_UTF8_ENCODING;
   }
   if (encoding == ANTHY_UTF8_ENCODING ||
       encoding == ANTHY_EUC_JP_ENCODING) {

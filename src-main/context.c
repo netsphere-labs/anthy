@@ -503,7 +503,7 @@ write_history(FILE *fp, struct anthy_context *ac)
   fprintf(fp, "|");
   for (i = 0; i < ac->seg_list.nr_segments; i++) {
     struct seg_ent *s = anthy_get_nth_segment(&ac->seg_list, i);
-    char *c = anthy_xstr_to_cstr(&s->str, ANTHY_EUC_JP_ENCODING);
+    char *c = anthy_xstr_to_cstr(&s->str, ANTHY_UTF8_ENCODING);
     fprintf(fp, "%s|", c);
     free(c);
   }
@@ -518,7 +518,7 @@ write_history(FILE *fp, struct anthy_context *ac)
       continue ;
     }
     c = anthy_xstr_to_cstr(&s->cands[s->committed]->str,
-			   ANTHY_EUC_JP_ENCODING);
+			   ANTHY_UTF8_ENCODING);
     fprintf(fp, "%s|", c);
     free(c);
   }
