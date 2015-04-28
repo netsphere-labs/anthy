@@ -1,10 +1,10 @@
 /*
- * ÁÂ¹ÔÎó¤ò°·¤¦¤¿¤á¤Î¥³¡¼¥É
+ * ç–è¡Œåˆ—ã‚’æ‰±ã†ãŸã‚ã®ã‚³ãƒ¼ãƒ‰
  *
- * (1) ¹ÔÎó(sparse_matrix)¤Î¥¤¥ó¥¹¥¿¥ó¥¹¤òºîÀ®¤·¹ÔÎó¤ÎÍ×ÁÇ¤òÀßÄê¤¹¤ë
- * (2) ¹ÔÎó¤«¤é¹ÔÎó¥¤¥á¡¼¥¸(matrix_image)¤òºîÀ®¤¹¤ë
- *  *  ¹ÔÎó¥¤¥á¡¼¥¸¤ònetwork byteorder¤Ç¥Õ¥¡¥¤¥ë¤Ë½ñ¤­½Ğ¤¹
- * (3) ¹ÔÎó¥¤¥á¡¼¥¸¤òÆÉ¤ß¹ş¤ß(or mmap¤¹¤ë)Í×ÁÇ¤Ë¥¢¥¯¥»¥¹¤¹¤ë
+ * (1) è¡Œåˆ—(sparse_matrix)ã®ã‚¤ãƒ³ã‚¹ã‚¿ãƒ³ã‚¹ã‚’ä½œæˆã—è¡Œåˆ—ã®è¦ç´ ã‚’è¨­å®šã™ã‚‹
+ * (2) è¡Œåˆ—ã‹ã‚‰è¡Œåˆ—ã‚¤ãƒ¡ãƒ¼ã‚¸(matrix_image)ã‚’ä½œæˆã™ã‚‹
+ *  *  è¡Œåˆ—ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’network byteorderã§ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã™
+ * (3) è¡Œåˆ—ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’èª­ã¿è¾¼ã¿(or mmapã™ã‚‹)è¦ç´ ã«ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹
  *
  */
 /*
@@ -265,6 +265,7 @@ sparse_array_get(struct sparse_array *s, int index, struct array_elm *arg)
   }
 }
 
+#if 0
 static int
 sparse_array_get_int(struct sparse_array *s, int index)
 {
@@ -274,6 +275,7 @@ sparse_array_get_int(struct sparse_array *s, int index)
   }
   return 0;
 }
+#endif
 
 static void *
 sparse_array_get_ptr(struct sparse_array *s, int index)

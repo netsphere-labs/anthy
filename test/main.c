@@ -1,17 +1,17 @@
-/* �饤�֥��δؿ��ƤӽФ��Υƥ���
+/* ライブラリの関数呼び出しのテスト
  *
- * �ǥե���ȤǤϡ�test.txt����1�Ԥ����ɤ߹�����Ѵ���Ԥ���
- * �Ѵ�����ʸ������Ѵ���Ԥä���̤�test.exp����õ����
- * �Ѵ���̤���äƤ��뤫�򥫥���Ȥ��ƺǸ�˽��Ϥ��롣
+ * デフォルトでは、test.txtから1行ずつ読み込んで変換を行う。
+ * 変換前の文字列と変換を行った結果をtest.expから探し、
+ * 変換結果が合っているかをカウントして最後に出力する。
  *
- * ./anthy --from 1 --to 10 �Τ褦�˼¹Ԥ����test.txt�κǽ��10�Ĥ�
- *  �Ԥ��Ѵ��ƥ��Ȥ��Ԥ��ޤ���
+ * ./anthy --from 1 --to 10 のように実行するとtest.txtの最初の10個の
+ *  行の変換テストが行われます。
  *
- * --ask���ץ������դ��Ƽ¹Ԥ���ȡ���̤���äƤ��뤫��Ƚ�Ǥ�
- * ���ꤹ��⡼�ɤˤʤ�Τǡ�ɽ�����줿��̤��Ф���Ƚ�Ǥ�
- * ɸ�����Ϥ���'y', 'n', 'd', 'q'�����Ϥ��Ƥ���������
+ * --askオプションを付けて実行すると、結果が合っているかの判断を
+ * 設定するモードになるので、表示された結果に対する判断を
+ * 標準入力から'y', 'n', 'd', 'q'で入力してください。
  * 'd' dont care, 'q' quit
- * Ƚ�ǤǤ��ʤ����Ϥ���¾��ʸ�������Ϥ��Ƥ���������
+ * 判断できない場合はその他の文字を入力してください。
  *
  * Copyright (C) 2000-2006 TABATA Yusuke
  * Copyright (C) 2004-2006 YOSHIDA Yuichi
@@ -28,20 +28,20 @@
 #include <anthy/convdb.h>
 #include <config.h>
 
-/* Makefile �� $(srcdir) (��Ū�ǡ����ե�����δ��ǥ��쥯�ȥ�) */
+/* Makefile の $(srcdir) (静的データファイルの基準ディレクトリ) */
 #ifndef SRCDIR
 # define SRCDIR "."
 #endif
-/* �ӥ�ɻ��Υ����ȥǥ��쥯�ȥ� (������ .anthy ����) */
+/* ビルド時のカレントディレクトリ (ここに .anthy を作る) */
 #ifndef TEST_HOME
-# define TEST_HOME "."		/* FIXME: �ºݤ����Хѥ����ȸ�ư��� */
+# define TEST_HOME "."		/* FIXME: 実際は相対パスだと誤動作する */
 #endif
 
-/* �ƥ��ȥǡ����Ȥʤ��Ѵ�����ʸ���� */
+/* テストデータとなる変換前の文字列 */
 #define TESTDATA "test.txt"
 const char *testdata = SRCDIR "/" TESTDATA;
 
-/* �Ѵ����ʸ�����������ɤ���������å����뤿��Υǡ��� */
+/* 変換後の文字列が妥当かどうかをチェックするためのデータ */
 #define EXPDATA "test.exp"
 const char *expdata = SRCDIR "/" EXPDATA;
 
@@ -50,7 +50,7 @@ struct input {
   int serial;
 };
 
-/* �ƥ��Ȥ�Ԥ���� */
+/* テストを行う条件 */
 struct condition {
   /* conversion condition */
   int serial;
@@ -110,7 +110,7 @@ static anthy_context_t
 init_lib(int use_utf8)
 {
   anthy_context_t ac;
-  /* ���˥��󥹥ȡ��뤵��Ƥ���ե�����αƶ�������ʤ��褦�ˤ��� */
+  /* 既にインストールされているファイルの影響を受けないようにする */
   anthy_conf_override("CONFFILE", "../anthy-conf");
   anthy_conf_override("HOME", TEST_HOME);
   anthy_conf_override("DIC_FILE", "../mkanthydic/anthy.dic");
@@ -359,7 +359,7 @@ init_condition(struct condition *cond)
   cond->quiet = 0;
   cond->ask = 0;
   cond->miss_only = 0;
-  cond->use_utf8 = 0;
+  cond->use_utf8 = 1;
 }
 
 int
@@ -391,7 +391,7 @@ main(int argc,char **argv)
   
   ac = init_lib(cond.use_utf8);
 
-  /* �ե�������ɤ�Ǥ����롼�� */
+  /* ファイルを読んでいくループ */
   while (!read_file(fp, &cur_input)) {
     if (check_cond(&cond, &cur_input)) {
       set_string(&cond, db, &cur_input, ac);
@@ -402,7 +402,7 @@ main(int argc,char **argv)
   anthy_quit();
 
   if (cond.ask) {
-    /* �桼����ʹ�� */
+    /* ユーザに聞く */
     ask_results(db);
   }
 

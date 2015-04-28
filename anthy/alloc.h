@@ -1,43 +1,43 @@
 /*
- * ¹½Â¤ÂÎallocator
- * ¥½¡¼¥¹¥³¡¼¥ÉÃæ¤Ç¤Ïator¤ÈÎ¬¤¹¤ë¤³¤È¤¬¤¢¤ë
+ * æ§‹é€ ä½“allocator
+ * ã‚½ãƒ¼ã‚¹ã‚³ãƒ¼ãƒ‰ä¸­ã§ã¯atorã¨ç•¥ã™ã‚‹ã“ã¨ãŒã‚ã‚‹
  */
 #ifndef _alloc_h_included_
 #define _alloc_h_included_
 
-/** ¥¢¥í¥±¡¼¥¿¤Î¥Ï¥ó¥É¥ë */
+/** ã‚¢ãƒ­ã‚±ãƒ¼ã‚¿ã®ãƒãƒ³ãƒ‰ãƒ« */
 typedef struct allocator_priv * allocator;
 
 /*
- * allocator¤òºî¤ë
- * s: ¹½Â¤ÂÎ¤Îsize(¥Ð¥¤¥È¿ô)
- * dtor: =destructor ³ÎÊÝ¤·¤¿¥ª¥Ö¥¸¥§¥¯¥È¤¬²òÊü¤µ¤ì¤ë¤È¤­¤Ë¸Æ¤Ð¤ì¤ë´Ø¿ô
- *  dtor¤Î°ú¿ô¤Ï²òÊü¤µ¤ì¤ë¥ª¥Ö¥¸¥§¥¯¥È
- * ÊÖ¤êÃÍ: ºîÀ®¤·¤¿allocator 
+ * allocatorã‚’ä½œã‚‹
+ * s: æ§‹é€ ä½“ã®size(ãƒã‚¤ãƒˆæ•°)
+ * dtor: =destructor ç¢ºä¿ã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆãŒè§£æ”¾ã•ã‚Œã‚‹ã¨ãã«å‘¼ã°ã‚Œã‚‹é–¢æ•°
+ *  dtorã®å¼•æ•°ã¯è§£æ”¾ã•ã‚Œã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ
+ * è¿”ã‚Šå€¤: ä½œæˆã—ãŸallocator 
  */
 allocator anthy_create_allocator(int s, void (*dtor)(void *));
 
 /*
- * allocator¤ò²òÊü¤¹¤ë
- *  ¤³¤ÎºÝ¤Ë¡¢¤³¤Îallocator¤«¤é³ÎÊÝ¤µ¤ì¤¿¥ª¥Ö¥¸¥§¥¯¥È¤ÏÁ´¤Æ²òÊü¤µ¤ì¤ë
- * a: ²òÊü¤¹¤ëallocator
+ * allocatorã‚’è§£æ”¾ã™ã‚‹
+ *  ã“ã®éš›ã«ã€ã“ã®allocatorã‹ã‚‰ç¢ºä¿ã•ã‚ŒãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã¯å…¨ã¦è§£æ”¾ã•ã‚Œã‚‹
+ * a: è§£æ”¾ã™ã‚‹allocator
  */
 void anthy_free_allocator(allocator a);
 
 /*
- * ¥ª¥Ö¥¸¥§¥¯¥È¤ò³ÎÊÝ¤¹¤ë
+ * ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’ç¢ºä¿ã™ã‚‹
  * a: allocator
- * ÊÖ¤êÃÍ: ³ÎÊÝ¤·¤¿¥ª¥Ö¥¸¥§¥¯¥È¤Î¥¢¥É¥ì¥¹
+ * è¿”ã‚Šå€¤: ç¢ºä¿ã—ãŸã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¢ãƒ‰ãƒ¬ã‚¹
  */
 void *anthy_smalloc(allocator a);
 /*
- * ¥ª¥Ö¥¸¥§¥¯¥È¤ò²òÊü¤¹¤ë
+ * ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è§£æ”¾ã™ã‚‹
  * a: allocator
- * p: ²òÊü¤¹¤ë¥ª¥Ö¥¸¥§¥¯¥È¤Î¥¢¥É¥ì¥¹
+ * p: è§£æ”¾ã™ã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®ã‚¢ãƒ‰ãƒ¬ã‚¹
  */
 void anthy_sfree(allocator a, void *p);
 
-/* Á´¤Æ¤Îallocator¤òÇË´þ¤¹¤ë */
+/* å…¨ã¦ã®allocatorã‚’ç ´æ£„ã™ã‚‹ */
 void anthy_quit_allocator(void);
 
 #endif

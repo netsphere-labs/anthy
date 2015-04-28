@@ -1,5 +1,5 @@
 /*
- * Ê¸Àá¤Î´Ø·¸¤ò½èÍı¤¹¤ë
+ * æ–‡ç¯€ã®é–¢ä¿‚ã‚’å‡¦ç†ã™ã‚‹
  * Copyright (C) 2006 Higashiyama Masahiko (thanks google summer of code program)
  * Copyright (C) 2002-2007 TABATA Yusuke
  *
@@ -39,7 +39,7 @@
 #define MAX_NEIGHBOR 10
 
 
-/* Á´Ê¸¸¡º÷ÍÑ¤Î¥³¡¼¥Ñ¥¹ */
+/* å…¨æ–‡æ¤œç´¢ç”¨ã®ã‚³ãƒ¼ãƒ‘ã‚¹ */
 static struct corpus_ {
   /* header */
   void *corpus_bucket;
@@ -52,12 +52,12 @@ static struct corpus_ {
   int array_size;
 } corpus_info;
 
-/* ¸¡º÷ÍÑ¤Îiterator */
+/* æ¤œç´¢ç”¨ã®iterator */
 struct iterator {
-  /* ¸¡º÷¤Î¥­¡¼¤È¸½ºß¤Î¾ì½ê */
+  /* æ¤œç´¢ã®ã‚­ãƒ¼ã¨ç¾åœ¨ã®å ´æ‰€ */
   int key;
   int idx;
-  /* ¸¡º÷²ó¿ô¤Î¾å¸Â */
+  /* æ¤œç´¢å›æ•°ã®ä¸Šé™ */
   int limit;
 };
 
@@ -66,22 +66,22 @@ struct neighbor {
   int id[MAX_NEIGHBOR];
 };
 
-/** Ê¸Àá@seg¤ÎÃæ¤Ë@from_word_id¤ÎÃ±¸ì¤È¶¦µ¯´Ø·¸¤Ë¤¢¤ë
- *  ¸õÊä¤¬¤¢¤ë¤«¤É¤¦¤«¤òÃµ¤·¡¢¤¢¤ì¤Ğ¥¹¥³¥¢¤ò¾å¤²¤ë¡£
+/** æ–‡ç¯€@segã®ä¸­ã«@from_word_idã®å˜èªã¨å…±èµ·é–¢ä¿‚ã«ã‚ã‚‹
+ *  å€™è£œãŒã‚ã‚‹ã‹ã©ã†ã‹ã‚’æ¢ã—ã€ã‚ã‚Œã°ã‚¹ã‚³ã‚¢ã‚’ä¸Šã’ã‚‹ã€‚
  */
 static void
 reorder_candidate(int from_word_id, struct seg_ent *seg)
 {
   int i, pos;
   struct cand_ent *ce;
-  if (NULL == seg->cands) { /* ¼­½ñ¤â¤·¤¯¤Ï³Ø½¬¥Ç¡¼¥¿¤¬²õ¤ì¤Æ¤¤¤¿»ş¤ÎÂĞºö */
+  if (NULL == seg->cands) { /* è¾æ›¸ã‚‚ã—ãã¯å­¦ç¿’ãƒ‡ãƒ¼ã‚¿ãŒå£Šã‚Œã¦ã„ãŸæ™‚ã®å¯¾ç­– */
     return;
   }
   ce = seg->cands[0];
   if (ce->core_elm_index == -1) {
     return ;
   }
-  /* 0ÈÖÌÜ¤Î¸õÊä¤ÎÉÊ»ì */
+  /* 0ç•ªç›®ã®å€™è£œã®å“è© */
   pos = anthy_wtype_get_pos(ce->elm[ce->core_elm_index].wt);
 
   for (i = 0; i < seg->nr_cands; i++) {
@@ -93,7 +93,7 @@ reorder_candidate(int from_word_id, struct seg_ent *seg)
     word_id = ce->elm[ce->core_elm_index].id;
     if (anthy_dic_check_word_relation(from_word_id, word_id) &&
 	anthy_wtype_get_pos(ce->elm[ce->core_elm_index].wt) == pos) {
-      /* ÍÑÎã¤Ë¥Ş¥Ã¥Á¤·¤¿¤Î¤Ç¡¢¸õÊä¤Î¥¹¥³¥¢¤ò¹¹¿· */
+      /* ç”¨ä¾‹ã«ãƒãƒƒãƒã—ãŸã®ã§ã€å€™è£œã®ã‚¹ã‚³ã‚¢ã‚’æ›´æ–° */
       ce->flag |= CEF_USEDICT;
       ce->score *= 10;
     }
@@ -104,19 +104,19 @@ static int
 get_indep_word_id(struct seg_ent *seg, int nth)
 {
   struct cand_ent *ce;
-  if (NULL == seg->cands) { /* ¼­½ñ¤â¤·¤¯¤Ï³Ø½¬¥Ç¡¼¥¿¤¬²õ¤ì¤Æ¤¤¤¿»ş¤ÎÂĞºö */
+  if (NULL == seg->cands) { /* è¾æ›¸ã‚‚ã—ãã¯å­¦ç¿’ãƒ‡ãƒ¼ã‚¿ãŒå£Šã‚Œã¦ã„ãŸæ™‚ã®å¯¾ç­– */
     return -1;
   }
   if (seg->cands[nth]->core_elm_index == -1) {
-    /* °ìÈÖÌÜ¤Î¸õÊä¤¬seq_ent¤«¤éºî¤é¤ì¤¿¸õÊä¤Ç¤Ï¤Ê¤¤ */
+    /* ä¸€ç•ªç›®ã®å€™è£œãŒseq_entã‹ã‚‰ä½œã‚‰ã‚ŒãŸå€™è£œã§ã¯ãªã„ */
     return -1;
   }
   ce = seg->cands[nth];
-  /* ¼«Î©¸ì¤Îid¤ò¼è¤ê½Ğ¤¹ */
+  /* è‡ªç«‹èªã®idã‚’å–ã‚Šå‡ºã™ */
   return ce->elm[ce->core_elm_index].id;
 }
 
-/* ÍÑÎã¼­½ñ¤ò»È¤Ã¤ÆÊÂ¤ÓÂØ¤¨¤ò¤¹¤ë */
+/* ç”¨ä¾‹è¾æ›¸ã‚’ä½¿ã£ã¦ä¸¦ã³æ›¿ãˆã‚’ã™ã‚‹ */
 static void
 reorder_by_use_dict(struct segment_list *sl, int nth)
 {
@@ -130,13 +130,13 @@ reorder_by_use_dict(struct segment_list *sl, int nth)
     /**/
     return ;
   }
-  /* ¶á½ê¤ÎÊ¸Àá¤ò½ç¤Ë¸«¤Æ¤¤¤¯ */
+  /* è¿‘æ‰€ã®æ–‡ç¯€ã‚’é †ã«è¦‹ã¦ã„ã */
   for (i = nth - 2; i < nth + 2 && i < sl->nr_segments; i++) {
     struct seg_ent *target_seg;
     if (i < 0 || i == nth) {
       continue ;
     }
-    /* iÈÖÌÜ¤ÎÊ¸Àá¤ÈÁ°¸å¤ÎjÈÖÌÜ¤ÎÊ¸Àá¤ËÂĞ¤·¤Æ */
+    /* iç•ªç›®ã®æ–‡ç¯€ã¨å‰å¾Œã®jç•ªç›®ã®æ–‡ç¯€ã«å¯¾ã—ã¦ */
     target_seg = anthy_get_nth_segment(sl, i);
     reorder_candidate(word_id, target_seg);
   }
@@ -210,7 +210,7 @@ collect_word_context(struct neighbor *ctx, int idx)
   push_id(ctx, id);
 }
 
-/* ÎãÊ¸Ãæ¤Ç¼şÊÕ¤Î¾ğÊó¤ò¼èÆÀ¤¹¤ë */
+/* ä¾‹æ–‡ä¸­ã§å‘¨è¾ºã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹ */
 static void
 collect_corpus_context(struct neighbor *ctx,
 		       struct iterator *it)
@@ -221,7 +221,7 @@ collect_corpus_context(struct neighbor *ctx,
   this_idx = find_border_of_this_word(it->idx);
 
   /*printf(" key=%d\n", it->key);*/
-  /* º¸¤Ø¥¹¥­¥ã¥ó */
+  /* å·¦ã¸ã‚¹ã‚­ãƒ£ãƒ³ */
   idx = this_idx;
   for (i = 0; i < 2; i++) {
     idx = find_left_word_border(idx);
@@ -230,7 +230,7 @@ collect_corpus_context(struct neighbor *ctx,
     }
     collect_word_context(ctx, idx);
   }
-  /* ±¦¤Ø¥¹¥­¥ã¥ó */
+  /* å³ã¸ã‚¹ã‚­ãƒ£ãƒ³ */
   idx = this_idx;
   for (i = 0; i < 2; i++) {
     idx = find_right_word_border(idx);
@@ -241,7 +241,7 @@ collect_corpus_context(struct neighbor *ctx,
   }
 }
 
-/* ÊÑ´¹ÂĞ¾İ¤ÎÊ¸»úÎó¤Î¼şÊÕ¤Î¾ğÊó¤ò¼èÆÀ¤¹¤ë */
+/* å¤‰æ›å¯¾è±¡ã®æ–‡å­—åˆ—ã®å‘¨è¾ºã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹ */
 static void
 collect_user_context(struct neighbor *ctx,
 		     struct segment_list *sl, int nth)
@@ -262,7 +262,7 @@ collect_user_context(struct neighbor *ctx,
   }
 }
 
-/* ÎÙÀÜÊ¸Àá¤Î¾ğÊó¤òÈæ³Ó¤¹¤ë */
+/* éš£æ¥æ–‡ç¯€ã®æƒ…å ±ã‚’æ¯”è¼ƒã™ã‚‹ */
 static int 
 do_compare_context(struct neighbor *n1,
 		   struct neighbor *n2)
@@ -279,7 +279,7 @@ do_compare_context(struct neighbor *n1,
   return m;
 }
 
-/* ÎÙÀÜÊ¸Àá¤Î¾ğÊó¤ò¼èÆÀ¤·¤ÆÈæ³Ó¤¹¤ë */
+/* éš£æ¥æ–‡ç¯€ã®æƒ…å ±ã‚’å–å¾—ã—ã¦æ¯”è¼ƒã™ã‚‹ */
 static int
 compare_context(struct neighbor *user,
 		struct iterator *it)
@@ -288,12 +288,12 @@ compare_context(struct neighbor *user,
   int nr;
   /**/
   sample.nr = 0;
-  /* ÎãÊ¸Ãæ¤Î¼şÊÕ¾ğÊó¤ò½¸¤á¤ë */
+  /* ä¾‹æ–‡ä¸­ã®å‘¨è¾ºæƒ…å ±ã‚’é›†ã‚ã‚‹ */
   collect_corpus_context(&sample, it);
   if (sample.nr == 0) {
     return 0;
   }
-  /* Èæ³Ó¤¹¤ë */
+  /* æ¯”è¼ƒã™ã‚‹ */
   nr = do_compare_context(user, &sample);
   if (nr >= sample.nr / 2) {
     return nr;
@@ -301,8 +301,8 @@ compare_context(struct neighbor *user,
   return 0;
 }
 
-/* key¤ÎºÇ½é¤Î½Ğ¸½¾ì½ê¤ò¸«¤Ä¤±¤ë
- * ¸«¤Ä¤«¤é¤Ê¤«¤Ã¤¿¤é-1¤òÊÖ¤¹
+/* keyã®æœ€åˆã®å‡ºç¾å ´æ‰€ã‚’è¦‹ã¤ã‘ã‚‹
+ * è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰-1ã‚’è¿”ã™
  */
 static int
 find_first_pos(int key)
@@ -317,8 +317,8 @@ find_first_pos(int key)
   return -1;
 }
 
-/* key¤ÎºÇ½é¤Î½Ğ¸½¾ì½ê¤Çiterator¤ò½é´ü²½¤¹¤ë
- * ¸«¤Ä¤«¤é¤Ê¤«¤Ã¤¿¤é-1¤òÊÖ¤¹
+/* keyã®æœ€åˆã®å‡ºç¾å ´æ‰€ã§iteratorã‚’åˆæœŸåŒ–ã™ã‚‹
+ * è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰-1ã‚’è¿”ã™
  */
 static int
 find_first_from_corpus(int key, struct iterator *it, int limit)
@@ -330,7 +330,7 @@ find_first_from_corpus(int key, struct iterator *it, int limit)
   return it->idx;
 }
 
-/* key¤Î¼¡¤Î½Ğ¸½¾ì½ê¤Îiterator¤òÀßÄê¤¹¤ë
+/* keyã®æ¬¡ã®å‡ºç¾å ´æ‰€ã®iteratorã‚’è¨­å®šã™ã‚‹
  */
 static int
 find_next_from_corpus(struct iterator *it)
@@ -361,7 +361,7 @@ check_candidate_context(struct seg_ent *cur_seg,
   if (word_id == -1) {
     return ;
   }
-  /* ³Æ½Ğ¸½¾ì½ê¤ò¥¹¥­¥ã¥ó¤¹¤ë */
+  /* å„å‡ºç¾å ´æ‰€ã‚’ã‚¹ã‚­ãƒ£ãƒ³ã™ã‚‹ */
   find_first_from_corpus(word_id, &it, SEARCH_LIMIT);
   /*printf("word_id=%d %d\n", word_id, it.idx);*/
   while (it.idx > -1) {
@@ -375,32 +375,32 @@ check_candidate_context(struct seg_ent *cur_seg,
   }
 }
 
-/* Á´Ê¸¸¡º÷¤Ç¸õÊä¤òÊÂ¤ÓÂØ¤¨¤ë */
+/* å…¨æ–‡æ¤œç´¢ã§å€™è£œã‚’ä¸¦ã³æ›¿ãˆã‚‹ */
 static void
 reorder_by_corpus(struct segment_list *sl, int nth)
 {
   struct seg_ent *cur_seg;
   struct neighbor user;
   int i;
-  /* Ê¸Àá¤Î¼şÊÕ¾ğÊó¤ò½¸¤á¤ë */
+  /* æ–‡ç¯€ã®å‘¨è¾ºæƒ…å ±ã‚’é›†ã‚ã‚‹ */
   collect_user_context(&user, sl, nth);
   if (user.nr == 0) {
     return ;
   }
   cur_seg = anthy_get_nth_segment(sl, nth);
-  if (NULL == cur_seg->cands) { /* ¼­½ñ¤â¤·¤¯¤Ï³Ø½¬¥Ç¡¼¥¿¤¬²õ¤ì¤Æ¤¤¤¿»ş¤ÎÂĞºö */
+  if (NULL == cur_seg->cands) { /* è¾æ›¸ã‚‚ã—ãã¯å­¦ç¿’ãƒ‡ãƒ¼ã‚¿ãŒå£Šã‚Œã¦ã„ãŸæ™‚ã®å¯¾ç­– */
     return;
   }
-  /* ³Æ¸õÊä¤Ë¤Ä¤¤¤Æ */
+  /* å„å€™è£œã«ã¤ã„ã¦ */
   for (i = 0; i < cur_seg->nr_cands; i++) {
     check_candidate_context(cur_seg, i, &user);
   }
-  /* ¥È¥Ã¥×¤Î¸õÊä¤ËÍÑÎã¤¬¤¢¤ì¤Ğ¡¢Â¾¤Î¸õÊä¤Ï¸«¤Ê¤¤ */
+  /* ãƒˆãƒƒãƒ—ã®å€™è£œã«ç”¨ä¾‹ãŒã‚ã‚Œã°ã€ä»–ã®å€™è£œã¯è¦‹ãªã„ */
   if (cur_seg->cands[0]->flag & CEF_CONTEXT) {
     cur_seg->cands[0]->flag &= ~CEF_CONTEXT;
     return ;
   }
-  /* ÍÑÎã¤Ë¤è¤ë¥¹¥³¥¢²Ã»» */
+  /* ç”¨ä¾‹ã«ã‚ˆã‚‹ã‚¹ã‚³ã‚¢åŠ ç®— */
   for (i = 1; i < cur_seg->nr_cands; i++) {
     if (cur_seg->cands[i]->flag & CEF_CONTEXT) {
       cur_seg->cands[i]->score *= 2;
@@ -409,8 +409,8 @@ reorder_by_corpus(struct segment_list *sl, int nth)
 }
 
 /*
- * ÍÑÎã¤òÍÑ¤¤¤Æ¸õÊä¤òÊÂ¤ÓÂØ¤¨¤ë
- *  @nthÈÖÌÜ°Ê¹ß¤ÎÊ¸Àá¤òÂĞ¾İ¤È¤¹¤ë
+ * ç”¨ä¾‹ã‚’ç”¨ã„ã¦å€™è£œã‚’ä¸¦ã³æ›¿ãˆã‚‹
+ *  @nthç•ªç›®ä»¥é™ã®æ–‡ç¯€ã‚’å¯¾è±¡ã¨ã™ã‚‹
  */
 void
 anthy_reorder_candidates_by_relation(struct segment_list *sl, int nth)
@@ -418,7 +418,8 @@ anthy_reorder_candidates_by_relation(struct segment_list *sl, int nth)
   int i;
   for (i = nth; i < sl->nr_segments; i++) {
     reorder_by_use_dict(sl, i);
-    reorder_by_corpus(sl, i);
+    if (corpus_info.array)
+      reorder_by_corpus(sl, i);
   }
 }
 
@@ -428,7 +429,11 @@ anthy_relation_init(void)
   corpus_info.corpus_array = anthy_file_dic_get_section("corpus_array");
   corpus_info.corpus_bucket = anthy_file_dic_get_section("corpus_bucket");
   if (!corpus_info.corpus_array ||
-      !corpus_info.corpus_array) {
+      !corpus_info.corpus_bucket) {
+    corpus_info.array = NULL;
+    corpus_info.bucket = NULL;
+    corpus_info.array_size = 0;
+    corpus_info.bucket_size = 0;
     return ;
   }
   corpus_info.array_size = ntohl(((int *)corpus_info.corpus_array)[1]);

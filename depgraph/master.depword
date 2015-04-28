@@ -1,27 +1,27 @@
-# EUC
+# UTF-8
 #
 # 付属語の列を定義する
 #
 # indepword.txtに各品詞ごとの最初のノードが定義してある。
 #
 # 活用表
-\\include conjugate.table
+# \\include conjugate.table
 # 活用するもの
-\\include conjugate.depword
+# \\include conjugate.depword
 # 活用しないもの
-\\include fix.depword
+# \\include fix.depword
 #
 # 名詞
-\\include noun.depword
-\\include noun-variant.depword
+# \\include noun.depword
+# \\include noun-variant.depword
 # 副詞
-\\include av.depword
+# \\include av.depword
 # 動詞
-\\include v.depword
+# \\include v.depword
 # 形容詞
-\\include a.depword
+# \\include a.depword
 # 形容動詞
-\\include ajv.depword
+# \\include ajv.depword
 #
 #
 @接続詞 "" Sy@ Sy@間投助詞

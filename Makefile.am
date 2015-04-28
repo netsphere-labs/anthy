@@ -4,7 +4,8 @@ ACLOCAL_AMFLAGS=-I m4
 EXTRA_DIST = COPYING.LIB2_1 \
 	README.2007.ja THANKS.2007.ja NEWS.2007.ja INSTALL.2006.ja \
 	ChangeLog.2001-2009 \
-	anthy-conf.in anthy-test-conf.in anthy.spec.in anthy.pc.in Doxyfile
+	anthy-conf.in anthy-test-conf.in anthy.spec.in anthy.pc.in Doxyfile \
+	corpus/corpus.?.txt
 
 SRCDIR = src-diclib src-worddic src-splitter src-ordering src-main src-util
 
@@ -16,13 +17,3 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = anthy.pc
 
 MOSTLYCLEANFILES = core
-
-update_params:
-	make -C calctrans update_params
-	make
-update_params0:
-	make -C calctrans update_params0
-	make
-update_params2:
-	make -C calctrans update_params2
-	make

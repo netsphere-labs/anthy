@@ -1,22 +1,23 @@
 #
-# ���٤��������륳�ޥ��
+# 頻度を補正するコマンド
 #
 #
-# \modify_freq ��� �ʻ� ñ�� {up, down, kill}
-#  ���٤�Ĵ������
+# \modify_freq よみ 品詞 単語 {up, down, kill}
+#  頻度を調整する
 #
-# �Ѵ���̤���adjust_command������������ơ������
-# �Ȥ߹���Ǻ��ټ�����������뤳�Ȥˤ�ꡢ�⤤�Ѵ����٤�
-# �¸����뤳�Ȥ���ɸ�Ȥ��롣
+# 変換結果からadjust_commandの列を生成して、それを
+# 組み込んで再度辞書を生成することにより、高い変換精度を
+# 実現することを目標とする。
 #
-#��
-#\mofidy_freq �Τ� #T35 �Τ� down
-# �֤ʤ���������פ��ֱʰ漡���פˤʤ�
-#\modify_freq ������ #JNSUC ���� kill
-\modify_freq �������礦 #JN ��� kill
-\modify_freq ���Τ� #JN ������ kill
-\modify_freq �Τ� #CN ��� kill
-\modify_freq ���Τ� #CN ���� kill
-\modify_freq �Τߤ� #JN ��� kill
-\modify_freq ���礦�� #JN ���� down
+#例
+#\mofidy_freq のし #T35 のし down
+# 「ながいじかん」が「永井次官」になる
+#\modify_freq じかん #JNSUC 次官 kill
+\modify_freq こうじょう #JN 香城 kill
+\modify_freq このせ #JN 小野瀬 kill
+\modify_freq のい #CN 野井 kill
+\modify_freq あのお #CN 穴生 kill
+\modify_freq あのお #CN 穴太 kill
+\modify_freq のみず #JN 野水 kill
+\modify_freq きょうか #JN 京香 down
 

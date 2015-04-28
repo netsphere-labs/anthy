@@ -1,4 +1,4 @@
-/* $B@_Dj$r<hF@$9$k$?$a$N%$%s%?%U%'!<%9(B */
+/* 設定を取得するためのインタフェース */
 #ifndef _conf_h_included_
 #define _conf_h_included_
 

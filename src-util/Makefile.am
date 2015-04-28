@@ -13,7 +13,7 @@ endif
 noinst_LTLIBRARIES = libconvdb.la
 libconvdb_la_SOURCES = convdb.c
 
-INCLUDES = -I$(top_srcdir)/
+AM_CPPFLAGS = -I$(top_srcdir)/
 anthy_dic_tool_SOURCES = dic-tool.c
 anthy_dic_tool_LDADD = ../src-worddic/libanthydic.la
 anthy_agent_SOURCES = agent.c egg.c

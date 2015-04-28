@@ -7,7 +7,7 @@
 #include <anthy/xstr.h>
 
 
-/* ¼­½ñÃæ¤ÎÉÑÅÙ¤ËÂĞ¤·¤ÆÆâÉô¤ÎÉÑÅÙ¤ÎÇÜÎ¨ */
+/* è¾æ›¸ä¸­ã®é »åº¦ã«å¯¾ã—ã¦å†…éƒ¨ã®é »åº¦ã®å€ç‡ */
 #define FREQ_RATIO 8
 
 
@@ -17,12 +17,12 @@ struct seq_ent *anthy_cache_get_seq_ent(xstr *x, int is_reverse);
 
 
 /* word_dic.c */
-/* ¼­½ñ¸¡º÷¤Î¥­¡¼¤Ë»ÈÍÑ¤¹¤ëÉôÊ¬Ê¸»úÎó */
+/* è¾æ›¸æ¤œç´¢ã®ã‚­ãƒ¼ã«ä½¿ç”¨ã™ã‚‹éƒ¨åˆ†æ–‡å­—åˆ— */
 struct gang_elm {
   char *key;
   xstr xs;
   union {
-    /* ¾Ê¥á¥â¥ê¤Î¤¿¤á¤Ëunion¤Ë¤·¤Æ¤¤¤ë */
+    /* çœãƒ¡ãƒ¢ãƒªã®ãŸã‚ã«unionã«ã—ã¦ã„ã‚‹ */
     int idx;
     struct gang_elm *next;
   } tmp;
@@ -57,10 +57,10 @@ void anthy_init_mem_dic(void);
 void anthy_quit_mem_dic(void);
 struct mem_dic * anthy_create_mem_dic(void);
 void anthy_release_mem_dic(struct mem_dic * );
-/* node ¤¬¤Ê¤±¤ì¤Ğºî¤ë */
+/* node ãŒãªã‘ã‚Œã°ä½œã‚‹ */
 struct seq_ent *anthy_mem_dic_alloc_seq_ent_by_xstr(struct mem_dic * d,
 						    xstr *, int is_reverse);
-/* node ¤¬¤Ê¤±¤ì¤Ğºî¤é¤Ê¤¤ */
+/* node ãŒãªã‘ã‚Œã°ä½œã‚‰ãªã„ */
 struct seq_ent *anthy_mem_dic_find_seq_ent_by_xstr(struct mem_dic * d,
 						   xstr *, int is_reverse);
 /**/
@@ -79,15 +79,12 @@ void anthy_release_private_dic(void);
 void anthy_check_user_dir(void);
 void anthy_priv_dic_lock(void);
 void anthy_priv_dic_unlock(void);
-void anthy_priv_dic_update(void);
 struct word_line {
   char wt[10];
   int freq;
   const char *word;
 };
 int anthy_parse_word_line(const char *line, struct word_line *res);
-struct textdict;
-void anthy_ask_scan(void (*request_scan)(struct textdict *, void *),
-		    void *arg);
+void anthy_ask_scan(void (*request_scan)(const char *, void *), void *arg);
 
 #endif

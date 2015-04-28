@@ -2,7 +2,7 @@
 #define __diclib_h_included__
 
 
-/* Á´ÂÎ¤Î½é´ü²½¡¢²òÊü */
+/* å…¨ä½“ã®åˆæœŸåŒ–ã€è§£æ”¾ */
 int anthy_init_diclib(void);
 void anthy_quit_diclib(void);
 

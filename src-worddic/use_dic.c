@@ -1,5 +1,5 @@
 /*
- * мянЦ╪╜╫Я╓Р╟╥╓╕ 
+ * Г■╗Д╬▀Х╬·Ф⌡╦Ц┌▓Ф┴╠Ц│├ 
  * Copyright (C) 2003 TABATA Yusuke
  */
 #include <string.h>
@@ -16,6 +16,6 @@
 int anthy_word_dic_check_word_relation(struct word_dic *wdic,
 				       int from, int to)
 {
-  /* ╤╕м╜╪╜╫Я */
+  /* Е┘╠Ф°┴Х╬·Ф⌡╦ */
   return anthy_matrix_image_peek((int *)wdic->uc_section, from, to);
 }

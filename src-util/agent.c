@@ -1,15 +1,15 @@
 /* 
- * É¸½àÆş½ĞÎÏ¤Ç¥³¥Ş¥ó¥É¤ò¼õ¤±¤¿¤ê¡¤ÊÑ´¹·ë²Ì¤òÁ÷¤ë¤Ê¤É¤ÎÄÌ¿®¤ò
- * ¥¢¥×¥ê¥±¡¼¥·¥ç¥ó(¤ª¤â¤ËEmacs)¤È¹Ô¤¦¤³¤È¤Ë¤è¤ê¡¤¥¢¥×¥ê¥±¡¼¥·¥ç¥ó¤Ë
- * Anthy¤Ë¤è¤ëÆşÎÏµ¡Ç½¤òÍÆ°×¤«¤Ä°ÂÁ´¤ËÄÉ²Ã¤Ç¤­¤ë¡¥
+ * æ¨™æº–å…¥å‡ºåŠ›ã§ã‚³ãƒãƒ³ãƒ‰ã‚’å—ã‘ãŸã‚Šï¼Œå¤‰æ›çµæœã‚’é€ã‚‹ãªã©ã®é€šä¿¡ã‚’
+ * ã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³(ãŠã‚‚ã«Emacs)ã¨è¡Œã†ã“ã¨ã«ã‚ˆã‚Šï¼Œã‚¢ãƒ—ãƒªã‚±ãƒ¼ã‚·ãƒ§ãƒ³ã«
+ * Anthyã«ã‚ˆã‚‹å…¥åŠ›æ©Ÿèƒ½ã‚’å®¹æ˜“ã‹ã¤å®‰å…¨ã«è¿½åŠ ã§ãã‚‹ï¼
  *
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2002 2/26
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2002 2/26
  * Copyright (C) 2001-2002 UGAWA Tomoharu
  * Copyright (C) 2002-2004 TABATA Yusuke,
  */
 /*
- * *¥Ş¥ë¥Á¥³¥ó¥Æ¥­¥¹¥È¤Î°·¤¤¤ò·è¤á¤«¤Í¤Æ¤¤¤ë
- * *Æş½ĞÎÏ¤Ëstdio¤ò»È¤¦¤«fd¤ò»È¤¦¤«·è¤á¤«¤Í¤Æ¤¤¤ë
+ * *ãƒãƒ«ãƒã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®æ‰±ã„ã‚’æ±ºã‚ã‹ã­ã¦ã„ã‚‹
+ * *å…¥å‡ºåŠ›ã«stdioã‚’ä½¿ã†ã‹fdã‚’ä½¿ã†ã‹æ±ºã‚ã‹ã­ã¦ã„ã‚‹
  */
 
 #include <sys/time.h>
@@ -30,11 +30,11 @@
 
 extern void egg_main(void);
 
-/* ²¿²ó¼¡¸õÊä¤ò²¡¤¹¤È¸õÊä¤ÎÎóµó¤ò°ìÍ÷¥â¡¼¥É¤ËÀÚÂØ¤¨¤ë¤«¡© */
+/* ä½•å›æ¬¡å€™è£œã‚’æŠ¼ã™ã¨å€™è£œã®åˆ—æŒ™ã‚’ä¸€è¦§ãƒ¢ãƒ¼ãƒ‰ã«åˆ‡æ›¿ãˆã‚‹ã‹ï¼Ÿ */
 #define DEFAULT_ENUM_CAND_LIMIT 3
 
 
-/* ¥­¡¼¤ËÂĞ±ş¤¹¤ëÄê¿ô */
+/* ã‚­ãƒ¼ã«å¯¾å¿œã™ã‚‹å®šæ•° */
 #define KEY_SHIFT   0x00010000
 #define KEY_CTRL    0x00020000
 #define KEY_ALT     0x00040000
@@ -67,18 +67,18 @@ extern void egg_main(void);
 
 
 /*
- * ¥³¥Ş¥ó¥É¤Ë¤Ï¥­¡¼¤¬²¡¤µ¤ì¤¿¤³¤È¤ò¼¨¤¹ÉáÄÌ¤Î¥³¥Ş¥ó¥É¤È
- * ¹â¿å½à¤ÊÌ¿Îá¤Î¥Ï¥¤¥ì¥Ù¥ë¥³¥Ş¥ó¥É¤¬¤¢¤ë¡¥
+ * ã‚³ãƒãƒ³ãƒ‰ã«ã¯ã‚­ãƒ¼ãŒæŠ¼ã•ã‚ŒãŸã“ã¨ã‚’ç¤ºã™æ™®é€šã®ã‚³ãƒãƒ³ãƒ‰ã¨
+ * é«˜æ°´æº–ãªå‘½ä»¤ã®ãƒã‚¤ãƒ¬ãƒ™ãƒ«ã‚³ãƒãƒ³ãƒ‰ãŒã‚ã‚‹ï¼
  */
 enum {
-  /* ¥Ï¥¤¥ì¥Ù¥ë¥³¥Ş¥ó¥É */
+  /* ãƒã‚¤ãƒ¬ãƒ™ãƒ«ã‚³ãƒãƒ³ãƒ‰ */
   CMDH_IGNORE_ICTXT, CMDH_GETPREEDIT, CMDH_SELECT_CONTEXT,
   CMDH_RELEASE_CONTEXT, CMDH_MAP_EDIT, CMDH_MAP_SELECT,
   CMDH_GET_CANDIDATE, CMDH_SELECT_CANDIDATE, CMDH_CHANGE_TOGGLE,
   CMDH_MAP_CLEAR, CMDH_SET_BREAK_INTO_ROMAN,
   CMDH_SET_PREEDIT_MODE, CMDH_PRINT_CONTEXT,
 
-  /* ¥­¡¼¥³¥Ş¥ó¥É */
+  /* ã‚­ãƒ¼ã‚³ãƒãƒ³ãƒ‰ */
   CMD_SPACE = 1000,
   CMD_ENTER,
   CMD_BACKSPACE, 
@@ -99,11 +99,11 @@ struct high_level_command_type {
   int n_arg;
   int opt_arg;
 } high_level_command_type[] = {
-  /* ¥³¥ó¥Æ¥­¥¹¥È¤Î¾ğÊó¤òÉ½¼¨¤¹¤ë */
+  /* ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®æƒ…å ±ã‚’è¡¨ç¤ºã™ã‚‹ */
   {"PRINT_CONTEXT",  CMDH_PRINT_CONTEXT,  0, 0},
-  /* ¥È¥°¥ë¤Ë»È¤¦¥­¡¼¤òÊÑ¹¹¤¹¤ë */
+  /* ãƒˆã‚°ãƒ«ã«ä½¿ã†ã‚­ãƒ¼ã‚’å¤‰æ›´ã™ã‚‹ */
   {"CHANGE_TOGGLE",  CMDH_CHANGE_TOGGLE,  1, 0},
-  /* ¥³¥ó¥Æ¥­¥¹¥È¤òÁªÂò¤¹¤ë */
+  /* ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã‚’é¸æŠã™ã‚‹ */
   {"SELECT_CONTEXT", CMDH_SELECT_CONTEXT, 1, 0},
   {"RELEASE_CONTEXT", CMDH_RELEASE_CONTEXT, 0, 0},
   {"MAP_CLEAR", CMDH_MAP_CLEAR, 1, 0},
@@ -111,7 +111,7 @@ struct high_level_command_type {
   {"MAP_SELECT",     CMDH_MAP_SELECT,     1, 0},
   {"GET_CANDIDATE",  CMDH_GET_CANDIDATE,  1, 0},
   {"SELECT_CANDIDATE", CMDH_SELECT_CANDIDATE, 1, 0},
-  /* ¥Ğ¥Ã¥¯¥¹¥Ú¡¼¥¹¤Ç¥í¡¼¥Ş»ú¤ËÌá¤ë */
+  /* ãƒãƒƒã‚¯ã‚¹ãƒšãƒ¼ã‚¹ã§ãƒ­ãƒ¼ãƒå­—ã«æˆ»ã‚‹ */
   {"BREAK_INTO_ROMAN", CMDH_SET_BREAK_INTO_ROMAN, 1, 0},
   /**/
   {"SET_PREEDIT_MODE", CMDH_SET_PREEDIT_MODE, 1, 0},
@@ -147,7 +147,7 @@ static int daemon_sock = -1;
 static int anonymous;
 static int egg;
 static char *personality;
-int use_utf8;
+int use_utf8 = 1;
 
 static char *
 encode_command_arg(char *a)
@@ -163,7 +163,7 @@ encode_command_arg(char *a)
       j++;
       continue;
     }
-    /* ¥Ğ¥Ã¥¯¥¹¥é¥Ã¥·¥å */
+    /* ãƒãƒƒã‚¯ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ */
     i++;
     switch (a[i]) {
     case 0:
@@ -180,7 +180,7 @@ encode_command_arg(char *a)
 	char buf[5];
 	unsigned char *p;
 	int num;
-	/* ToBeDone ¥¨¥é¡¼¥Á¥§¥Ã¥¯ */
+	/* ToBeDone ã‚¨ãƒ©ãƒ¼ãƒã‚§ãƒƒã‚¯ */
 	strncpy(buf, &a[i+1], 4);
 	i+= 5;
 	sscanf(buf, "%x", (unsigned int *)&num);
@@ -270,7 +270,7 @@ static struct key_name_table {
 };
 
 /*
- * ¥¨¥ó¥³¡¼¥É¤µ¤ì¤¿¥­¡¼¤Î¾ğÊó¤ò¼èÆÀ¤¹¤ë
+ * ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‰ã•ã‚ŒãŸã‚­ãƒ¼ã®æƒ…å ±ã‚’å–å¾—ã™ã‚‹
  */
 static int
 read_encoded_key(char** buf)
@@ -280,7 +280,7 @@ read_encoded_key(char** buf)
 
   int key = 0;
 
-  /* ÊÄ¤¸³ç¸Ì¤òÃµ¤¹ */
+  /* é–‰ã˜æ‹¬å¼§ã‚’æ¢ã™ */
   for (p = *buf + 1; *p; p++) {
     if (*p == ')') {
       break;
@@ -333,7 +333,7 @@ find_command_type(char *str)
   return NULL;
 }
 
-/* ¥Ï¥¤¥ì¥Ù¥ë¥³¥Ş¥ó¥É¤ò¥Ñ¡¼¥¹¤¹¤ë */
+/* ãƒã‚¤ãƒ¬ãƒ™ãƒ«ã‚³ãƒãƒ³ãƒ‰ã‚’ãƒ‘ãƒ¼ã‚¹ã™ã‚‹ */
 static struct command *
 make_hl_command(char *buf)
 {
@@ -343,7 +343,7 @@ make_hl_command(char *buf)
   char* p;
   int i;
 
-  /* ¥³¥Ş¥ó¥É¤Î¼ïÎà¤òÄ´¤Ù¤ë */
+  /* ã‚³ãƒãƒ³ãƒ‰ã®ç¨®é¡ã‚’èª¿ã¹ã‚‹ */
   p = strtok(buf, " \t\r");
   if (!p) {
     return NULL;
@@ -353,7 +353,7 @@ make_hl_command(char *buf)
     return NULL;
   }
 
-  /* ¥³¥Ş¥ó¥É¤òºî¤ë */
+  /* ã‚³ãƒãƒ³ãƒ‰ã‚’ä½œã‚‹ */
   cmd = (struct command*) malloc(sizeof(struct command));
   cmd->cmd = cmdn->cmd;
   cmd->n_arg = cmdn->n_arg;
@@ -385,7 +385,7 @@ make_hl_command(char *buf)
   return cmd;
 }
 
-/* ÉáÄÌ¤Î¥³¥Ş¥ó¥É¤ò¥Ñ¡¼¥¹¤¹¤ë */
+/* æ™®é€šã®ã‚³ãƒãƒ³ãƒ‰ã‚’ãƒ‘ãƒ¼ã‚¹ã™ã‚‹ */
 static struct command *
 make_ll_command(char *buf)
 {
@@ -454,7 +454,7 @@ make_ll_command(char *buf)
       break;
     default:
       if ((c & 0xffffff80) == 0) {
-	/* ASCIIÊ¸»ú */
+	/* ASCIIæ–‡å­— */
 	char str[2];
 
 	str[0] = (char)c;
@@ -489,7 +489,7 @@ make_command(char* buf)
 {
 
   if (*buf == ' ') {
-    /* ¥Ï¥¤¥ì¥Ù¥ë¥³¥Ş¥ó¥É */
+    /* ãƒã‚¤ãƒ¬ãƒ™ãƒ«ã‚³ãƒãƒ³ãƒ‰ */
     struct command *cmd;
     cmd = make_hl_command(buf);
     if (!cmd) {
@@ -627,7 +627,7 @@ send_string(const char* str)
 static void
 send_quote_string(const char* str)
 {
-  char buf[20]; /* ¤³¤Î¤°¤é¤¤¤¢¤ì¤ĞÂçÄñÂç¾æÉ× */
+  char buf[20]; /* ã“ã®ãã‚‰ã„ã‚ã‚Œã°å¤§æŠµå¤§ä¸ˆå¤« */
   const char *p;
   char *q, *end;
 
@@ -955,7 +955,7 @@ cmd_key(struct anthy_input_context* ictx, struct command* cmd)
 }
 
 /*
- * ¥³¥Ş¥ó¥É¤ò¥Ç¥£¥¹¥Ñ¥Ã¥Á¤¹¤ë
+ * ã‚³ãƒãƒ³ãƒ‰ã‚’ãƒ‡ã‚£ã‚¹ãƒ‘ãƒƒãƒã™ã‚‹
  */
 static void
 dispatch_command(struct anthy_input_context* ictx, 
@@ -1091,8 +1091,8 @@ parse_args(int argc, char **argv)
       egg = 1;
     } else if (!strncmp("--personality=", str, 14)) {
       personality = &str[14];
-    } else if (!strcmp("--utf8", str)) {
-      use_utf8 = 1;
+    } else if (!strcmp("--euc", str)) {
+      use_utf8 = 0;
     } else if (i < argc - 1) {
       char *arg = argv[i+1];
       if (!strcmp("--dir", str)) {
@@ -1114,7 +1114,7 @@ parse_args(int argc, char **argv)
     anthy_conf_override("ANTHYDIR", dir);
   }
   if (dic) {
-    anthy_conf_override("SDIC", dic);
+    anthy_conf_override("DIC_FILE", dic);
   }
 }
 

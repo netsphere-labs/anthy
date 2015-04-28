@@ -1,10 +1,10 @@
 /*
- * •≥°º•—•π§»§ §Î ∏æœ§Ú∆…§Û§«°¢ ∏¿·§Œƒπ§µ§Úƒ¥¿∞§∑§∆
- * ∑¡¬÷¡«≤Ú¿œ§Œ∑Î≤Ã§ÚΩ–Œœ§π§Î
+ * „Ç≥„Éº„Éë„Çπ„Å®„Å™„ÇãÊñáÁ´†„ÇíË™≠„Çì„Åß„ÄÅÊñáÁØÄ„ÅÆÈï∑„Åï„ÇíË™øÊï¥„Åó„Å¶
+ * ÂΩ¢ÊÖãÁ¥†Ëß£Êûê„ÅÆÁµêÊûú„ÇíÂá∫Âäõ„Åô„Çã
  *
- * Ω–Œœ∑¡º∞§À§ƒ§§§∆
- *  §ﬁ§∫ø≠ΩÃ§Úπ‘§√§ø ∏¿·§¨∫«ΩÈ§Œƒπ§µ§«Ω–Œœ§µ§Ï§Î
- *  º°§À≥∆ ∏¿·ÀË§À(§¢§Ï§–)∏Ì§√§ø∏ı ‰°¢¿µ§∑§§∏ı ‰§ŒΩÁ§«æ Û§ÚΩ–Œœ§π§Î
+ * Âá∫ÂäõÂΩ¢Âºè„Å´„Å§„ÅÑ„Å¶
+ *  „Åæ„Åö‰º∏Á∏Æ„ÇíË°å„Å£„ÅüÊñáÁØÄ„ÅåÊúÄÂàù„ÅÆÈï∑„Åï„ÅßÂá∫Âäõ„Åï„Çå„Çã
+ *  Ê¨°„Å´ÂêÑÊñáÁØÄÊØé„Å´(„ÅÇ„Çå„Å∞)Ë™§„Å£„ÅüÂÄôË£ú„ÄÅÊ≠£„Åó„ÅÑÂÄôË£ú„ÅÆÈ†Ü„ÅßÊÉÖÂ†±„ÇíÂá∫Âäõ„Åô„Çã
  *
  *
  * Copyright (C) 2006-2007 TABATA Yusuke
@@ -17,7 +17,7 @@
 
 static int verbose;
 
-/*  ∏¿·§Œƒπ§µ§ÚŒ„ ∏§À§¢§Ô§ª§Î */
+/* ÊñáÁØÄ„ÅÆÈï∑„Åï„Çí‰æãÊñá„Å´„ÅÇ„Çè„Åõ„Çã */
 static int
 trim_segment(anthy_context_t ac, struct conv_res *cr,
 	     int nth, char *seg)
@@ -37,7 +37,7 @@ trim_segment(anthy_context_t ac, struct conv_res *cr,
     }
     if (!resized) {
       resized = 1;
-      /* ø≠ΩÃ¡∞§Œ ∏¿·§Œæ Û§Ú…Ωº®§π§Î */
+      /* ‰º∏Á∏ÆÂâç„ÅÆÊñáÁØÄ„ÅÆÊÉÖÂ†±„ÇíË°®Á§∫„Åô„Çã */
       print_size_miss_segment_info(ac, nth);
     }
     if (len > cur_len) {
@@ -50,7 +50,7 @@ trim_segment(anthy_context_t ac, struct conv_res *cr,
 }
 
 /*
- * nth»÷Ã‹§Œ ∏¿·§«∏ı ‰seg§Ú√µ§∑§∆≥ŒƒÍ§π§Î
+ * nthÁï™ÁõÆ„ÅÆÊñáÁØÄ„ÅßÂÄôË£úseg„ÇíÊé¢„Åó„Å¶Á¢∫ÂÆö„Åô„Çã
  */
 static int
 find_candidate(anthy_context_t ac, struct conv_res *cr,
@@ -61,7 +61,7 @@ find_candidate(anthy_context_t ac, struct conv_res *cr,
   struct anthy_segment_stat ass;
 
   if (seg[0] == '~') {
-    /* ∏ı ‰•ﬂ•π§Œ•ﬁ°º•Ø°÷~°◊§Ú•π•≠•√•◊§π§Î */
+    /* ÂÄôË£ú„Éü„Çπ„ÅÆ„Éû„Éº„ÇØ„Äå~„Äç„Çí„Çπ„Ç≠„ÉÉ„Éó„Åô„Çã */
     seg++;
     cr->cand_check[nth] = 1;
   }
@@ -70,7 +70,7 @@ find_candidate(anthy_context_t ac, struct conv_res *cr,
   for (i = 0; i < ass.nr_candidate; i++) {
     anthy_get_segment(ac, nth, i, seg_buf, 1024);
     if (!strcmp(seg_buf, seg)) {
-      /* ∞Ï√◊§π§Î∏ı ‰§Ú∏´§ƒ§±§ø§Œ§«≥ŒƒÍ§π§Î */
+      /* ‰∏ÄËá¥„Åô„ÇãÂÄôË£ú„ÇíË¶ã„Å§„Åë„Åü„ÅÆ„ÅßÁ¢∫ÂÆö„Åô„Çã */
       anthy_commit_segment(ac, nth, i);
       return 0;
     }
@@ -78,7 +78,7 @@ find_candidate(anthy_context_t ac, struct conv_res *cr,
   return 0;
 }
 
-/* '|' §« ∏¿·§À∂Ë¿⁄§È§Ï§ø ∏ª˙ŒÛ§Œ≥∆ ∏¿·§Ú∞˙øÙ§Àfn§Ú∏∆§÷ */
+/* '|' „ÅßÊñáÁØÄ„Å´Âå∫Âàá„Çâ„Çå„ÅüÊñáÂ≠óÂàó„ÅÆÂêÑÊñáÁØÄ„ÇíÂºïÊï∞„Å´fn„ÇíÂëº„Å∂ */
 static int
 for_each_segment(anthy_context_t ac, struct conv_res *cr,
 		 const char *res_str,
@@ -120,7 +120,7 @@ proc_sentence(anthy_context_t ac, struct conv_res *cr)
   struct anthy_conv_stat acs;
   /*printf("(%s)\n", cr->src_str);*/
   anthy_set_string(ac, cr->src_str);
-  /*  ∏¿·§Œƒπ§µ§Úƒ¥¿·§π§Î */
+  /* ÊñáÁØÄ„ÅÆÈï∑„Åï„ÇíË™øÁØÄ„Åô„Çã */
   if (!for_each_segment(ac, cr, cr->res_str, trim_segment)) {
     return ;
   }
@@ -133,7 +133,7 @@ proc_sentence(anthy_context_t ac, struct conv_res *cr)
     cr->cand_check[i] = 0;
   }
 
-  /* ∏ı ‰§Ú¡™¬Ú§π§Î */
+  /* ÂÄôË£ú„ÇíÈÅ∏Êäû„Åô„Çã */
   if (cr->cand_str) {
     for_each_segment(ac, cr, cr->cand_str, find_candidate);
   }
@@ -141,7 +141,7 @@ proc_sentence(anthy_context_t ac, struct conv_res *cr)
   if (verbose) {
     anthy_print_context(ac);
   }
-  /* Ω–Œœ§π§Î */
+  /* Âá∫Âäõ„Åô„Çã */
   print_context_info(ac, cr);
 }
 
@@ -152,18 +152,19 @@ main(int argc, char **argv)
   struct conv_res *cr;
   anthy_context_t ac;
   int i;
+  const char *dic = "anthy.dic";
 
   db = create_db();
-  for (i = 1; i < argc; i++) {
-    if (!strcmp("-v", argv[i])) {
+  for (i = 1; i < argc; i++)
+    if (!strcmp("-d", argv[i]) && (i+1) < argc)
+      dic = argv[++i];
+    else if (!strcmp("-v", argv[i]))
       verbose = 1;
-    } else {
+    else
       read_db(db, argv[i]);
-    }
-  }
 
   anthy_conf_override("CONFFILE", "../anthy-conf");
-  anthy_conf_override("DIC_FILE", "../mkanthydic/anthy.dic");
+  anthy_conf_override("DIC_FILE", dic);
   anthy_init();
   anthy_set_personality("");
   ac = anthy_create_context();

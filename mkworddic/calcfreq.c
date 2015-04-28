@@ -1,4 +1,4 @@
-/* Ã±¸ì¤ÎÉÑÅÙ¤ò·×»»¤¹¤ë */
+/* å˜èªã®é »åº¦ã‚’è¨ˆç®—ã™ã‚‹ */
 #include <stdlib.h>
 #include "mkdic.h"
 
@@ -30,7 +30,7 @@ make_word_array(struct yomi_entry_list *yl, int nr)
   return array;
 }
 
-/** qsortÍÑ¤ÎÈæ³Ó´Ø¿ô */
+/** qsortç”¨ã®æ¯”è¼ƒé–¢æ•° */
 static int
 compare_word_entry_by_freq(const void *p1, const void *p2)
 {

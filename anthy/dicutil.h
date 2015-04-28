@@ -8,14 +8,14 @@
 extern "C" {
 #endif
 
-/* йж╓Йцм / anthy_priv_dic_add_entry*/
-/* OK / ц╠╦Л╓╛епо©╓г╓╜╓© */
+/* Х©■Ц┌┼Е─╓ / anthy_priv_dic_add_entry*/
+/* OK / Е█≤Х╙·Ц│▄Г≥╩И▄╡Ц│╖Ц│█Ц│÷ */
 #define ANTHY_DIC_UTIL_OK 0
-/* ╪╨гт / епо©╓к╪╨гт╓╥╓© */
+/* Е╓╠Ф∙≈ / Г≥╩И▄╡Ц│╚Е╓╠Ф∙≈Ц│≈Ц│÷ */
 #define ANTHY_DIC_UTIL_ERROR -1
-/* ф╠╓╦ц╠╦Л╓╛епо©╓╥╓ф╓╒╓ц╓©║╒ияеы╓ю╓╠╓Р╬Е╫Я╓╜ */
+/* Е░▄Ц│≤Е█≤Х╙·Ц│▄Г≥╩И▄╡Ц│≈Ц│╕Ц│┌Ц│ёЦ│÷Ц─│И═╩Е╨╕Ц│═Ц│▒Ц┌▓Д╦┼Ф⌡╦Ц│█ */
 #define ANTHY_DIC_UTIL_DUPLICATE -2
-/* ╪╜╫Я╓╛б╦╨ъ╓╥╓й╓╓ */
+/* Х╬·Ф⌡╦Ц│▄Е╜≤Е°╗Ц│≈Ц│╙Ц│└ */
 #define ANTHY_DIC_UTIL_INVALID -3
 
 void anthy_dic_util_init(void);

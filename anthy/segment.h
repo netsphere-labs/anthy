@@ -1,4 +1,4 @@
-/* segment(Ê¸Àá) ¤ÎÄêµÁ */
+/* segment(æ–‡ç¯€) ã®å®šç¾© */
 #ifndef _segment_h_included_
 #define _segment_h_included_
 
@@ -7,38 +7,38 @@
 #include <anthy/xstr.h>
 #include <anthy/dic.h>
 
-/** ¸õÊä¤Î¹½À®Í×ÁÇ */
+/** å€™è£œã®æ§‹æˆè¦ç´  */
 struct cand_elm {
-  int nth; /* -1¤Î¤È¤­¤Ï¼­½ñ¤«¤é¤Î³ä¤êÅö¤Æ¤ò¤ä¤Ã¤Æ¤¤¤Ê¤¤ */
+  int nth; /* -1ã®ã¨ãã¯è¾æ›¸ã‹ã‚‰ã®å‰²ã‚Šå½“ã¦ã‚’ã‚„ã£ã¦ã„ãªã„ */
   wtype_t wt;
   seq_ent_t se;
-  int ratio;/* ÉÑÅÙ¤òÉ¾²Á¤¹¤ëºİ¤Ë»ÈÍÑ¤¹¤ëÈæÎ¨ */
-  xstr str;/* ÊÑ´¹ÂĞ¾İ¤ÎÊ¸»úÎó */
-  int id;/* ÊÑ´¹·ë²Ì¤ÎÊ¸»úÎó¤ËÂĞ¤¹¤ëhashÃÍ */
+  int ratio;/* é »åº¦ã‚’è©•ä¾¡ã™ã‚‹éš›ã«ä½¿ç”¨ã™ã‚‹æ¯”ç‡ */
+  xstr str;/* å¤‰æ›å¯¾è±¡ã®æ–‡å­—åˆ— */
+  int id;/* å¤‰æ›çµæœã®æ–‡å­—åˆ—ã«å¯¾ã™ã‚‹hashå€¤ */
 };
 
-/** °ì¤Ä¤Î¸õÊä¤ËÁêÅö¤¹¤ë¡£
- * anthy_release_cand_ent()¤Ç²òÊü¤¹¤ë
+/** ä¸€ã¤ã®å€™è£œã«ç›¸å½“ã™ã‚‹ã€‚
+ * anthy_release_cand_ent()ã§è§£æ”¾ã™ã‚‹
  */
 struct cand_ent {
-  /** ¸õÊä¤Î¥¹¥³¥¢ */
+  /** å€™è£œã®ã‚¹ã‚³ã‚¢ */
   int score;
-  /** ÊÑ´¹¸å¤ÎÊ¸»úÎó */
+  /** å¤‰æ›å¾Œã®æ–‡å­—åˆ— */
   xstr str;
-  /** Í×ÁÇ¤Î¿ô */
+  /** è¦ç´ ã®æ•° */
   int nr_words;
-  /** ¸õÊä¤ò¹½À®¤¹¤ëÍ×ÁÇ¤ÎÇÛÎó */
+  /** å€™è£œã‚’æ§‹æˆã™ã‚‹è¦ç´ ã®é…åˆ— */
   struct cand_elm *elm;
-  /** ¼«Î©¸ìÉô¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹ */
+  /** è‡ªç«‹èªéƒ¨ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ */
   int core_elm_index;
-  /** ÉÕÂ°¸ì¤ÎhashÃÍ */
+  /** ä»˜å±èªã®hashå€¤ */
   int dep_word_hash;
-  /** ¸õÊä¤Î¥Õ¥é¥° CEF_? */
+  /** å€™è£œã®ãƒ•ãƒ©ã‚° CEF_? */
   unsigned int flag;
   struct meta_word *mw;
 };
 
-/* ¸õÊä(cand_ent)¤Î¥Õ¥é¥° */
+/* å€™è£œ(cand_ent)ã®ãƒ•ãƒ©ã‚° */
 #define CEF_NONE           0
 #define CEF_OCHAIRE        0x00000001
 #define CEF_SINGLEWORD     0x00000002
@@ -51,41 +51,41 @@ struct cand_ent {
 #define CEF_BEST           0x00000100
 #define CEF_CONTEXT        0x00000200
 
-/** ContextÆâ¤ËÂ¸ºß¤¹¤ëÊ¸Àá¤ÎÎó
- * release_seg_ent¤Ç²òÊü¤¹¤ë
+/** Contextå†…ã«å­˜åœ¨ã™ã‚‹æ–‡ç¯€ã®åˆ—
+ * release_seg_entã§è§£æ”¾ã™ã‚‹
  */
 struct seg_ent {
-  /* str¤Î¼ÂÂÎ¤ÏcontextÃæ¤Ë¤¢¤ë */
+  /* strã®å®Ÿä½“ã¯contextä¸­ã«ã‚ã‚‹ */
   xstr str;
-  /* commit¤µ¤ì¤¿¸õÊä¤ÎÈÖ¹æ¡¢Éé¤Î¿ô¤Î¾ì¹ç¤Ï¤Ş¤À¥³¥ß¥Ã¥È¤µ¤ì¤Æ¤¤¤Ê¤¤ */
+  /* commitã•ã‚ŒãŸå€™è£œã®ç•ªå·ã€è² ã®æ•°ã®å ´åˆã¯ã¾ã ã‚³ãƒŸãƒƒãƒˆã•ã‚Œã¦ã„ãªã„ */
   int committed;
   
-  /* ¸õÊä¤ÎÇÛÎó */
-  int nr_cands;/* ¸õÊä¤Î¿ô */
-  struct cand_ent **cands;/* ÇÛÎó */
+  /* å€™è£œã®é…åˆ— */
+  int nr_cands;/* å€™è£œã®æ•° */
+  struct cand_ent **cands;/* é…åˆ— */
 
   int from, len;/* len == str.len */
 
-  /* Ê¸Àá¤Î¹½À® */
+  /* æ–‡ç¯€ã®æ§‹æˆ */
   int nr_metaword;
   struct meta_word **mw_array;
 
-  /* °ìÈÖÀ®ÀÓ¤ÎÎÉ¤«¤Ã¤¿¥¯¥é¥¹ */
+  /* ä¸€ç•ªæˆç¸¾ã®è‰¯ã‹ã£ãŸã‚¯ãƒ©ã‚¹ */
   enum seg_class best_seg_class;
-  /* °ìÈÖÀ®ÀÓ¤ÎÎÉ¤«¤Ã¤¿meta_word
-   * mw_arrayÃæ¤Ë¤â¡¢´Ş¤Ş¤ì¤ë¤³¤È¤¬´üÂÔ¤Ç¤­¤ë¤¬¡¢Êİ¾Ú¤Ï¤·¤Ê¤¤ */
+  /* ä¸€ç•ªæˆç¸¾ã®è‰¯ã‹ã£ãŸmeta_word
+   * mw_arrayä¸­ã«ã‚‚ã€å«ã¾ã‚Œã‚‹ã“ã¨ãŒæœŸå¾…ã§ãã‚‹ãŒã€ä¿è¨¼ã¯ã—ãªã„ */
   struct meta_word *best_mw;
 
   struct seg_ent *prev, *next;
 };
 
-/** Ê¸Àá¤Î¥ê¥¹¥È */
+/** æ–‡ç¯€ã®ãƒªã‚¹ãƒˆ */
 struct segment_list {
   int nr_segments;
   struct seg_ent list_head;
 };
 
-/* ¸õÊä¤ò²òÊü¤¹¤ë(ÌµÂÌ¤ËÀ¸À®¤·¤Æ¤·¤Ş¤Ã¤¿¤â¤ÎÅù) */
+/* å€™è£œã‚’è§£æ”¾ã™ã‚‹(ç„¡é§„ã«ç”Ÿæˆã—ã¦ã—ã¾ã£ãŸã‚‚ã®ç­‰) */
 void anthy_release_cand_ent(struct cand_ent *s);
 
 /**/
@@ -93,7 +93,7 @@ struct seg_ent *anthy_get_nth_segment(struct segment_list *c, int );
 void anthy_print_candidate(struct cand_ent *ce);
 
 /* compose.c */
-/* ¸õÊä¤òºî¤ê½Ğ¤¹ */
+/* å€™è£œã‚’ä½œã‚Šå‡ºã™ */
 struct splitter_context;
 void anthy_do_make_candidates(struct splitter_context *sc,
 			      struct seg_ent *e, int is_reverse);
