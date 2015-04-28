@@ -6,4 +6,4 @@
 #
 ANTHYDIR @abs_srcdir@/depgraph
 DIC_FILE @abs_builddir@/mkanthydic/anthy.dic
-ZIPDICT_EUC @abs_srcdir@/mkanthydic/zipcode.t
+ZIPDICT @abs_srcdir@/mkanthydic/zipcode.t
