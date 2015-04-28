@@ -1,4 +1,12 @@
-anthy (1:0.2-1) experimental; urgency=low
+anthy (1:0.3-1) experimental; urgency=low
+
+  * New upstream.
+  * debian/*.install: Update.
+  * debian/control: Update.
+
+ -- NIIBE Yutaka <gniibe@fsij.org>  Tue, 28 Apr 2015 17:23:48 +0900
+
+anthy (1:0.2-1) UNRELEASED; urgency=low
 
   * New upstream.
   * Incorporate changes up to 9100h-25 by Hideki Yamane.

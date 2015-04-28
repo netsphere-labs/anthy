@@ -1,9 +1,9 @@
 Source: anthy
 Section: utils
 Priority: optional
-Maintainer: pkg-anthy-devel@lists.alioth.debian.org
+Maintainer: Debian Anthy Team <pkg-anthy-devel@lists.alioth.debian.org>
 Uploaders: NOKUBI Takatsugu <knok@daionet.gr.jp>, Hideki Yamane <henrich@debian.org>, NIIBE Yutaka <gniibe@fsij.org>
-Build-Depends: debhelper (>= 9), autotools-dev, debconf (>= 0.5), po-debconf, automake
+Build-Depends: debhelper (>= 9), autotools-dev, debconf (>= 0.5), po-debconf, automake, quilt (>= 0.46-7~)
 Standards-Version: 3.9.6
 Vcs-Git: git://anonscm.debian.org/pkg-anthy/anthy.git
 Vcs-Browser: http://anonscm.debian.org/cgit/pkg-anthy/anthy.git
@@ -11,10 +11,8 @@ Homepage: https://alioth.debian.org/projects/pkg-anthy/
 
 Package: anthy
 Architecture: any
-Replaces: anthy-cannadic, anthy-cannadic-2ch
 Depends: anthy-common, libanthy1 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
-Conflicts: anthy-cannadic, anthy-cannadic-2ch
-Recommends: kasumi
+Conflicts: anthy-common (<= 9100h-25)
 Description: Japanese kana-kanji conversion - utilities
  Anthy is kana-kanji conversion engine for Japanese.  It converts
  hiragana text to mixed kana and kanji.  It is implemented as a library
@@ -23,8 +21,8 @@ Description: Japanese kana-kanji conversion - utilities
 Package: anthy-common
 Architecture: all
 Multi-Arch: foreign
+Recommends: kasumi
 Depends: ${misc:Depends}
-Conflicts: anthy (<= 9100h-25)
 Description: Japanese kana-kanji conversion - dictionary
  Anthy is kana-kanji conversion engine for Japanese.  It converts
  hiragana text to mixed kana and kanji.  It is implemented as a library
@@ -35,7 +33,7 @@ Description: Japanese kana-kanji conversion - dictionary
 Package: anthy-el
 Section: lisp
 Architecture: all
-Depends: ${misc:Depends}, anthy, emacsen
+Depends: ${misc:Depends}, anthy, emacs24 | emacsen
 Conflicts: xemacs21-nomule
 Description: Japanese kana-kanji conversion - elisp frontend
  Anthy is kana-kanji conversion engine for Japanese.  It converts
