@@ -1,7 +1,7 @@
-EGG ¤È¤ÎÄÌ¿®¤Î¥×¥í¥È¥³¥ë
- anthy-agent¥³¥Ş¥ó¥É¤Ë--egg¥ª¥×¥·¥ç¥ó¤òÀßÄê¤·¤Æµ¯Æ°¤¹¤ë¤³¤È¤ÇÍøÍÑ²ÄÇ½¤Ç¤¹¡£
+EGG ã¨ã®é€šä¿¡ã®ãƒ—ãƒ­ãƒˆã‚³ãƒ«
+ anthy-agentã‚³ãƒãƒ³ãƒ‰ã«--eggã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’è¨­å®šã—ã¦èµ·å‹•ã™ã‚‹ã“ã¨ã§åˆ©ç”¨å¯èƒ½ã§ã™ã€‚
 
-°§»¢
+æŒ¨æ‹¶
 	greeting = server-name " (" version ") " options " :" string CRLF
 	server-name = string
 	version = 1*(DIGIT)
@@ -56,7 +56,7 @@ Command Semantics and Syntax
 	number-of-candidates = 1*( DIGIT )
 
 
-1. ¥³¥ó¥Æ¥¯¥¹¥ÈÀ¸À®
+1. ã‚³ãƒ³ãƒ†ã‚¯ã‚¹ãƒˆç”Ÿæˆ
   Command:
 	command-new-context = "NEW-CONTEXT" parameters CRLF
 	parameters = *( SP expression )
@@ -74,14 +74,14 @@ Command Semantics and Syntax
 			     / success-with-number
 			     ; number: context-descriptor
 
-2. ¥³¥ó¥Æ¥¯¥¹¥È²òÊü
+2. ã‚³ãƒ³ãƒ†ã‚¯ã‚¹ãƒˆè§£æ”¾
   Command:
 	command-release-context = "RELEASE-CONTEXT" SP context-desc CRLF
 
   Reply:
 	reply-of-release-context = error / success
 
-3. ÊÑ´¹
+3. å¤‰æ›
   Command:
 	command-convert = "CONVERT" SP context-desc SP input CRLF
 	input = string
@@ -89,15 +89,15 @@ Command Semantics and Syntax
   Reply:
 	reply-of-convert = error / segments
 
-4. ÊÑ´¹·ë²Ì¥³¥ß¥Ã¥È/¥­¥ã¥ó¥»¥ë
+4. å¤‰æ›çµæœã‚³ãƒŸãƒƒãƒˆ/ã‚­ãƒ£ãƒ³ã‚»ãƒ«
   Command:
 	command-commit-or-cancel = "COMMIT" SP context-desc SP do-cancel CRLF
 	do-cancel = "0" / "1"
-		  ;  0 ¤Î¤È¤­³ÎÄê¡£¤½¤ÎÂ¾¤Î¤È¤­¥­¥ã¥ó¥»¥ë¡£
+		  ;  0 ã®ã¨ãç¢ºå®šã€‚ãã®ä»–ã®ã¨ãã‚­ãƒ£ãƒ³ã‚»ãƒ«ã€‚
   Reply:
 	reply-of-commit-or-cancel = error / success
 
-5.¸õÊä¼èÆÀ
+5.å€™è£œå–å¾—
   Command:
 	command-get-candidates = "GET-CANDIDATES" SP context-desc SP
 			          seg-no SP candidate-offset SP
@@ -106,14 +106,14 @@ Command Semantics and Syntax
   Reply:
 	reply-of-get-candidates = error / candidates
 
-6. ¸õÊä³ÎÄê
+6. å€™è£œç¢ºå®š
   Command:
 	command-select-candidate = "SELECT-CANDIDATE" SP context-desc SP
 				   seg-no SP cand-no CRLF
   Reply:
 	reply-of-select-candidate = error / success / segments
 
-7. Ê¸Àá¿­½Ì
+7. æ–‡ç¯€ä¼¸ç¸®
   Command:
 	command-resize-segment = "RESIZE-SEGMENT" SP context-desc SP
 				  seg-no SP inc-dec CRLF
@@ -122,7 +122,7 @@ Command Semantics and Syntax
   Reply:
 	reply-of-resize-segment = error / segments
 
-8. ½ªÎ»
+8. çµ‚äº†
   Command:
 	command-quit = "QUIT" CRLF
   Reply:
