@@ -1,6 +1,6 @@
 /*
- * └▀─ъе╒ебедеыд╩д╔д╬д┐дсд╬
- * ╚╞═╤д╬е╒ебедеы╞╔д▀╣■д▀ете╕ехб╝еы
+ * шинхоЪуГХуВбуВдуГлуБкуБйуБоуБЯуВБуБо
+ * ц▒ОчФиуБоуГХуВбуВдуГлшкнуБ┐ш╛╝уБ┐уГвуВ╕уГеуГ╝уГл
  *
  * Copyright (C) 2000-2006 TABATA Yusuke
  *
@@ -29,9 +29,9 @@
 #include <anthy/ruleparser.h>
 #include <anthy/logger.h>
 
-/* ╩╕╦бе╒ебедеыд╬е╤б╝е╢═╤д╬─ъ╡┴ */
+/* цЦЗц│ХуГХуВбуВдуГлуБоуГСуГ╝уВ╢чФиуБохоЪч╛й */
 #define MAX_TOKEN_LEN 256
-/* ║╟┬чд╬едеєепеыб╝е╔д╬┐╝д╡ */
+/* цЬАхдзуБоуВдуГ│уВпуГлуГ╝уГЙуБоц╖▒уБХ */
 #define MAX_INCLUDE_DEPTH 4
 
 #define PS_INIT 0
@@ -44,7 +44,7 @@ static const char *NL = "NL";
 static struct parser_stat {
   FILE *fp_stack[MAX_INCLUDE_DEPTH];
   FILE *fp;
-  int cur_fpp;/* е╣е┐е├епд╬едеєе╟е├епе╣ */
+  int cur_fpp;/* уВ╣уВ┐уГГуВпуБоуВдуГ│уГЗуГГуВпуВ╣ */
   int line_num;
   char **tokens;
   int nr_token;
@@ -69,7 +69,7 @@ open_file_in_confdir(const char *fn)
 
   if (fn[0] == '/' ||
       (fn[0] == '.' && fn[1] == '/')) {
-    /* └ф┬╨е╤е╣дтд╖дпд╧елеьеєе╚е╟егеьепе╚еъд╩д╬д╟д╜д╬д▐д▐fopen */
+    /* ч╡╢хп╛уГСуВ╣уВВуБЧуБПуБпуВлуГмуГ│уГИуГЗуВгуГмуВпуГИуГкуБкуБоуБзуБЭуБоуБ╛уБ╛fopen */
     return fopen(fn, "r");
   }
 
@@ -84,8 +84,8 @@ open_file_in_confdir(const char *fn)
   return fopen(full, "r");
 }
 
-/** е╨е├епе╣еще├е╖ехд╦дшдыеие╣е▒б╝е╫дт╜ш═¤д╣дыgetc
- * еие╣е▒б╝е╫д╡дьд┐╩╕╗·д╩дщд╨╩╓дъ├═д╧1д╦д╩дыбг
+/** уГРуГГуВпуВ╣уГйуГГуВ╖уГеуБлуВИуВЛуВиуВ╣уВ▒уГ╝уГЧуВВхЗжчРЖуБЩуВЛgetc
+ * уВиуВ╣уВ▒уГ╝уГЧуБХуВМуБЯцЦЗхнЧуБкуВЙуБ░ш┐ФуВКхАдуБп1уБлуБкуВЛуАВ
  */
 static int
 mygetc (int *cc)
@@ -112,7 +112,7 @@ mygetc (int *cc)
 
 #define myisblank(c)	((c) == ' ' || (c) == '\t')
 
-/* ╣╘д╦░ь╩╕╗·─╔▓├д╣ды */
+/* шбМуБлф╕АцЦЗхнЧш┐╜хКауБЩуВЛ */
 static void
 pushchar(struct line_stat *ls, int cc)
 {
@@ -135,7 +135,7 @@ get_token_in(struct line_stat *ls)
   if (ls->stat == PS_RET) {
     return NL;
   }
-  /* е╚б╝епеєдм╗╧д▐дыд▐д╟╢ї╟ЄдЄ╞╔д▀╚Їд╨д╣ */
+  /* уГИуГ╝уВпуГ│уБМхзЛуБ╛уВЛуБ╛уБзчй║чЩ╜уВТшкнуБ┐щгЫуБ░уБЩ */
   do {
     esc = mygetc(&cc);
   } while (cc > 0 && myisblank(cc) && esc == 0);
@@ -161,7 +161,7 @@ get_token_in(struct line_stat *ls)
       return ls->buf;
     }
     if (cc == '\n' && !esc) {
-      /* ▓■╣╘ */
+      /* цФ╣шбМ */
       pushchar(ls, 0);
       ls->stat = PS_RET;
       return ls->buf;
@@ -178,7 +178,7 @@ get_token_in(struct line_stat *ls)
   return ls->buf;
 }
 
-/* ░ь╣╘╞╔др */
+/* ф╕АшбМшкнуВА */
 static int
 get_line_in(void)
 {
@@ -223,7 +223,7 @@ proc_include(void)
   g_ps.fp = fp;
 }
 
-/* едеєепеыб╝е╔д╬е═е╣е╚дЄ▓╝д▓ды */
+/* уВдуГ│уВпуГлуГ╝уГЙуБоуГНуВ╣уГИуВТф╕ЛуБТуВЛ */
 static void
 pop_file(void)
 {
@@ -243,7 +243,7 @@ get_line(void)
 
   r = get_line_in();
   if (r == -1){
-    /* EOF┼∙д╟д│дь░╩╛х╞╔дсдє */
+    /* EOFчнЙуБзуБУуВМф╗еф╕КшкнуВБуВУ */
     if (g_ps.cur_fpp > 0) {
       pop_file();
       goto again;
@@ -275,7 +275,7 @@ void
 anthy_free_line(void)
 {
   int i;
-  if (g_ps.tokens) {        /* ╔╘└╡д╩есетеъевепе╗е╣д╬╦╔╗▀ */
+  if (g_ps.tokens) {        /* ф╕НцнгуБкуГбуГвуГкуВвуВпуВ╗уВ╣уБощШ▓цнв */
     for (i = 0; i < g_ps.nr_token; i++) {
       free(g_ps.tokens[i]);
     }
@@ -292,12 +292,12 @@ anthy_open_file(const char *fn)
   if (!g_ps.fp_stack[0]) {
     return -1;
   }
-  /* е╤б╝е╢д╬╛ї┬╓дЄ╜щ┤№▓╜д╣ды */
+  /* уГСуГ╝уВ╢уБочК╢цЕЛуВТхИЭцЬЯхМЦуБЩуВЛ */
   g_ps.cur_fpp = 0;
   g_ps.fp = g_ps.fp_stack[0];
   g_ps.line_num = 0;
-  g_ps.nr_token = 0;        /* ╜щ┤№▓╜╦║дьд╬╜д└╡ */
-  g_ps.tokens = NULL;       /* ╜щ┤№▓╜╦║дьд╬╜д└╡ */
+  g_ps.nr_token = 0;        /* хИЭцЬЯхМЦх┐ШуВМуБоф┐оцнг */
+  g_ps.tokens = NULL;       /* хИЭцЬЯхМЦх┐ШуВМуБоф┐оцнг */
   return 0;
 }
 
@@ -307,7 +307,7 @@ anthy_close_file(void)
   if (g_ps.fp != stdin) {
     fclose(g_ps.fp);
   }
-  anthy_free_line();        /* ╕х╗╧╦Ў╦║дьд╬╦╔╗▀ */
+  anthy_free_line();        /* х╛МхзЛцЬлх┐ШуВМуБощШ▓цнв */
 }
 
 int

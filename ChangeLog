@@ -1,118 +1,55 @@
-2010-05-18  NIIBE Yutaka  <gniibe@fsij.org>
+2015-04-28  NIIBE Yutaka  <gniibe@fsij.org>
 
-	* configure.ac: Version 9200.
+    * configure.ac: Version 0.2.
 
-	* Makefile.am (EXTRA_DIST): Added missing \.
-	* alt-cannadic/Makefile.am (EXTRA_DIST): Removed Makefile.orig.
-	* doc/Makefile.am (EXTRA_DIST): Added DIARY.
-	* Makefile.am (ACLOCAL_AMFLAGS): Unquoted.
-	(EXTRA_DIST): Removed README.en, DIARY.
-	Added COPYING.LIB2_1 README.2007.ja THANKS.2007.ja NEWS.2007.ja
-	INSTALL.2006.ja ChangeLog.2001-2009.
-	* anthy-conf.in: Added datarootdir.
-	* calctrans/corpus_info: Updated.
-	* calctrans/weak_words: Updated.
+    * depgraph/mkdepgraph.c, src-main/main.c, src-worddic/dic_util.c,
+    src-worddic/matrix.c, src-worddic/priv_dic.c, src-worddic/record.c,
+    src-worddic/textdic.c, src-worddic/word_lookup.c: Clean up.
 
-	* calctrans/calctrans.c: Fix typo in comment.
+2015-04-27  NIIBE Yutaka  <gniibe@fsij.org>
 
-	* mkworddic/mkdic.c (mk_yomi_hash): Free hash_array.
-	Closes: sf.jp ticket #20964.  Thanks to syama.
+    * anthy/*.h: Encode in UTF-8.
 
-	* src-util/anthy.el (anthy-accept-timeout): Support Emacs 23 or
-	later too.  Closes: sf.jp ticket #11263.  Thanks to Kasuga.
+    * calctrans/calctrans.c, depgraph/mkdepgraph.c, mkworddic/mkdic.c,
+    src-main/context.c, src-main/main.c, src-util/agent.c,
+    src-util/dic-tool.c, src-worddic/dic_util.c: Encode in UTF-8.
 
-	* src-util/Makefile.am (ELCFILES): Removed.
-	* src-util/anthy.el (anthy-erase-preedit): Use mapc instead of mapcar.
-	(anthy-buffer-undo-list): New deflocalvar.
-	(anthy-deflocalvar): New implementation killing old-style quasi-quote.
-	* src-util/anthy-kyuri.el (anthy-kyuri): Use mapc instead of mapcar.
-	(anthy-kyuri-mode-hiragana-map): Define	as defvar.
-	* src-util/anthy-conf.el (anthy-load-hiragana-map)
-	(anthy-kana-map-mode): Use mapc instead of mapcar.
-	* src-util/anthy-azik.el: Require anthy.
-	(anthy-azik-mode): Use mapc instead of mapcar.
+    * src-main/context.c (write_history): Use UTF-8.
+    * src-main/main.c (anthy_init): Default to UTF-8.
+    (anthy_context_set_encoding): Likewise.
 
-	* ChangeLog, mkworddic/Makefile.am, src-diclib/alloc.c,
-	src-diclib/logger.c, src-main/Makefile.am, src-main/context.c,
-	src-ordering/candsort.c, src-splitter/Makefile.am,
-	src-splitter/compose.c, src-splitter/splitter.c,
-	src-splitter/wordlist.c, src-util/Makefile.am, src-util/input.c,
-	src-util/rkconv.c, src-util/rkmap.h, src-worddic/Makefile.am:
-	Removed Id keyword of RCS/CVS.
+    * src-util/agent.c (use_utf8): Initialize as 1.
+    (parse_args): Support --euc.
+    * src-util/egg.c (new_context): Set UTF-8.
+    * src-util/dic-tool.c (encoding): Default to UTF-8.
+    * src-util/dic-tool-usage.txt: Encode in UTF-8.
 
-	* mkworddic/base.t, mkworddic/name.t, mkworddic/tankanji.t: Removed.
-	* mkworddic/Makefile.am (EXTRA_DICS): Follow the removal.
+    * src-worddic/dic_util.c (anthy_dic_util_init): Use UTF-8.
 
-	* COPYING: New file, GNU GPL 3, as LGPL3 refers it.
+    * mkworddic/mkdic.c (parse_modify_freq_command): It's UTF-8.
+    (init_mds): Use UTF-8.
+    * mkworddic/dict.args.in: Use UTF-8.
+    * alt-cannadic/g_fname.t, alt-cannadic/gcanna.t,
+    alt-cannadic/gcannaf.ctd, alt-cannadic/gtankan.ctd: Encode in UTF-8.
+    * mkworddic/adjust.t, mkworddic/compound.t, mkworddic/extra.t,
+    mkworddic/udict, mkworddic/zipcode.t: Encode in UTF-8.
 
-	* INSTALL, THANKS, NEWS: New.
+    * depgraph/mkdepgraph.c (parse_dep, parse_indep): Use UTF-8.
+    * depgraph/*.depword: Encode in UTF-8.
+    * depgraph/{conjugate.table,indepword-wt.txt, indepword.txt}: Likewise.
 
-	* README.2007.ja: Follow the change of paths.  Fixed some
-	information.
+    * calctrans/calctrans.c (flush_extract_stat): Use UTF-8 encoding.
+    * corpus/*.txt: Encode by UTF-8.
 
-	* COPYING.LIB: New file, GNU LGPL 3.
-	* COPYING.LIB2_1: New file, GNU LGPL 2.1.
+    * src-worddic/Makefile.am (CONF_DIR): Remove.
 
-	* COPYING: Removed.
-	* README: New file, Incorporating text header of COPYING.
+2015-04-27  NOKUBI Takatsugu <knok@daionet.gr.jp>
 
-	* THANKS.2007.ja: Moved from THANKS.
-	* NEWS.2007.ja: Moved from NEWS.
-	* INSTALL.2006.ja: Moved from INSTALL.
-	* README.2007.ja: Moved from README.
+    * src-worddic/record.c (read_1_token): check EOF.
 
-	* ChangeLog.2001-2009: Moved from ChangeLog.2009
+2015-04-27  NIIBE Yutaka  <gniibe@fsij.org>
 
-2010-05-17  NIIBE Yutaka  <gniibe@fsij.org>
-
-	* mkworddic/Makefile.am (DIC_FILES): Added utf8.t.
-
-    	* src-worddic/ext_ent.c (MAX_LINE_LEN): New.
-    	(parse_zipcode_line, search_zipcode_dict): Use it.
-    	See [Anthy-dev 3706].  Thanks to G-HAL.
-
-    	* mkworddic/extra.t: Fix entry for "Abunai Hashi".
-    	* mkworddic/extra.t, mkworddic/compound.t: Fix double spaces.
-	See [Anthy-dev 3701].  Thanks to G-HAL.
-
-    	* mkworddic/compound.t: Modified words for "TYUI KYU".
-    	See [Anthy-dev 3697], parts of proposal integrated.
-    	Thanks to G-HAL.
-
-    	* src-splitter/lattice.c (cmp_node_by_type): Removed.
-    	(cmp_node_by_type_to_type): Removed.
-    	(cmp_node): Handle the case of lhs->mw->type == MW_COMPOUND_PART,
-    	but rhs->mw->type != MW_COMPOUND_HEAD nor MW_COMPOUND_PART.
-    	See [Anthy-dev 3703].  Thanks to G-HAL.
-
-    	* src-worddic/dic_util.c (do_search,anthy_dic_search_words_file):
-    	  Removed.
-    	* anthy/dicutil.h, doc/DICLIB: Follow the change.
-    	* anthy-test-conf.in, anthy-conf.in: Removed WORDS_FILE.
-
-	* Makefile.am, configure.ac, autogen.sh: Use m4 subdirectory.
-
-	* autogen.sh: New file.
-
-	* doc/DIARY: Moved this historical file from top directory.
-
-	* AUTHORS: New.
-	* THANKS: Moved old AUTHORS to this file.
-
-	* Remove all generated files from repository.
-	Makefile.in, aclocal.m4, config.h.in, config.guess, config.sub,
-	configure, compile, depcomp, install-sh, ltmain.sh, missing,
-	elisp-comp, mkinstalldirs, alt-cannadic/Makefile.in,
-	anthy/Makefile.in, calctrans/Makefile.in, depgraph/Makefile.in,
-	doc/Makefile.in, mkanthydic/Makefile.in, mkworddic/Makefile.in,
-	src-diclib/Makefile.in, src-main/Makefile.in, src-ordering/Makefile.in,
-	src-splitter/Makefile.in, src-util/Makefile.in,
-	src-worddic/Makefile.in, test/Makefile.in: Removed from repository.
-
-	* alt-cannadic/Makefile.orig: Removed.
-
-	* ChangeLog: New.
-	* ChangeLog.2009: Moved old ChangeLog to this file.
-
-	* New development starts.
-	  See ChangeLog.2009 for old development.
+    * configure.ac (AC_INIT, AM_INIT_AUTOMAKE): New style.
+    * */Makefile.am: Use AM_CPPFLAGS (was: INCLUDES).
+    * depgraph/mkdepgraph.c: Support external definition of
+    INDEPWORD_INPUT_FILENAME.

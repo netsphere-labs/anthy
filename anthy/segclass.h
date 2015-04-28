@@ -1,21 +1,21 @@
-/** Ê¸Àá¤Î¥¯¥é¥¹ */
+/** æ–‡ç¯€ã®ã‚¯ãƒ©ã‚¹ */
 #ifndef _segclass_h_included_
 #define _segclass_h_included_
 
 enum dep_class {
-  /* ÉÕÂ°¸ì¤Ê¤· */
+  /* ä»˜å±èªãªã— */
   DEP_NONE,
-  /* ÉÕÂ°¸ì°ìÈÌ */
+  /* ä»˜å±èªä¸€èˆ¬ */
   DEP_FUZOKUGO,
-  /* ³Ê½õ»ì */
+  /* æ ¼åŠ©è© */
   DEP_KAKUJOSHI,
-  /* Ï¢ÍÑ */
+  /* é€£ç”¨ */
   DEP_RENYOU,
-  /* Ï¢ÂÎ */
+  /* é€£ä½“ */
   DEP_RENTAI,
-  /* ½ªÃ¼ */
+  /* çµ‚ç«¯ */
   DEP_END,
-  /* Ì¾»ìÃ±ÆÈ */
+  /* åè©å˜ç‹¬ */
   DEP_RAW
 };
 
@@ -43,8 +43,5 @@ enum seg_class {
   SEG_SIZE
 };
 
-const char* anthy_seg_class_name(enum seg_class sc);
 const char* anthy_seg_class_sym(enum seg_class sc);
-enum seg_class anthy_seg_class_by_name(const char *name);
-
 #endif

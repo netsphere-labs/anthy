@@ -1,8 +1,8 @@
 /*
- * mem_dic ¼­½ñ¤Î¥­¥ã¥Ã¥·¥å¤ò¹Ô¤¦
+ * mem_dic è¾žæ›¸ã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‚’è¡Œã†
  *
- * ¥­¥ã¥Ã¥·¥å¤ÏÆÉ¤ß¤ÎÊ¸»úÎó¤ÈµÕÊÑ´¹ÍÑ¤«¤Î¥Õ¥é¥°(is_reverse)¤Î
- * Æó¤Ä¤ò¥­¡¼¤È¤·¤ÆÁàºî¤µ¤ì¤ë¡£
+ * ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã¯èª­ã¿ã®æ–‡å­—åˆ—ã¨é€†å¤‰æ›ç”¨ã‹ã®ãƒ•ãƒ©ã‚°(is_reverse)ã®
+ * äºŒã¤ã‚’ã‚­ãƒ¼ã¨ã—ã¦æ“ä½œã•ã‚Œã‚‹ã€‚
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  */
@@ -62,7 +62,7 @@ mem_dic_dtor(void *p)
   anthy_free_allocator(md->dic_ent_allocator);
 }
 
-/** xstr¤ËÂÐ±þ¤¹¤ëseq_ent¤ò³ÎÊÝ¤¹¤ë */
+/** xstrã«å¯¾å¿œã™ã‚‹seq_entã‚’ç¢ºä¿ã™ã‚‹ */
 static struct seq_ent *
 alloc_seq_ent_by_xstr(struct mem_dic * md, xstr *x, int is_reverse)
 {
@@ -85,7 +85,7 @@ alloc_seq_ent_by_xstr(struct mem_dic * md, xstr *x, int is_reverse)
   return se;
 }
 
-/* ¥Ï¥Ã¥·¥å´Ø¿ô¡£¤È¤ê¤¢¤¨¤º¤Æ¤­¤È¡¼ */
+/* ãƒãƒƒã‚·ãƒ¥é–¢æ•°ã€‚ã¨ã‚Šã‚ãˆãšã¦ãã¨ãƒ¼ */
 static int
 hash_function(xstr *xs)
 {
@@ -95,22 +95,22 @@ hash_function(xstr *xs)
   return 0;
 }
 
-/** xstr¤ËÂÐ±þ¤¹¤ëseq_ent¤òÊÖ¤¹ */
+/** xstrã«å¯¾å¿œã™ã‚‹seq_entã‚’è¿”ã™ */
 struct seq_ent *
 anthy_mem_dic_alloc_seq_ent_by_xstr(struct mem_dic * md, xstr *xs,
 				    int is_reverse)
 {
   struct seq_ent *se;
   int h;
-  /* ¥­¥ã¥Ã¥·¥å¤Ë¤¢¤ì¤Ð¤½¤ì¤òÊÖ¤¹ */
+  /* ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã«ã‚ã‚Œã°ãã‚Œã‚’è¿”ã™ */
   se = anthy_mem_dic_find_seq_ent_by_xstr(md, xs, is_reverse);
   if (se) {
     return se;
   }
-  /* ¥­¥ã¥Ã¥·¥å¤Ë¤ÏÌµ¤¤¤Î¤Çºî¤ë */
+  /* ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã«ã¯ç„¡ã„ã®ã§ä½œã‚‹ */
   se = alloc_seq_ent_by_xstr(md, xs, is_reverse);
 
-  /* mem_dicÃæ¤Ë¤Ä¤Ê¤° */
+  /* mem_dicä¸­ã«ã¤ãªã */
   h = hash_function(xs);
   se->next = md->seq_ent_hash[h];
   md->seq_ent_hash[h] = se;
@@ -121,7 +121,7 @@ anthy_mem_dic_alloc_seq_ent_by_xstr(struct mem_dic * md, xstr *xs,
 static int
 compare_seq_ent(struct seq_ent *seq, xstr *xs, int is_reverse)
 {
-  /* ¤Þ¤º¡¢¤É¤Á¤é¤«¤¬µÕÊÑ´¹ÍÑ¤Î¥¨¥ó¥È¥ê¤«¤ò¥Á¥§¥Ã¥¯ */
+  /* ã¾ãšã€ã©ã¡ã‚‰ã‹ãŒé€†å¤‰æ›ç”¨ã®ã‚¨ãƒ³ãƒˆãƒªã‹ã‚’ãƒã‚§ãƒƒã‚¯ */
   if (seq->seq_type & ST_REVERSE) {
     if (!is_reverse) {
       return 1;
@@ -131,11 +131,11 @@ compare_seq_ent(struct seq_ent *seq, xstr *xs, int is_reverse)
       return 1;
     }
   }
-  /* ¼¡¤ËÊ¸»úÎó¤ÎÈæ³Ó */
+  /* æ¬¡ã«æ–‡å­—åˆ—ã®æ¯”è¼ƒ */
   return anthy_xstrcmp(&seq->str, xs);
 }
 
-/*** mem_dic¤ÎÃæ¤«¤éÊ¸»úÎó¤ËÂÐ±þ¤¹¤ëseq_ent*¤ò¼èÆÀ¤¹¤ë
+/*** mem_dicã®ä¸­ã‹ã‚‰æ–‡å­—åˆ—ã«å¯¾å¿œã™ã‚‹seq_ent*ã‚’å–å¾—ã™ã‚‹
  * */
 struct seq_ent *
 anthy_mem_dic_find_seq_ent_by_xstr(struct mem_dic * md, xstr *xs,
@@ -172,7 +172,7 @@ anthy_mem_dic_release_seq_ent(struct mem_dic * md, xstr *xs, int is_reverse)
   }
 }
 
-/** seq_ent¤Ëdic_ent¤òÄÉ²Ã¤¹¤ë */
+/** seq_entã«dic_entã‚’è¿½åŠ ã™ã‚‹ */
 void
 anthy_mem_dic_push_back_dic_ent(struct seq_ent *se, int is_compound,
 				xstr *xs, wtype_t wt,
@@ -193,7 +193,7 @@ anthy_mem_dic_push_back_dic_ent(struct seq_ent *se, int is_compound,
     se->nr_compound_ents ++;
   }
 
-  /* order¤ò·×»»¤¹¤ë */
+  /* orderã‚’è¨ˆç®—ã™ã‚‹ */
   if (se->nr_dic_ents > 0) {
     struct dic_ent *prev_de = se->dic_ents[se->nr_dic_ents-1];
     if (anthy_wtype_equal(prev_de->type, de->type) &&
@@ -202,7 +202,7 @@ anthy_mem_dic_push_back_dic_ent(struct seq_ent *se, int is_compound,
     }
   }
 
-  /* ÇÛÎó¤ËÄÉ²Ã¤¹¤ë */
+  /* é…åˆ—ã«è¿½åŠ ã™ã‚‹ */
   se->nr_dic_ents ++;
   se->dic_ents = realloc(se->dic_ents,
 			 sizeof(struct dic_ent *)*se->nr_dic_ents);

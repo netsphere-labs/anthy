@@ -1,4 +1,4 @@
-/* Ê¸Àá¶­³¦¤Î¸¡½Ğ¤Ë»È¤¦¥Ç¡¼¥¿ */
+/* æ–‡ç¯€å¢ƒç•Œã®æ¤œå‡ºã«ä½¿ã†ãƒ‡ãƒ¼ã‚¿ */
 #ifndef _wordborder_h_included_
 #define _wordborder_h_included_
 
@@ -11,12 +11,12 @@
 struct splitter_context;
 
 /*
- * meta_word¤Î»ÈÍÑ²ÄÇ½¥Á¥§¥Ã¥¯¤Î¤ä¤êÊı
+ * meta_wordã®ä½¿ç”¨å¯èƒ½ãƒã‚§ãƒƒã‚¯ã®ã‚„ã‚Šæ–¹
  */
 enum mw_check {
-  /* ¤Ê¤Ë¤â¤»¤º */
+  /* ãªã«ã‚‚ã›ãš */
   MW_CHECK_NONE,
-  /* mw->wl¤¬Ìµ¤¤¤«¡¢wl¤¬»È¤¨¤ë¾ì¹ç */
+  /* mw->wlãŒç„¡ã„ã‹ã€wlãŒä½¿ãˆã‚‹å ´åˆ */
   MW_CHECK_SINGLE,
   MW_CHECK_BORDER,
   MW_CHECK_WRAP,
@@ -26,8 +26,8 @@ enum mw_check {
 };
 
 /*
- * Ê¸»úÎóÃæ¤Î¤¢¤ë¾ì½ê¤òÉ½¤·¡¤
- * ¤½¤³¤«¤é»Ï¤Ş¤ëmeta_word, word_list¤Î¥»¥Ã¥È¤ò»ı¤Ä
+ * æ–‡å­—åˆ—ä¸­ã®ã‚ã‚‹å ´æ‰€ã‚’è¡¨ã—ï¼Œ
+ * ãã“ã‹ã‚‰å§‹ã¾ã‚‹meta_word, word_listã®ã‚»ãƒƒãƒˆã‚’æŒã¤
  */
 struct char_node {
   int max_len;
@@ -36,47 +36,47 @@ struct char_node {
 };
 
 /*
- * ¥³¥ó¥Æ¥­¥¹¥ÈÃæ¤Î¼«Î©¸ì¤Ê¤É¤Î¾ğÊó¡¢ºÇ½é¤ËÊÑ´¹¥­¡¼¤ò²¡¤·¤¿¤È¤­¤Ë
- * ¹½ÃÛ¤µ¤ì¤ë
+ * ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆä¸­ã®è‡ªç«‹èªãªã©ã®æƒ…å ±ã€æœ€åˆã«å¤‰æ›ã‚­ãƒ¼ã‚’æŠ¼ã—ãŸã¨ãã«
+ * æ§‹ç¯‰ã•ã‚Œã‚‹
  */
 struct word_split_info_cache {
   struct char_node *cnode;
 
-  /* ¥­¥ã¥Ã¥·¥å¹½À®»ş¤Ë»È¤¦¾ğÊó */
-  /* ÀÜÈø¼­¤òÃµ¤¹¤Î¤Ë»È¤¦ */
-  int *seq_len;/* ¤½¤³¤«¤é»Ï¤Ş¤ëºÇÄ¹¤ÎÃ±¸ì¤ÎÄ¹¤µ */
-  /* ÀÜÆ¬¼­¤òÃµ¤¹¤Î¤Ë»È¤¦ */
-  int *rev_seq_len;/* ¤½¤³¤Ç½ª¤ï¤ëºÇÄ¹¤ÎÃ±¸ì¤ÎÄ¹¤µ */
-  /* Ê¸Àá¶­³¦context¤«¤é¤Î¥³¥Ô¡¼ */
+  /* ã‚­ãƒ£ãƒƒã‚·ãƒ¥æ§‹æˆæ™‚ã«ä½¿ã†æƒ…å ± */
+  /* æ¥å°¾è¾ã‚’æ¢ã™ã®ã«ä½¿ã† */
+  int *seq_len;/* ãã“ã‹ã‚‰å§‹ã¾ã‚‹æœ€é•·ã®å˜èªã®é•·ã• */
+  /* æ¥é ­è¾ã‚’æ¢ã™ã®ã«ä½¿ã† */
+  int *rev_seq_len;/* ãã“ã§çµ‚ã‚ã‚‹æœ€é•·ã®å˜èªã®é•·ã• */
+  /* æ–‡ç¯€å¢ƒç•Œcontextã‹ã‚‰ã®ã‚³ãƒ”ãƒ¼ */
   int *seg_border;
-  /* ¸¡º÷¤Ç°ìÈÖÀ®ÀÓ¤ÎÎÉ¤«¤Ã¤¿¥¯¥é¥¹ */
+  /* æ¤œç´¢ã§ä¸€ç•ªæˆç¸¾ã®è‰¯ã‹ã£ãŸã‚¯ãƒ©ã‚¹ */
   enum seg_class* best_seg_class;
   /*  */
   struct meta_word **best_mw;
-  /* ¥¢¥í¥±¡¼¥¿ */
+  /* ã‚¢ãƒ­ã‚±ãƒ¼ã‚¿ */
   allocator MwAllocator, WlAllocator;
 };
 
 /*
- * meta_word¤Î¾õÂÖ
+ * meta_wordã®çŠ¶æ…‹
  */
 enum mw_status {
   MW_STATUS_NONE,
-  /* mw->mw1¤ËÃæ¿È¤¬Æş¤Ã¤Æ¤¤¤ë */
+  /* mw->mw1ã«ä¸­èº«ãŒå…¥ã£ã¦ã„ã‚‹ */
   MW_STATUS_WRAPPED,
-  /* mw-mw1¤Èmw->mw2¤«¤éÏ¢·ë */
+  /* mw-mw1ã¨mw->mw2ã‹ã‚‰é€£çµ */
   MW_STATUS_COMBINED,
-  /* Ê£¹ç¸ìÍÑ */
+  /* è¤‡åˆèªç”¨ */
   MW_STATUS_COMPOUND,
-  /* Ê£¹ç¸ì¤Î¸Ä¡¹¤ÎÊ¸Àá¤ò·ë¹ç¤·¤Æ°ì¤Ä¤ÎÊ¸Àá¤È¤·¤Æ¸«¤¿¤â¤Î */
+  /* è¤‡åˆèªã®å€‹ã€…ã®æ–‡ç¯€ã‚’çµåˆã—ã¦ä¸€ã¤ã®æ–‡ç¯€ã¨ã—ã¦è¦‹ãŸã‚‚ã® */
   MW_STATUS_COMPOUND_PART,
-  /* OCHAIRE³Ø½¬¤«¤é¼è¤ê½Ğ¤¹ */
+  /* OCHAIREå­¦ç¿’ã‹ã‚‰å–ã‚Šå‡ºã™ */
   MW_STATUS_OCHAIRE
 };
 
 
 
-/* metaword¤Î¼ïÎà¤Ë¤è¤ë½èÍı¤Î°ã¤¤ (metaword.c) */
+/* metawordã®ç¨®é¡ã«ã‚ˆã‚‹å‡¦ç†ã®é•ã„ (metaword.c) */
 extern struct metaword_type_tab_ {
   enum metaword_type type;
   const char *name;
@@ -85,9 +85,9 @@ extern struct metaword_type_tab_ {
 } anthy_metaword_type_tab[];
 
 /*
- * 0: ÀÜÆ¬¼­
- * 1: ¼«Î©¸ìÉô
- * 2: ÀÜÈø¼­
+ * 0: æ¥é ­è¾
+ * 1: è‡ªç«‹èªéƒ¨
+ * 2: æ¥å°¾è¾
  */
 #define NR_PARTS 4
 #define PART_PREFIX 0
@@ -96,58 +96,58 @@ extern struct metaword_type_tab_ {
 #define PART_DEPWORD 3
 
 struct part_info {
-  /* ¤³¤Îpart¤ÎÄ¹¤µ */
+  /* ã“ã®partã®é•·ã• */
   int from, len;
-  /* ÉÊ»ì */
+  /* å“è© */
   wtype_t wt;
   seq_ent_t seq;
-  /* ÉÑÅÙ */
+  /* é »åº¦ */
   int freq;
-  /* ÉÕÂ°¸ì¥¯¥é¥¹ */
+  /* ä»˜å±èªã‚¯ãƒ©ã‚¹ */
   enum dep_class dc;
 };
 
 /*
- * word_list: Ê¸Àá¤ò·ÁÀ®¤¹¤ë¤â¤Î
- * ÀÜÆ¬¸ì¡¢¼«Î©¸ì¡¢ÀÜÈø¸ì¡¢ÉÕÂ°¸ì¤ò´Ş¤à
+ * word_list: æ–‡ç¯€ã‚’å½¢æˆã™ã‚‹ã‚‚ã®
+ * æ¥é ­èªã€è‡ªç«‹èªã€æ¥å°¾èªã€ä»˜å±èªã‚’å«ã‚€
  */
 struct word_list {
   /**/
-  int from, len; /* Ê¸ÀáÁ´ÂÎ */
-  int is_compound; /* Ê£¹ç¸ì¤«¤É¤¦¤« */
+  int from, len; /* æ–‡ç¯€å…¨ä½“ */
+  int is_compound; /* è¤‡åˆèªã‹ã©ã†ã‹ */
 
   /**/
   int dep_word_hash;
   int mw_features;
   /**/
   enum seg_class seg_class;
-  enum constraint_stat can_use; /* ¥»¥°¥á¥ó¥È¶­³¦¤Ë¸Ù¤¬¤Ã¤Æ¤¤¤Ê¤¤ */
+  enum constraint_stat can_use; /* ã‚»ã‚°ãƒ¡ãƒ³ãƒˆå¢ƒç•Œã«è·¨ãŒã£ã¦ã„ãªã„ */
 
-  /* ´Á»ú¤òÆÀ¤ë¤¿¤á¤Ç¤Ï¤Ê¤¯¤Æ¡¢»¨Â¿¤Ê½èÍı¤Ë»È¤¤¤¿¤¤¾ğÊó */
-  int head_pos; /* lattice¸¡º÷ÍÑ¤ÎÉÊ»ì */
-  int tail_ct; /* meta_word¤Î·ë¹çÍÑ¤Î³èÍÑ·Á */
+  /* æ¼¢å­—ã‚’å¾—ã‚‹ãŸã‚ã§ã¯ãªãã¦ã€é›‘å¤šãªå‡¦ç†ã«ä½¿ã„ãŸã„æƒ…å ± */
+  int head_pos; /* latticeæ¤œç´¢ç”¨ã®å“è© */
+  int tail_ct; /* meta_wordã®çµåˆç”¨ã®æ´»ç”¨å½¢ */
 
   /**/
   int last_part;
   struct part_info part[NR_PARTS];
 
-  /* ¤³¤Îword_list¤òºî¤Ã¤¿ºİ¤Î¾ğÊó */
-  int node_id; /* ÉÕÂ°¸ì¥°¥é¥Õ¤Î¸¡º÷³«»Ï¤Înode¤Îid*/
+  /* ã“ã®word_listã‚’ä½œã£ãŸéš›ã®æƒ…å ± */
+  int node_id; /* ä»˜å±èªã‚°ãƒ©ãƒ•ã®æ¤œç´¢é–‹å§‹ã®nodeã®id*/
 
-  /* Æ±¤¸from¤ò»ı¤Äword_list¤Î¥ê¥¹¥È */
+  /* åŒã˜fromã‚’æŒã¤word_listã®ãƒªã‚¹ãƒˆ */
   struct word_list *next;
 };
 
 
 /* splitter.c */
 #define SPLITTER_DEBUG_NONE 0
-/* wordlist¤ÎÉ½¼¨ */
+/* wordlistã®è¡¨ç¤º */
 #define SPLITTER_DEBUG_WL 1
-/* metaword¤ÎÉ½¼¨ */
+/* metawordã®è¡¨ç¤º */
 #define SPLITTER_DEBUG_MW 2
-/* lattice¤Î node¤ÎÉ½¼¨ */
+/* latticeã® nodeã®è¡¨ç¤º */
 #define SPLITTER_DEBUG_LN 4
-/* ¼«Î©¸ì¤Î¥Ş¥Ã¥Á¤·¤¿ÉÊ»ì */
+/* è‡ªç«‹èªã®ãƒãƒƒãƒã—ãŸå“è© */
 #define SPLITTER_DEBUG_ID 8
 /**/
 #define SPLITTER_DEBUG_CAND 16
@@ -156,7 +156,7 @@ int anthy_splitter_debug_flags(void);
 
 
 /* defined in wordseq.c */
-/* ¼«Î©¸ì°Ê¹ß¤ÎÀÜÂ³¤Î½èÍı */
+/* è‡ªç«‹èªä»¥é™ã®æ¥ç¶šã®å‡¦ç† */
 void anthy_scan_node(struct splitter_context *sc,
 		     struct word_list *wl,
 		     xstr *follow, int node);
@@ -175,7 +175,6 @@ void anthy_print_word_list(struct splitter_context *, struct word_list *);
 void anthy_make_word_list_all(struct splitter_context *);
 
 /* defined in metaword.c */
-void anthy_commit_meta_word(struct splitter_context *, struct meta_word *mw);
 void anthy_make_metaword_all(struct splitter_context *);
 void anthy_print_metaword(struct splitter_context *, struct meta_word *);
 
@@ -191,20 +190,5 @@ void anthy_mark_borders(struct splitter_context *sc, int from, int to);
 
 /* defined at seg_class.c */
 void anthy_set_seg_class(struct word_list* wl);
-
-/* ÉÊ»ì(anthy_init_splitter¤Ç½é´ü²½¤µ¤ì¤ë) */
-extern wtype_t anthy_wtype_noun;
-extern wtype_t anthy_wtype_name_noun;
-extern wtype_t anthy_wtype_num_noun;
-extern wtype_t anthy_wtype_prefix;
-extern wtype_t anthy_wtype_num_prefix;
-extern wtype_t anthy_wtype_num_postfix;
-extern wtype_t anthy_wtype_name_postfix;
-extern wtype_t anthy_wtype_sv_postfix;
-extern wtype_t anthy_wtype_a_tail_of_v_renyou;
-extern wtype_t anthy_wtype_v_renyou;
-extern wtype_t anthy_wtype_noun_tail;/* ¤¤¤ì¡Ö¤¿¤Æ¡×¤È¤« */
-extern wtype_t anthy_wtype_n1;
-extern wtype_t anthy_wtype_n10;
 
 #endif

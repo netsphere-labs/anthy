@@ -1,70 +1,70 @@
 /*
- * AnthyÆâÉô¤Ç»È¤¦Ê¸»úÎó
- * ÆÃ¤Ë¼ÂÁõ¤ò±£ÊÃ¤·¤è¤¦¤È¤·¤Æ¤¤¤ë¤ï¤±¤Ç¤ÏÌµ¤¤¤Î¤Ç¡¢
- * ¤³¤³¤Ë¤¢¤ë´Ø¿ô¤Î»ÈÍÑ¤Ï¶¯À©¤·¤Ê¤¤¡£
+ * Anthyå†…éƒ¨ã§ä½¿ã†æ–‡å­—åˆ—
+ * ç‰¹ã«å®Ÿè£…ã‚’éš è”½ã—ã‚ˆã†ã¨ã—ã¦ã„ã‚‹ã‚ã‘ã§ã¯ç„¡ã„ã®ã§ã€
+ * ã“ã“ã«ã‚ã‚‹é–¢æ•°ã®ä½¿ç”¨ã¯å¼·åˆ¶ã—ãªã„ã€‚
  */
 #ifndef _xstr_h_included_
 #define _xstr_h_included_
 
-/** Ê¸»ú·¿
- * UCS4¤¬Æş¤Ã¤Æ¤¤¤ë */
+/** æ–‡å­—å‹
+ * UCS4ãŒå…¥ã£ã¦ã„ã‚‹ */
 typedef int xchar;
 
-/** Ê¸»úÎó
- * xstr¤Ëtypedef¤µ¤ì¤Æ¤¤¤ë
+/** æ–‡å­—åˆ—
+ * xstrã«typedefã•ã‚Œã¦ã„ã‚‹
  */
 typedef struct xstr_ {
-  /** Ê¸»úÎó¤Ø¤Î¥İ¥¤¥ó¥¿ */
+  /** æ–‡å­—åˆ—ã¸ã®ãƒã‚¤ãƒ³ã‚¿ */
   xchar *str;
-  /** xchar¤Î¿ô */
+  /** xcharã®æ•° */
   int len;
 } xstr;
 
-/* ¥Ç¥Ğ¥Ã¥°ÍÑ¤Î½ĞÎÏ´Ø¿ô */
+/* ãƒ‡ãƒãƒƒã‚°ç”¨ã®å‡ºåŠ›é–¢æ•° */
 void anthy_putxchar(xchar );
 void anthy_putxstr(xstr *);
 void anthy_putxstrln(xstr *);
 
-/* C¤ÎÊ¸»úÎó¤Ø¤Î½ñ¤­½Ğ¤· */
+/* Cã®æ–‡å­—åˆ—ã¸ã®æ›¸ãå‡ºã— */
 int anthy_sputxchar(char *, xchar , int encoding);
 int anthy_sputxstr(char *, xstr *, int encoding);
 int anthy_snputxstr(char *, int , xstr *, int encoding);
 
-/* xstr¤Èstr¶¦¤Ëmalloc¤µ¤ì¤ë¡¢free¤ÇÎ¾Êı²òÊü¤¹¤ë¤«anthy_free_xstr¤Ç²òÊü¤¹¤ë */
+/* xstrã¨strå…±ã«mallocã•ã‚Œã‚‹ã€freeã§ä¸¡æ–¹è§£æ”¾ã™ã‚‹ã‹anthy_free_xstrã§è§£æ”¾ã™ã‚‹ */
 xstr *anthy_cstr_to_xstr(const char *, int );
-/* ·ë²Ì¤Ïmalloc¤Ç³ÎÊİ¤µ¤ì¤ë */
+/* çµæœã¯mallocã§ç¢ºä¿ã•ã‚Œã‚‹ */
 char *anthy_xstr_to_cstr(xstr *, int);
 
-/* xstr¤Èstr¶¦¤Ëmalloc¤µ¤ì¤ë */
+/* xstrã¨strå…±ã«mallocã•ã‚Œã‚‹ */
 xstr *anthy_xstr_dup(xstr *);
 void anthy_free_xstr(xstr *);
 
-/* ·ë²Ì¤Ïmalloc¤Ç³ÎÊİ¤µ¤ì¤ë */
+/* çµæœã¯mallocã§ç¢ºä¿ã•ã‚Œã‚‹ */
 xchar *anthy_xstr_dup_str(xstr *);
 void anthy_free_xstr_str(xstr *);
 
-/* Ê¸»úÎó¤ò¥³¥Ô¡¼¤¹¤ë */
+/* æ–‡å­—åˆ—ã‚’ã‚³ãƒ”ãƒ¼ã™ã‚‹ */
 xstr* anthy_xstrcpy(xstr *, xstr *);
-/* Ê¸»úÎó¤òÈæ³Ó¤¹¤ë¡£strcmp¤ÈÆ±Åù¤ÎÆ°ºî(ÊÖ¤êÃÍ¤ÎÉä¹æ¤Ë°ÕÌ£¤¬¤¢¤ë) */
+/* æ–‡å­—åˆ—ã‚’æ¯”è¼ƒã™ã‚‹ã€‚strcmpã¨åŒç­‰ã®å‹•ä½œ(è¿”ã‚Šå€¤ã®ç¬¦å·ã«æ„å‘³ãŒã‚ã‚‹) */
 int anthy_xstrcmp(xstr *, xstr *);
-/* nÊ¸»úÌÜ¤Ş¤ÇÊ¸»úÎó¤òÈæ³Ó¤¹¤ë¡£strncmp¤ÈÆ±Åù¤ÎÆ°ºî(ÊÖ¤êÃÍ¤ÎÉä¹æ¤Ë°ÕÌ£¤¬¤¢¤ë) */
+/* næ–‡å­—ç›®ã¾ã§æ–‡å­—åˆ—ã‚’æ¯”è¼ƒã™ã‚‹ã€‚strncmpã¨åŒç­‰ã®å‹•ä½œ(è¿”ã‚Šå€¤ã®ç¬¦å·ã«æ„å‘³ãŒã‚ã‚‹) */
 int anthy_xstrncmp(xstr *, xstr *, int);
-/* s->str¤òrealloc¤¹¤ë */
+/* s->strã‚’reallocã™ã‚‹ */
 xstr *anthy_xstrcat(xstr *s, xstr *d);
-/* xs->str¤òrealloc¤¹¤ë */
+/* xs->strã‚’reallocã™ã‚‹ */
 xstr *anthy_xstrappend(xstr *xs, xchar c);
 
-/* strtoll¤ÎxstrÈÇ */
+/* strtollã®xstrç‰ˆ */
 long long anthy_xstrtoll(xstr *);
-/* Á´³Ñ¿ô»ú¤«¤éÈ¾³Ñ¿ô»ú¤Ø¤ÎÊÑ´¹ */
+/* å…¨è§’æ•°å­—ã‹ã‚‰åŠè§’æ•°å­—ã¸ã®å¤‰æ› */
 xstr *anthy_xstr_wide_num_to_num(xstr *);
-/* ¤Ò¤é¤¬¤Ê¤«¤é¥«¥¿¥«¥Ê¤Ø¤ÎÊÑ´¹ */
+/* ã²ã‚‰ãŒãªã‹ã‚‰ã‚«ã‚¿ã‚«ãƒŠã¸ã®å¤‰æ› */
 xstr *anthy_xstr_hira_to_kata(xstr *);
 /**/
 xstr *anthy_xstr_hira_to_half_kata(xstr *);
 xstr *anthy_conv_half_wide(xstr *xs);
 
-/*  xchar¤Î·¿ */
+/*  xcharã®å‹ */
 #define XCT_ALL 0xffffffff
 #define XCT_NONE 0
 #define XCT_HIRA 1
@@ -74,20 +74,20 @@ xstr *anthy_conv_half_wide(xstr *xs);
 #define XCT_WIDENUM 16
 #define XCT_OPEN 32
 #define XCT_CLOSE 64
-/* Ä¾Á°¤ÎÊ¸»ú¤Î°ìÉô */
+/* ç›´å‰ã®æ–‡å­—ã®ä¸€éƒ¨ */
 #define XCT_PART 128
-/* ½õ»ì */
+/* åŠ©è© */
 #define XCT_DEP 256
-/* µ­¹æ */
+/* è¨˜å· */
 #define XCT_SYMBOL 1024
-/* ´Á»ú */
+/* æ¼¢å­— */
 #define XCT_KANJI 2048
-/* ¶çÆÉÅÀ */
+/* å¥èª­ç‚¹ */
 #define XCT_PUNCTUATION 4096
 
-/** XCT_*¤¬ÊÖ¤Ã¤Æ¤¯¤ë */
+/** XCT_*ãŒè¿”ã£ã¦ãã‚‹ */
 int anthy_get_xchar_type(const xchar );
-/** Á´¤Æ¤ÎÊ¸»ú¤ËÂĞ¤·¤ÆXCT_*¤ÎÏÀÍıÀÑ¤ò¤È¤Ã¤¿¤â¤Î */
+/** å…¨ã¦ã®æ–‡å­—ã«å¯¾ã—ã¦XCT_*ã®è«–ç†ç©ã‚’ã¨ã£ãŸã‚‚ã® */
 int anthy_get_xstr_type(const xstr *);
 
 /* hash */

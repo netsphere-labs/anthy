@@ -1,4 +1,4 @@
-/* ¥³¡¼¥Ñ¥¹¤«¤éÁ«°Ü¹ÔÎó¤òºî¤ë¤¿¤á¤Î¥³¡¼¥É 
+/* ã‚³ãƒ¼ãƒ‘ã‚¹ã‹ã‚‰é·ç§»è¡Œåˆ—ã‚’ä½œã‚‹ãŸã‚ã®ã‚³ãƒ¼ãƒ‰ 
  *
  * Copyright (C) 2005-2006 TABATA Yusuke
  * Copyright (C) 2005-2006 YOSHIDA Yuichi
@@ -59,7 +59,7 @@ conv_sentence(struct test_context *tc, const char *str)
   print_context_info(tc->ac, NULL);
 }
 
-/* ¹ÔËö¤Î²þ¹Ô¤òºï½ü */
+/* è¡Œæœ«ã®æ”¹è¡Œã‚’å‰Šé™¤ */
 static void
 chomp(char *buf)
 {

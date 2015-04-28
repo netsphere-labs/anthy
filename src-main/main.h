@@ -9,36 +9,36 @@
 #include <anthy/prediction.h>
 
 /* 
-   Í½Â¬ÊÑ´¹¤Î¸õÊä¤Î¥­¥ã¥Ã¥·¥å
+   äºˆæ¸¬å¤‰æ›ã®å€™è£œã®ã‚­ãƒ£ãƒƒã‚·ãƒ¥
  */
 struct prediction_cache {
-  /* Í½Â¬¸µ¤ÎÊ¸»úÎó */
+  /* äºˆæ¸¬å…ƒã®æ–‡å­—åˆ— */
   xstr str;
-  /* Í½Â¬¤µ¤ì¤¿¸õÊä¤Î¿ô */
+  /* äºˆæ¸¬ã•ã‚ŒãŸå€™è£œã®æ•° */
   int nr_prediction;
-  /* Í½Â¬¤µ¤ì¤¿¸õÊä */
+  /* äºˆæ¸¬ã•ã‚ŒãŸå€™è£œ */
   struct prediction_t* predictions;
 };
 
-/** Anthy¤ÎÊÑ´¹¥³¥ó¥Æ¥­¥¹¥È
- * ÊÑ´¹Ãæ¤ÎÊ¸»úÎó¤Ê¤É¤¬Æş¤Ã¤Æ¤¤¤ë
+/** Anthyã®å¤‰æ›ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆ
+ * å¤‰æ›ä¸­ã®æ–‡å­—åˆ—ãªã©ãŒå…¥ã£ã¦ã„ã‚‹
  */
 struct anthy_context {
-  /** ¥³¥ó¥Æ¥­¥¹¥È¤Î»ı¤ÄÊ¸»úÎó */
+  /** ã‚³ãƒ³ãƒ†ã‚­ã‚¹ãƒˆã®æŒã¤æ–‡å­—åˆ— */
   xstr str;
-  /** Ê¸Àá¤Î¥ê¥¹¥È */
+  /** æ–‡ç¯€ã®ãƒªã‚¹ãƒˆ */
   struct segment_list seg_list;
-  /** ¼­½ñ¥»¥Ã¥·¥ç¥ó */
+  /** è¾æ›¸ã‚»ãƒƒã‚·ãƒ§ãƒ³ */
   dic_session_t dic_session;
-  /** splitter¤Î¾ğÊó */
+  /** splitterã®æƒ…å ± */
   struct splitter_context split_info;
-  /** ¸õÊä¤ÎÊÂ¤ÓÂØ¤¨¾ğÊó */
+  /** å€™è£œã®ä¸¦ã³æ›¿ãˆæƒ…å ± */
   struct ordering_context_wrapper ordering_info;
-  /** Í½Â¬¸õÊä */
+  /** äºˆæ¸¬å€™è£œ */
   struct prediction_cache prediction;
-  /** ¥¨¥ó¥³¡¼¥Ç¥£¥ó¥° */
+  /** ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚° */
   int encoding;
-  /** ºÆÊÑ´¹¤Î¥â¡¼¥É */
+  /** å†å¤‰æ›ã®ãƒ¢ãƒ¼ãƒ‰ */
   int reconversion_mode;
 };
 
@@ -65,4 +65,4 @@ void anthy_do_print_context(struct anthy_context *c, int encoding);
 
 
 #endif
-/* ¤Ê¤ë¤Ù¤¯³¬ÁØ¤ò¥Õ¥é¥Ã¥È¤Ë¤¹¤ë¤è¤í¤· */
+/* ãªã‚‹ã¹ãéšå±¤ã‚’ãƒ•ãƒ©ãƒƒãƒˆã«ã™ã‚‹ã‚ˆã‚ã— */

@@ -1,11 +1,11 @@
 /*
- * ¥í¡¼¥Ş»ú¤«¤éÊ¿²¾Ì¾¡ÊÀµ³Î¤Ë¤Ï¥­¡¼¤ÎÎó¤«¤éÊ¸»ú¡Ë¤ÎÉ½(rk_map)¤Î
- * ¥«¥¹¥¿¥Ş¥¤¥º¤ò´ÉÍı¤¹¤ë
+ * ãƒ­ãƒ¼ãƒå­—ã‹ã‚‰å¹³ä»®åï¼ˆæ­£ç¢ºã«ã¯ã‚­ãƒ¼ã®åˆ—ã‹ã‚‰æ–‡å­—ï¼‰ã®è¡¨(rk_map)ã®
+ * ã‚«ã‚¹ã‚¿ãƒã‚¤ã‚ºã‚’ç®¡ç†ã™ã‚‹
  *
  * Copyright (C) 2001-2002 UGAWA Tomoharu
  * Copyright (C) 2002 Tabata Yusuke
  *
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2001
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2001
  */
 
 #include <string.h>
@@ -18,19 +18,19 @@ static const char* rk_default_symbol[128] = {
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-  "¡¡", "¡ª", "¡É", "¡ô", "¡ğ", "¡ó", "¡õ", "¡Ç", 
-  "¡Ê", "¡Ë", "¡ö", "¡Ü", "¡¢", "¡¼", "¡£", "¡¿",
-  "£°", "£±", "£²", "£³", "£´", "£µ", "£¶", "£·",
-  "£¸", "£¹", "¡§", "¡¨", "¡ã", "¡á", "¡ä", "¡©",
+  "ã€€", "ï¼", "â€", "ï¼ƒ", "ï¼„", "ï¼…", "ï¼†", "â€™", 
+  "ï¼ˆ", "ï¼‰", "ï¼Š", "ï¼‹", "ã€", "ãƒ¼", "ã€‚", "ï¼",
+  "ï¼", "ï¼‘", "ï¼’", "ï¼“", "ï¼”", "ï¼•", "ï¼–", "ï¼—",
+  "ï¼˜", "ï¼™", "ï¼š", "ï¼›", "ï¼œ", "ï¼", "ï¼", "ï¼Ÿ",
 
-  "¡÷", NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+  "ï¼ ", NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-  NULL, NULL, NULL, "¡Ö", "¡À", "¡×", "¡°", "¡²",
-  "¡Æ", NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+  NULL, NULL, NULL, "ã€Œ", "ï¼¼", "ã€", "ï¼¾", "ï¼¿",
+  "â€˜", NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 
-  NULL, NULL, NULL, "¡Ğ", "¡Ã", "¡Ñ", "¡Á", NULL
+  NULL, NULL, NULL, "ï½›", "ï½œ", "ï½", "ã€œ", NULL
 };
 
 struct rk_conf_ent {
@@ -41,14 +41,14 @@ struct rk_conf_ent {
 
 struct rk_option {
   int enable_default;
-  char toggle; /* ±Ñ¿ô¤È¤Î°ì»şÅª¤ÊÀÚÂØ¤¨¤Ë»È¤¦¥·¥ó¥Ü¥ë */
+  char toggle; /* è‹±æ•°ã¨ã®ä¸€æ™‚çš„ãªåˆ‡æ›¿ãˆã«ä½¿ã†ã‚·ãƒ³ãƒœãƒ« */
   /*
-   * ÇÛÎó¤Ï¤½¤ì¤¾¤ì¥ê¥¹¥È¤ÎÀèÆ¬¤Ë¤Ê¤ë
-   * ¥ê¥¹¥È¤ÎÀèÆ¬¤Ï°ìÊ¸»ú¤Î¥¨¥ó¥È¥ê¤¬Æş¤ë
+   * é…åˆ—ã¯ãã‚Œãã‚Œãƒªã‚¹ãƒˆã®å…ˆé ­ã«ãªã‚‹
+   * ãƒªã‚¹ãƒˆã®å…ˆé ­ã¯ä¸€æ–‡å­—ã®ã‚¨ãƒ³ãƒˆãƒªãŒå…¥ã‚‹
    */
-  struct rk_conf_ent hiragana_symbol[128]; /* ¤Ò¤é¤¬¤Ê¤È¤ÎÂĞ±ş */
-  struct rk_conf_ent katakana_symbol[128]; /* ¥«¥¿¥«¥Ê¤È¤ÎÂĞ±ş */
-  struct rk_conf_ent hankaku_kana_symbol[128]; /* ¥«¥¿¥«¥Ê¤È¤ÎÂĞ±ş */
+  struct rk_conf_ent hiragana_symbol[128]; /* ã²ã‚‰ãŒãªã¨ã®å¯¾å¿œ */
+  struct rk_conf_ent katakana_symbol[128]; /* ã‚«ã‚¿ã‚«ãƒŠã¨ã®å¯¾å¿œ */
+  struct rk_conf_ent hankaku_kana_symbol[128]; /* ã‚«ã‚¿ã‚«ãƒŠã¨ã®å¯¾å¿œ */
 };
 
 #include "rkmap.h"
@@ -114,7 +114,7 @@ find_rk_conf_ent(struct rk_option *opt, int map,
   if (strlen(key) == 1) {
     sym = &tab[c];
   } else {
-    /* 2Ê¸»ú°Ê¾å */
+    /* 2æ–‡å­—ä»¥ä¸Š */
     for (sym = tab[c].next; sym; sym = sym->next) {
       if (!strcmp(sym->lhs, key)) {
 	break;
@@ -122,7 +122,7 @@ find_rk_conf_ent(struct rk_option *opt, int map,
     }
   }
   if (!sym && force) {
-    /* ¥á¥â¥ê³ÎÊİ¤·¤Æ¤Ä¤Ê¤° */
+    /* ãƒ¡ãƒ¢ãƒªç¢ºä¿ã—ã¦ã¤ãªã */
     sym = malloc(sizeof(struct rk_conf_ent));
     sym->rhs = NULL;
     sym->lhs = NULL;
@@ -136,11 +136,11 @@ find_rk_conf_ent(struct rk_option *opt, int map,
 }
 
 /*
- * opt ÊÑ¹¹ÂĞ¾İ¤Îoption
+ * opt å¤‰æ›´å¯¾è±¡ã®option
  * map RKMAP_*
- * from ÊÑ´¹¤â¤È¤ÎÊ¸»ú
- * to ÊÑ´¹Àè¤ÎÊ¸»úÎó
- * follow follow½¸¹ç
+ * from å¤‰æ›ã‚‚ã¨ã®æ–‡å­—
+ * to å¤‰æ›å…ˆã®æ–‡å­—åˆ—
+ * follow followé›†åˆ
  */
 int
 anthy_input_do_edit_rk_option(struct rk_option* opt, int map, 
@@ -187,23 +187,23 @@ anthy_input_do_clear_rk_option(struct rk_option* opt,
 
   opt->enable_default = use_default;
   for (i = 0; i < 128; i++) {
-    /* ³ÆÊ¸»ú¤ËÂĞ¤·¤Æ */
+    /* å„æ–‡å­—ã«å¯¾ã—ã¦ */
     struct rk_conf_ent *tab, *tmp;
-    /* ¤Ò¤é¤¬¤Ê¤Î¥ê¥¹¥È¤ò²òÊü */
+    /* ã²ã‚‰ãŒãªã®ãƒªã‚¹ãƒˆã‚’è§£æ”¾ */
     for (tab = opt->hiragana_symbol[i].next; tab;) {
       tmp = tab;
       tab = tab->next;
       free_rk_conf_ent(tmp);
       free(tmp);
     }
-    /* ¥«¥¿¥«¥Ê¤Î¥ê¥¹¥È¤ò²òÊü */
+    /* ã‚«ã‚¿ã‚«ãƒŠã®ãƒªã‚¹ãƒˆã‚’è§£æ”¾ */
     for (tab = opt->katakana_symbol[i].next; tab;) {
       tmp = tab;
       tab = tab->next;
       free_rk_conf_ent(tmp);
       free(tmp);
     }
-    /* ÀèÆ¬¤Î°ìÊ¸»ú¤Î¥¨¥ó¥È¥ê¤âËº¤ì¤º¤Ë²òÊü */
+    /* å…ˆé ­ã®ä¸€æ–‡å­—ã®ã‚¨ãƒ³ãƒˆãƒªã‚‚å¿˜ã‚Œãšã«è§£æ”¾ */
     free_rk_conf_ent(&opt->katakana_symbol[i]);
     free_rk_conf_ent(&opt->hiragana_symbol[i]);
   }
@@ -282,7 +282,7 @@ make_rkmap_shiftascii(struct rk_option* opt)
   for (c = 0; c < 128; c++) {
     if (rk_default_symbol[c]) {
       if (c == toggle_char) {
-	/* ¥È¥°¥ë¤¹¤ëÊ¸»ú¤Î¾ì¹ç */
+	/* ãƒˆã‚°ãƒ«ã™ã‚‹æ–‡å­—ã®å ´åˆ */
 	w[0] = c;
 	w[1] = '\0';
 	rkrule_set(p++, w, "\xff" "o", NULL);
@@ -292,7 +292,7 @@ make_rkmap_shiftascii(struct rk_option* opt)
 	rkrule_set(p++, w + 2, w, NULL);
 	w += 5;	
       } else {
-	/* ÉáÄÌ¤ÎÊ¸»ú¤Î¾ì¹ç */
+	/* æ™®é€šã®æ–‡å­—ã®å ´åˆ */
 	w[0] = c;
 	w[1] = '\0';
 	rkrule_set(p++, w, w, NULL);
@@ -336,8 +336,8 @@ count_rk_rule_ent(struct rk_option *opt, int map_no)
 }
 
 /*
- * ¥Ç¥Õ¥©¥ë¥È¤Î¥ë¡¼¥ë¤È¥«¥¹¥¿¥Ş¥¤¥º¤µ¤ì¤¿¥ë¡¼¥ë¤ò¥Ş¡¼¥¸¤·¤Æ
- * rk_map¤òºî¤ë¡£
+ * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ãƒ«ãƒ¼ãƒ«ã¨ã‚«ã‚¹ã‚¿ãƒã‚¤ã‚ºã•ã‚ŒãŸãƒ«ãƒ¼ãƒ«ã‚’ãƒãƒ¼ã‚¸ã—ã¦
+ * rk_mapã‚’ä½œã‚‹ã€‚
  */
 static struct rk_map*
 make_rkmap_hirakata(const struct rk_rule* rule,
@@ -362,8 +362,8 @@ make_rkmap_hirakata(const struct rk_rule* rule,
   p = rk_var_part;
   w = work;
 
-  /* °ìÊ¸»ú¤Î¤â¤Î¤òrk_var_part¤Ë½ñ¤­¹ş¤ó¤Ç¤¤¤¯ */
-  /* ¥È¥°¥ë¤Î¾ì¹ç */
+  /* ä¸€æ–‡å­—ã®ã‚‚ã®ã‚’rk_var_partã«æ›¸ãè¾¼ã‚“ã§ã„ã */
+  /* ãƒˆã‚°ãƒ«ã®å ´åˆ */
   buf[0] = toggle;
   buf[1] = 0;
   w[0] = toggle;
@@ -382,24 +382,24 @@ make_rkmap_hirakata(const struct rk_rule* rule,
     rkrule_set(p++, w + 5, rk_default_symbol[toggle], NULL);
   }
   w += 8;
-  /* ¥È¥°¥ë°Ê³° */
+  /* ãƒˆã‚°ãƒ«ä»¥å¤– */
   for (c = 0; c < 128; c++) {
     if (c != toggle) {
       buf[0] = c;
       buf[1] = 0;
-      /* °ìÊ¸»ú¤Î¤â¤Î */
+      /* ä¸€æ–‡å­—ã®ã‚‚ã® */
       w[0] = c;
       w[1] = '\0';
       tab = find_rk_conf_ent(opt, map_no, buf, 0);
       if (tab && tab->rhs) {
-	/* ¥«¥¹¥¿¥Ş¥¤¥ººÑ¤Î¤¬¤¢¤ë */
+	/* ã‚«ã‚¹ã‚¿ãƒã‚¤ã‚ºæ¸ˆã®ãŒã‚ã‚‹ */
 	rkrule_set(p++, w, tab->rhs, NULL);
       } else if (rk_default_symbol[c]) {
-	/* µ­¹æ¤Ê¤É */
+	/* è¨˜å·ãªã© */
 	rkrule_set(p++, w, rk_default_symbol[c], NULL);
       }
       w += 2;
-      /* ÆóÊ¸»ú°Ê¾å¤Î¤â¤Î */
+      /* äºŒæ–‡å­—ä»¥ä¸Šã®ã‚‚ã® */
       if (tab) {
 	for (tab = tab->next; tab; tab = tab->next) {
 	  rkrule_set(p++, tab->lhs, tab->rhs, NULL);
