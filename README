@@ -9,7 +9,7 @@ Japanese text input.
 
 See following page for Anthy development:
 	http://wiki.debian.org/Teams/DebianAnthy
-	http://git.debian.org/?p=collab-maint/anthy.git;a=summary
+	http://git.debian.org/?p=pkg-anthy/anthy.git;a=summary
 
 
 What's New?
@@ -53,7 +53,7 @@ generated.
     ---[mkworddic/mkworddic]---> anthy.wdic (2)
 
    "initial anthy.dic"
-   calctrans/corpus.?.txt
+   corpus/corpus.?.txt
     ---[calctrans/{proccorpus,calctrans}]---> corpus_info (3-1)
     					      weak_words  (3-2)
 
