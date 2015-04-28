@@ -1,3 +1,246 @@
+anthy (1:0.2-1) experimental; urgency=low
+
+  * New upstream.
+  * Incorporate changes up to 9100h-25 by Hideki Yamane.
+  * Adopt git-buildpackage.
+  * debian/*.install: Update.
+  * debian/rules: Update and simplify.
+  * debian/copyright: Update for new upstream.
+  * debian/gpg.conf: New.
+  * debian/control (Description): Fix explanations.
+  * libanth1, libanthyinput0, libanthy-dev, libanthyinput-dev: Divide.
+  * debian/anthy.config, debian/anthy.templates, debian/po: Remove.  No
+    configuration any more.
+  * debian/patches/02_2ch_t.diff: Remove, because it might be license
+    violation to distribute it, and its totally useless for general
+    public.
+  * debian/update-anthy-dics: Remove, it was mistake to have this in
+    Debian.
+  * debian/patches/03_change_anthy_dic_path.diff: Remove.  This was
+    mistake by Omote-san to introduce this kind of dictionary update.
+  * debian/patches/04_mkworddic-compound.t: Remove.
+  * debian/patches/remove_name.t: Remove.
+  * debian/patches/11_ZIPDICT_EUC: Remove, it's irrelevant with newer
+    upstream.
+  * debian/patches/12_workaround_removal_of_orig: Remove, likewise.
+  * debian/anthy.dirs, debian/anthy.README.Debian: Remove, likewise.
+  * debian/anthy.postrm, debian/postinst: Remove, likewise.
+  * debian/source/local-options: Remove, likewise.
+
+ -- NIIBE Yutaka <gniibe@fsij.org>  Tue, 28 Apr 2015 15:34:44 +0900
+
+anthy (9100h-25) unstable; urgency=medium
+
+  * debian/patches
+    - add bug#777689.patch to fix infinite loop (Closes: #777689)
+  * debian/control
+    - update Vcs-*
+    - Standards-Version: 3.9.6
+
+ -- Hideki Yamane <henrich@debian.org>  Sun, 15 Mar 2015 20:37:26 +0900
+
+anthy (9100h-24) unstable; urgency=medium
+
+  * debian/rules
+    - add dh --with autoreconf
+    - drop override_dh_builddeb since xz compression becomes default
+  * debian/control
+    - set Standards-Version: 3.9.5
+    - move "Depends: emacs23" to emacs that provides newest emacs
+      (Closes: #753988)
+
+ -- Hideki Yamane <henrich@debian.org>  Sat, 13 Sep 2014 22:59:20 +0900
+
+anthy (9100h-23) unstable; urgency=low
+
+  * Once remove social-ime and wikipedia dic data since it causes a lot of
+    wrong output. 
+  * Upload to unstable
+
+ -- Hideki Yamane <henrich@debian.org>  Wed, 03 Apr 2013 11:03:20 +0900
+
+anthy (9100h-22) experimental; urgency=low
+
+  * debian/patches
+    - add work-with-emacs-24.3.1.patch to make anthy.el works with
+      Emacs-24.3.1 or later.
+  * debian/control
+    - remove duplicate autotools-dev
+  * debian/libanthy0.lintian-overrides
+    - make it works with other architecture
+
+ -- Hideki Yamane <henrich@debian.org>  Mon, 11 Mar 2013 23:33:33 +0900
+
+anthy (9100h-21) experimental; urgency=low
+
+  * debian/control
+    - set Standards-Version: 3.9.4
+  * debian/copyright
+    - fix "copyright-refers-to-deprecated-bsd-license-file" warning 
+  * debian/libanthy0.lintian-overrides
+    - avoid false positive warning
+
+ -- Hideki Yamane <henrich@debian.org>  Fri, 25 Jan 2013 08:08:16 +0900
+
+anthy (9100h-20) experimental; urgency=low
+
+  * debian/rules
+    - remove -pie from hardening 
+    - add dh_autoreconf to avoid build failure by enabling PIE hardening
+  * debian/control
+    - add "Build-Depends: dh-autoreconf"
+  * debian/copyright
+    - convert to copyright format 1.0
+
+ -- Hideki Yamane <henrich@debian.org>  Mon, 14 Jan 2013 10:34:58 +0900
+
+anthy (9100h-19) experimental; urgency=low
+
+  * debian/patches
+    - update remove_wrong_trans_data.patch 
+  * debian/{rules,control}
+    - use autotools-dev to deal with Outdated config.{sub,guess}
+      (Closes: #579072)
+
+ -- Hideki Yamane <henrich@debian.org>  Mon, 06 Aug 2012 23:27:02 +0900
+
+anthy (9100h-18) experimental; urgency=low
+
+  * debian/patches
+    - add fedora_anthy-fix-typo-in-dict-name.patch, taken from Fedora
+    - add fedora_anthy-fix-typo-in-dict.patch, taken from Fedora
+
+ -- Hideki Yamane <henrich@debian.org>  Fri, 03 Aug 2012 14:47:27 +0900
+
+anthy (9100h-17) experimental; urgency=low
+
+  * debian/control
+    - anthy-el seems to not work with xemacs21-nomule, so set "Conflicts: 
+      xemacs21-nomule" as workaround. If it would work again, then remove this
+      setting (Closes: LP#325790)
+  * debian/patches
+    - add explanation to each patch file
+    - add inactivate-input-method.patch to deal with changes in emacs-head
+    - add remove_wrong_trans_data.patch to avoid wrong translation
+  * debian/rules
+    - enable parallel build
+  * nokuno-dictionary-20120103-dfsg (hatena is removed since license issue)
+    - add SocialIME and Wikipedia dictionary, those files are provided as 
+      multiple upstream tarball. It comes from 
+      http://code.google.com/p/nokuno/downloads/detail?name=dictionary.tar.bz2
+  * debian/update-anthy-dic,anthy-common.install,rules
+    - add social-ime.ctd and wikipedia.ctd 
+  * debian/copyright
+    - add explation for zip_code.t license (Closes: #635958)
+
+ -- Hideki Yamane <henrich@debian.org>  Thu, 05 Jul 2012 16:57:13 +0900
+
+anthy (9100h-16) unstable; urgency=low
+
+  * debian/anthy-common.install
+    - add missing g_fname.t
+
+ -- Hideki Yamane <henrich@debian.org>  Thu, 05 Jul 2012 16:59:52 +0900
+
+anthy (9100h-15) unstable; urgency=low
+
+  * debian/anthy.postinst
+    - fix checking compare dictonaries
+
+ -- Hideki Yamane <henrich@debian.org>  Tue, 26 Jun 2012 18:06:46 +0900
+
+anthy (9100h-14) unstable; urgency=low
+
+  * debian/anthy.postinst
+    - To avoid unnecessary dictionary generation, check dictionaries' hashsum.
+      If you want to add another dictionary, then update anthy.postinst file 
+      (add it to EXTRADICTLIST line).
+  * debian/anthy.{postrm, postinst}
+    - Cleanup unused lines
+  * debian/control
+    - Fix description for anthy-el, it is for only Emacs, drop XEmacs.
+
+ -- Hideki Yamane <henrich@debian.org>  Tue, 26 Jun 2012 16:14:58 +0900
+
+anthy (9100h-13) unstable; urgency=low
+
+  * debian/anthy.README.Debian
+    - remove lines "Messages for po translators" since I'll upload l10n update
+      package now, and add "How to add 3rd party dictionary" instructions to 
+      help users
+  * debian/patches
+    - remove 02_2ch_t.diff and provide it as anthy_9100h.orig-2ch_t.tar.xz
+      multiple upstream tarball (Closes: #576285)
+    - remove 04_mkworddic-compound.t since it was already merged
+
+ -- Hideki Yamane <henrich@debian.org>  Mon, 25 Jun 2012 13:55:54 +0900
+
+anthy (9100h-12) unstable; urgency=low
+
+  * debian/anthy.config
+    - modify to fix lintian false positive 
+  * debian/control
+    - add "Pre-Depends on dpkg (>= 1.15.6~)" to fix 
+      "data.tar.xz-member-without-dpkg-pre-depends"
+    - add "Recommends: kasumi"
+
+ -- Hideki Yamane <henrich@debian.org>  Tue, 12 Jun 2012 12:51:27 +0900
+
+anthy (9100h-11) unstable; urgency=low
+
+  * debian/control
+    - set "Build-Depends: debhelper (>= 9)" to enable hardening
+    - set "Standards-Version: 3.9.3"
+    - anthy-common: set "Multi-Arch: foreign"
+    - libanthy0, libanthy-dev: set "Multi-Arch: same"
+  * debian/compat
+    - set 9
+  * debian/rules
+    - set "DEB_HOST_MULTIARCH"
+    - set "DEB_BUILD_MAINT_OPTIONS = hardening=+all, -pie"
+    - compress anthy-common package with xz
+  * debian/{libanthy0,libanthy-dev}.install 
+    - adjust file path for Multi-Arch
+
+ -- Hideki Yamane <henrich@debian.org>  Sun, 27 May 2012 06:56:25 +0900
+
+anthy (9100h-10) unstable; urgency=low
+
+  * debian/anthy.postrm
+    - remove /etc/anthy if it's empty
+
+ -- Hideki Yamane <henrich@debian.org>  Sun, 25 Sep 2011 01:36:14 +0900
+
+anthy (9100h-9) unstable; urgency=low
+
+  * debian/po
+    - add Danish translation. Thanks to Joe Dalton <joedalton2@yahoo.dk> 
+      (Closes: #621023)
+  * debian/libanthy-dev.install
+    - not install *.la file. Thanks to codehelp@debian.org (Closes: #621319)
+  * debian/control
+    - Bump up Standards-Version: 3.9.2 with no change
+
+ -- Hideki Yamane <henrich@debian.org>  Fri, 29 Apr 2011 22:22:35 +0900
+
+anthy (9100h-8) unstable; urgency=low
+
+  * debian/control
+    - Bump up Standards-Version: 3.9.1 with no change
+    - add "Homepage:", "Vcs-Git:" and "Vcs-Browser:" field.
+  * debian/po
+    - add Brazilian Portuguese tranlsation (pt_BR).
+      Thanks to Adriano Rafael Gomes <adrianorg@gmail.com> (Closes: #610488)
+
+ -- Hideki Yamane <henrich@debian.org>  Sun, 06 Feb 2011 20:55:48 +0900
+
+anthy (9100h-7) unstable; urgency=low
+
+  * remove debian/dirs and add debian/anthy.dirs, delete unnnecessary lines
+    to avoid failure with removing package. Thanks for piuparts
+
+ -- Hideki Yamane <henrich@debian.org>  Wed, 01 Sep 2010 22:07:36 +0900
+
 anthy (9100h-6) unstable; urgency=low
 
   * upload to unstable

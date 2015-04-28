@@ -1,0 +1,3 @@
+usr/include/anthy/input.h
+usr/lib/*/libanthyinput.a
+usr/lib/*/libanthyinput.so

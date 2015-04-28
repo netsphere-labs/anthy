@@ -1,19 +1,50 @@
-This package was debianized by Masahito Omote <omote@debian.org> on
-Sat, 20 Oct 2001 00:38:29 +0900.
+Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: anthy
+Source: http://sourceforge.jp/projects/anthy/
 
-Upstream URI: http://anthy.sourceforge.jp/
-	      http://sourceforge.jp/projects/anthy/
+Files: *
+Copyright: 2001-2005, Yusuke Tabata <yusuke@kmc.gr.jp> and Project Heke
+           2002, 2005, 2010, 2015  NIIBE Yutaka <gniibe@fsij.org>
+License: LGPL-3+
+ Anthy is free software: you can redistribute it and/or modify it under
+ the terms of the GNU Lesser General Public License as published by the
+ Free Software Foundation, either version 3 of the License, or (at your
+ option) any later version.
+ .
+ On Debian systems, the complete text of the GNU Lesser General
+ Public License can be found in `/usr/share/common-licenses/LGPL-3'.
 
-Upstream Author: Yusuke Tabata <yusuke@kmc.gr.jp> and Project Heke.
+Files: alt-cannadic/*
+Comment: http://sourceforge.jp/projects/alt-cannadic/
+         Based on Cannadic http://cannadic.oucrc.org/
+Copyright: 2000-2004, すぎもとまさお <sugimoto@oucrc.org>
+           2005-2007, vagus <vagus.xyz _at_ gmail.com>
+License: GPL-2
+ This package is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; version 2 of the License.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ can be found in `/usr/share/common-licenses/GPL-2'.
 
-Copyright: All of this package (of course dictionary) can redistribute under
-           the term of GPL found on Debian systems in file
-           /usr/share/common-licenses/GPL.
+Files: mkworddic/zipcode.t
+Copyright: 郵便事業株式会社 (Japan Post Service Co., Ltd.)
+License: public-domain
+ 使用・再配布・移植・改良について
+ 郵便事業株式会社は著作権を主張しません。自由に配布していただいて結構です。
+ .
+ (In English)
+ For use, redistribution, porting, and modification
+ It's public domain. It can be distributed freely.
 
-Anthy uses cannadic and 2ch dictionary. Cannadic can be distribute under GPL.
-2ch.t is a public domain.
-
-For more infomation about these 2 dictionaries, see
-
-	  http://omaemona.sourceforge.net/packages/Canna/ (mkanthydic/2ch.t)
-	  http://cannadic.oucrc.org/ (cannadic/*)
+Files: debian/*
+Copyright: 2001-2007, Masahito Omote <omote@debian.org>
+           2007-2008, NOKUBI Takatsugu <knok@daionet.gr.jp> 
+           2010-2013, Hideki Yamane <henrich@debian.org>
+License: GPL-2
+ This package is free software; you can redistribute it and/or
+ modify it under the terms of the GNU General Public License as
+ published by the Free Software Foundation; version 2 of the License.
+ .
+ On Debian systems, the complete text of the GNU General Public License
+ can be found in `/usr/share/common-licenses/GPL-2'.

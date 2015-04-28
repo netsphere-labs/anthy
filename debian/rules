@@ -5,12 +5,5 @@
 %:
 	dh $@ --with quilt
 
-override_dh_clean:
-	dh_clean --exclude=alt-cannadic/Makefile.orig
-
 override_dh_auto_configure:
 	dh_auto_configure -- --sysconfdir=/etc/anthy
-
-override_dh_auto_clean:
-	debconf-updatepo
-	dh_auto_clean

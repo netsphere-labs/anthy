@@ -1,72 +1,97 @@
 Source: anthy
 Section: utils
 Priority: optional
-Maintainer: NOKUBI Takatsugu <knok@daionet.gr.jp>
-Uploaders: Hideki Yamane <henrich@debian.org>, NIIBE Yutaka <gniibe@fsij.org>
-Build-Depends: debhelper (>= 7.0.50~), autotools-dev, debconf (>= 0.5), po-debconf, automake
-Standards-Version: 3.8.4
+Maintainer: pkg-anthy-devel@lists.alioth.debian.org
+Uploaders: NOKUBI Takatsugu <knok@daionet.gr.jp>, Hideki Yamane <henrich@debian.org>, NIIBE Yutaka <gniibe@fsij.org>
+Build-Depends: debhelper (>= 9), autotools-dev, debconf (>= 0.5), po-debconf, automake
+Standards-Version: 3.9.6
+Vcs-Git: git://anonscm.debian.org/pkg-anthy/anthy.git
+Vcs-Browser: http://anonscm.debian.org/cgit/pkg-anthy/anthy.git
+Homepage: https://alioth.debian.org/projects/pkg-anthy/
 
 Package: anthy
 Architecture: any
 Replaces: anthy-cannadic, anthy-cannadic-2ch
-Depends: anthy-common, libanthy0 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
+Depends: anthy-common, libanthy1 (= ${binary:Version}), ${shlibs:Depends}, ${misc:Depends}
 Conflicts: anthy-cannadic, anthy-cannadic-2ch
-Description: input method for Japanese - backend, dictionary and utility
- Anthy is a Japanese input method working on X11 and Emacs. It converts
- hiragana text to mixed kana and kanji. It is implemented as a library
- and stores private information securely in ~/.anthy/.
- Thus, Anthy is simple and secure (information is protected from
- spoofing and snooping). 
+Recommends: kasumi
+Description: Japanese kana-kanji conversion - utilities
+ Anthy is kana-kanji conversion engine for Japanese.  It converts
+ hiragana text to mixed kana and kanji.  It is implemented as a library
+ and stores private information in ~/.anthy/.
 
 Package: anthy-common
 Architecture: all
+Multi-Arch: foreign
 Depends: ${misc:Depends}
-Conflicts: anthy (<= 9100h-4)
-Description: input method for Japanese - common files and dictionary
- Anthy is a Japanese input method working on X11 and Emacs. It converts
- hiragana text to mixed kana and kanji. It is implemented as a library
- and stores private information securely in ~/.anthy/.
- Thus, Anthy is simple and secure (information is protected from
- spoofing and snooping). 
+Conflicts: anthy (<= 9100h-25)
+Description: Japanese kana-kanji conversion - dictionary
+ Anthy is kana-kanji conversion engine for Japanese.  It converts
+ hiragana text to mixed kana and kanji.  It is implemented as a library
+ and stores private information in ~/.anthy/.
  .
- This package provides common files dictonary data for anthy.
+ This package provides common dictonary data files.
 
 Package: anthy-el
 Section: lisp
 Architecture: all
-Depends: ${misc:Depends}, anthy, emacs23 | emacsen
-Description: input method for Japanese - elisp frontend
- Anthy is a Japanese input method working on X11 and Emacs. It converts
- hiragana text to mixed kana and kanji. It is implemented as a library
- and stores private information securely in ~/.anthy/.
- Thus, Anthy is simple and secure (information is protected from
- spoofing and snooping). 
+Depends: ${misc:Depends}, anthy, emacsen
+Conflicts: xemacs21-nomule
+Description: Japanese kana-kanji conversion - elisp frontend
+ Anthy is kana-kanji conversion engine for Japanese.  It converts
+ hiragana text to mixed kana and kanji.  It is implemented as a library
+ and stores private information in ~/.anthy/.
  .
- This package provides an Anthy frontend for Emacs and XEmacs.
+ This package provides an Anthy frontend for Emacs.
 
-Package: libanthy0
+Package: libanthy1
 Section: libs
 Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
 Depends: ${shlibs:Depends}, ${misc:Depends}, anthy-common
-Description: input method for Japanese - runtime library
- Anthy is a Japanese input method working on X11 and Emacs. It converts
- hiragana text to mixed kana and kanji. It is implemented as a library
- and stores private information securely in ~/.anthy/.
- Thus, Anthy is simple and secure (information is protected from
- spoofing and snooping). 
+Description: Japanese kana-kanji conversion - runtime library
+ Anthy is kana-kanji conversion engine for Japanese.  It converts
+ hiragana text to mixed kana and kanji.  It is implemented as a library
+ and stores private information in ~/.anthy/.
  .
- This package provides shared libraries for Anthy.
+ This package provides runtime shared libraries for Anthy.
 
 Package: libanthy-dev
 Section: libdevel
 Architecture: any
-Depends: libanthy0 (= ${binary:Version}), ${misc:Depends}
-Description: input method for Japanese - development files
- Anthy is a Japanese input method working on X11 and Emacs. It converts
- hiragana text to mixed kana and kanji. It is implemented as a library
- and stores private information securely in ~/.anthy/.
- Thus, Anthy is simple and secure (information is protected from
- spoofing and snooping). 
+Multi-Arch: same
+Depends: libanthy1 (= ${binary:Version}), ${misc:Depends}
+Description: Japanese kana-kanji conversion - runtime library
+ Anthy is kana-kanji conversion engine for Japanese.  It converts
+ hiragana text to mixed kana and kanji.  It is implemented as a library
+ and stores private information in ~/.anthy/.
  .
  This package provides the files necessary for compiling programs that
- depend on Anthy.
+ use Anthy.
+
+Package: libanthyinput0
+Section: libs
+Architecture: any
+Multi-Arch: same
+Pre-Depends: ${misc:Pre-Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Japanese kana-kanji conversion - runtime library for input
+ Anthy is kana-kanji conversion engine for Japanese.  It converts
+ hiragana text to mixed kana and kanji.  It is implemented as a library
+ and stores private information in ~/.anthy/.
+ .
+ This package provides shared library for input method.
+
+Package: libanthyinput-dev
+Section: libdevel
+Architecture: any
+Multi-Arch: same
+Depends: libanthyinput0 (= ${binary:Version}), ${misc:Depends}
+Description: Japanese kana-kanji conversion - runtime library for input
+ Anthy is kana-kanji conversion engine for Japanese.  It converts
+ hiragana text to mixed kana and kanji.  It is implemented as a library
+ and stores private information in ~/.anthy/.
+ .
+ This package provides the files necessary for compiling programs that
+ use Anthy as an input method.

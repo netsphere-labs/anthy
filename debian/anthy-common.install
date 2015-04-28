@@ -1,14 +1,2 @@
-etc/anthy/anthy-conf            etc/anthy/
-alt-cannadic/*.ctd              usr/share/anthy/dic/
-mkworddic/*.t                   usr/share/anthy/dic/
-depgraph/*.depword              usr/share/anthy/depgraph/
-depgraph/conjugate.table        usr/share/anthy/depgraph/
-depgraph/indepword.txt          usr/share/anthy/depgraph/
-mkworddic/udict                 usr/share/anthy/dic/
-calctrans/anthy.cand_info       usr/share/anthy/calctrans
-calctrans/anthy.trans_info      usr/share/anthy/calctrans
-calctrans/anthy.corpus_array    usr/share/anthy/calctrans
-calctrans/anthy.corpus_bucket   usr/share/anthy/calctrans
-calctrans/anthy.weak_words      usr/share/anthy/calctrans
-usr/share/anthy/typetab         usr/share/anthy/
-
+etc/anthy
+usr/share/anthy

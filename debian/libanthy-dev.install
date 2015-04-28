@@ -1,7 +1,7 @@
-anthy/xstr.h                    usr/include/anthy/
-anthy/wtype.h                   usr/include/anthy
-usr/include/anthy/*.h		usr/include/anthy/
-usr/lib/libanthy*.a		usr/lib/
-usr/lib/pkgconfig/anthy.pc	usr/lib/pkgconfig/
-usr/lib/lib*.so			usr/lib/
-
+usr/include/anthy/anthy.h
+usr/include/anthy/dicutil.h
+usr/lib/*/libanthy.a
+usr/lib/*/libanthydic.a
+usr/lib/*/libanthydic.so
+usr/lib/*/libanthy.so
+usr/lib/*/pkgconfig/anthy.pc
