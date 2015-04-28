@@ -56,7 +56,8 @@ anthy_textdic_scan (const char *name, long offset, void *data,
       char *end_of_column0;
 
       column0 = buf;
-      end_of_column0 = column1 = NULL;
+      column1 = NULL;
+      end_of_column0 = NULL;
       for (i = 0; i < BUFSIZE; i++)
 	if (buf[i])
 	  {
@@ -186,6 +187,8 @@ delete_line (void *data, FILE *fp_r, FILE *fp_w)
 {
   char buf[BUFSIZE];
 
+  (void)data;
+  (void)fp_w;
   if (fgets (buf, BUFSIZE, fp_r) == NULL)
     return -1;
 
@@ -202,8 +205,9 @@ static int
 insert_line (void *data, FILE *fp_r, FILE *fp_w)
 {
   const char *line = (const char *)data;
-  int r;
+  size_t r;
 
+  (void)fp_r;
   r = fwrite (line, 1, strlen (line), fp_w);
   if (r < strlen (line))
     return -1;

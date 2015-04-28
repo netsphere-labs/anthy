@@ -311,23 +311,6 @@ do_add_word_to_textdic(const char *td, int offset,
 }
 
 static int
-dup_word_check(const char *v, const char *word, const char *wt)
-{
-  struct word_line res;
-
-  if (anthy_parse_word_line(v, &res)) {
-    return 0;
-  }
-
-  /* 読みと単語を比較する */
-  if (!strcmp(res.wt, wt) &&
-      !strcmp(res.word, word)) {
-    return 1;
-  }
-  return 0;
-}
-
-static int
 add_word_to_textdic(const char *yomi, const char *word,
 		    const char *wt_name, int freq)
 {

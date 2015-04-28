@@ -275,6 +275,7 @@ static void trie_mark_used(struct trie_root *root, struct trie_node *n,
  * 削除の時はtrie_row_freeを使ってrowの内容を解放
  */
 
+#if 0
 #define PUTNODE(x) ((x) == &root->root ? printf("root\n") : anthy_putxstrln(&(x)->row.key))
 static int
 debug_trie_dump(FILE* fp, struct trie_node* n, int encoding)
@@ -316,6 +317,7 @@ debug_trie_dump(FILE* fp, struct trie_node* n, int encoding)
 
   return cnt;
 }
+#endif
 
 static void
 init_trie_root(struct trie_root *root)

@@ -635,7 +635,6 @@ struct word_dic *
 anthy_create_word_dic(void)
 {
   struct word_dic *wdic;
-  char *p;
 
   wdic = anthy_smalloc(word_dic_ator);
   memset(wdic, 0, sizeof(*wdic));
@@ -651,7 +650,6 @@ anthy_create_word_dic(void)
   wdic->nr_pages = get_nr_page(wdic);
 
   /* 用例辞書をマップする */
-  p = wdic->uc_section;
   return wdic;
 }
 

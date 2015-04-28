@@ -509,11 +509,7 @@ anthy_print_context(struct anthy_context *ac)
 const char *
 anthy_get_version_string (void)
 {
-#ifdef VERSION
   return VERSION;
-#else  /* just in case */
-  return "(unknown)";
-#endif
 }
 
 /** (API) */

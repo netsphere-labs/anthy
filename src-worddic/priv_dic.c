@@ -139,6 +139,7 @@ anthy_priv_dic_unlock(void)
   }
 }
 
+#if 0
 /* seq_entに追加する */
 static void
 add_to_seq_ent(const char *line, int encoding, struct seq_ent *seq)
@@ -156,6 +157,7 @@ add_to_seq_ent(const char *line, int encoding, struct seq_ent *seq)
 				  NULL, wl.freq, 0);
   anthy_free_xstr(xs);
 }
+#endif
 
 void
 anthy_copy_words_from_private_dic(struct seq_ent *seq,
@@ -305,8 +307,8 @@ anthy_init_private_dic(const char *id)
 void
 anthy_release_private_dic(void)
 {
-  free (anthy_private_text_dic);
-  free (anthy_imported_text_dic);
+  free ((char *)anthy_private_text_dic);
+  free ((char *)anthy_imported_text_dic);
   free(imported_dic_dir);
   anthy_private_text_dic = NULL;
   anthy_imported_text_dic = NULL;

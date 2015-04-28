@@ -513,8 +513,11 @@ write_file(const char* file_name)
 }
 
 int
-main(int argc, char* argv[])
+main (int argc, const char *argv[])
 {
+  (void)argc;
+  (void)argv;
+
   anthy_init_wtypes ();
 
   /* 付属語グラフ */
