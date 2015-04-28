@@ -1,5 +1,23 @@
 2015-04-28  NIIBE Yutaka  <gniibe@fsij.org>
 
+    * configure.ac: Version 0.3.
+    * src-main/Makefile.am (version-info): Bump to 2:2:1.
+    * src-worddic/Makefile.am (version-info): Ditto.
+
+    * doc/*: Encode in UTF-8.
+
+    * src-util/Makefile.am (anthy-morphological-analyzer): No install.
+    (libanthyinput_la_LIBADD): No dependency to libanthydic.
+
+    * configure.ac (AM_MAINTAINER_MODE): New.
+    * mkanthydic/Makefile.am [MAINTAINER_MODE]: dictionary bootstrap.
+
+    * src-worddic/ext_ent.c (pushback_place_name): Use UTF-8.
+    (search_zipcode_dict): Change the variable name without "EUC".
+    * anthy-conf.in, anthy-test-conf.in: Variable name change.
+
+2015-04-28  NIIBE Yutaka  <gniibe@fsij.org>
+
     * configure.ac: Version 0.2.
 
     * depgraph/mkdepgraph.c, src-main/main.c, src-worddic/dic_util.c,

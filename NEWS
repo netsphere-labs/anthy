@@ -1,6 +1,6 @@
 Anthy NEWS - User visible changes
 
-* Major changes in Anthy 0.2
+* Major changes in Anthy 0.3
 
   Released 2015-04-28, by NIIBE Yutaka
 
@@ -12,6 +12,10 @@ vice versa.
 ** Encoding is default to UTF-8.
 Default encoding is now in UTF-8.  All source code are converted
 in UTF-8, as well as dictionaries.
+
+** The utility anthy-morphological-analyzer is not installed anymore.
+Since it was an experimental program for development, it should not be
+installed as a general tool.
 
 
 * Major changes in Anthy 9200

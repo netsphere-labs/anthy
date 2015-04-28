@@ -1,29 +1,29 @@
 **This document is written in Japanese.**
 
-���Υǥ��쥯�ȥ�ˤ���ɥ�����ȤΥե���������Ȥ��������Ǥ�
- �ɥ�����Ȥ��Դ������ä��긽�¤ȿ�����äƤ����ꤹ�����
- ��θ������Ϣ���򤪴ꤤ���ޤ�
+このディレクトリにあるドキュメントのファイル一覧とその説明です
+ ドキュメントは不完全だったり現実と食い違っていたりする場合は
+ 遠慮せずに連絡をお願いします
 
-�桼���������Υɥ������
- *GUIDE                 ���Ѳ�ǽ�ʵ�ǽ�������Ǥ�
- *ELISP			Emacs����Anthy����Ѥ��뤿�����ˡ��ޤȤ�Ƥ��ޤ�
+ユーザー向けのドキュメント
+ *GUIDE                 利用可能な機能の説明です
+ *ELISP			EmacsからAnthyを使用するための方法をまとめています
 
-��ȯ�Ը����Υɥ������
- *DICUTIL		����������ޥ�ɤλ���
- *GLOSSARY		�Ѹ�ΰ�̣�������ʤ�
- *ILIB			Anthy(����)�饤�֥��λ��ͽ�
- *LIB			Anthy(�Ѵ����󥸥�)�饤�֥��λ��ͽ�
- *DICLIB                Anthy(�Ŀͼ���)�饤�֥��λ��ͽ�
- *MISC			��¿�ʥɥ������
- *POS			�ʻ�ʬ��ˤĤ���(Part Of Speech)
- *SPLITTER		ʸ�ᶭ���θ��Х⥸�塼��γ���
- *LEARING		�Ƴؽ������ˤĤ��Ƥ�����
- *TESTING		�ƥ��Ȥ���ˡ�ˤĤ���
+開発者向けのドキュメント
+ *DICUTIL		辞書管理コマンドの仕様
+ *GLOSSARY		用語の意味の説明など
+ *ILIB			Anthy(入力)ライブラリの仕様書
+ *LIB			Anthy(変換エンジン)ライブラリの仕様書
+ *DICLIB                Anthy(個人辞書)ライブラリの仕様書
+ *MISC			雑多なドキュメント
+ *POS			品詞分類について(Part Of Speech)
+ *SPLITTER		文節境界の検出モジュールの概要
+ *LEARING		各学習機構についての説明
+ *TESTING		テストの方法について
  *GUIDE.english		Guide for non Japanese people
- *protocol.txt		EGG �б��ץ��ȥ���λ��ͤ�����  
- *GRAMMAR		���ܸ�ʸˡ�Τ���anthy�Ǥΰ������񤷤�or��̯�ʤ�ΤΥ��
+ *protocol.txt		EGG 対応プロトコルの仕様と説明  
+ *GRAMMAR		日本語文法のうちanthyでの扱いが難しいor微妙なもののメモ
 
-00INDEX�Ȥ����ե�����̾��ls�������˺ǽ�˽ФƤ���褦��
-�Ȥ����տޤ��ä�̾�դ��Ƥ���ޤ���linux�ˤ�
- linux/Documentation/00INDEX �Ȥ����ե����뤬
-����ޤ���
+00INDEXというファイル名はlsした時に最初に出てくるように
+という意図をもって名付けてあります。linuxにも
+ linux/Documentation/00INDEX というファイルが
+あります。

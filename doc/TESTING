@@ -1,36 +1,36 @@
-�ƥ��Ȥ���ˡ
+テストの方法
 
-*�Ѵ����٤�ưŪ��¬�ꤹ��ΤϺ���Ǥ��뤬�Ϻ����Ƥ���
-*���̥桼�����θ��¤ǥƥ��ȤǤ���褦�ˤ���ɬ�פ�����
+*変換精度を自動的に測定するのは困難であるが模索していく
+*一般ユーザーの権限でテストできるようにする必要がある
 
-*��ñ�ʥƥ��ȤǤ���С�emacs���ΥХå�����ɤǤ���anthy-agent
-���ޥ�ɤ��Ѥ��ƹԤʤ��Τ������Ǥ�
- anthy-agent�Υ��ץ����
+*簡単なテストであれば、emacs等のバックエンドであるanthy-agent
+コマンドを用いて行なうのが便利です
+ anthy-agentのオプション
   --dir
   --dic
   --conf
 
-*��ñ�˥ƥ��ȥǡ�����ή���Ƥߤ뤿��ˤϡ�
+*簡単にテストデータを流してみるためには、
 $ cd test
 $ ./anthy --all
- test/test.txt�����Ƥ�����Ѵ�����ޤ���
+ test/test.txtの内容が順に変換されます。
 $ ./anthy 1
- �Τ褦���ֹ����ꤷ�������ʸ������Ѵ����뤳�Ȥ�Ǥ��ޤ�
+ のように番号を指定して特定の文字列を変換することもできます
 
-*ruby��ͳ�Ǽ¹Ԥ��뤿��ˤ�swig�Υ��󥹥ȡ��뤬ɬ�פǤ�
+*ruby経由で実行するためにはswigのインストールが必要です
  sh test.sh -compile
-��ruby/anthy�Υ⥸�塼��򥳥�ѥ��뤷
+でruby/anthyのモジュールをコンパイルし
  sh test.sh
-���Ѵ��ƥ��Ȥ�¹Ԥ��ޤ����ºݤ�ư���Τ�test/test.rb�Ǥ���
+で変換テストを実行します。実際に動作するのはtest/test.rbです。
 
-*�Ķ��ѿ������Ѥ����ǥХå�
- ANTHY_ENABLE_DEBUG_PRINT�ˤʤ�餫��ʸ�������ꤵ�졢
- ANTHY_DISABLE_DEBUG_PRINT�˲������ꤵ��Ƥ��ʤ��Ȥ��˥ǥХå��ץ��Ȥ�ͭ���ˤʤ�ޤ�
+*環境変数を利用したデバッグ
+ ANTHY_ENABLE_DEBUG_PRINTになんらかの文字列が設定され、
+ ANTHY_DISABLE_DEBUG_PRINTに何も設定されていないときにデバッグプリントが有効になります
 
- �ǥХå��ץ��Ȥ�ͭ���ˤ��ơ�
- ANTHY_SPLITTER_PRINT��ʸ�������ꤹ���splitter�γƼ�ǡ�����¤�����Ϥ���ޤ�
+ デバッグプリントを有効にして、
+ ANTHY_SPLITTER_PRINTに文字を設定するとsplitterの各種データ構造が出力されます
  w wordlist
  m metaword
  a A*node
- i ��Ω��Υ�����
- 1 1ʸ�������������
+ i 自立語のタイプ
+ 1 1文節だけ境界検出

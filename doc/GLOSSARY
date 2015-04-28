@@ -1,164 +1,164 @@
 ** GLOSSARY **
-ator allocator��ά
-     allocator�ϰ��̤ˤϥ���δ�����Ԥ������Τ��Ȥ�ؤ���
-     ����γ��ݤ����ǤϤʤ�������������롣
+ator allocatorの略
+     allocatorは一般にはメモリの管理を行う機構のことを指し、
+     メモリの確保だけではなく解放も管理する。
 
-candidate ����
+candidate 候補
 
-candsort �����ɾ���¤Ӵ�����Ԥ��⥸�塼��
+candsort 候補の評価並び換えを行うモジュール
 
-candswap �����ͥ���̤θ򴹤�Ԥ��⥸�塼��
+candswap 候補の優先順位の交換を行うモジュール
 
-cc(conjugate class) �ɤγ��Ѥ� (���Բ��ʤȤ�)
+cc(conjugate class) どの活用か (何行何段とか)
 
-commit(���ߥå�) ���Ϥγ���
+commit(コミット) 入力の確定
 
 compose:
-	�ʻ������Ƥ�줿ʸ����Ф��Ƹ��������Ƥ�
+	品詞を割当てられた文節に対して候補を割当てる
 
 conjugate:
-	����(infection������Ŭ�ڤ���)
+	活用(infectionの方が適切かも)
 
 context:
-	���ϥ���ƥ����� �Ѵ�����ʸ�����Ĥ��б�����
+	入力コンテキスト 変換する文字列一つに対応する
 
 corpus:
-	��ʸ
+	例文
 
 cos(class of speech):
-	���ʻ�
+	副品詞
 
 ct(conjugate type):
-	���ѷ� (̤����Ϣ�ѡ���)
+	活用形 (未然、連用、、)
 
 declinable:
-	�Ѹ� <-> �θ� indeclinable
+	用言 <-> 体言 indeclinable
 
 depword:
-	��°��
+	付属語
 
 dic_session_t:
-	����Υ��å����
+	辞書のセッション
 
 dtor:
-	destructor��ά
+	destructorの略
 
 ent:
 	entry
 
 feature:
-	������0,1���ͤ���ؿ�
+	素性、0,1の値を取る関数
 
 feature_set:
-	�����ν��硢���ͤΥ٥��ȥ�⤷���������ֹ�Υꥹ�ȤȤ��ư�����
+	素性の集合、二値のベクトルもしくは素性番号のリストとして扱える
 
 file_dic:
-	�ե����뼭��
+	ファイル辞書
 
 gang look up:
-	ʣ���θ����������Ф��븡������٤˹Ԥ�
+	複数の検索キーに対する検索を一度に行う
 
 lattice:
-	«���������γ�ǰ
+	束、集合論の概念
 
 metaword:
-	ʸ���ʣ���ޤȤ᤿���
+	文節を複数まとめたもの
 
 mmap:
-	OS�ε�ǽ
-	�ե���������Ƥ�ץ������Υ��ɥ쥹���֤˸�����褦�ˤ���
+	OSの機能
+	ファイルの内容をプロセスのアドレス空間に見えるようにする
 
 nr:
-	NumbeR��nr_?? �Ǥʤˤ��ο����̣����
+	NumbeR。nr_?? でなにかの数を意味する
 
-ochaire(��������):
-	ʸ����Ȥ򤽤Τޤ޳ؽ����뤿��ε���
+ochaire(お茶入れ):
+	文節の組をそのまま学習するための機構
 
 personality:
-	�桼�����̤��뤿���ʸ����
+	ユーザを識別するための文字列
 
 pos(part of speech):
-	�ʻ�
+	品詞
 
 quit:
-	�⥸�塼�뼫�Τν�λ(�ؿ���̿̾�˻ȤäƤ�) -> release
+	モジュール自体の終了(関数の命名に使ってる) -> release
 
 ratio:
-	RATIO_BASE��ʬ��Ȥ�����Ψ
+	RATIO_BASEを分母とする比率
 
 release :
-	�⥸�塼��Υǡ���(��¤)�β���(�ؿ���̿̾�˻ȤäƤ�) -> quit
+	モジュールのデータ(構造)の解放(関数の命名に使ってる) -> quit
 
 scos(sub cos):
-	�����ʻ�
+	副副品詞
 
 seg:
 	-> segment
 
 seq_ent_t:
-	�����θ��и�
+	辞書上の見出語
 
 segment:
-	ʸ��(��ʸˡ��ʸ��Ǥ�̵��)
+	文節(国文法の文節では無い)
 
 segstruct:
-	ʸ���������ñ����Ф��롼���Ť��Ƥ��ʻ������Ƥ�
+	文節を構成する単語に対しルール基づいてに品詞を割当てる
 
 splitter:
-	�Ҥ餬�����ʸ���ʬ�䤹��
+	ひらがな列を文節に分割する
 
 trie:
-	n-way tree ����Ū�ˤ�256�ʤɤ��Ѥ���
-        ʸ�����IP���ɥ쥹���ι�®�������Ѥ�����
+	n-way tree 一般的には256などを用いる
+        文字列やIPアドレス等の高速検索に用いられる
 
 word_list:
-	ʸ���������ñ�̡���Ω����Ĵޤ�
+	文節を構成する単位、自立語を一つ含む
 
 wordseq:
-	��Ω����Ф�����°����դ��Ƥ椯
+	自立語に対して付属語を付けてゆく
 
 wordsplit:
-	ʸ��ζ����򸡽Ф���
+	文節の境界を検出する
 
 wtype:
-	ñ��η����� -> doc/POS�򸫤褦
+	単語の型情報 -> doc/POSを見よう
 
 xchar:
-	ʸ��(EUC-JP�Υ�����)
+	文字(EUC-JPのコード)
 
 xstr:
-	ʸ����(Ĺ����xchar�ؤΥݥ��󥿤����)
+	文字列(長さとxcharへのポインタを持つ)
 
-�ӥ��ӥ��르�ꥺ��:
-	viterbi algorithm��ưŪ�ײ�ˡ�ΰ��
+ビタビアルゴリズム:
+	viterbi algorithm、動的計画法の一種
 
 
 ** xchar **
-anthy�Ǥ�xchar�Ȥ����ȼ���ʸ�������ä�ʸ���򰷤��褦�ˤ��Ƥ��롣
-xchar�ϸ������Ǥ�32bit��UCS4�⤷����ASCII�Υ����ɤ����äƤ��롣
+anthyではxcharという独自の文字型を作って文字を扱うようにしている。
+xcharは現時点では32bitでUCS4もしくはASCIIのコードが入っている。
 
 
 ** context **
-Anthy��Ʊ����ʣ�������Ϥ�Ԥ����Ȥ򥵥ݡ��Ȥ��뤿��ˡ�
-ʣ���γ����Ϥ򥳥�ƥ����ȤȤ������֥������Ȥ��б������ơ�
-�桼���ˤ�����򤽤줾��Υ���ƥ����Ȥؤ����Ȥ���
-���ǹԤ��褦�ˤ��Ƥ��ޤ���
+Anthyは同時に複数の入力を行うことをサポートするために、
+複数の各入力をコンテキストというオブジェクトに対応させて、
+ユーザによる操作をそれぞれのコンテキストへの操作という
+形で行うようにしています。
 
 ** seq_ent **
-ʸ����Υϥ�ɥ�Ǥ���
-personality���Ȥ˼�����Ѱդ����Τǡ��ۤʤ�personality�ˤ����Ƥ�
-Ʊ��ʸ����Ǥ�ۤʤ��ͤ���ޤ���
+文字列のハンドルです。
+personalityごとに辞書は用意されるので、異なるpersonalityにおいては
+同じ文字列でも異なる値を取ります。
 
 ** xstr **
 typedef struct xstr_{
   xchar *str;
   int len;
 }xstr;
-���̤�ʸ����Τ褦��\0��ü�ˤ������ʬ����Ф��ʤɤ���
-ʣ���ˤʤ�Τǡ��������ؤΥݥ��󥿤�ʸ��������Ĺ�¤�Τˤ�ä�
-ʸ�����ɽ�����Ƥ��롣
+普通の文字列のように\0終端にすると部分を取り出すなどの操作が
+複雑になるので、開始点へのポインタと文字数を持つ構造体によって
+文字列を表現している。
 
 ** personality **
-�ؽ������Ƥʤɤ��̤��뤿���̾��
-�ƥ���ƥ����Ȥϰ�Ĥ�personality�򻲾Ȥ��롣
-�ä˻��ꤷ�ʤ����default personality ""(��ʸ��)�����Ѥ���롣
+学習の内容などを識別するための名前
+各コンテキストは一つのpersonalityを参照する。
+特に指定しなければdefault personality ""(空文字)が使用される。

@@ -1,105 +1,105 @@
 This document is written in Japanese.
 
-Emacs����Anthy�γƵ�ǽ���Ѥ�����ˡ�򵭽Ҥ����ɥ�����ȤǤ�
+EmacsからAnthyの各機能を用いる方法を記述したドキュメントです
 
 
-(1)���եȥ������ι���
-(2)�Ȥ��Ϥ���뤿���
-(3)���ܸ����Ϥ���ˡ
-(4)�������
+(1)ソフトウェアの構成
+(2)使いはじめるために
+(3)日本語入力の方法
+(4)設定項目
 (5)Quick Guide
-(6)����Ū�ʾܺ�
+(6)技術的な詳細
 
 
 
 
-(1)���եȥ������ι���
-  Anthy��emacs�б������ܸ��������ȸĿͼ���δ�����
-  ��Ĥ���ʬ�ǹ�������Ƥ��ޤ���
-  �ɤ������ʬ��elisp�ǵ��Ҥ��줿�ե���ȥ���ɤ���
-  ���ޥ�ɤ�ư���ơ��ѥ��פ��̿����뤳�Ȥˤ�ä�
-  ư��ޤ�������ˤ�äƥ��꡼��ʼ����Ȱ����
-  �������ƥ��ȥץ饤�Х����ݸ��¸����Ƥ��ޤ���
+(1)ソフトウェアの構成
+  Anthyのemacs対応は日本語入力部と個人辞書の管理の
+  二つの部分で構成されています。
+  どちらの部分もelispで記述されたフロントエンドから
+  コマンドを起動して、パイプで通信することによって
+  動作します。これによってクリーンな実装と一定の
+  セキュリティとプライバシー保護を実現しています。
 
 
 
-(2)�Ȥ��Ϥ���뤿���
-  *�ޤ�Anthy���̾�˥��󥹥ȡ��뤷�Ƥ���������
-  *����emacs lisp������ɤ�������򤷤ޤ���
-   ����Ū�ˤ� ~/.emacs ��
+(2)使いはじめるために
+  *まずAnthyを通常にインストールしてください。
+  *次にemacs lispをロードする設定をします。
+   一般的には ~/.emacs に
    (load-library "anthy")
-   �Ȥ����Ԥ��ɲä��ޤ�
-  *�����ƻ��Ѥ���input-method�Ȥ���Anthy�����򤷤ޤ�
-   ��������Ū�ˤ� ~/.emacs ��
+   という行を追加します
+  *そして使用するinput-methodとしてAnthyを選択します
+   これも一般的には ~/.emacs に
    (setq default-input-method 'japanese-anthy)
-   �Ȥ����Ԥ��ɲä��뤳�Ȥˤ�äƹԤ��ޤ�
-  *emacs�Υ��󥹥ȡ��뤵��Ƥ������anthy��
-   ���󥹥ȡ��뤵��Ƥ����꤬�ۤʤ���ˤ�
-   ~/.emacs �˲����ιԤ��ɲä��Ƥ�������
+   という行を追加することによって行います
+  *emacsのインストールされている場所とanthyの
+   インストールされている場所が異なる場合には
+   ~/.emacs に下記の行を追加してください
    (setq load-path
     (cons "/usr/local/share/emacs/site-lisp/anthy/" load-path))
-   emacs�򥤥󥹥ȡ��뤷�����prefix��anthy�򥤥󥹥ȡ��뤷�����prefix��
-   �㤦����
-   ~/.emacs �˲����ιԤ��ɲä��Ƥ�������
+   emacsをインストールした先のprefixとanthyをインストールした先のprefixが
+   違う場合は
+   ~/.emacs に下記の行を追加してください
    (load-file "/usr/local/share/emacs/site-lisp/anthy/leim-list.el")
 
 
-(3)���ܸ����Ϥ���ˡ
- �����Х����
-  ���ϥ⡼�ɤؤΰܹ�
-   +C-\ anthy-mode��on-off
-  ���ϥ⡼��
-   +/ �ѿ��⡼�ɤȤΰ��Ū�ʥȥ���
-    `/'���Τ�Τ����Ϥ���������`/'��2���ǤäƤ�������
-   +l �ѿ��⡼�ɤؤ��ѹ�(�ץꥨ�ǥ��åȤ�̵�����֤�ͭ��)
-   +C-j ���ܸ�⡼�ɤؤ��ѹ�
-   +q �Ҥ餬�ʥ������ʤΥȥ���(�ץꥨ�ǥ��åȤ�̵�����֤�ͭ��)
-  �Խ��⡼��
-   +C-i ʸ���û��
-   +C-o ʸ��γ���
-   +C-f ��ʸ��
-   +C-b ��ʸ��
-   +C-n, space ������
-   +C-p ������
-   +C-j ����
-   +return ����
+(3)日本語入力の方法
+ キーバインド
+  入力モードへの移行
+   +C-\ anthy-modeのon-off
+  入力モード
+   +/ 英数モードとの一時的なトグル
+    `/'そのものを入力したい場合は`/'を2回打ってください
+   +l 英数モードへの変更(プリエディットの無い状態で有効)
+   +C-j 日本語モードへの変更
+   +q ひらがなカタカナのトグル(プリエディットの無い状態で有効)
+  編集モード
+   +C-i 文節の短縮
+   +C-o 文節の拡大
+   +C-f 右文節
+   +C-b 左文節
+   +C-n, space 次候補
+   +C-p 前候補
+   +C-j 確定
+   +return 確定
 
 
 
-(4)�������
-  *~/.emacs�˵��Ҥ��뤳�Ȥˤ�ä����꤬��ǽ�Ǥ���
+(4)設定項目
+  *~/.emacsに記述することによって設定が可能です．
    +(anthy-change-hiragana-map key str)
-      �Ҥ餬�ʤ�map���ѹ�����
-     ��
-      (anthy-change-hiragana-map "," "��")
-    ��.,�פ�֡����פ˳�����Ƥ����
+      ひらがなのmapを変更する
+     例
+      (anthy-change-hiragana-map "," "、")
+    「.,」を「．，」に割り当てる場合は
     (anthy-load-hiragana-map anthy-alt-char-map)
    +(anthy-set-break-into-roman 't)
-     �����޻�������˥Хå����ڡ����򲡤���ʸ��ñ�̤ǤϤʤ������޻���ä���
-     ���Ȥ��С֤��פǥХå����ڡ����򲡤��ȡ�k�פ��Ĥ�
+     ローマ字入力中にバックスペースを押すと文字単位ではなくローマ字を消す．
+     たとえば「か」でバックスペースを押すと「k」が残る
    +(anthy-kana-map-mode)
-    ���ʥ����ܡ����Ǥ��⡼�ɤ��ѹ�����
+    かなキーボード打ちモードに変更する
 
 (6)Quick Guide
- ~/.emacs���ɲä������Ƥ������Ǥ�
- ���ܸ��ǥե���Ȥˤ���
+ ~/.emacsに追加する内容の説明です
+ 日本語をデフォルトにする
   (set-language-environment "Japanese")
- anthy.el ������ɤǤ���褦�ˤ���
+ anthy.el をロードできるようにする
   (push "/usr/local/share/emacs/site-lisp/anthy/" load-path)
- anthy.el������ɤ���
+ anthy.elをロードする
   (load-library "anthy")
- japanese-anthy ��ǥե���Ȥ�input-method�ˤ���
+ japanese-anthy をデフォルトのinput-methodにする
   (setq default-input-method 'japanese-anthy)
 
 
 
-(6)����Ū�ʾܺ�
-  *src-util/anthy.el��emacs�Ѥ�anthy�Υե���ȥ���ɤǤ���
-  *src-util/anthy-dic.el��emacs�Ѥ�anthy�Υե���ȥ���ɤǤ���
-  *emacs��site-lisp�Υǥ��쥯�ȥ�˥��󥹥ȡ��뤵��ޤ���
-  *emacs20.7�ʤɤ�ư��ޤ���
-  *leim��API�ˤ��򤷤Ƥ��ޤ���
-  *anthy.el ��Ʊ������Ƥ���anthy-agent�Ȥ������ޥ�ɤ�ư����
-   �ѥ��פ��̿��򤹤뤳�Ȥˤ�ä��Ѵ���ư���Ԥ��ޤ���
-  *anthy-dic.el ��Ʊ������Ƥ���anthy-dic-tool�Ȥ������ޥ�ɤ�
-   ��ư���ƥѥ��פ��̿���Ԥ����Ȥˤ�äơ��Ŀͼ���˥����������ޤ���
+(6)技術的な詳細
+  *src-util/anthy.elがemacs用のanthyのフロントエンドです。
+  *src-util/anthy-dic.elがemacs用のanthyのフロントエンドです。
+  *emacsのsite-lispのディレクトリにインストールされます。
+  *emacs20.7などで動作します。
+  *leimのAPIにも準拠しています。
+  *anthy.el は同梱されているanthy-agentというコマンドを起動して
+   パイプで通信をすることによって変換の動作を行います。
+  *anthy-dic.el は同梱されているanthy-dic-toolというコマンドを
+   起動してパイプで通信を行うことによって、個人辞書にアクセスします。
