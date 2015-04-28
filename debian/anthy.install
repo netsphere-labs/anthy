@@ -1,2 +1,4 @@
 usr/bin/anthy-agent
 usr/bin/anthy-dic-tool
+usr/share/anthy/dic-tool-usage.txt
+usr/share/anthy/typetab

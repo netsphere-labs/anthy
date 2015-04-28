@@ -1,2 +1,3 @@
 etc/anthy
-usr/share/anthy
+usr/share/anthy/anthy.dic
+usr/share/anthy/zipcode.t
