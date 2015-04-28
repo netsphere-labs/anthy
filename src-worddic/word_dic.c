@@ -1,7 +1,7 @@
 /*
- * Anthy¤Î¼­½ñ¥é¥¤¥Ö¥é¥ê¤ÎÃæ¿´
+ * Anthyã®è¾æ›¸ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®ä¸­å¿ƒ
  *
- * anthy_get_seq_ent_from_xstr()¤Ç¼­½ñ¤ò¤Ò¤¯
+ * anthy_get_seq_ent_from_xstr()ã§è¾æ›¸ã‚’ã²ã
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  * Copyright (C) 2005-2006 YOSHIDA Yuichi
@@ -33,7 +33,7 @@
 #include <anthy/logger.h>
 #include <anthy/xchar.h>
 #include <anthy/feature_set.h>
-#include <anthy/textdict.h>
+#include <anthy/textdic.h>
 
 #include <anthy/diclib.h>
 
@@ -44,12 +44,12 @@
 /**/
 static int dic_init_count;
 
-/* ¼­½ñ */
-/* Á´personality¤Ç¶¦Í­¤µ¤ì¤ë¥Õ¥¡¥¤¥ë¼­½ñ */
+/* è¾æ›¸ */
+/* å…¨personalityã§å…±æœ‰ã•ã‚Œã‚‹ãƒ•ã‚¡ã‚¤ãƒ«è¾æ›¸ */
 static struct word_dic *master_dic_file;
 
-/* ³Æ¥Ñ¡¼¥½¥Ê¥ê¥Æ¥£¤´¤È¤Î¼­½ñ */
-struct mem_dic *anthy_current_personal_dic_cache;/* ¥­¥ã¥Ã¥·¥å */
+/* å„ãƒ‘ãƒ¼ã‚½ãƒŠãƒªãƒ†ã‚£ã”ã¨ã®è¾æ›¸ */
+struct mem_dic *anthy_current_personal_dic_cache;/* ã‚­ãƒ£ãƒƒã‚·ãƒ¥ */
 /**/
 struct record_stat *anthy_current_record;
 
@@ -60,7 +60,7 @@ anthy_validate_seq_ent(struct seq_ent *seq, xstr *xs, int is_reverse)
     return NULL;
   }
   if (seq->nr_dic_ents == 0 && seq->nr_compound_ents == 0) {
-    /* Ìµ¸ú¤Ê¥¨¥ó¥È¥ê¤òºîÀ®¤·¤¿¤Î¤Çcache¤«¤éºï½ü */
+    /* ç„¡åŠ¹ãªã‚¨ãƒ³ãƒˆãƒªã‚’ä½œæˆã—ãŸã®ã§cacheã‹ã‚‰å‰Šé™¤ */
     anthy_mem_dic_release_seq_ent(anthy_current_personal_dic_cache,
 				  xs, is_reverse);
     return NULL;
@@ -74,14 +74,14 @@ anthy_cache_get_seq_ent(xstr *xs, int is_reverse)
 {
   struct seq_ent *seq;
 
-  /* ¥­¥ã¥Ã¥·¥åÃæ¤Ë´û¤Ë¤¢¤ì¤Ğ¤½¤ì¤òÊÖ¤¹ */
+  /* ã‚­ãƒ£ãƒƒã‚·ãƒ¥ä¸­ã«æ—¢ã«ã‚ã‚Œã°ãã‚Œã‚’è¿”ã™ */
   seq = anthy_mem_dic_find_seq_ent_by_xstr(anthy_current_personal_dic_cache,
 					   xs, is_reverse);
   if (seq) {
     return seq;
   }
 
-  /* ¥­¥ã¥Ã¥·¥åÃæ¤ËÌµ¤¤¤Î¤Ç³ÎÊİ */
+  /* ã‚­ãƒ£ãƒƒã‚·ãƒ¥ä¸­ã«ç„¡ã„ã®ã§ç¢ºä¿ */
   return anthy_mem_dic_alloc_seq_ent_by_xstr(anthy_current_personal_dic_cache,
 					     xs, is_reverse);
 }
@@ -96,11 +96,11 @@ static seq_ent_t
 do_get_seq_ent_from_xstr(xstr *xs, int is_reverse)
 {
   struct seq_ent *seq;
-  /* ¥­¥ã¥Ã¥·¥å¤«¤é¼è¤ê½Ğ¤¹ */
+  /* ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‹ã‚‰å–ã‚Šå‡ºã™ */
   seq = anthy_cache_get_seq_ent(xs, is_reverse);
   seq = anthy_validate_seq_ent(seq, xs, is_reverse);
   if (!seq) {
-    /* ¿ô»ú¤Ê¤É¤Î¼­½ñ¤ËÌµ¤¤Ê¸»úÎó¤ò¸¡º÷¤¹¤ë */
+    /* æ•°å­—ãªã©ã®è¾æ›¸ã«ç„¡ã„æ–‡å­—åˆ—ã‚’æ¤œç´¢ã™ã‚‹ */
     return anthy_get_ext_seq_ent_from_xstr(xs, is_reverse);
   }
   return seq;
@@ -112,7 +112,7 @@ convert_vu(xstr *xs)
   int i, v = 0;
   int j;
 
-    /* ¡Ö¥ô¡×¤Î½Ğ¸½¤ò¿ô¤¨¤ë */
+    /* ã€Œãƒ´ã€ã®å‡ºç¾ã‚’æ•°ãˆã‚‹ */
   for (i = 0; i < xs->len; i++) {
     if (xs->str[i] == KK_VU) {
       v++;
@@ -123,7 +123,7 @@ convert_vu(xstr *xs)
     nx->len = xs->len + v;
     nx->str = malloc(sizeof(xchar)*nx->len);
     j = 0;
-    /* ¡Ö¥ô¡×¤ò¡Ö¤¦¡«¡×¤ËÊÑ´¹¤·¤Ä¤Ä¥³¥Ô¡¼¤¹¤ë */
+    /* ã€Œãƒ´ã€ã‚’ã€Œã†ã‚›ã€ã«å¤‰æ›ã—ã¤ã¤ã‚³ãƒ”ãƒ¼ã™ã‚‹ */
     for (i = 0; i < xs->len; i++) {
       if (xs->str[i] == KK_VU) {
 	nx->str[j] = HK_U;
@@ -150,9 +150,9 @@ anthy_get_seq_ent_from_xstr(xstr *xs, int is_reverse)
   }
   if (!is_reverse) {
     xstr *nx = convert_vu(xs);
-    /* ¡Ö¥ô¡×¤Îº®¤¶¤Ã¤¿½çÊÑ´¹¤Î¾ì¹ç¡¢¡Ö¤¦¡«¡×¤ËÄ¾¤·¤Æ¸¡º÷¤¹¤ë
-     *   ¾å°Ì¤Î¥ì¥¤¥ä¡¼¤Ç¤Ï¥æ¡¼¥¶¤ÎÍ¿¤¨¤¿Ê¸»úÎó¤ò¤½¤Î¤Ş¤ŞÊİ»ı¤¹¤ë¤³¤È¤¬
-     *   ´üÂÔ¤µ¤ì¤ë¤Î¤Ç¡¢ÊÑ´¹¤Ï¤³¤³¤Ç¹Ô¤Ê¤¦¡£
+    /* ã€Œãƒ´ã€ã®æ··ã–ã£ãŸé †å¤‰æ›ã®å ´åˆã€ã€Œã†ã‚›ã€ã«ç›´ã—ã¦æ¤œç´¢ã™ã‚‹
+     *   ä¸Šä½ã®ãƒ¬ã‚¤ãƒ¤ãƒ¼ã§ã¯ãƒ¦ãƒ¼ã‚¶ã®ä¸ãˆãŸæ–‡å­—åˆ—ã‚’ãã®ã¾ã¾ä¿æŒã™ã‚‹ã“ã¨ãŒ
+     *   æœŸå¾…ã•ã‚Œã‚‹ã®ã§ã€å¤‰æ›ã¯ã“ã“ã§è¡Œãªã†ã€‚
      */
     if (nx) {
       se = do_get_seq_ent_from_xstr(nx, 0);
@@ -160,7 +160,7 @@ anthy_get_seq_ent_from_xstr(xstr *xs, int is_reverse)
       return se;
     }
   }
-  /* ¡Ö¥ô¡×¤¬½Ğ¸½¤·¤Ê¤¤¡¢¤â¤·¤¯¤ÏµÕÊÑ´¹¤Î¾ì¹ç */
+  /* ã€Œãƒ´ã€ãŒå‡ºç¾ã—ãªã„ã€ã‚‚ã—ãã¯é€†å¤‰æ›ã®å ´åˆ */
   return do_get_seq_ent_from_xstr(xs, is_reverse);
 }
 
@@ -223,7 +223,7 @@ scan_misc_dic(struct gang_elm **array, int nr, int is_reverse)
     xstr *xs = &array[i]->xs;
     struct seq_ent *seq;
     seq = anthy_cache_get_seq_ent(xs, is_reverse);
-    /* ¸Ä¿Í¼­½ñ¤«¤é¤Î¼èÆÀ(texttrie(µì·Á¼°)¤ÈÌ¤ÃÎ¸ì¼­½ñ) */
+    /* å€‹äººè¾æ›¸ã‹ã‚‰ã®å–å¾—(æœªçŸ¥èªè¾æ›¸) */
     if (seq) {
       anthy_copy_words_from_private_dic(seq, xs, is_reverse);
       anthy_validate_seq_ent(seq, xs, is_reverse);
@@ -255,7 +255,7 @@ load_word(xstr *xs, const char *n, int is_reverse)
 }
 
 static int
-gang_scan(void *p, int offset, const char *key, const char *n)
+gang_scan(void *p, long offset, const char *key, const char *n)
 {
   struct gang_scan_context *gsc = p;
   struct gang_elm *elm;
@@ -284,13 +284,13 @@ gang_scan(void *p, int offset, const char *key, const char *n)
 }
 
 static void
-scan_dict(struct textdict *td, int nr, struct gang_elm **array)
+scan_dict(const char *td, int nr, struct gang_elm **array)
 {
   struct gang_scan_context gsc;
   gsc.nr = nr;
   gsc.array = array;
   gsc.nth = 0;
-  anthy_textdict_scan(td, 0, &gsc, gang_scan);
+  anthy_textdic_scan(td, 0, &gsc, gang_scan);
 }
 
 struct scan_arg {
@@ -299,10 +299,10 @@ struct scan_arg {
 };
 
 static void
-request_scan(struct textdict *td, void *arg)
+request_scan(const char *tdname, void *arg)
 {
   struct scan_arg *sarg = (struct scan_arg *)arg;
-  scan_dict(td, sarg->nr, sarg->array);
+  scan_dict(tdname, sarg->nr, sarg->array);
 }
 
 static void
@@ -336,7 +336,7 @@ do_gang_load_dic(xstr *sentence, int is_reverse)
   anthy_gang_fill_seq_ent(master_dic_file, array, nr, is_reverse);
   /**/
   scan_misc_dic(array, nr, is_reverse);
-  /* ¸Ä¿Í¼­½ñ¤«¤éÆÉ¤à */
+  /* å€‹äººè¾æ›¸ã‹ã‚‰èª­ã‚€ */
   sarg.nr = nr;
   sarg.array = array;
   anthy_ask_scan(request_scan, (void *)&sarg);
@@ -358,29 +358,28 @@ anthy_gang_load_dic(xstr *sentence, int is_reverse)
 }
 
 /*
- * seq_ent¤Î¼èÆÀ
+ * seq_entã®å–å¾—
  ************************
- * seq_ent¤Î³Æ¼ï¾ğÊó¤Î¼èÆÀ
+ * seq_entã®å„ç¨®æƒ…å ±ã®å–å¾—
  */
 int
 anthy_get_nr_dic_ents(seq_ent_t se, xstr *xs)
 {
-  struct seq_ent *s = se;
-  if (!s) {
+  if (!se) {
     return 0;
   }
   if (!xs) {
-    return s->nr_dic_ents;
+    return se->nr_dic_ents;
   }
-  return s->nr_dic_ents + anthy_get_nr_dic_ents_of_ext_ent(se, xs);
+  return se->nr_dic_ents + anthy_get_nr_dic_ents_of_ext_ent(se, xs);
 }
 
 int
 anthy_get_nth_dic_ent_str(seq_ent_t se, xstr *orig,
 			  int n, xstr *x)
 {
-  if (!se || (n < 0)) { /* INDEPPAIR³Ø½¬¤Ë¤è¤ë¸ò´¹Àè¤¬¸«¤Ä¤«¤é¤Ê¤«¤Ã¤¿»ş¤ËÉÔÀµ¤Ê¥á¥â¥ê¥¢¥¯¥»¥¹¤ò¤¹¤ë¥Ğ¥°¤Î½¤Àµ¡ÊÄÌ¾Î¡Ö¤¤¤Á¤ª¤¯¡×¤Î·ï¡Ë */
-    x->str = NULL;      /* ÉÔÀµ¤Ê¥á¥â¥ê¥¢¥¯¥»¥¹¤ä¥á¥â¥ê¤ÎÂ¿½Å²òÊü¤ò¤¹¤ë¥Ğ¥°¤Î½¤Àµ */
+  if (!se || (n < 0)) { /* INDEPPAIRå­¦ç¿’ã«ã‚ˆã‚‹äº¤æ›å…ˆãŒè¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸæ™‚ã«ä¸æ­£ãªãƒ¡ãƒ¢ãƒªã‚¢ã‚¯ã‚»ã‚¹ã‚’ã™ã‚‹ãƒã‚°ã®ä¿®æ­£ï¼ˆé€šç§°ã€Œã„ã¡ãŠãã€ã®ä»¶ï¼‰ */
+    x->str = NULL;      /* ä¸æ­£ãªãƒ¡ãƒ¢ãƒªã‚¢ã‚¯ã‚»ã‚¹ã‚„ãƒ¡ãƒ¢ãƒªã®å¤šé‡è§£æ”¾ã‚’ã™ã‚‹ãƒã‚°ã®ä¿®æ­£ */
     x->len = 0;
     return -1;
   }
@@ -396,49 +395,36 @@ anthy_get_nth_dic_ent_str(seq_ent_t se, xstr *orig,
 int
 anthy_get_nth_dic_ent_is_compound(seq_ent_t se, int nth)
 {
-  if (!se) {
+  if (!se || nth >= se->nr_dic_ents)
     return 0;
-  }
-  if (nth >= se->nr_dic_ents) {
-    return 0;
-  }
+
   return se->dic_ents[nth]->is_compound;
 }
 
+#define MAGIC_FREQ 100
 int
 anthy_get_nth_dic_ent_freq(seq_ent_t se, int nth)
 {
-  struct seq_ent *s = se;
-  if (!s) {
+  if (!se)
     return 0;
-  }
-  if (!s->dic_ents) {
-    return anthy_get_nth_dic_ent_freq_of_ext_ent(se, nth);
-  }
-  if (s->nr_dic_ents <= nth) {
-    return anthy_get_nth_dic_ent_freq_of_ext_ent(se, nth - se->nr_dic_ents);
-  }
-  return s->dic_ents[nth]->freq;
+  else if (!se->dic_ents || nth >= se->nr_dic_ents)
+    return MAGIC_FREQ;
+
+  return se->dic_ents[nth]->freq;
 }
 
 int
-anthy_get_nth_dic_ent_wtype(seq_ent_t se, xstr *xs,
-			    int n, wtype_t *w)
+anthy_get_nth_dic_ent_wtype (seq_ent_t se, xstr *xs, int n, wtype_t *w)
 {
-  struct seq_ent *s = se;
-  if (!s) {
+  if (!se) {
     *w = anthy_wt_none;
     return -1;
   }
-  if (s->nr_dic_ents <= n) {
-    int r;
-    r = anthy_get_nth_dic_ent_wtype_of_ext_ent(xs, n - s->nr_dic_ents, w);
-    if (r == -1) {
-      *w = anthy_wt_none;
-    }
-    return r;
-  }
-  *w =  s->dic_ents[n]->type;
+
+  if (n >= se->nr_dic_ents)
+    return anthy_get_nth_dic_ent_wtype_of_ext_ent(xs, w);
+
+  *w = se->dic_ents[n]->type;
   return 0;
 }
 
@@ -446,39 +432,15 @@ int
 anthy_get_seq_ent_pos(seq_ent_t se, int pos)
 {
   int i, v=0;
-  struct seq_ent *s = se;
-  if (!s) {
+  if (!se) {
     return 0;
   }
-  if (s->nr_dic_ents == 0) {
+  if (se->nr_dic_ents == 0) {
     return anthy_get_ext_seq_ent_pos(se, pos);
   }
-  for (i = 0; i < s->nr_dic_ents; i++) {
-    if (anthy_wtype_get_pos(s->dic_ents[i]->type) == pos) {
-      v += s->dic_ents[i]->freq;
-      if (v == 0) {
-	v = 1;
-      }
-    }
-  }
-  return v;
-}
-
-int
-anthy_get_seq_ent_ct(seq_ent_t se, int pos, int ct)
-{
-  int i, v=0;
-  struct seq_ent *s = se;
-  if (!s) {
-    return 0;
-  }
-  if (s->nr_dic_ents == 0) {
-    return anthy_get_ext_seq_ent_ct(s, pos, ct);
-  }
-  for (i = 0; i < s->nr_dic_ents; i++) {
-    if (anthy_wtype_get_pos(s->dic_ents[i]->type)== pos &&
-	anthy_wtype_get_ct(s->dic_ents[i]->type)==ct) {
-      v += s->dic_ents[i]->freq;
+  for (i = 0; i < se->nr_dic_ents; i++) {
+    if (anthy_wtype_get_pos(se->dic_ents[i]->type) == pos) {
+      v += se->dic_ents[i]->freq;
       if (v == 0) {
 	v = 1;
       }
@@ -488,10 +450,10 @@ anthy_get_seq_ent_ct(seq_ent_t se, int pos, int ct)
 }
 
 /*
- * wt¤ÎÉÊ»ì¤ò»ı¤ÄÃ±¸ì¤ÎÃæ¤ÇºÇÂç¤ÎÉÑÅÙ¤ò»ı¤Ä¤â¤Î¤òÊÖ¤¹
+ * wtã®å“è©ã‚’æŒã¤å˜èªã®ä¸­ã§æœ€å¤§ã®é »åº¦ã‚’æŒã¤ã‚‚ã®ã‚’è¿”ã™
  */
 int
-anthy_get_seq_ent_wtype_freq(seq_ent_t seq, wtype_t wt)
+anthy_get_seq_ent_wtype_freq (seq_ent_t seq, wtype_t wt)
 {
   int i, f;
 
@@ -504,10 +466,10 @@ anthy_get_seq_ent_wtype_freq(seq_ent_t seq, wtype_t wt)
   }
 
   f = 0;
-  /* Ã±¸ì */
+  /* å˜èª */
   for (i = 0; i < seq->nr_dic_ents; i++) {
     if (seq->dic_ents[i]->order == 0 &&
-	anthy_wtype_include(wt, seq->dic_ents[i]->type)) {
+	anthy_wtype_equal (wt, seq->dic_ents[i]->type)) {
       if (f < seq->dic_ents[i]->freq) {
 	f = seq->dic_ents[i]->freq;
       }
@@ -517,25 +479,24 @@ anthy_get_seq_ent_wtype_freq(seq_ent_t seq, wtype_t wt)
 }
 
 /*
- * wt¤ÎÉÊ»ì¤ò»ı¤ÄÊ£¹ç¸ì¤ÎÃæ¤ÇºÇÂç¤ÎÉÑÅÙ¤ò»ı¤Ä¤â¤Î¤òÊÖ¤¹
+ * wtã®å“è©ã‚’æŒã¤è¤‡åˆèªã®ä¸­ã§æœ€å¤§ã®é »åº¦ã‚’æŒã¤ã‚‚ã®ã‚’è¿”ã™
  */
 int
 anthy_get_seq_ent_wtype_compound_freq(seq_ent_t se, wtype_t wt)
 {
   int i,f;
-  struct seq_ent *s = se;
-  if (!s) {
+  if (!se) {
     return 0;
   }
   /**/
   f = 0;
-  for (i = 0; i < s->nr_dic_ents; i++) {
+  for (i = 0; i < se->nr_dic_ents; i++) {
     if (!anthy_get_nth_dic_ent_is_compound(se, i)) {
       continue;
     }
-    if (anthy_wtype_include(wt, s->dic_ents[i]->type)) {
-      if (f < s->dic_ents[i]->freq) {
-	f = s->dic_ents[i]->freq;
+    if (anthy_wtype_equal (wt, se->dic_ents[i]->type)) {
+      if (f < se->dic_ents[i]->freq) {
+	f = se->dic_ents[i]->freq;
       }
     }
   }
@@ -546,15 +507,14 @@ int
 anthy_get_seq_ent_indep(seq_ent_t se)
 {
   int i;
-  struct seq_ent *s = se;
-  if (!s) {
+  if (!se) {
     return 0;
   }
-  if (s->nr_dic_ents == 0) {
-    return anthy_get_ext_seq_ent_indep(s);
+  if (se->nr_dic_ents == 0) {
+    return anthy_get_ext_seq_ent_indep(se);
   }
-  for (i = 0; i < s->nr_dic_ents; i++) {
-    if (anthy_wtype_get_indep(s->dic_ents[i]->type)) {
+  for (i = 0; i < se->nr_dic_ents; i++) {
+    if (anthy_wtype_get_indep(se->dic_ents[i]->type)) {
       return 1;
     }
   }
@@ -570,7 +530,7 @@ anthy_has_compound_ents(seq_ent_t se)
   return se->nr_compound_ents;
 }
 
-/* compund¤Ç¤Ê¤¤¸õÊä¤ò»ı¤Ã¤Æ¤¤¤ë¤« */
+/* compundã§ãªã„å€™è£œã‚’æŒã£ã¦ã„ã‚‹ã‹ */
 int
 anthy_has_non_compound_ents(seq_ent_t se)
 {
@@ -600,7 +560,7 @@ struct elm_compound {
   xstr str;
 };
 
-/* Í×ÁÇ¤ËÂĞ±ş¤¹¤ëÆÉ¤ß¤ÎÄ¹¤µ¤òÊÖ¤¹ */
+/* è¦ç´ ã«å¯¾å¿œã™ã‚‹èª­ã¿ã®é•·ã•ã‚’è¿”ã™ */
 static int
 get_element_len(xchar xc)
 {
@@ -619,7 +579,7 @@ get_nth_elm_compound(compound_ent_t ce, struct elm_compound *elm, int nth)
   int off = 0;
   int i, j;
   for (i = 0; i <= nth; i++) {
-    /* nthÈÖÌÜ¤ÎÍ×ÁÇ¤ÎÀèÆ¬¤Ø°ÜÆ°¤¹¤ë */
+    /* nthç•ªç›®ã®è¦ç´ ã®å…ˆé ­ã¸ç§»å‹•ã™ã‚‹ */
     while (!(ce->str.str[off] == '_' &&
 	     get_element_len(ce->str.str[off+1]) > 0)) {
       off ++;
@@ -627,7 +587,7 @@ get_nth_elm_compound(compound_ent_t ce, struct elm_compound *elm, int nth)
 	return NULL;
       }
     }
-    /* ¹½Â¤ÂÎ¤Ø¾ğÊó¤ò¼è¤ê¹ş¤à */
+    /* æ§‹é€ ä½“ã¸æƒ…å ±ã‚’å–ã‚Šè¾¼ã‚€ */
     elm->len = get_element_len(ce->str.str[off+1]);
     elm->str.str = &ce->str.str[off+2];
     elm->str.len = ce->str.len - off - 2;
@@ -690,15 +650,14 @@ anthy_compound_get_freq(compound_ent_t ce)
   return ce->freq;
 }
 
-/* ¥Õ¥í¥ó¥È¥¨¥ó¥É¤«¤é¸Æ¤Ğ¤ì¤ë */
+/* ãƒ•ãƒ­ãƒ³ãƒˆã‚¨ãƒ³ãƒ‰ã‹ã‚‰å‘¼ã°ã‚Œã‚‹ */
 void
 anthy_lock_dic(void)
 {
   anthy_priv_dic_lock();
-  anthy_priv_dic_update();
 }
 
-/* ¥Õ¥í¥ó¥È¥¨¥ó¥É¤«¤é¸Æ¤Ğ¤ì¤ë */
+/* ãƒ•ãƒ­ãƒ³ãƒˆã‚¨ãƒ³ãƒ‰ã‹ã‚‰å‘¼ã°ã‚Œã‚‹ */
 void
 anthy_unlock_dic(void)
 {
@@ -733,7 +692,7 @@ anthy_dic_set_personality(const char *id)
 }
 
 
-/** ¼­½ñ¥µ¥Ö¥·¥¹¥Æ¥à¤ò½é´ü²½
+/** è¾æ›¸ã‚µãƒ–ã‚·ã‚¹ãƒ†ãƒ ã‚’åˆæœŸåŒ–
  */
 int
 anthy_init_dic(void)
@@ -762,7 +721,7 @@ anthy_init_dic(void)
   return 0;
 }
 
-/** ¼­½ñ¥µ¥Ö¥·¥¹¥Æ¥à¤ò¤¹¤Ù¤Æ²òÊü
+/** è¾æ›¸ã‚µãƒ–ã‚·ã‚¹ãƒ†ãƒ ã‚’ã™ã¹ã¦è§£æ”¾
  */
 void
 anthy_quit_dic(void)

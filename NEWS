@@ -1,16 +1,33 @@
 Anthy NEWS - User visible changes
 
+* Major changes in Anthy 0.2
+
+  Released 2015-04-28, by NIIBE Yutaka
+
+** Dictionary format has been changed.
+The format of dictionary part 'anthy.dep' in anthy.dic has been
+changed.  You cannot use old anthy.dic with new implementation, or
+vice versa.
+
+** Encoding is default to UTF-8.
+Default encoding is now in UTF-8.  All source code are converted
+in UTF-8, as well as dictionaries.
+
+
 * Major changes in Anthy 9200
 
-  Released 2010-05-18, by NIIBE Yutaka
+  Not released 2010-05-18, by NIIBE Yutaka
 
-** Package are more GNU-ish now, and non-Japanese can read documentation.
+** Packaging improvement.
+Package are more GNU-ish now, and non-Japanese can read documentation.
 
-** Clarify that Anthy is now distributed under the GNU Lesser General
-   Public License version 3 or later (LGPLv3+).
+** License clarification.
+Clarify that Anthy is now distributed under the GNU Lesser General
+Public License version 3 or later (LGPLv3+).
 
-** On conversion, it gives preference to combined words such as "Jiken-go",
-   "Suimin-busoku", "Kensaku-shori", and "Nihongo-henkan".
+** Conversion preference.
+On conversion, it gives preference to combined words such as "Jiken-go",
+"Suimin-busoku", "Kensaku-shori", and "Nihongo-henkan".
 
 ** anthy.el on Emacs23 works faster (closes: sf.jp ticket #11263).
 

@@ -1,10 +1,10 @@
 /*
  * Some comments are written in Japanese.
  *
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2001
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2001
  *
  * Comments are in Japanese(EUC-JP)
- * doc/ILIB »²¾È
+ * doc/ILIB å‚ç…§
  */
 
 #ifndef INPUT_H_INCLUDE
@@ -21,11 +21,11 @@ extern int anthy_input_errno;
 #define AIE_INVAL 2
 #define AIE_NOIMPL 3
 
-#define ANTHY_INPUT_ST_OFF  0  /* Ìµ¸ú¾õÂÖ */ /* anthy agent does not use this state */
-#define ANTHY_INPUT_ST_NONE 1  /* ÂÔµ¡¾õÂÖ */
-#define ANTHY_INPUT_ST_EDIT 2  /* ÊÔ½¸¾õÂÖ */
-#define ANTHY_INPUT_ST_CONV 3  /* ÊÑ´¹¾õÂÖ */
-#define ANTHY_INPUT_ST_CSEG 4  /* Ê¸Àá¿­½Ì¾õÂÖ */
+#define ANTHY_INPUT_ST_OFF  0  /* ç„¡åŠ¹çŠ¶æ…‹ */ /* anthy agent does not use this state */
+#define ANTHY_INPUT_ST_NONE 1  /* å¾…æ©ŸçŠ¶æ…‹ */
+#define ANTHY_INPUT_ST_EDIT 2  /* ç·¨é›†çŠ¶æ…‹ */
+#define ANTHY_INPUT_ST_CONV 3  /* å¤‰æ›çŠ¶æ…‹ */
+#define ANTHY_INPUT_ST_CSEG 4  /* æ–‡ç¯€ä¼¸ç¸®çŠ¶æ…‹ */
 
 #define ANTHY_INPUT_MAP_ALPHABET  0
 #define ANTHY_INPUT_MAP_WALPHABET 1

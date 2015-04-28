@@ -1,7 +1,7 @@
 /*
- * Ê¸Àá¤Î¹½Â¤metaword¤ò¥½¡¼¥È¤¹¤ë
+ * æ–‡ç¯€ã®æ§‹é€ metawordã‚’ã‚½ãƒ¼ãƒˆã™ã‚‹
  *
- * Ê¸Àá¤ËÂĞ¤¹¤ëÊ£¿ô¤Î¹½Â¤¤Î¸õÊä¤ò¥½¡¼¥È¤¹¤ë
+ * æ–‡ç¯€ã«å¯¾ã™ã‚‹è¤‡æ•°ã®æ§‹é€ ã®å€™è£œã‚’ã‚½ãƒ¼ãƒˆã™ã‚‹
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  *
@@ -64,7 +64,7 @@ mw_eval(struct seg_ent *prev_seg, struct seg_ent *seg,
   anthy_feature_list_set_dep_word(&fl, mw->dep_word_hash);
   anthy_feature_list_set_dep_class(&fl, mw->dep_class);
   anthy_feature_list_set_mw_features(&fl, mw->mw_features);
-  /* Á°¤ÎÊ¸Àá¤ÎÁÇÀ­ */
+  /* å‰ã®æ–‡ç¯€ã®ç´ æ€§ */
   if (prev_seg) {
     pc = prev_seg->best_seg_class;
   } else {
@@ -72,7 +72,7 @@ mw_eval(struct seg_ent *prev_seg, struct seg_ent *seg,
   }
   anthy_feature_list_set_class_trans(&fl, pc, mw->seg_class);
   anthy_feature_list_sort(&fl);
-  /* ·×»»¤¹¤ë */
+  /* è¨ˆç®—ã™ã‚‹ */
   prob = 0.1 + calc_probability(&fl);
   if (prob < 0) {
     prob = (double)1 / (double)1000;
@@ -134,7 +134,7 @@ anthy_sort_metaword(struct segment_list *seg_list)
   /**/
   for (i = 0; i < seg_list->nr_segments; i++) {
     struct seg_ent *seg = anthy_get_nth_segment(seg_list, i);
-    if (seg->mw_array) {    /* ÉÔÀµ¤Ê¥á¥â¥ê¥¢¥¯¥»¥¹¤ò¹Ô¤¦¥Ğ¥°¤Î½¤Àµ */
+    if (seg->mw_array) {    /* ä¸æ­£ãªãƒ¡ãƒ¢ãƒªã‚¢ã‚¯ã‚»ã‚¹ã‚’è¡Œã†ãƒã‚°ã®ä¿®æ­£ */
     qsort(seg->mw_array, seg->nr_metaword, sizeof(struct meta_word *),
 	  metaword_compare_func);
     }

@@ -1,6 +1,6 @@
 /*
- * ÊÑ´¹¥¨¥ó¥¸¥ó¤ÎÆâÉô¾ğÊó¤ò»È¤¦¤¿¤á¡¢°Õ¿ŞÅª¤Ë
- * layer violation¤òÊüÃÖ¤·¤Æ¤¤¤ë¡£
+ * å¤‰æ›ã‚¨ãƒ³ã‚¸ãƒ³ã®å†…éƒ¨æƒ…å ±ã‚’ä½¿ã†ãŸã‚ã€æ„å›³çš„ã«
+ * layer violationã‚’æ”¾ç½®ã—ã¦ã„ã‚‹ã€‚
  *
  */
 #include <stdio.h>
@@ -17,23 +17,23 @@
 #include "../src-worddic/dic_ent.h"
 
 
-/* ¼«Î©¸ìÉô¤«ÉÕÂ°¸ìÉô¤« */
+/* è‡ªç«‹èªéƒ¨ã‹ä»˜å±èªéƒ¨ã‹ */
 #define WORD_INDEP 0
 #define WORD_DEP 1
 
-/* Ã±¸ì(¼«Î©¸ìorÉÕÂ°¸ì) */
+/* å˜èª(è‡ªç«‹èªorä»˜å±èª) */
 struct word {
   /* WORD_* */
   int type;
-  /* ÉÕÂ°¸ì¤Îhash(WORD_INDEP)¤â¤·¤¯¤ÏÊÑ´¹¸å¤ÎÊ¸»úÎó¤Îhash(WORD_DEP) */
+  /* ä»˜å±èªã®hash(WORD_INDEP)ã‚‚ã—ãã¯å¤‰æ›å¾Œã®æ–‡å­—åˆ—ã®hash(WORD_DEP) */
   int hash;
-  /* ÆÉ¤ß¤ÎÊ¸»úÎó¤Îhash */
+  /* èª­ã¿ã®æ–‡å­—åˆ—ã®hash */
   int yomi_hash;
-  /* ÊÑ´¹Á°¤ÎÊ¸»úÎó */
+  /* å¤‰æ›å‰ã®æ–‡å­—åˆ— */
   xstr *raw_xs;
-  /* ÊÑ´¹¸å¤ÎÊ¸»úÎó */
+  /* å¤‰æ›å¾Œã®æ–‡å­—åˆ— */
   xstr *conv_xs;
-  /* ÊÑ´¹¸å¤ÎÉÊ»ì */
+  /* å¤‰æ›å¾Œã®å“è© */
   const char *wt;
 };
 
@@ -178,9 +178,9 @@ parse_line(struct res_db *db, char *line)
   }
   if (buf1[0] != '|') {
     /* buf1 buf2    buf3
-     * Ê¿Ê¸ ¶èÀÚ¤êÊ¸
-     * Ê¿Ê¸ ¶èÀÚ¤êÊ¸ ÊÑ´¹¸å
-     * Ê¿Ê¸ ¶èÀÚ¤êÊ¸ check
+     * å¹³æ–‡ åŒºåˆ‡ã‚Šæ–‡
+     * å¹³æ–‡ åŒºåˆ‡ã‚Šæ–‡ å¤‰æ›å¾Œ
+     * å¹³æ–‡ åŒºåˆ‡ã‚Šæ–‡ check
      */
     src = buf1;
     res = buf2;
@@ -191,9 +191,9 @@ parse_line(struct res_db *db, char *line)
     }
   } else {
     /* buf1    buf2  (buf3)
-     * ¶èÀÚ¤êÊ¸
-     * ¶èÀÚ¤êÊ¸ ÊÑ´¹¸å
-     * ¶èÀÚ¤êÊ¸ check
+     * åŒºåˆ‡ã‚Šæ–‡
+     * åŒºåˆ‡ã‚Šæ–‡ å¤‰æ›å¾Œ
+     * åŒºåˆ‡ã‚Šæ–‡ check
      */
     strip_separator_vbar(buf4, buf1);
     src = buf4;
@@ -276,12 +276,12 @@ free_word(struct word *w)
   anthy_free_xstr(w->conv_xs);
 }
 
-/* ¼«Î©¸ì¤òºî¤ë */
+/* è‡ªç«‹èªã‚’ä½œã‚‹ */
 static void
 fill_indep_word(struct word *w, struct cand_elm *elm)
 {
   init_word(w, WORD_INDEP);
-  /* ÊÑ´¹Á°¤ÎÆÉ¤ß¤ò¼èÆÀ¤¹¤ë */
+  /* å¤‰æ›å‰ã®èª­ã¿ã‚’å–å¾—ã™ã‚‹ */
   w->raw_xs = anthy_xstr_dup(&elm->str);
   w->yomi_hash = anthy_xstr_hash(w->raw_xs);
   w->hash = 0;
@@ -289,7 +289,7 @@ fill_indep_word(struct word *w, struct cand_elm *elm)
   fill_conv_info(w, elm);
 }
 
-/* ÉÕÂ°¸ì¤òºî¤ë */
+/* ä»˜å±èªã‚’ä½œã‚‹ */
 static void
 fill_dep_word(struct word *w, struct cand_elm *elm)
 {
@@ -325,24 +325,24 @@ print_word(const char *prefix, struct word *w, struct feature_list *fl)
 {
   printf("%s", prefix);
   if (w->type == WORD_DEP) {
-    /* ÉÕÂ°¸ì */
+    /* ä»˜å±èª */
     printf("dep_word hash=%d ", w->hash);
     anthy_putxstrln(w->raw_xs);
     return ;
   }
-  /* ¼«Î©¸ì */
+  /* è‡ªç«‹èª */
   printf("indep_word hash=%d", w->hash);
   /**/
   if (fl) {
     print_features(fl);
   }
-  /* ÉÊ»ì */
+  /* å“è© */
   if (w->wt) {
     printf(" %s", w->wt);
   } else {
     printf(" null");
   }
-  /* Ê¸»úÎó */
+  /* æ–‡å­—åˆ— */
   if (w->conv_xs) {
     printf(" ");
     anthy_putxstr(w->conv_xs);
@@ -353,8 +353,8 @@ print_word(const char *prefix, struct word *w, struct feature_list *fl)
   anthy_putxstrln(w->raw_xs);
 }
 
-/** seg¤ÎÊ¸Àá¥¯¥é¥¹¤òÊÖ¤¹
- * seg¤¬null¤Ç¤¢¤ì¤Ğ¡¢cl¤ò¥¯¥é¥¹¤È¤¹¤ë
+/** segã®æ–‡ç¯€ã‚¯ãƒ©ã‚¹ã‚’è¿”ã™
+ * segãŒnullã§ã‚ã‚Œã°ã€clã‚’ã‚¯ãƒ©ã‚¹ã¨ã™ã‚‹
  */
 static int
 get_seg_class(struct seg_ent *seg, int cl)
@@ -404,11 +404,11 @@ print_element(const char *prefix,
     return ;
   }
   if (elm->id != -1) {
-    /* ¼«Î©¸ì */
+    /* è‡ªç«‹èª */
     fill_indep_word(&w, elm);
     print_word(prefix, &w, fl);
   } else {
-    /* ÉÕÂ°¸ì */
+    /* ä»˜å±èª */
     fill_dep_word(&w, elm);
     print_word(prefix, &w, NULL);
   }
@@ -434,8 +434,8 @@ print_eos(struct seg_ent *prev_seg)
   anthy_feature_list_free(&fl);
 }
 
-/* ¸õÊä¤Î¥ß¥¹¤Ë¤Ï '~'¡¢Ê¸ÀáÄ¹¤Î¥ß¥¹¤Ë¤Ï '!'¤òÉÕ¤±¤ë
- * Æ±¤¸Ê¸ÀáÆâ¤ÎÆó¤Ä¤á°Ê¹ß¤Î¼«Î©¸ì¤Ë¤Ï '^'¤òÉÕ¤±¤ë
+/* å€™è£œã®ãƒŸã‚¹ã«ã¯ '~'ã€æ–‡ç¯€é•·ã®ãƒŸã‚¹ã«ã¯ '!'ã‚’ä»˜ã‘ã‚‹
+ * åŒã˜æ–‡ç¯€å†…ã®äºŒã¤ã‚ä»¥é™ã®è‡ªç«‹èªã«ã¯ '^'ã‚’ä»˜ã‘ã‚‹
  */
 static const char *
 get_prefix(int flag)
@@ -471,9 +471,9 @@ print_segment_info(int is_negative,
     if (nr_indep > 0 && elm->id != -1) {
       prefix = get_prefix(is_negative | CONV_INVALID);
     }
-    /* ½ĞÎÏ¤¹¤ë */
+    /* å‡ºåŠ›ã™ã‚‹ */
     print_element(prefix, elm, &fl);
-    /* ¼«Î©¸ì¤ò¿ô¤¨¤ë */
+    /* è‡ªç«‹èªã‚’æ•°ãˆã‚‹ */
     if (elm->id != -1) {
       nr_indep ++;
     }
@@ -510,7 +510,7 @@ print_context_info(anthy_context_t ac, struct conv_res *cr)
   struct seg_ent *prev_seg = NULL;
 
   printf("segments: %d\n", ac->seg_list.nr_segments);
-  /* ³ÆÊ¸Àá¤ËÂĞ¤·¤Æ */
+  /* å„æ–‡ç¯€ã«å¯¾ã—ã¦ */
   for (i = 0; i < ac->seg_list.nr_segments; i++) {
     struct seg_ent *seg = anthy_get_nth_segment(&ac->seg_list, i);
     struct cand_ent *ce = selected_candidate(seg);
@@ -519,19 +519,19 @@ print_context_info(anthy_context_t ac, struct conv_res *cr)
       is_negative = CONV_CAND_MISS;
     }
 
-    /* ³ÆÍ×ÁÇ¤ËÂĞ¤·¤Æ */
+    /* å„è¦ç´ ã«å¯¾ã—ã¦ */
     if (!ce->nr_words) {
-      /* Í×ÁÇ¤¬Ìµ¤¤¤â¤Î¤Ï¤½¤Î¤Ş¤ŞÉ½¼¨ */
+      /* è¦ç´ ãŒç„¡ã„ã‚‚ã®ã¯ãã®ã¾ã¾è¡¨ç¤º */
       print_unconverted(ce);
     } else {
-      /* ¸õÊä¤ÎÊÑ¹¹¤¬¤¢¤Ã¤¿¾ì¹ç¤Ï¤½¤ì¤òÉ½¼¨ */
+      /* å€™è£œã®å¤‰æ›´ãŒã‚ã£ãŸå ´åˆã¯ãã‚Œã‚’è¡¨ç¤º */
       if (seg->committed > 0) {
 	int tmp = seg->committed;
 	seg->committed = 0;
 	print_cand_miss_segment_info(ac, i);
 	seg->committed = tmp;
       }
-      /* Ê¸Àá¤Î¹½À®¤òÉ½¼¨ */
+      /* æ–‡ç¯€ã®æ§‹æˆã‚’è¡¨ç¤º */
       print_segment_info(is_negative, prev_seg, seg);
     }
     /**/

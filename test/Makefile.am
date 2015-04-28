@@ -2,7 +2,7 @@ SUBDIRS =
 
 EXTRA_DIST = test.txt test.exp prediction.c test-matrix.c
 
-INCLUDES = -I$(top_srcdir)/ -DSRCDIR=\"$(srcdir)\" \
+AM_CPPFLAGS = -I$(top_srcdir)/ -DSRCDIR=\"$(srcdir)\" \
 	  -DTEST_HOME=\""`pwd`"\"
 
 noinst_PROGRAMS = anthy checklib

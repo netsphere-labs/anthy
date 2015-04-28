@@ -1,12 +1,12 @@
 /*
- * ³Ø½¬¤ÎÍúÎò¤Ê¤É¤ò´ÉÍı¤¹¤ë¤¿¤á¤Î¥Ç¡¼¥¿¥Ù¡¼¥¹
- * Ê¸»úÎó(xstr)¤ò¥­¡¼¤Ë¤·¤Æ¹âÂ®¤Ë¹Ô(row)¤ò¸¡º÷¤¹¤ë¤³¤È¤¬¤Ç¤­¤ë¡¥
- * Ê£¿ô¤Î¥»¥¯¥·¥ç¥ó¤ò¤â¤Ä¤³¤È¤¬¤Ç¤­¡¤³Ø½¬¤Î°ã¤¦¥Õ¥§¡¼¥º¤Ê¤É¤ËÂĞ±ş¤¹¤ë
- *  (¥»¥¯¥·¥ç¥ó * Ê¸»úÎó -> ¹Ô)
- * ³Æ¹Ô¤ÏÊ¸»úÎó¤«¿ô¤ò»ı¤ÄÇÛÎó¤Ë¤Ê¤Ã¤Æ¤¤¤ë
+ * å­¦ç¿’ã®å±¥æ­´ãªã©ã‚’ç®¡ç†ã™ã‚‹ãŸã‚ã®ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹
+ * æ–‡å­—åˆ—(xstr)ã‚’ã‚­ãƒ¼ã«ã—ã¦é«˜é€Ÿã«è¡Œ(row)ã‚’æ¤œç´¢ã™ã‚‹ã“ã¨ãŒã§ãã‚‹ï¼
+ * è¤‡æ•°ã®ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‚’ã‚‚ã¤ã“ã¨ãŒã§ãï¼Œå­¦ç¿’ã®é•ã†ãƒ•ã‚§ãƒ¼ã‚ºãªã©ã«å¯¾å¿œã™ã‚‹
+ *  (ã‚»ã‚¯ã‚·ãƒ§ãƒ³ * æ–‡å­—åˆ— -> è¡Œ)
+ * å„è¡Œã¯æ–‡å­—åˆ—ã‹æ•°ã‚’æŒã¤é…åˆ—ã«ãªã£ã¦ã„ã‚‹
  *
- * ¡Ö¥Ñ¥È¥ê¥·¥¢¡¦¥È¥é¥¤¡×¤È¤¤¤¦¥Ç¡¼¥¿¹½Â¤¤ò»ÈÍÑ¤·¤Æ¤¤¤ë¡£
- * ¼«Á³¸À¸ì¤Î¸¡º÷¤Ê¤É¤ò°·¤Ã¤Æ¤¤¤ë¶µ²Ê½ñ¤ò»²¾È¤Î¤³¤È
+ * ã€Œãƒ‘ãƒˆãƒªã‚·ã‚¢ãƒ»ãƒˆãƒ©ã‚¤ã€ã¨ã„ã†ãƒ‡ãƒ¼ã‚¿æ§‹é€ ã‚’ä½¿ç”¨ã—ã¦ã„ã‚‹ã€‚
+ * è‡ªç„¶è¨€èªã®æ¤œç´¢ãªã©ã‚’æ‰±ã£ã¦ã„ã‚‹æ•™ç§‘æ›¸ã‚’å‚ç…§ã®ã“ã¨
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -24,16 +24,16 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 /*
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2002 1/18
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2005
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2002 1/18
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2005
  * Copyright (C) 2005 YOSHIDA Yuichi
  * Copyright (C) 2000-2006 TABATA Yusuke
  * Copyright (C) 2000-2003 UGAWA Tomoharu
  * Copyright (C) 2001-2002 TAKAI Kosuke
  */
 /*
- * ¥Ñ¡¼¥½¥Ê¥ê¥Æ¥£""¤ÏÆ¿Ì¾¥Ñ¡¼¥½¥Ê¥ê¥Æ¥£¤Ç¤¢¤ê¡¤
- * ¥Õ¥¡¥¤¥ë¤Ø¤ÎÆÉ¤ß½ñ¤­¤Ï¹Ô¤ï¤Ê¤¤¡¥
+ * ãƒ‘ãƒ¼ã‚½ãƒŠãƒªãƒ†ã‚£""ã¯åŒ¿åãƒ‘ãƒ¼ã‚½ãƒŠãƒªãƒ†ã‚£ã§ã‚ã‚Šï¼Œ
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®èª­ã¿æ›¸ãã¯è¡Œã‚ãªã„ï¼
  */
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -56,7 +56,7 @@
 #include "dic_main.h"
 #include "dic_personality.h"
 
-/* ¸Ä¿Í¼­½ñ¤ò¥»¡¼¥Ö¤¹¤ë¥Õ¥¡¥¤¥ëÌ¾¤Îsuffix */
+/* å€‹äººè¾æ›¸ã‚’ã‚»ãƒ¼ãƒ–ã™ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«åã®suffix */
 #define ENCODING_SUFFIX ".utf8"
 
 
@@ -64,7 +64,7 @@ enum val_type {
   RT_EMPTY, RT_VAL, RT_XSTR, RT_XSTRP
 };
 
-/* ÃÍ */
+/* å€¤ */
 struct record_val {
   enum val_type type;
   union {
@@ -74,24 +74,24 @@ struct record_val {
   } u;
 };
 
-/* ¹Ô */
+/* è¡Œ */
 struct record_row {
   xstr key;
   int nr_vals;
   struct record_val *vals;
 };
 
-/* trie node´ÉÍıÍÑ */
+/* trie nodeç®¡ç†ç”¨ */
 struct trie_node {
   struct trie_node *l;
   struct trie_node *r;
   int bit;
   struct record_row row;
-  struct trie_node *lru_prev, *lru_next; /* Î¾Ã¼¥ë¡¼¥× */
-  int dirty; /* LRU ¤Î¤¿¤á¤Î used, sused ¥Ó¥Ã¥È */
+  struct trie_node *lru_prev, *lru_next; /* ä¸¡ç«¯ãƒ«ãƒ¼ãƒ— */
+  int dirty; /* LRU ã®ãŸã‚ã® used, sused ãƒ“ãƒƒãƒˆ */
 };
 
-/* trie tree¤Îroot */
+/* trie treeã®root */
 struct trie_root {
   struct trie_node root;
   allocator node_ator;
@@ -99,152 +99,152 @@ struct trie_root {
 
 #define LRU_USED  0x01
 #define LRU_SUSED 0x02
-#define PROTECT   0x04 /* º¹Ê¬½ñ¤­½Ğ¤·»ş¤Ë»È¤¦(LRU¤È¤Ï´Ø·¸¤Ê¤¤)
-			*   º¹Ê¬½ñ¤­½Ğ¤·¤Ç¤Ï¡¢¥Õ¥¡¥¤¥ë¤Ë½ñ¤­½Ğ¤¹Á°¤Ë
-			*   ¥Õ¥¡¥¤¥ë¾å¤ËÂ¾¤Î¥×¥í¥»¥¹¤¬µ­Ï¿¤·¤¿¹¹¿·¤ò
-			*   ÆÉ¤ß¹ş¤à¡£¤½¤ì¤Ë¤è¤Ã¤Æ¡¢¤³¤ì¤«¤éÄÉ²Ã¤·¤è
-			*   ¤¦¤È¤¹¤ë¥Î¡¼¥É¤¬¾Ã¤µ¤ì¤ë¤Î¤òËÉ¤°
+#define PROTECT   0x04 /* å·®åˆ†æ›¸ãå‡ºã—æ™‚ã«ä½¿ã†(LRUã¨ã¯é–¢ä¿‚ãªã„)
+			*   å·®åˆ†æ›¸ãå‡ºã—ã§ã¯ã€ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã™å‰ã«
+			*   ãƒ•ã‚¡ã‚¤ãƒ«ä¸Šã«ä»–ã®ãƒ—ãƒ­ã‚»ã‚¹ãŒè¨˜éŒ²ã—ãŸæ›´æ–°ã‚’
+			*   èª­ã¿è¾¼ã‚€ã€‚ãã‚Œã«ã‚ˆã£ã¦ã€ã“ã‚Œã‹ã‚‰è¿½åŠ ã—ã‚ˆ
+			*   ã†ã¨ã™ã‚‹ãƒãƒ¼ãƒ‰ãŒæ¶ˆã•ã‚Œã‚‹ã®ã‚’é˜²ã
 			*/
 /*
  * LRU:
- *   USED:  ¥á¥â¥ê¾å¤Ç»È¤ï¤ì¤¿
- *   SUSED: ÊİÂ¸¤µ¤ì¤¿ used ¥Ó¥Ã¥È
+ *   USED:  ãƒ¡ãƒ¢ãƒªä¸Šã§ä½¿ã‚ã‚ŒãŸ
+ *   SUSED: ä¿å­˜ã•ã‚ŒãŸ used ãƒ“ãƒƒãƒˆ
  *
- * LRU¥ê¥¹¥È¾å¤Ç¤Ï¡¢ USED ¤ÏÉ¬¤º¥ê¥¹¥ÈÀèÆ¬¤ËÊÂ¤ó¤Ç¤¤¤ë¤¬¡¢ SUSED ¤Ï
- * ¥Õ¥é¥°¤Ê¤·¤Î¥Î¡¼¥É¤Èº®ºß¤·¤Æ¤¤¤ë²ÄÇ½À­¤¬¤¢¤ë¡£
+ * LRUãƒªã‚¹ãƒˆä¸Šã§ã¯ã€ USED ã¯å¿…ãšãƒªã‚¹ãƒˆå…ˆé ­ã«ä¸¦ã‚“ã§ã„ã‚‹ãŒã€ SUSED ã¯
+ * ãƒ•ãƒ©ã‚°ãªã—ã®ãƒãƒ¼ãƒ‰ã¨æ··åœ¨ã—ã¦ã„ã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹ã€‚
  *
- * n¸Ä¤ò»Ä¤¹¤è¤¦¤Ë»ØÄê¤µ¤ì¤¿»ş¤ÎÆ°ºî
+ * nå€‹ã‚’æ®‹ã™ã‚ˆã†ã«æŒ‡å®šã•ã‚ŒãŸæ™‚ã®å‹•ä½œ
  *    1. used > n
- *        LRU ¥ê¥¹¥È¤ÎÀèÆ¬¤«¤é n ÈÖÌÜ°Ê¹ß¤ò¾Ã¤¹
+ *        LRU ãƒªã‚¹ãƒˆã®å…ˆé ­ã‹ã‚‰ n ç•ªç›®ä»¥é™ã‚’æ¶ˆã™
  *    2. used + sused > n
- *        used -> »Ä¤¹
- *        sused -> sused ¥Õ¥é¥°¤òÍî¤¹
- *        ¤½¤ì°Ê³° -> ¾Ã¤¹
- *    3. ¤½¤ì°Ê³°
- *        Á´¤Æ»Ä¤¹
- * ¥Õ¥¡¥¤¥ë¤Ë½ñ¤­½Ğ¤¹»ş¤Ë¡¢ used || sused -> sused ¤È¤·¤Æ½ñ¤­½Ğ¤¹
+ *        used -> æ®‹ã™
+ *        sused -> sused ãƒ•ãƒ©ã‚°ã‚’è½ã™
+ *        ãã‚Œä»¥å¤– -> æ¶ˆã™
+ *    3. ãã‚Œä»¥å¤–
+ *        å…¨ã¦æ®‹ã™
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã™æ™‚ã«ã€ used || sused -> sused ã¨ã—ã¦æ›¸ãå‡ºã™
  */
 
-/** ¥»¥¯¥·¥ç¥ó */
+/** ã‚»ã‚¯ã‚·ãƒ§ãƒ³ */
 struct record_section {
   const char *name;
   struct trie_root cols;
   struct record_section *next;
-  int lru_nr_used, lru_nr_sused; /* LRU ÍÑ */
+  int lru_nr_used, lru_nr_sused; /* LRU ç”¨ */
 };
 
-/** ¥Ç¡¼¥¿¥Ù¡¼¥¹ */
+/** ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ */
 struct record_stat {
-  struct record_section section_list; /* section¤Î¥ê¥¹¥È*/
+  struct record_section section_list; /* sectionã®ãƒªã‚¹ãƒˆ*/
   struct record_section *cur_section;
-  struct trie_root xstrs; /* xstr ¤ò intern ¤¹¤ë¤¿¤á¤Î trie */
+  struct trie_root xstrs; /* xstr ã‚’ intern ã™ã‚‹ãŸã‚ã® trie */
   struct trie_node *cur_row;
-  int row_dirty; /* cur_row ¤¬ÊİÂ¸¤ÎÉ¬Í×¤¬¤¢¤ë¤« */
+  int row_dirty; /* cur_row ãŒä¿å­˜ã®å¿…è¦ãŒã‚ã‚‹ã‹ */
   int encoding;
   /**/
   int is_anon;
-  const char *id;         /* ¥Ñ¡¼¥½¥Ê¥ê¥Æ¥£¤Îid */
-  char *base_fn; /* ´ğËÜ¥Õ¥¡¥¤¥ë ÀäÂĞ¥Ñ¥¹ */
-  char *journal_fn; /* º¹Ê¬¥Õ¥¡¥¤¥ë ÀäÂĞ¥Ñ¥¹ */
+  const char *id;         /* ãƒ‘ãƒ¼ã‚½ãƒŠãƒªãƒ†ã‚£ã®id */
+  char *base_fn; /* åŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ« çµ¶å¯¾ãƒ‘ã‚¹ */
+  char *journal_fn; /* å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ« çµ¶å¯¾ãƒ‘ã‚¹ */
   /**/
-  time_t base_timestamp; /* ´ğËÜ¥Õ¥¡¥¤¥ë¤Î¥¿¥¤¥à¥¹¥¿¥ó¥× */
-  int last_update;  /* º¹Ê¬¥Õ¥¡¥¤¥ë¤ÎºÇ¸å¤ËÆÉ¤ó¤À°ÌÃÖ */
-  time_t journal_timestamp; /* º¹Ê¬¥Õ¥¡¥¤¥ë¤Î¥¿¥¤¥à¥¹¥¿¥ó¥× */
+  time_t base_timestamp; /* åŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ— */
+  int last_update;  /* å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®æœ€å¾Œã«èª­ã‚“ã ä½ç½® */
+  time_t journal_timestamp; /* å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ— */
 };
 
-/* º¹Ê¬¤¬100KB±Û¤¨¤¿¤é´ğËÜ¥Õ¥¡¥¤¥ë¤Ø¥Ş¡¼¥¸ */
+/* å·®åˆ†ãŒ100KBè¶ŠãˆãŸã‚‰åŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ«ã¸ãƒãƒ¼ã‚¸ */
 #define FILE2_LIMIT 102400
 
 
 /*
- * xstr ¤Î intern:
- *  ¸Ä¿Í¤´¤È( record_stat ¤´¤È)¤ËÊ¸»úÎó¤ò intern ¤¹¤ë¡£¤³¤ì¤Ï¡¢
- *  ¥á¥â¥ê¤ÎÀáÌó¤ÎÂ¾¤Ë¡¢¥Ç¡¼¥¿¥Ù¡¼¥¹¤Î flush »ş¤Ë¥Ç¡¼¥¿¥Ù¡¼¥¹¤Ë
- *  Í³Íè¤¹¤ë xstr ¤¬Ìµ¸ú¤Ë¤Ê¤ë¤Î¤òËÉ¤°ÌÜÅª¤¬¤¢¤ë¡£
- *  ¤·¤¿¤¬¤Ã¤Æ¡¢¥Ç¡¼¥¿¥Ù¡¼¥¹¤Î flush »ş¤Ç¤â xstr ¤Î intern ÍÑ
- *  ¤Î¥Ç¡¼¥¿¥Ù¡¼¥¹ xstrs ¤Ï¤½¤Î¤Ş¤ŞÊİÂ¸¤¹¤ë¡£
+ * xstr ã® intern:
+ *  å€‹äººã”ã¨( record_stat ã”ã¨)ã«æ–‡å­—åˆ—ã‚’ intern ã™ã‚‹ã€‚ã“ã‚Œã¯ã€
+ *  ãƒ¡ãƒ¢ãƒªã®ç¯€ç´„ã®ä»–ã«ã€ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã® flush æ™‚ã«ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã«
+ *  ç”±æ¥ã™ã‚‹ xstr ãŒç„¡åŠ¹ã«ãªã‚‹ã®ã‚’é˜²ãç›®çš„ãŒã‚ã‚‹ã€‚
+ *  ã—ãŸãŒã£ã¦ã€ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã® flush æ™‚ã§ã‚‚ xstr ã® intern ç”¨
+ *  ã®ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ xstrs ã¯ãã®ã¾ã¾ä¿å­˜ã™ã‚‹ã€‚
  *  
- *  xstrs: xstr ¤Î intern ÍÑ¤Î¥Ç¡¼¥¿¥Ù¡¼¥¹
- *         row ¤Î key ¤ò intern ¤µ¤ì¤¿ xstr ¤È¤·¤Æ»È¤¦¡£
- *         row ¤Ë value ¤Ï»ı¤¿¤Ê¤¤¡£
- *                    (¾­ÍèÅª¤Ë¤Ï»²¾È¥«¥¦¥ó¥¿¤ò¤Ä¤±¤Æ¤â¤¤¤¤¤«¤â)
- *  »²¾È: intern_xstr()
+ *  xstrs: xstr ã® intern ç”¨ã®ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹
+ *         row ã® key ã‚’ intern ã•ã‚ŒãŸ xstr ã¨ã—ã¦ä½¿ã†ã€‚
+ *         row ã« value ã¯æŒãŸãªã„ã€‚
+ *                    (å°†æ¥çš„ã«ã¯å‚ç…§ã‚«ã‚¦ãƒ³ã‚¿ã‚’ã¤ã‘ã¦ã‚‚ã„ã„ã‹ã‚‚)
+ *  å‚ç…§: intern_xstr()
  */
 
 /*
- * º¹Ê¬½ñ¤­½Ğ¤·:
- *  ¥Ç¡¼¥¿¥Ù¡¼¥¹¤ÎÊİÂ¸¡¢Ê£¿ô¤Î anthy ¥é¥¤¥Ö¥é¥ê¤ò¥ê¥ó¥¯¤·¤¿
- *  ¥×¥í¥»¥¹¤Î³Ø½¬ÍúÎò¤ÎÆ±´ü¤Î¤¿¤á¤Ë¡¢³Ø½¬ÍúÎò¤Î¹¹¿·¾ğÊó¤ò
- *  Ãà°ì¥Õ¥¡¥¤¥ë¤Ë½ñ¤­½Ğ¤¹¡£
+ * å·®åˆ†æ›¸ãå‡ºã—:
+ *  ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã®ä¿å­˜ã€è¤‡æ•°ã® anthy ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’ãƒªãƒ³ã‚¯ã—ãŸ
+ *  ãƒ—ãƒ­ã‚»ã‚¹ã®å­¦ç¿’å±¥æ­´ã®åŒæœŸã®ãŸã‚ã«ã€å­¦ç¿’å±¥æ­´ã®æ›´æ–°æƒ…å ±ã‚’
+ *  é€ä¸€ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã™ã€‚
  *
- * ¡¦´ğËÜ¥Õ¥¡¥¤¥ë  ¸Å¤¤ anthy ¤Î³Ø½¬ÍúÎò¤ÈÆ±¤¸·Á¼°¡£
- *                 º¹Ê¬¾ğÊó¤òÅ¬ÍÑ¤¹¤ë¸µ¤È¤Ê¤ë¥Õ¥¡¥¤¥ë¡£
- *                 ´ğËÜÅª¤Ë¤Ïµ¯Æ°»ş¤À¤±¤ËÆÉ¤ß¹ş¤à¡£
- *                 ¤³¤Î¥×¥í¥°¥é¥àÃæ¤Ç¥Õ¥¡¥¤¥ë1¡¤base¤È¸Æ¤Ö¤³¤È¤¬¤¢¤ë¡£
- * ¡¦º¹Ê¬¥Õ¥¡¥¤¥ë  ´ğËÜ¥Õ¥¡¥¤¥ë¤ËÂĞ¤¹¤ë¹¹¿·¾ğÊó¡£
- *                 ¥Ç¡¼¥¿¥Ù¡¼¥¹¤ËÂĞ¤¹¤ë¹¹¿·¤¬¥³¥ß¥Ã¥È¤µ¤ì¤ë¤¿¤Ó¤Ë
- *                 ÆÉ¤ß½ñ¤­¤µ¤ì¤ë¡£
- *                 ¤³¤Î¥×¥í¥°¥é¥àÃæ¤Ç¥Õ¥¡¥¤¥ë2¡¤journal¤È¸Æ¤Ö¤³¤È¤¬¤¢¤ë¡£
- *  ´ğËÜÊı¿Ë:
- *     ¥Ç¡¼¥¿¥Ù¡¼¥¹¤ËÂĞ¤¹¤ë¹¹¿·¤¬¥³¥ß¥Ã¥È¤µ¤ì¤ë¤È¡¢¤Ş¤ºº¹Ê¬¥Õ¥¡¥¤¥ë
- *     ¤ËÂ¾¤Î¥×¥í¥»¥¹¤¬ÄÉ²Ã¤·¤¿¹¹¿·¾ğÊó¤òÆÉ¤ß¹ş¤ß¡¢¤½¤Î¸å¤Ë¼«Ê¬¤Î
- *     ¥³¥ß¥Ã¥È¤·¤¿¹¹¿·¤òº¹Ê¬¥Õ¥¡¥¤¥ë¤Ë½ñ¤­½Ğ¤¹¡£
- *     ¤³¤ì¤é¤Ï¥í¥Ã¥¯¥Õ¥¡¥¤¥ë¤òÍÑ¤¤¤Æ¥¢¥È¥ß¥Ã¥¯¤Ë¹Ô¤ï¤ì¤ë¡£¤Ş¤¿¡¢
- *     ´ğËÜ¥Õ¥¡¥¤¥ë¡¢º¹Ê¬¥Õ¥¡¥¤¥ë¤È¤â¡¢¥í¥Ã¥¯¤ò¼è¤Ã¤Æ¤¤¤ë´Ö¤·¤«
- *     ¥ª¡¼¥×¥ó¤·¤Æ¤¤¤Æ¤Ï¤¤¤±¤Ê¤¤¡£
- *  ÄÉ²Ã¤Èºï½ü:
- *     ÄÉ²Ã¤Ï¤¹¤Ç¤Ë¥á¥â¥ê¾å¤Ç¹¹¿·¤µ¤ì¤¿ row ¤ò¥³¥ß¥Ã¥È¤Ë¤è¤Ã¤Æ
- *     ¥á¥â¥ê¤Ë½ñ¤­½Ğ¤¹¤¿¤á¡¢
- *       1. ¥³¥ß¥Ã¥ÈÂĞ¾İ row °Ê³°¤òº¹Ê¬¥Õ¥¡¥¤¥ë¤Î¾ğÊó¤Ç
- *       2. ¥³¥ß¥Ã¥ÈÂĞ¾İ row ¤òº¹Ê¬¥Õ¥¡¥¤¥ë¤Ë½ñ¤­½Ğ¤·
- *     ¤È¤¹¤ë¡£ºï½ü¤Ï¤Ş¤À¥á¥â¥ê¾å¤Ë row ¤¬»Ä¤Ã¤Æ¤¤¤ë¾õÂÖ¤Ç¥³¥ß¥Ã¥È
- *     ¤¬¹Ô¤ï¤ì¤ë(ºï½üÍ×µá¤ò¥³¥ß¥Ã¥È¤È¤·¤Æ°·¤¦)¤¿¤á¡¢
- *       1. ºï½ü¤Î¾ğÊó¤òº¹Ê¬¥Õ¥¡¥¤¥ë¤Ë½ñ¤­½Ğ¤·
- *       2. º¹Ê¬¥Õ¥¡¥¤¥ë¤ÎÆÉ¤ß¹ş¤ß¤Ë¤è¤êºï½üÍ×µá¤â¼Â¹Ô¤¹¤ë
- *     ¤È¤¹¤ë¡£
- *  ´ğËÜ¥Õ¥¡¥¤¥ë¤Î¹¹¿·:
- *     º¹Ê¬¥Õ¥¡¥¤¥ë¤¬¤¢¤ëÄøÅÙÈîÂç²½¤¹¤ë¤È¡¢º¹Ê¬¥Õ¥¡¥¤¥ë¤Î¾ğÊó¤ò
- *     ´ğËÜ¥Õ¥¡¥¤¥ë¤ËÈ¿±Ç¤·¤Æº¹Ê¬¥Õ¥¡¥¤¥ë¤ò¶õ¤Ë¤¹¤ë¡£
- *     ¹¹¿·¤¹¤ë¥×¥í¥»¥¹:
- *       º¹Ê¬¥Õ¥¡¥¤¥ë¤Ë½ñ¤­½Ğ¤·¤ò¹Ô¤Ã¤¿¸å¡¢º¹Ê¬¥Õ¥¡¥¤¥ë¤ÎÂç¤­¤µ¤òÄ´¤Ù¡¢
- *       ÈîÂç²½¤·¤Æ¤¤¤ì¤Ğ¡¢¤½¤Î¤È¤­¤Î¥á¥â¥ê¾å¤Î¥Ç¡¼¥¿¥Ù¡¼¥¹(¤³¤ì¤Ë¤Ï
- *       Á´¤Æ¤Îº¹Ê¬¥Õ¥¡¥¤¥ë¤Î¹¹¿·¤¬Å¬ÍÑ¤µ¤ì¤Æ¤¤¤ë)¤ò´ğËÜ¥Õ¥¡¥¤¥ë¤Ë
- *       ½ñ¤­½Ğ¤¹¡£
- *     ¤½¤ì°Ê³°¤Î¥×¥í¥»¥¹:
- *       º¹Ê¬¥Õ¥¡¥¤¥ë¤òÆÉ¤àÁ°¤Ë¡¢´ğËÜ¥Õ¥¡¥¤¥ë¤¬¹¹¿·¤µ¤ì¤Æ¤¤¤ë¤«¤ò
- *       ¥Õ¥¡¥¤¥ë¤Î¥¿¥¤¥à¥¹¥¿¥ó¥×¤ÇÄ´¤Ù¡¢¹¹¿·¤µ¤ì¤Æ¤¤¤ì¤Ğ¡¢¥³¥ß¥Ã¥È
- *       ¤µ¤ì¤¿¹¹¿·¾ğÊó¤òÄ¾¤Á¤Ë¹¹¿·¥Õ¥¡¥¤¥ë¤ËÄÉ²Ã¤·¡¢¥á¥â¥ê¾å¤Î
- *       ¥Ç¡¼¥¿¥Ù¡¼¥¹¤ò flush ¤·¤¿¸å´ğËÜ¥Õ¥¡¥¤¥ë¡¢º¹Ê¬¥Õ¥¡¥¤¥ë¤ò
- *       ÆÉ¤ß¹ş¤ßÄ¾¤¹¡£
- *       ¥Ç¡¼¥¿¥Ù¡¼¥¹¤Î flush ¤Ë¤è¤ê¡¢ 
- *           ¡¦cur_row ¤¬Ìµ¸ú¤Ë¤Ê¤ë (NULL ¤Ë¤Ê¤ë)
- *           ¡¦cur_section ¤ÎÍ­¸úÀ­¤ÏÊİÂ¸¤µ¤ì¤ë(section¤Ï²òÊü¤·¤Ê¤¤)
- *           ¡¦xstr ¤Ï intern ¤·¤Æ¤¤¤ì¤ĞÊİÂ¸¤µ¤ì¤ë
- *                              (¤¹¤Ù¤Æ¤Î xstr ¤Ï intern ¤µ¤ì¤Æ¤¤¤ë¤Ï¤º)
- *   ·ë¶É¡¢¼¡¤ÎÍÍ¤Ë¤Ê¤ë:
- *     if (´ğËÜ¥Õ¥¡¥¤¥ë¤¬¹¹¿·¤µ¤ì¤Æ¤¤¤ë) {
- *             º¹Ê¬¥Õ¥¡¥¤¥ë¤Ø¥³¥ß¥Ã¥È¤µ¤ì¤¿¹¹¿·¤ò½ñ¤­½Ğ¤¹;
- *             ¥Ç¡¼¥¿¥Ù¡¼¥¹¤Î¥Õ¥é¥Ã¥·¥å;
- *             ´ğËÜ¥Õ¥¡¥¤¥ë¤ÎÆÉ¹ş¤Èº¹Ê¬¥Õ¥¡¥¤¥ë¤ÎºÇ½ªÆÉ¹ş°ÌÃÖ¥¯¥ê¥¢;
- *             º¹Ê¬¥Õ¥¡¥¤¥ë¤ÎÆÉ¹ş¤Èº¹Ê¬¥Õ¥¡¥¤¥ë¤ÎºÇ½ªÆÉ¹ş°ÌÃÖ¹¹¿·;
+ * ãƒ»åŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ«  å¤ã„ anthy ã®å­¦ç¿’å±¥æ­´ã¨åŒã˜å½¢å¼ã€‚
+ *                 å·®åˆ†æƒ…å ±ã‚’é©ç”¨ã™ã‚‹å…ƒã¨ãªã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã€‚
+ *                 åŸºæœ¬çš„ã«ã¯èµ·å‹•æ™‚ã ã‘ã«èª­ã¿è¾¼ã‚€ã€‚
+ *                 ã“ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ä¸­ã§ãƒ•ã‚¡ã‚¤ãƒ«1ï¼Œbaseã¨å‘¼ã¶ã“ã¨ãŒã‚ã‚‹ã€‚
+ * ãƒ»å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«  åŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ«ã«å¯¾ã™ã‚‹æ›´æ–°æƒ…å ±ã€‚
+ *                 ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã«å¯¾ã™ã‚‹æ›´æ–°ãŒã‚³ãƒŸãƒƒãƒˆã•ã‚Œã‚‹ãŸã³ã«
+ *                 èª­ã¿æ›¸ãã•ã‚Œã‚‹ã€‚
+ *                 ã“ã®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ä¸­ã§ãƒ•ã‚¡ã‚¤ãƒ«2ï¼Œjournalã¨å‘¼ã¶ã“ã¨ãŒã‚ã‚‹ã€‚
+ *  åŸºæœ¬æ–¹é‡:
+ *     ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã«å¯¾ã™ã‚‹æ›´æ–°ãŒã‚³ãƒŸãƒƒãƒˆã•ã‚Œã‚‹ã¨ã€ã¾ãšå·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«
+ *     ã«ä»–ã®ãƒ—ãƒ­ã‚»ã‚¹ãŒè¿½åŠ ã—ãŸæ›´æ–°æƒ…å ±ã‚’èª­ã¿è¾¼ã¿ã€ãã®å¾Œã«è‡ªåˆ†ã®
+ *     ã‚³ãƒŸãƒƒãƒˆã—ãŸæ›´æ–°ã‚’å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã™ã€‚
+ *     ã“ã‚Œã‚‰ã¯ãƒ­ãƒƒã‚¯ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç”¨ã„ã¦ã‚¢ãƒˆãƒŸãƒƒã‚¯ã«è¡Œã‚ã‚Œã‚‹ã€‚ã¾ãŸã€
+ *     åŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ«ã€å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã¨ã‚‚ã€ãƒ­ãƒƒã‚¯ã‚’å–ã£ã¦ã„ã‚‹é–“ã—ã‹
+ *     ã‚ªãƒ¼ãƒ—ãƒ³ã—ã¦ã„ã¦ã¯ã„ã‘ãªã„ã€‚
+ *  è¿½åŠ ã¨å‰Šé™¤:
+ *     è¿½åŠ ã¯ã™ã§ã«ãƒ¡ãƒ¢ãƒªä¸Šã§æ›´æ–°ã•ã‚ŒãŸ row ã‚’ã‚³ãƒŸãƒƒãƒˆã«ã‚ˆã£ã¦
+ *     ãƒ¡ãƒ¢ãƒªã«æ›¸ãå‡ºã™ãŸã‚ã€
+ *       1. ã‚³ãƒŸãƒƒãƒˆå¯¾è±¡ row ä»¥å¤–ã‚’å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®æƒ…å ±ã§
+ *       2. ã‚³ãƒŸãƒƒãƒˆå¯¾è±¡ row ã‚’å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã—
+ *     ã¨ã™ã‚‹ã€‚å‰Šé™¤ã¯ã¾ã ãƒ¡ãƒ¢ãƒªä¸Šã« row ãŒæ®‹ã£ã¦ã„ã‚‹çŠ¶æ…‹ã§ã‚³ãƒŸãƒƒãƒˆ
+ *     ãŒè¡Œã‚ã‚Œã‚‹(å‰Šé™¤è¦æ±‚ã‚’ã‚³ãƒŸãƒƒãƒˆã¨ã—ã¦æ‰±ã†)ãŸã‚ã€
+ *       1. å‰Šé™¤ã®æƒ…å ±ã‚’å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã—
+ *       2. å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­ã¿è¾¼ã¿ã«ã‚ˆã‚Šå‰Šé™¤è¦æ±‚ã‚‚å®Ÿè¡Œã™ã‚‹
+ *     ã¨ã™ã‚‹ã€‚
+ *  åŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ«ã®æ›´æ–°:
+ *     å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ãŒã‚ã‚‹ç¨‹åº¦è‚¥å¤§åŒ–ã™ã‚‹ã¨ã€å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®æƒ…å ±ã‚’
+ *     åŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ«ã«åæ˜ ã—ã¦å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç©ºã«ã™ã‚‹ã€‚
+ *     æ›´æ–°ã™ã‚‹ãƒ—ãƒ­ã‚»ã‚¹:
+ *       å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã—ã‚’è¡Œã£ãŸå¾Œã€å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®å¤§ãã•ã‚’èª¿ã¹ã€
+ *       è‚¥å¤§åŒ–ã—ã¦ã„ã‚Œã°ã€ãã®ã¨ãã®ãƒ¡ãƒ¢ãƒªä¸Šã®ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹(ã“ã‚Œã«ã¯
+ *       å…¨ã¦ã®å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®æ›´æ–°ãŒé©ç”¨ã•ã‚Œã¦ã„ã‚‹)ã‚’åŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ«ã«
+ *       æ›¸ãå‡ºã™ã€‚
+ *     ãã‚Œä»¥å¤–ã®ãƒ—ãƒ­ã‚»ã‚¹:
+ *       å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã‚€å‰ã«ã€åŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ«ãŒæ›´æ–°ã•ã‚Œã¦ã„ã‚‹ã‹ã‚’
+ *       ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã§èª¿ã¹ã€æ›´æ–°ã•ã‚Œã¦ã„ã‚Œã°ã€ã‚³ãƒŸãƒƒãƒˆ
+ *       ã•ã‚ŒãŸæ›´æ–°æƒ…å ±ã‚’ç›´ã¡ã«æ›´æ–°ãƒ•ã‚¡ã‚¤ãƒ«ã«è¿½åŠ ã—ã€ãƒ¡ãƒ¢ãƒªä¸Šã®
+ *       ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã‚’ flush ã—ãŸå¾ŒåŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ«ã€å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã‚’
+ *       èª­ã¿è¾¼ã¿ç›´ã™ã€‚
+ *       ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã® flush ã«ã‚ˆã‚Šã€ 
+ *           ãƒ»cur_row ãŒç„¡åŠ¹ã«ãªã‚‹ (NULL ã«ãªã‚‹)
+ *           ãƒ»cur_section ã®æœ‰åŠ¹æ€§ã¯ä¿å­˜ã•ã‚Œã‚‹(sectionã¯è§£æ”¾ã—ãªã„)
+ *           ãƒ»xstr ã¯ intern ã—ã¦ã„ã‚Œã°ä¿å­˜ã•ã‚Œã‚‹
+ *                              (ã™ã¹ã¦ã® xstr ã¯ intern ã•ã‚Œã¦ã„ã‚‹ã¯ãš)
+ *   çµå±€ã€æ¬¡ã®æ§˜ã«ãªã‚‹:
+ *     if (åŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ«ãŒæ›´æ–°ã•ã‚Œã¦ã„ã‚‹) {
+ *             å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã¸ã‚³ãƒŸãƒƒãƒˆã•ã‚ŒãŸæ›´æ–°ã‚’æ›¸ãå‡ºã™;
+ *             ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã®ãƒ•ãƒ©ãƒƒã‚·ãƒ¥;
+ *             åŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­è¾¼ã¨å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®æœ€çµ‚èª­è¾¼ä½ç½®ã‚¯ãƒªã‚¢;
+ *             å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­è¾¼ã¨å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®æœ€çµ‚èª­è¾¼ä½ç½®æ›´æ–°;
  *     } else {
- *             if (ÄÉ²Ã) {
- *                     º¹Ê¬¥Õ¥¡¥¤¥ë¤ÎÆÉ¹ş¤Èº¹Ê¬¥Õ¥¡¥¤¥ë¤ÎºÇ½ªÆÉ¹ş°ÌÃÖ¹¹¿·;
- *                     º¹Ê¬¥Õ¥¡¥¤¥ë¤Ø¤Î½ñ¤­½Ğ¤·;
+ *             if (è¿½åŠ ) {
+ *                     å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­è¾¼ã¨å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®æœ€çµ‚èª­è¾¼ä½ç½®æ›´æ–°;
+ *                     å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®æ›¸ãå‡ºã—;
  *             } else {
- *                     º¹Ê¬¥Õ¥¡¥¤¥ë¤Ø¤Î½ñ¤­½Ğ¤·;
- *                     º¹Ê¬¥Õ¥¡¥¤¥ë¤ÎÆÉ¹ş¤Èº¹Ê¬¥Õ¥¡¥¤¥ë¤ÎºÇ½ªÆÉ¹ş°ÌÃÖ¹¹¿·;
+ *                     å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®æ›¸ãå‡ºã—;
+ *                     å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®èª­è¾¼ã¨å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®æœ€çµ‚èª­è¾¼ä½ç½®æ›´æ–°;
  *             }
  *     }
- *     if (º¹Ê¬¥Õ¥¡¥¤¥ë¤¬Âç¤­¤¤) {
- *             ´ğËÜ¥Õ¥¡¥¤¥ë¤Ø¤Î½ñ¤­½Ğ¤·;
- *             º¹Ê¬¥Õ¥¡¥¤¥ë¤Î¥¯¥ê¥¢;
+ *     if (å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ãŒå¤§ãã„) {
+ *             åŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ«ã¸ã®æ›¸ãå‡ºã—;
+ *             å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚¯ãƒªã‚¢;
  *     }
  */
 
 static allocator record_ator;
 
-/* trieÁàºîÍÑ */
+/* trieæ“ä½œç”¨ */
 static void init_trie_root(struct trie_root *n);
 static int trie_key_nth_bit(xstr* key, int n);
 static int trie_key_first_diff_bit_1byte(xchar c1, xchar c2);
@@ -270,11 +270,12 @@ static void trie_mark_used(struct trie_root *root, struct trie_node *n,
 
 
 /* 
- * ¥È¥é¥¤¤Î¼ÂÁõ
- * struct trie_node¤Î¤¦¤Árow°Ê³°¤ÎÉôÊ¬¤Èrow.key¤ò»ÈÍÑ
- * ºï½ü¤Î»ş¤Ïtrie_row_free¤ò»È¤Ã¤Ærow¤ÎÆâÍÆ¤ò²òÊü
+ * ãƒˆãƒ©ã‚¤ã®å®Ÿè£…
+ * struct trie_nodeã®ã†ã¡rowä»¥å¤–ã®éƒ¨åˆ†ã¨row.keyã‚’ä½¿ç”¨
+ * å‰Šé™¤ã®æ™‚ã¯trie_row_freeã‚’ä½¿ã£ã¦rowã®å†…å®¹ã‚’è§£æ”¾
  */
 
+#if 0
 #define PUTNODE(x) ((x) == &root->root ? printf("root\n") : anthy_putxstrln(&(x)->row.key))
 static int
 debug_trie_dump(FILE* fp, struct trie_node* n, int encoding)
@@ -316,6 +317,7 @@ debug_trie_dump(FILE* fp, struct trie_node* n, int encoding)
 
   return cnt;
 }
+#endif
 
 static void
 init_trie_root(struct trie_root *root)
@@ -335,11 +337,11 @@ init_trie_root(struct trie_root *root)
 
 /*
  * bit0: 0
- * bit1: head¤Î¥­¡¼¤À¤±0
- * bit2: Ê¸»úÎó¤Î¥Ó¥Ã¥È0
- * bit3: Ê¸»úÎó¤Î¥Ó¥Ã¥È1
+ * bit1: headã®ã‚­ãƒ¼ã ã‘0
+ * bit2: æ–‡å­—åˆ—ã®ãƒ“ãƒƒãƒˆ0
+ * bit3: æ–‡å­—åˆ—ã®ãƒ“ãƒƒãƒˆ1
  *   ...
- * Ê¸»úÎóÄ¹¤ò±Û¤¨¤ë¤È0
+ * æ–‡å­—åˆ—é•·ã‚’è¶Šãˆã‚‹ã¨0
  */
 static int
 trie_key_nth_bit(xstr* key, int n)
@@ -362,7 +364,7 @@ trie_key_nth_bit(xstr* key, int n)
   }
 }
 
-/* c1 == c2 ¤Ç¤Ï¸Æ¤ó¤Ç¤Ï¤¤¤±¤Ê¤¤ */
+/* c1 == c2 ã§ã¯å‘¼ã‚“ã§ã¯ã„ã‘ãªã„ */
 static int
 trie_key_first_diff_bit_1byte(xchar c1, xchar c2)
 {
@@ -374,8 +376,8 @@ trie_key_first_diff_bit_1byte(xchar c1, xchar c2)
 }
 
 /*
- * k1 == k2 ¤Ç¤Ï¸Æ¤ó¤Ç¤Ï¤¤¤±¤Ê¤¤
- * ki->str[0 .. (ki->len - 1)]¤Ë0¤Ï¤Ê¤¤¤È²¾Äê
+ * k1 == k2 ã§ã¯å‘¼ã‚“ã§ã¯ã„ã‘ãªã„
+ * ki->str[0 .. (ki->len - 1)]ã«0ã¯ãªã„ã¨ä»®å®š
  */
 #define MIN(a,b) ((a)<(b)?(a):(b))
 static int
@@ -421,7 +423,7 @@ trie_key_dup(xstr *dst, xstr *src)
 }
 
 /*
- * ¸«¤Ä¤«¤é¤Ê¤±¤ì¤Ğ 0 
+ * è¦‹ã¤ã‹ã‚‰ãªã‘ã‚Œã° 0 
  */
 static struct trie_node *
 trie_find(struct trie_root *root, xstr *key)
@@ -439,8 +441,8 @@ trie_find(struct trie_root *root, xstr *key)
 }
 
 /*
- * ºÇÄ¹¥Ş¥Ã¥Á¤Î¤¿¤á¤ÎÊä½õ´Ø¿ô
- *  key ¤ÇÃµº÷¤·¤Æ¡¢»Ï¤á¤Æ°ìÃ×¤·¤Ê¤¯¤Ê¤Ã¤¿¥Î¡¼¥É¤òÊÖ¤¹¡£
+ * æœ€é•·ãƒãƒƒãƒã®ãŸã‚ã®è£œåŠ©é–¢æ•°
+ *  key ã§æ¢ç´¢ã—ã¦ã€å§‹ã‚ã¦ä¸€è‡´ã—ãªããªã£ãŸãƒãƒ¼ãƒ‰ã‚’è¿”ã™ã€‚
  */
 static struct trie_node *
 trie_find_longest (struct trie_root* root, xstr *key)
@@ -459,8 +461,8 @@ trie_find_longest (struct trie_root* root, xstr *key)
 }
 
 /* 
- * ÄÉ²Ã¤·¤¿¥Î¡¼¥É¤òÊÖ¤¹
- * ¤¹¤Ç¤ËÆ±¤¸¥­¡¼¤ò¤â¤Ä¥Î¡¼¥É¤¬¤¢¤ë¤È¤­¤Ï¡¢ÄÉ²Ã¤»¤º¤Ë0¤òÊÖ¤¹
+ * è¿½åŠ ã—ãŸãƒãƒ¼ãƒ‰ã‚’è¿”ã™
+ * ã™ã§ã«åŒã˜ã‚­ãƒ¼ã‚’ã‚‚ã¤ãƒãƒ¼ãƒ‰ãŒã‚ã‚‹ã¨ãã¯ã€è¿½åŠ ã›ãšã«0ã‚’è¿”ã™
  */
 static struct trie_node *
 trie_insert(struct trie_root *root, xstr *key,
@@ -478,7 +480,7 @@ trie_insert(struct trie_root *root, xstr *key,
     q = trie_key_nth_bit(key, p->bit) ? p->r : p->l;
   }
   if (trie_key_cmp(&q->row.key,key) == 0) {
-    /* USED > SUSED > 0 ¤Ç¶¯¤¤Êı¤ò»Ä¤¹ */
+    /* USED > SUSED > 0 ã§å¼·ã„æ–¹ã‚’æ®‹ã™ */
     if (dirty == LRU_USED) {
       trie_mark_used(root, q, nr_used, nr_sused);
     } else if (q->dirty == 0) {
@@ -510,7 +512,7 @@ trie_insert(struct trie_root *root, xstr *key,
     p->r = n;
   }
 
-  /* LRU ¤Î½èÍı */
+  /* LRU ã®å‡¦ç† */
   if (dirty == LRU_USED) {
     root->root.lru_next->lru_prev = n;
     n->lru_prev = &root->root;
@@ -531,17 +533,17 @@ trie_insert(struct trie_root *root, xstr *key,
 }
 
 /* 
- * ¥Î¡¼¥É¤ò¸«¤Ä¤±¤ë¤Èºï½ü¤¹¤ë
- * ÆâÉô¤Çtrie_row_free¤ò¸Æ¤Ó¡¢¥­¡¼¤ò´Ş¤à¥Ç¡¼¥¿ÉôÊ¬¤òfree¤¹¤ë
+ * ãƒãƒ¼ãƒ‰ã‚’è¦‹ã¤ã‘ã‚‹ã¨å‰Šé™¤ã™ã‚‹
+ * å†…éƒ¨ã§trie_row_freeã‚’å‘¼ã³ã€ã‚­ãƒ¼ã‚’å«ã‚€ãƒ‡ãƒ¼ã‚¿éƒ¨åˆ†ã‚’freeã™ã‚‹
  *
- * ¥Ç¡¼¥¿¤È¥Î¡¼¥É¤òºï½ü¤¹¤ë¡£
- * ºï½üÂĞ¾İ¤Î¥Ç¡¼¥¿¤Ïºï½üÂĞ¾İ¤Î¥Î¡¼¥É¤Ë³ÊÇ¼¤µ¤ì¤Æ¤¤¤ë¤È¤Ï
- * ¸Â¤é¤Ê¤¤¤³¤È¤ËÃí°Õ¡£
- * 1. ºï½üÂĞ¾İ¤ÎÍÕ¤ò»ı¤Ä¥Î¡¼¥É¤Ëºï½üÂĞ¾İ¤ÎÍÕ¤¬´Ş¤Ş¤ì¤Æ¤¤¤ë¤È¤­
- *  ºï½üÂĞ¾İ¤Î¥Î¡¼¥É¤Ï¡¢»Ò¤Ø¤Î»Ş¤Î¤¦¤Á¡¢À¸¤­¤Î¤³¤ë»Ş¤ò¿Æ¤ËÅÏ¤·¤Æ»à¤Ì
- * 2. ºï½üÂĞ¾İ¤ÎÍÕ¤ò»ı¤Ä¥Î¡¼¥É¤ÎÁÄÀè¤Ëºï½üÂĞ¾İ¤ÎÍÕ¤¬´Ş¤Ş¤ì¤Æ¤¤¤ë¤È¤­
- *  1. ¤Ë²Ã¤¨¤Æ¡¢ºï½üÂĞ¾İ¤ÎÍÕ¤ò¤â¤Ä¥Î¡¼¥É¤ò»¦¤·¤Æ¡¢Âå¤ï¤ê¤Ëºï½ü
- *  ÂĞ¾İ¤Î¥Î¡¼¥É¤òºï½üÂĞ¾İ¤ÎÍÕ¤ò¤â¤Ä¥Î¡¼¥É¤Î°ÌÃÖ¤Ë°ÜÆ°¤µ¤»À¸¤«¤¹
+ * ãƒ‡ãƒ¼ã‚¿ã¨ãƒãƒ¼ãƒ‰ã‚’å‰Šé™¤ã™ã‚‹ã€‚
+ * å‰Šé™¤å¯¾è±¡ã®ãƒ‡ãƒ¼ã‚¿ã¯å‰Šé™¤å¯¾è±¡ã®ãƒãƒ¼ãƒ‰ã«æ ¼ç´ã•ã‚Œã¦ã„ã‚‹ã¨ã¯
+ * é™ã‚‰ãªã„ã“ã¨ã«æ³¨æ„ã€‚
+ * 1. å‰Šé™¤å¯¾è±¡ã®è‘‰ã‚’æŒã¤ãƒãƒ¼ãƒ‰ã«å‰Šé™¤å¯¾è±¡ã®è‘‰ãŒå«ã¾ã‚Œã¦ã„ã‚‹ã¨ã
+ *  å‰Šé™¤å¯¾è±¡ã®ãƒãƒ¼ãƒ‰ã¯ã€å­ã¸ã®æã®ã†ã¡ã€ç”Ÿãã®ã“ã‚‹æã‚’è¦ªã«æ¸¡ã—ã¦æ­»ã¬
+ * 2. å‰Šé™¤å¯¾è±¡ã®è‘‰ã‚’æŒã¤ãƒãƒ¼ãƒ‰ã®ç¥–å…ˆã«å‰Šé™¤å¯¾è±¡ã®è‘‰ãŒå«ã¾ã‚Œã¦ã„ã‚‹ã¨ã
+ *  1. ã«åŠ ãˆã¦ã€å‰Šé™¤å¯¾è±¡ã®è‘‰ã‚’ã‚‚ã¤ãƒãƒ¼ãƒ‰ã‚’æ®ºã—ã¦ã€ä»£ã‚ã‚Šã«å‰Šé™¤
+ *  å¯¾è±¡ã®ãƒãƒ¼ãƒ‰ã‚’å‰Šé™¤å¯¾è±¡ã®è‘‰ã‚’ã‚‚ã¤ãƒãƒ¼ãƒ‰ã®ä½ç½®ã«ç§»å‹•ã•ã›ç”Ÿã‹ã™
  */
 static void
 trie_remove(struct trie_root *root, xstr *key, 
@@ -549,7 +551,7 @@ trie_remove(struct trie_root *root, xstr *key,
 {
   struct trie_node *p;
   struct trie_node *q;
-  struct trie_node **pp = NULL; /* gcc ¤Î warning ²óÈò */
+  struct trie_node **pp = NULL; /* gcc ã® warning å›é¿ */
   struct trie_node **qq;
   p = &root->root;
   qq = &p->l;
@@ -597,7 +599,7 @@ trie_remove(struct trie_root *root, xstr *key,
   anthy_sfree(root->node_ator, p);
 }
 
-/* head°Ê³°¤Î¥Î¡¼¥É¤¬¤Ê¤±¤ì¤Ğ 0 ¤òÊÖ¤¹ */
+/* headä»¥å¤–ã®ãƒãƒ¼ãƒ‰ãŒãªã‘ã‚Œã° 0 ã‚’è¿”ã™ */
 static struct trie_node *
 trie_first (struct trie_root *root)
 {
@@ -605,7 +607,7 @@ trie_first (struct trie_root *root)
     NULL : root->root.lru_next;
 }
 
-/* ¼¡¤Î¥Î¡¼¥É¤¬¤Ê¤±¤ì¤Ğ 0 ¤òÊÖ¤¹ */
+/* æ¬¡ã®ãƒãƒ¼ãƒ‰ãŒãªã‘ã‚Œã° 0 ã‚’è¿”ã™ */
 static struct trie_node *
 trie_next (struct trie_root *root,
 	   struct trie_node *cur)
@@ -614,8 +616,8 @@ trie_next (struct trie_root *root,
 }
 
 /*
- * head°Ê³°Á´¤Æ¤Î¥Î¡¼¥É¤òºï½ü¤¹¤ë
- * ÆâÉô¤Çtrie_row_free¤ò¸Æ¤Ó¡¢¥­¡¼¤ò´Ş¤à¥Ç¡¼¥¿ÉôÊ¬¤òfree¤¹¤ë
+ * headä»¥å¤–å…¨ã¦ã®ãƒãƒ¼ãƒ‰ã‚’å‰Šé™¤ã™ã‚‹
+ * å†…éƒ¨ã§trie_row_freeã‚’å‘¼ã³ã€ã‚­ãƒ¼ã‚’å«ã‚€ãƒ‡ãƒ¼ã‚¿éƒ¨åˆ†ã‚’freeã™ã‚‹
  */
 static void 
 trie_remove_all (struct trie_root *root,
@@ -632,7 +634,7 @@ trie_remove_all (struct trie_root *root,
 }
 
 /*
- * LRU ¥ê¥¹¥È¤ÎÀèÆ¬¤«¤é count ÈÖÌÜ¤Ş¤Ç¤ò»Ä¤·¤Æ»Ä¤ê¤ò²òÊü¤¹¤ë
+ * LRU ãƒªã‚¹ãƒˆã®å…ˆé ­ã‹ã‚‰ count ç•ªç›®ã¾ã§ã‚’æ®‹ã—ã¦æ®‹ã‚Šã‚’è§£æ”¾ã™ã‚‹
  */
 static void
 trie_remove_old (struct trie_root *root, int count, 
@@ -644,7 +646,7 @@ trie_remove_old (struct trie_root *root, int count,
   if (*nr_used > count) {
     for (p = root->root.lru_next; count; count--, p = p->lru_next)
       ;
-    /* p ¤«¤é head ¤Ş¤Ç¤ò¾Ã¤¹ */
+    /* p ã‹ã‚‰ head ã¾ã§ã‚’æ¶ˆã™ */
     for ( ; p != &root->root; p = q) {
       q = p->lru_next;
       trie_remove(root, &p->row.key, nr_used, nr_sused);
@@ -653,8 +655,8 @@ trie_remove_old (struct trie_root *root, int count,
     for (p = root->root.lru_next; p->dirty == LRU_USED; p = p->lru_next)
       ; 
     /*
-     * p ¤«¤é root ¤Ş¤Ç  sused    -> dirty := 0
-     *                   ¤½¤ì°Ê³° -> ¾Ã¤¹
+     * p ã‹ã‚‰ root ã¾ã§  sused    -> dirty := 0
+     *                   ãã‚Œä»¥å¤– -> æ¶ˆã™
      */
     for ( ; p != &root->root; p = q) {
       q = p->lru_next;
@@ -692,7 +694,7 @@ trie_mark_used (struct trie_root *root, struct trie_node *n,
 }
 
 /*
- * ¥È¥é¥¤¤Î¼ÂÁõ¤Ï¤³¤³¤Ş¤Ç
+ * ãƒˆãƒ©ã‚¤ã®å®Ÿè£…ã¯ã“ã“ã¾ã§
  */
 
 static xstr *
@@ -737,15 +739,15 @@ do_select_longest_row(struct record_section *rsc, xstr *name)
   int i;
 
   if ((NULL == name) || (NULL == name->str) || (name->len < 1) || (0 == name->str[0])) {
-    /* ¼­½ñ¤â¤·¤¯¤Ï³Ø½¬¥Ç¡¼¥¿¤¬²õ¤ì¤Æ¤¤¤¿»ş¤ÎÂĞºö */
+    /* è¾æ›¸ã‚‚ã—ãã¯å­¦ç¿’ãƒ‡ãƒ¼ã‚¿ãŒå£Šã‚Œã¦ã„ãŸæ™‚ã®å¯¾ç­– */
     return NULL;
   }
 
   mark = trie_find_longest(&rsc->cols, name);
   xs.str = name->str;
-  for (i = (mark->row.key.len <= name->len) ? mark->row.key.len : name->len; i > 1; i--) {  /* ÉÔÀµ¤Ê¥á¥â¥ê¥¢¥¯¥»¥¹¤Î½¤Àµ */
-    /* ¥ë¡¼¥È¥Î¡¼¥É¤Ï i == 1 ¤Ç¥Ş¥Ã¥Á¤¹¤ë¤Î¤Ç½ü³°
-     * trie_key_nth_bit »²¾È
+  for (i = (mark->row.key.len <= name->len) ? mark->row.key.len : name->len; i > 1; i--) {  /* ä¸æ­£ãªãƒ¡ãƒ¢ãƒªã‚¢ã‚¯ã‚»ã‚¹ã®ä¿®æ­£ */
+    /* ãƒ«ãƒ¼ãƒˆãƒãƒ¼ãƒ‰ã¯ i == 1 ã§ãƒãƒƒãƒã™ã‚‹ã®ã§é™¤å¤–
+     * trie_key_nth_bit å‚ç…§
      */
     xs.len = i;
     found = trie_find(&rsc->cols, &xs);
@@ -885,7 +887,7 @@ intern_xstr (struct trie_root* xstrs, xstr* xs)
   int dummy;
 
   if ((NULL == xs) || (NULL == xs->str) || (xs->len < 1) || (0 == xs->str[0])) {
-    /* ¼­½ñ¤â¤·¤¯¤Ï³Ø½¬¥Ç¡¼¥¿¤¬²õ¤ì¤Æ¤¤¤¿»ş¤ÎÂĞºö */
+    /* è¾æ›¸ã‚‚ã—ãã¯å­¦ç¿’ãƒ‡ãƒ¼ã‚¿ãŒå£Šã‚Œã¦ã„ãŸæ™‚ã®å¯¾ç­– */
     return NULL;
   }
   node = trie_find(xstrs, xs);
@@ -965,19 +967,19 @@ unlock_record (struct record_stat* rs)
   anthy_priv_dic_unlock();
 }
 
-/* ºÆÆÉ¤ß¹ş¤ß¤ÎÉ¬Í×¤¬¤¢¤ë¤«¤ò¥Á¥§¥Ã¥¯¤¹¤ë
- * É¬Í×¤¬¤¢¤ì¤ĞÊÖ¤êÃÍ¤¬1¤Ë¤Ê¤ë */
+/* å†èª­ã¿è¾¼ã¿ã®å¿…è¦ãŒã‚ã‚‹ã‹ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹
+ * å¿…è¦ãŒã‚ã‚Œã°è¿”ã‚Šå€¤ãŒ1ã«ãªã‚‹ */
 static int
 check_base_record_uptodate(struct record_stat *rst)
 {
   struct stat st;
   if (rst->is_anon) {
-    return 1;
+    return 0;
   }
   anthy_check_user_dir();
   if (stat(rst->base_fn, &st) < 0) {
     return 0;
-  } else if (st.st_mtime != rst->base_timestamp) {
+  } else if (st.st_mtime == rst->base_timestamp) {
     return 0;
   }
   return 1;
@@ -987,15 +989,15 @@ check_base_record_uptodate(struct record_stat *rst)
 /*
  * row format:
  *  ROW := OPERATION SECTION KEY VALUE*
- *  OPERATION := "ADD"    (ÄÉ²Ã¤Ş¤¿¤ÏLRU¹¹¿·)
- *               "DEL"    (ºï½ü)
- *  SECTION := (Ê¸»úÎó)
+ *  OPERATION := "ADD"    (è¿½åŠ ã¾ãŸã¯LRUæ›´æ–°)
+ *               "DEL"    (å‰Šé™¤)
+ *  SECTION := (æ–‡å­—åˆ—)
  *  KEY     := TD
  *  VALUE   := TD
- *  TD      := TYPE DATA  (¶õÇò¤ò¤¢¤±¤º¤Ë½ñ¤¯)
+ *  TD      := TYPE DATA  (ç©ºç™½ã‚’ã‚ã‘ãšã«æ›¸ã)
  *  TYPE    := "S"        (xstr)
  *             "N"        (number)
- *  DATA    := (·¿¤´¤È¤Ë¥·¥ê¥¢¥é¥¤¥º¤·¤¿¤â¤Î)
+ *  DATA    := (å‹ã”ã¨ã«ã‚·ãƒªã‚¢ãƒ©ã‚¤ã‚ºã—ãŸã‚‚ã®)
  */
 
 static char*
@@ -1043,11 +1045,11 @@ out:
   if (s) {
     s[len] = '\0';
   }
-  *eol = (c == '\n');
+  *eol = (c == '\n' || c == EOF);
   return s;
 }
 
-/* journal¤«¤éADD¤Î¹Ô¤òÆÉ¤à */
+/* journalã‹ã‚‰ADDã®è¡Œã‚’èª­ã‚€ */
 static void
 read_add_row(FILE *fp, struct record_stat* rst,
 	     struct record_section* rsc)
@@ -1063,7 +1065,7 @@ read_add_row(FILE *fp, struct record_stat* rst,
     return ;
   }
 
-  xs = anthy_cstr_to_xstr(/* xstr ·¿¤òÉ½¤¹ S ¤òÆÉ¤ß¼Î¤Æ¤ë */
+  xs = anthy_cstr_to_xstr(/* xstr å‹ã‚’è¡¨ã™ S ã‚’èª­ã¿æ¨ã¦ã‚‹ */
 			  token + 1,
 			  rst->encoding);
   node = do_select_row(rsc, xs, 1, LRU_USED);
@@ -1071,7 +1073,7 @@ read_add_row(FILE *fp, struct record_stat* rst,
   free(token);
 
   if (node->dirty & PROTECT) {
-    /* ÊİÂ¸¤¹¤Ù¤­ row ¤Ê¤Î¤Ç¡¢º¹Ê¬¥Õ¥¡¥¤¥ë¤òÆÉ¤ß¼Î¤Æ¤ë */
+    /* ä¿å­˜ã™ã¹ã row ãªã®ã§ã€å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿æ¨ã¦ã‚‹ */
     while (!eol) {
       free(read_1_token(fp, &eol));
     }
@@ -1083,7 +1085,7 @@ read_add_row(FILE *fp, struct record_stat* rst,
     token = read_1_token(fp, &eol);
     if (token) {
       switch(*token) {
-	/* String Ê¸»úÎó */
+	/* String æ–‡å­—åˆ— */
       case 'S':
 	{
 	  xstr* xs;
@@ -1092,7 +1094,7 @@ read_add_row(FILE *fp, struct record_stat* rst,
 	  anthy_free_xstr(xs);
 	}
 	break;
-	/* Number ¿ôÃÍ */
+	/* Number æ•°å€¤ */
       case 'N':
 	do_set_nth_value(node, n, atoi(token + 1));
 	break;
@@ -1104,7 +1106,7 @@ read_add_row(FILE *fp, struct record_stat* rst,
   do_truncate_row(node, n);
 }
 
-/* journal¤«¤éDEL¤Î¹Ô¤òÆÉ¤à */
+/* journalã‹ã‚‰DELã®è¡Œã‚’èª­ã‚€ */
 static void
 read_del_row(FILE *fp, struct record_stat* rst,
 	     struct record_section* rsc)
@@ -1119,7 +1121,7 @@ read_del_row(FILE *fp, struct record_stat* rst,
     return ;
   }
 
-  xs = anthy_cstr_to_xstr(/* xstr ·¿¤òÉ½¤¹ S ¤òÆÉ¤ßÈô¤Ğ¤¹ */
+  xs = anthy_cstr_to_xstr(/* xstr å‹ã‚’è¡¨ã™ S ã‚’èª­ã¿é£›ã°ã™ */
 			  token + 1,
 			  rst->encoding);
   if ((node = do_select_row(rsc, xs, 0, 0)) != NULL) {
@@ -1129,7 +1131,7 @@ read_del_row(FILE *fp, struct record_stat* rst,
   free(token);
 }
 
-/** º¹Ê¬¥Õ¥¡¥¤¥ë¤«¤é1¹ÔÆÉ¤ß¹ş¤à */
+/** å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰1è¡Œèª­ã¿è¾¼ã‚€ */
 static void
 read_1_row(struct record_stat* rst, FILE* fp, char *op)
 {
@@ -1156,7 +1158,7 @@ read_1_row(struct record_stat* rst, FILE* fp, char *op)
 }
 
 /*
- * journal(º¹Ê¬)¥Õ¥¡¥¤¥ë¤òÆÉ¤à
+ * journal(å·®åˆ†)ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã‚€
  */
 static void
 read_journal_record(struct record_stat* rs)
@@ -1176,8 +1178,8 @@ read_journal_record(struct record_stat* rs)
     return ;
   }
   if (st.st_size < rs->last_update) {
-    /* ¥Õ¥¡¥¤¥ë¥µ¥¤¥º¤¬¾®¤µ¤¯¤Ê¤Ã¤Æ¤¤¤ë¤Î¤Ç¡¢
-     * ºÇ½é¤«¤éÆÉ¤ß¹ş¤à */
+    /* ãƒ•ã‚¡ã‚¤ãƒ«ã‚µã‚¤ã‚ºãŒå°ã•ããªã£ã¦ã„ã‚‹ã®ã§ã€
+     * æœ€åˆã‹ã‚‰èª­ã¿è¾¼ã‚€ */
     fseek(fp, 0, SEEK_SET);
   } else {
     fseek(fp, rs->last_update, SEEK_SET);
@@ -1202,7 +1204,7 @@ write_string(FILE* fp, const char* str)
   fprintf(fp, "%s", str);
 }
 
-/* ¥À¥Ö¥ë¥¯¥ª¡¼¥È¤â¤·¤¯¤Ï¥Ğ¥Ã¥¯¥¹¥é¥Ã¥·¥å¤Ë¥Ğ¥Ã¥¯¥¹¥é¥Ã¥·¥å¤òÉÕ¤±¤ë */
+/* ãƒ€ãƒ–ãƒ«ã‚¯ã‚ªãƒ¼ãƒˆã‚‚ã—ãã¯ãƒãƒƒã‚¯ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ã«ãƒãƒƒã‚¯ã‚¹ãƒ©ãƒƒã‚·ãƒ¥ã‚’ä»˜ã‘ã‚‹ */
 static void
 write_quote_string(FILE* fp, const char* str)
 {
@@ -1222,11 +1224,11 @@ write_quote_xstr(FILE* fp, xstr* xs, int encoding)
   char* buf;
 
   if ((NULL == xs) || (NULL == xs->str) || (xs->len < 1) || (0 == xs->str[0])) {
-    /* ¼­½ñ¤â¤·¤¯¤Ï³Ø½¬¥Ç¡¼¥¿¤¬²õ¤ì¤Æ¤¤¤¿»ş¤ÎÂĞºö */
+    /* è¾æ›¸ã‚‚ã—ãã¯å­¦ç¿’ãƒ‡ãƒ¼ã‚¿ãŒå£Šã‚Œã¦ã„ãŸæ™‚ã®å¯¾ç­– */
     return;
   }
 
-  buf = (char*) alloca(xs->len * 6 + 2); /* EUC ¤Ş¤¿¤ÏUTF8¤ò²¾Äê */
+  buf = (char*) alloca(xs->len * 6 + 2); /* EUC ã¾ãŸã¯UTF8ã‚’ä»®å®š */
   anthy_sputxstr(buf, xs, encoding);
   write_quote_string(fp, buf);
 }
@@ -1237,13 +1239,16 @@ write_number(FILE* fp, int x)
   fprintf(fp, "%d", x);
 }
 
-/* journal¤Ë1¹ÔÄÉµ­¤¹¤ë */
+/* journalã«1è¡Œè¿½è¨˜ã™ã‚‹ */
 static void
 commit_add_row(struct record_stat* rst,
 	       const char* sname, struct trie_node* node)
 {
   FILE* fp;
   int i;
+
+  if (rst->is_anon)
+    return ;
 
   fp = fopen(rst->journal_fn, "a");
   if (fp == NULL) {
@@ -1282,7 +1287,7 @@ commit_add_row(struct record_stat* rst,
   fclose(fp);
 }
 
-/* Á´¤Æ¤Î row ¤ò²òÊü¤¹¤ë */
+/* å…¨ã¦ã® row ã‚’è§£æ”¾ã™ã‚‹ */
 static void
 clear_record(struct record_stat* rst)
 {
@@ -1293,13 +1298,13 @@ clear_record(struct record_stat* rst)
   rst->cur_row = NULL;
 }
 
-/* ´ğËÜ¥Õ¥¡¥¤¥ë¤òÆÉ¤à */
+/* åŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã‚€ */
 static void
 read_session(struct record_stat *rst)
 {
   char **tokens;
   int nr;
-  int in_section = 0;
+  struct record_section* rsc = NULL;
   while (!anthy_read_line(&tokens, &nr)) {
     xstr *xs;
     int i;
@@ -1307,29 +1312,27 @@ read_session(struct record_stat *rst)
     struct trie_node* node;
 
     if (!strcmp(tokens[0], "---") && nr > 1) {
-      /* ¥»¥¯¥·¥ç¥ó¤ÎÀÚ¤ìÌÜ */
-      in_section = 1;
-      rst->cur_section = do_select_section(rst, tokens[1], 1);
+      /* ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®åˆ‡ã‚Œç›® */
+      rsc = do_select_section(rst, tokens[1], 1);
       goto end;
     }
-    if (!in_section || nr < 2) {
-      /* ¥»¥¯¥·¥ç¥ó¤¬»Ï¤Ş¤Ã¤Æ¤Ê¤¤ or ¹Ô¤¬ÉÔ´°Á´ */
+    if (!rsc || nr < 2) {
+      /* ã‚»ã‚¯ã‚·ãƒ§ãƒ³ãŒå§‹ã¾ã£ã¦ãªã„ or è¡ŒãŒä¸å®Œå…¨ */
       goto end;
     }
-    /* ¹ÔÆ¬¤ÎLRU¤Î¥Ş¡¼¥¯¤òÆÉ¤à */
+    /* è¡Œé ­ã®LRUã®ãƒãƒ¼ã‚¯ã‚’èª­ã‚€ */
     if (tokens[0][0] == '-') {
       dirty = 0;
     } else if (tokens[0][0] == '+') {
       dirty = LRU_SUSED;
     }
-    /* ¼¡¤Ëindex */
+    /* æ¬¡ã«index */
     xs = anthy_cstr_to_xstr(&tokens[0][1], rst->encoding);
-    node = do_select_row(rst->cur_section, xs, 1, dirty);
+    node = do_select_row(rsc, xs, 1, dirty);
     anthy_free_xstr(xs);
     if (!node) {
       goto end;
     }
-    rst->cur_row = node;
     /**/
     for (i = 1; i < nr; i++) {
       if (tokens[i][0] == '"') {
@@ -1338,13 +1341,13 @@ read_session(struct record_stat *rst)
 	str[strlen(str) - 1] = 0;
 	xs = anthy_cstr_to_xstr(str, rst->encoding);
 	free(str);
-	do_set_nth_xstr(rst->cur_row, i-1, xs, &rst->xstrs);
+	do_set_nth_xstr(node, i-1, xs, &rst->xstrs);
 	anthy_free_xstr(xs);
       }else if (tokens[i][0] == '*') {
 	/* EMPTY entry */
-	get_nth_val_ent(rst->cur_row, i-1, 1);
+	get_nth_val_ent(node, i-1, 1);
       } else {
-	do_set_nth_value(rst->cur_row, i-1, atoi(tokens[i]));
+	do_set_nth_value(node, i-1, atoi(tokens[i]));
       }
     }
   end:
@@ -1352,7 +1355,7 @@ read_session(struct record_stat *rst)
   }
 }
 
-/* ¤¤¤Ş¤Î¥Ç¡¼¥¿¥Ù¡¼¥¹¤ò²òÊü¤·¤¿¸å¤Ë¥Õ¥¡¥¤¥ë¤«¤éÆÉ¤ß¹ş¤à */
+/* ã„ã¾ã®ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã‚’è§£æ”¾ã—ãŸå¾Œã«ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­ã¿è¾¼ã‚€ */
 static void
 read_base_record(struct record_stat *rst)
 {
@@ -1390,7 +1393,7 @@ open_tmp_in_recorddir(void)
 }
 
 /*
- * °ì»ş¥Õ¥¡¥¤¥ë¤«¤ébase¥Õ¥¡¥¤¥ë¤Ørename¤¹¤ë 
+ * ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰baseãƒ•ã‚¡ã‚¤ãƒ«ã¸renameã™ã‚‹ 
  */
 static void
 update_file(const char *fn)
@@ -1408,21 +1411,21 @@ update_file(const char *fn)
   }
 }
 
-/* ¥«¥é¥à¤òÊİÂ¸¤¹¤ë */
+/* ã‚«ãƒ©ãƒ ã‚’ä¿å­˜ã™ã‚‹ */
 static void
 save_a_row(FILE *fp, struct record_stat* rst,
 	   struct record_row *c, int dirty)
 {
   int i;
   char *buf = alloca(c->key.len * 6 + 2);
-  /* LRU¤Î¥Ş¡¼¥¯¤ò½ĞÎÏ */
+  /* LRUã®ãƒãƒ¼ã‚¯ã‚’å‡ºåŠ› */
   if (dirty == 0) {
     fputc('-', fp);
   } else {
     fputc('+', fp);
   }
   anthy_sputxstr(buf, &c->key, rst->encoding);
-  /* index ¤ò½ĞÎÏ */
+  /* index ã‚’å‡ºåŠ› */
   fprintf(fp, "%s ", buf);
   /**/
   for (i = 0; i < c->nr_vals; i++) {
@@ -1447,7 +1450,7 @@ save_a_row(FILE *fp, struct record_stat* rst,
       fprintf(fp, "%d ", val->u.val);
       break;
     default:
-      anthy_log(0, "Faild to save an unkonwn record. (in record.c)\n");
+      anthy_log(0, "Faild to save an unknown record. (in record.c)\n");
       break;
     }
   }
@@ -1462,23 +1465,23 @@ update_base_record(struct record_stat* rst)
   FILE *fp;
   struct stat st;
 
-  /* °ì»ş¥Õ¥¡¥¤¥ë¤òºî¤Ã¤Ærecord¤ò½ñ¤­½Ğ¤¹ */
+  /* ä¸€æ™‚ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œã£ã¦recordã‚’æ›¸ãå‡ºã™ */
   anthy_check_user_dir();
   fp = open_tmp_in_recorddir();
   if (!fp) {
     anthy_log(0, "Failed to open temporaly session file.\n");
     return ;
   }
-  /* ³Æ¥»¥¯¥·¥ç¥ó¤ËÂĞ¤·¤Æ */
+  /* å„ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã«å¯¾ã—ã¦ */
   for (sec = rst->section_list.next;
        sec; sec = sec->next) {
     if (!trie_first(&sec->cols)) {
-      /*¤³¤Î¥»¥¯¥·¥ç¥ó¤Ï¶õ*/
+      /*ã“ã®ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã¯ç©º*/
       continue;
     }
-    /* ¥»¥¯¥·¥ç¥ó¶­³¦¤ÎÊ¸»úÎó */
+    /* ã‚»ã‚¯ã‚·ãƒ§ãƒ³å¢ƒç•Œã®æ–‡å­—åˆ— */
     fprintf(fp, "--- %s\n", sec->name);
-    /* ³Æ¥«¥é¥à¤òÊİÂ¸¤¹¤ë */
+    /* å„ã‚«ãƒ©ãƒ ã‚’ä¿å­˜ã™ã‚‹ */
     for (col = trie_first(&sec->cols); col; 
 	 col = trie_next(&sec->cols, col)) {
       save_a_row(fp, rst, &col->row, col->dirty);
@@ -1486,13 +1489,13 @@ update_base_record(struct record_stat* rst)
   }
   fclose(fp);
 
-  /* ËÜÍè¤ÎÌ¾Á°¤Ërename¤¹¤ë */
+  /* æœ¬æ¥ã®åå‰ã«renameã™ã‚‹ */
   update_file(rst->base_fn);
 
   if (stat(rst->base_fn, &st) == 0) {
     rst->base_timestamp = st.st_mtime;
   }
-  /* journal¥Õ¥¡¥¤¥ë¤ò¾Ã¤¹ */
+  /* journalãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ¶ˆã™ */
   unlink(rst->journal_fn);
   rst->last_update = 0;
 }
@@ -1517,27 +1520,27 @@ commit_del_row(struct record_stat* rst,
 }
 
 /*
- * sync_add: ADD ¤Î½ñ¤­¹ş¤ß
- * sync_del_and_del: DEL ¤Î½ñ¤­¹ş¤ß¤Èºï½ü
- *   ¤É¤Á¤é¤â½ñ¤­¹ş¤ß¤ÎÁ°¤Ë¡¢Â¾¤Î¥×¥í¥»¥¹¤Ë¤è¤Ã¤Æ¥Ç¥£¥¹¥¯¾å¤ËÊİÂ¸¤µ¤ì¤¿
- *   ¹¹¿·¤ò¥á¥â¥ê¾å¤ËÆÉ¤ß¹ş¤à¡£
- *   ¤³¤Î¤È¤­¡¢¥Ç¡¼¥¿¥Ù¡¼¥¹¤ò¥Õ¥é¥Ã¥·¥å¤¹¤ë²ÄÇ½À­¤â¤¢¤ë¡£¥Ç¡¼¥¿¥Ù¡¼¥¹¤Î
- *   ¥Õ¥é¥Ã¥·¥å¤¬¤¢¤ë¤È¡¢ cur_row ¤ÈÁ´¤Æ¤Î xstr ¤ÏÌµ¸ú¤Ë¤Ê¤ë¡£
- *   ¤¿¤À¤·¡¢ cur_section ¤ÎÍ­¸úÀ­¤ÏÊİÂ¸¤µ¤ì¤ë¡£
+ * sync_add: ADD ã®æ›¸ãè¾¼ã¿
+ * sync_del_and_del: DEL ã®æ›¸ãè¾¼ã¿ã¨å‰Šé™¤
+ *   ã©ã¡ã‚‰ã‚‚æ›¸ãè¾¼ã¿ã®å‰ã«ã€ä»–ã®ãƒ—ãƒ­ã‚»ã‚¹ã«ã‚ˆã£ã¦ãƒ‡ã‚£ã‚¹ã‚¯ä¸Šã«ä¿å­˜ã•ã‚ŒãŸ
+ *   æ›´æ–°ã‚’ãƒ¡ãƒ¢ãƒªä¸Šã«èª­ã¿è¾¼ã‚€ã€‚
+ *   ã“ã®ã¨ãã€ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã‚’ãƒ•ãƒ©ãƒƒã‚·ãƒ¥ã™ã‚‹å¯èƒ½æ€§ã‚‚ã‚ã‚‹ã€‚ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã®
+ *   ãƒ•ãƒ©ãƒƒã‚·ãƒ¥ãŒã‚ã‚‹ã¨ã€ cur_row ã¨å…¨ã¦ã® xstr ã¯ç„¡åŠ¹ã«ãªã‚‹ã€‚
+ *   ãŸã ã—ã€ cur_section ã®æœ‰åŠ¹æ€§ã¯ä¿å­˜ã•ã‚Œã‚‹ã€‚
  */
 static void
 sync_add(struct record_stat* rst, struct record_section* rsc, 
 	 struct trie_node* node)
 {
   lock_record(rst);
-  if (check_base_record_uptodate(rst)) {
+  if (!check_base_record_uptodate(rst)) {
     node->dirty |= PROTECT;
-    /* º¹Ê¬¥Õ¥¡¥¤¥ë¤À¤±ÆÉ¤à */
+    /* å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ã ã‘èª­ã‚€ */
     read_journal_record(rst);
     node->dirty &= ~PROTECT;
     commit_add_row(rst, rsc->name, node);
   } else {
-    /* ºÆÆÉ¤ß¹ş¤ß */
+    /* å†èª­ã¿è¾¼ã¿ */
     commit_add_row(rst, rsc->name, node);
     read_base_record(rst);
     read_journal_record(rst);
@@ -1566,7 +1569,7 @@ sync_del_and_del(struct record_stat* rst, struct record_section* rsc,
 
 
 /*
- * prediction´Ø·¸
+ * predictioné–¢ä¿‚
  */
 
 static int
@@ -1591,8 +1594,8 @@ read_prediction_node(struct trie_node *n, struct prediction_t* predictions, int 
 
 
 /*
- * trieÃæ¤ò¤¿¤É¤ê¡¢prefix¤¬¥Ş¥Ã¥Á¤·¤¿¤éread_prediction_node¤ò
- * ¸Æ¤ó¤Çpredictions¤ÎÇÛÎó¤Ë·ë²Ì¤òÄÉ²Ã¤¹¤ë¡£
+ * trieä¸­ã‚’ãŸã©ã‚Šã€prefixãŒãƒãƒƒãƒã—ãŸã‚‰read_prediction_nodeã‚’
+ * å‘¼ã‚“ã§predictionsã®é…åˆ—ã«çµæœã‚’è¿½åŠ ã™ã‚‹ã€‚
  */
 static int
 traverse_record_for_prediction(xstr* key, struct trie_node *n,
@@ -1620,9 +1623,9 @@ traverse_record_for_prediction(xstr* key, struct trie_node *n,
 }
 
 /*
- * key ¤ÇÃµº÷
- * key ¤ÎÊ¸»úÎóÄ¹¤ò±Û¤¨¤ë¤«¡¢¥Î¡¼¥É¤¬Ìµ¤¯¤Ê¤Ã¤¿¤éÃµº÷ÂÇ¤ÁÀÚ¤ê
- * trie¤Îkey¤¬³ÊÇ¼¤µ¤ì¤Æ¤¤¤ë¤È¤³¤í¤Ç¤Ê¤Ê¤¯¤ÆÍÕ¤òÊÖ¤¹
+ * key ã§æ¢ç´¢
+ * key ã®æ–‡å­—åˆ—é•·ã‚’è¶Šãˆã‚‹ã‹ã€ãƒãƒ¼ãƒ‰ãŒç„¡ããªã£ãŸã‚‰æ¢ç´¢æ‰“ã¡åˆ‡ã‚Š
+ * trieã®keyãŒæ ¼ç´ã•ã‚Œã¦ã„ã‚‹ã¨ã“ã‚ã§ãªãªãã¦è‘‰ã‚’è¿”ã™
  */
 static struct trie_node *
 trie_find_for_prediction (struct trie_root* root, xstr *key)
@@ -1662,14 +1665,14 @@ anthy_traverse_record_for_prediction(xstr* key, struct prediction_t* predictions
     return 0;
   }
 
-  /* »ØÄê¤µ¤ì¤¿Ê¸»úÎó¤òprefix¤Ë»ı¤Änode¤òÃµ¤¹ */
+  /* æŒ‡å®šã•ã‚ŒãŸæ–‡å­—åˆ—ã‚’prefixã«æŒã¤nodeã‚’æ¢ã™ */
   mark = trie_find_for_prediction(&anthy_current_record->cur_section->cols, key);
   if (!mark) {
     return 0;
   }
   nr_predictions = traverse_record_for_prediction(key, mark, predictions, 0);
   if (predictions) {
-    /* ¥¿¥¤¥à¥¹¥¿¥ó¥×¤ÇÍ½Â¬¸õÊä¤ò¥½¡¼¥È¤¹¤ë */
+    /* ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã§äºˆæ¸¬å€™è£œã‚’ã‚½ãƒ¼ãƒˆã™ã‚‹ */
     qsort(predictions, nr_predictions, sizeof(struct prediction_t), prediction_cmp);
   }
   return nr_predictions;
@@ -1849,8 +1852,8 @@ anthy_select_next_row(void)
   if (!rst->cur_section || !rst->cur_row)
     return -1;
   
-  /* sync_add() ¤Ç cur_row ¤¬Ìµ¸ú¤Ë¤Ê¤ë¤³¤È¤¬¤¢¤ë¤Î¤Ç¡¢
-   * ¤¿¤È¤¨ row_dirty ¤Ç¤â sync_add() ¤·¤Ê¤¤
+  /* sync_add() ã§ cur_row ãŒç„¡åŠ¹ã«ãªã‚‹ã“ã¨ãŒã‚ã‚‹ã®ã§ã€
+   * ãŸã¨ãˆ row_dirty ã§ã‚‚ sync_add() ã—ãªã„
    */
   rst->row_dirty = 0;
   node = do_select_next_row(rst->cur_section, rst->cur_row);
@@ -1869,7 +1872,7 @@ anthy_get_index_xstr(void)
 /*..Wrappers end*/
 
 /*
- * trie_row_init ¤Ï²¿²ó¤è¤ó¤Ç¤â¤¤¤¤
+ * trie_row_init ã¯ä½•å›ã‚ˆã‚“ã§ã‚‚ã„ã„
  */
 static void
 trie_row_init(struct record_row* rc)
@@ -1888,7 +1891,7 @@ trie_row_free(struct record_row *rc)
   free(rc->key.str);
 }  
 
-/* ¤¢¤ë¥»¥¯¥·¥ç¥ó¤Î¥Ç¡¼¥¿¤òÁ´¤Æ²òÊü¤¹¤ë */
+/* ã‚ã‚‹ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ãƒ‡ãƒ¼ã‚¿ã‚’å…¨ã¦è§£æ”¾ã™ã‚‹ */
 static void
 free_section(struct record_stat *r, struct record_section *rs)
 {
@@ -1909,7 +1912,7 @@ free_section(struct record_stat *r, struct record_section *rs)
   free(rs);
 }
 
-/* ¤¹¤Ù¤Æ¤Î¥Ç¡¼¥¿¤ò²òÊü¤¹¤ë */
+/* ã™ã¹ã¦ã®ãƒ‡ãƒ¼ã‚¿ã‚’è§£æ”¾ã™ã‚‹ */
 static void
 free_record(struct record_stat *rst)
 {
@@ -1947,7 +1950,7 @@ anthy_release_row(void)
   }
 
   rst->row_dirty = 0;
-  /* sync_del_and_del ¤Çºï½ü¤â¤¹¤ë */
+  /* sync_del_and_del ã§å‰Šé™¤ã‚‚ã™ã‚‹ */
   sync_del_and_del(rst, rst->cur_section, rst->cur_row);
   rst->cur_row = NULL;
 }
@@ -1957,13 +1960,13 @@ check_record_encoding(struct record_stat *rst)
 {
   FILE *fp;
   if (anthy_open_file(rst->base_fn) == 0) {
-    /* EUC¤ÎÍúÎò¥Õ¥¡¥¤¥ë¤¬¤¢¤Ã¤¿ */
+    /* EUCã®å±¥æ­´ãƒ•ã‚¡ã‚¤ãƒ«ãŒã‚ã£ãŸ */
     anthy_close_file();
     return ;
   }
   fp = fopen(rst->journal_fn, "r");
   if (fp) {
-    /* EUC¤Îº¹Ê¬¥Õ¥¡¥¤¥ë¤¬¤¢¤Ã¤¿ */
+    /* EUCã®å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ«ãŒã‚ã£ãŸ */
     fclose(fp);
     return ;
   }
@@ -2015,12 +2018,12 @@ setup_filenames(const char *id, struct record_stat *rst)
   const char *home = anthy_conf_get_str("HOME");
   int base_len = strlen(home) + strlen(id) + 10;
 
-  /* ´ğËÜ¥Õ¥¡¥¤¥ë */
+  /* åŸºæœ¬ãƒ•ã‚¡ã‚¤ãƒ« */
   rst->base_fn = (char*) malloc(base_len +
 				strlen("/.anthy/last-record1_"));
   sprintf(rst->base_fn, "%s/.anthy/last-record1_%s",
 	  home, id);
-  /* º¹Ê¬¥Õ¥¡¥¤¥ë */
+  /* å·®åˆ†ãƒ•ã‚¡ã‚¤ãƒ« */
   rst->journal_fn = (char*) malloc(base_len +
 				   strlen("/.anthy/last-record2_"));
   sprintf(rst->journal_fn, "%s/.anthy/last-record2_%s",
@@ -2045,7 +2048,7 @@ anthy_create_record(const char *id)
   rst->row_dirty = 0;
   rst->encoding = 0;
 
-  /* ¥Õ¥¡¥¤¥ëÌ¾¤ÎÊ¸»úÎó¤òºî¤ë */
+  /* ãƒ•ã‚¡ã‚¤ãƒ«åã®æ–‡å­—åˆ—ã‚’ä½œã‚‹ */
   setup_filenames(id, rst);
 
   rst->last_update = 0;
@@ -2057,7 +2060,7 @@ anthy_create_record(const char *id)
     anthy_check_user_dir();
   }
 
-  /* ¥Õ¥¡¥¤¥ë¤«¤éÆÉ¤ß¹ş¤à */
+  /* ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰èª­ã¿è¾¼ã‚€ */
   lock_record(rst);
   check_record_encoding(rst);
   read_base_record(rst);

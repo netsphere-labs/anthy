@@ -1,9 +1,9 @@
 /*
- * Ê¸Àá¤ËÂĞ¤¹¤ë¸õÊä¤ò¥½¡¼¥È¤¹¤ë¡£
- * ¾­ÍèÅª¤Ë¤Ï¶áÀÜ¤¹¤ëÊ¸Àá¤â¸«¤Æ¡¢Ã±¸ì¤Î·ë¹ç¤Ë¤è¤ëÉ¾²Á¤ò¤¹¤ë¡£
- * ¥À¥Ö¤Ã¤¿¸õÊä¤Îºï½ü¤â¤¹¤ë¡£
+ * æ–‡ç¯€ã«å¯¾ã™ã‚‹å€™è£œã‚’ã‚½ãƒ¼ãƒˆã™ã‚‹ã€‚
+ * å°†æ¥çš„ã«ã¯è¿‘æ¥ã™ã‚‹æ–‡ç¯€ã‚‚è¦‹ã¦ã€å˜èªã®çµåˆã«ã‚ˆã‚‹è©•ä¾¡ã‚’ã™ã‚‹ã€‚
+ * ãƒ€ãƒ–ã£ãŸå€™è£œã®å‰Šé™¤ã‚‚ã™ã‚‹ã€‚
  *
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2001 9/22
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2001 9/22
  * Copyright (C) 2000-2006 TABATA Yusuke
  * Copyright (C) 2001 UGAWA Tomoharu
  *
@@ -32,24 +32,24 @@
 #include <anthy/ordering.h>
 #include "sorter.h"
 
-/* ¤ªÃãÆş¤ì³Ø½¬¤Ë¤è¤ë¸õÊä */
+/* ãŠèŒ¶å…¥ã‚Œå­¦ç¿’ã«ã‚ˆã‚‹å€™è£œ */
 #define OCHAIRE_BASE OCHAIRE_SCORE
-/* metaword¤¬½½Ê¬ÌµÍıÌğÍı¤¯¤µ¤¤¤È¤­¤Î¡¢¤Ò¤é¤¬¤Ê¥«¥¿¥«¥Ê¤Î¥¹¥³¥¢ */
+/* metawordãŒååˆ†ç„¡ç†çŸ¢ç†ãã•ã„ã¨ãã®ã€ã²ã‚‰ãŒãªã‚«ã‚¿ã‚«ãƒŠã®ã‚¹ã‚³ã‚¢ */
 #define NOCONV_WITH_BIAS 900000
-/* ÉáÄÌ¤Î¸õÊä */
+/* æ™®é€šã®å€™è£œ */
 #define NORMAL_BASE 100
-/* Ã±´Á»ú */
+/* å˜æ¼¢å­— */
 #define SINGLEWORD_BASE 10
-/* Ê£¹ç¸ì */
+/* è¤‡åˆèª */
 #define COMPOUND_BASE (OCHAIRE_SCORE / 2)
-/* Ê£¹ç¸ì¤Î°ìÉôÊ¬¤ò°ìÊ¸Àá¤Ë¤·¤¿¤â¤Î */
+/* è¤‡åˆèªã®ä¸€éƒ¨åˆ†ã‚’ä¸€æ–‡ç¯€ã«ã—ãŸã‚‚ã® */
 #define COMPOUND_PART_BASE 2
-/* ÉÕÂ°¸ì¤Î¤ß */
+/* ä»˜å±èªã®ã¿ */
 #define DEPWORD_BASE (OCHAIRE_SCORE / 2)
-/* ¤Ò¤é¤¬¤Ê¥«¥¿¥«¥Ê¤Î¥Ç¥Õ¥©¥ë¥È¤Î¥¹¥³¥¢ */
+/* ã²ã‚‰ãŒãªã‚«ã‚¿ã‚«ãƒŠã®ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®ã‚¹ã‚³ã‚¢ */
 #define NOCONV_BASE 1
 
-/* ÌµÍı¤Ã¤İ¤¤¸õÊä³ä¤êÅö¤Æ¤«È½ÃÇ¤¹¤ë */
+/* ç„¡ç†ã£ã½ã„å€™è£œå‰²ã‚Šå½“ã¦ã‹åˆ¤æ–­ã™ã‚‹ */
 static int
 uncertain_segment_p(struct seg_ent *se)
 {
@@ -60,7 +60,7 @@ uncertain_segment_p(struct seg_ent *se)
 
   mw = se->mw_array[0];
 
-  /* Ä¹¤µ¤Î6³ä */
+  /* é•·ã•ã®6å‰² */
   if (se->len * 3 >= mw->len * 5) {
     return 1;
   }
@@ -71,9 +71,9 @@ static void
 release_redundant_candidate(struct seg_ent *se)
 {
   int i, j;
-  /* ÇÛÎó¤Ï¥½¡¼¥È¤µ¤ì¤Æ¤¤¤ë¤Î¤Çscore¤¬0¤Î¸õÊä¤¬¸å¤í¤ËÊÂ¤ó¤Ç¤¤¤ë */
+  /* é…åˆ—ã¯ã‚½ãƒ¼ãƒˆã•ã‚Œã¦ã„ã‚‹ã®ã§scoreãŒ0ã®å€™è£œãŒå¾Œã‚ã«ä¸¦ã‚“ã§ã„ã‚‹ */
   for (i = 0; i < se->nr_cands && se->cands[i]->score; i++);
-  /* i¤«¤é¸å¤í¤Î¸õÊä¤ò²òÊü */
+  /* iã‹ã‚‰å¾Œã‚ã®å€™è£œã‚’è§£æ”¾ */
   if (i < se->nr_cands) {
     for (j = i; j < se->nr_cands; j++) {
       anthy_release_cand_ent(se->cands[j]);
@@ -82,7 +82,7 @@ release_redundant_candidate(struct seg_ent *se)
   }
 }
 
-/* qsortÍÑ¤Î¸õÊäÈæ³Ó´Ø¿ô */
+/* qsortç”¨ã®å€™è£œæ¯”è¼ƒé–¢æ•° */
 static int
 candidate_compare_func(const void *p1, const void *p2)
 {
@@ -102,7 +102,7 @@ static void
 trim_kana_candidate(struct seg_ent *se)
 {
   int i;
-  if (NULL == se->cands) {  /* ¼­½ñ¤â¤·¤¯¤Ï³Ø½¬¥Ç¡¼¥¿¤¬²õ¤ì¤Æ¤¤¤¿»ş¤ÎÂĞºö */
+  if (NULL == se->cands) {  /* è¾æ›¸ã‚‚ã—ãã¯å­¦ç¿’ãƒ‡ãƒ¼ã‚¿ãŒå£Šã‚Œã¦ã„ãŸæ™‚ã®å¯¾ç­– */
     return;
   }
   if (se->cands[0]->flag & CEF_KATAKANA) {
@@ -110,7 +110,7 @@ trim_kana_candidate(struct seg_ent *se)
   }
   for (i = 1; i < se->nr_cands; i++) {
     if (se->cands[i]->flag & CEF_KATAKANA) {
-      /* ºÇÄãÅÀ¤Ş¤Ç²¼¤²¤ë */
+      /* æœ€ä½ç‚¹ã¾ã§ä¸‹ã’ã‚‹ */
       se->cands[i]->score = NOCONV_BASE;
     }
   }
@@ -123,7 +123,7 @@ check_dupl_candidate(struct seg_ent *se)
   for (i = 0; i < se->nr_cands - 1; i++) {
     for (j = i + 1; j < se->nr_cands; j++) {
       if (!anthy_xstrcmp(&se->cands[i]->str, &se->cands[j]->str)) {
-	/* ¥ë¡¼¥ë¤ËÎÉ¤¯¥Ş¥Ã¥Á¤·¤¿¤â¤Î¤ÎÊı¤òÁª¤Ö¤È¤«¤¹¤Ù¤­ */
+	/* ãƒ«ãƒ¼ãƒ«ã«è‰¯ããƒãƒƒãƒã—ãŸã‚‚ã®ã®æ–¹ã‚’é¸ã¶ã¨ã‹ã™ã¹ã */
 	se->cands[j]->score = 0;
 	se->cands[i]->flag |= se->cands[j]->flag;
       }
@@ -131,21 +131,21 @@ check_dupl_candidate(struct seg_ent *se)
   }
 }
 
-/* ÉÊ»ì³ä¤êÅö¤Æ¤Ë¤è¤Ã¤ÆÀ¸À®¤µ¤ì¤¿¸õÊä¤òÉ¾²Á¤¹¤ë */
+/* å“è©å‰²ã‚Šå½“ã¦ã«ã‚ˆã£ã¦ç”Ÿæˆã•ã‚ŒãŸå€™è£œã‚’è©•ä¾¡ã™ã‚‹ */
 static void
 eval_candidate_by_metaword(struct cand_ent *ce)
 {
   int i;
   int score = 1;
 
-  /* ¤Ş¤º¡¢Ã±¸ì¤ÎÉÑÅÙ¤Ë¤è¤ëscore¤ò²Ã»» */
+  /* ã¾ãšã€å˜èªã®é »åº¦ã«ã‚ˆã‚‹scoreã‚’åŠ ç®— */
   for (i = 0; i < ce->nr_words; i++) {
     struct cand_elm *elm = &ce->elm[i];
     int pos, div = 1;
     int freq;
 
     if (elm->nth < 0) {
-      /* ¸õÊä³ä¤êÅö¤Æ¤ÎÂĞ¾İ³°¤Ê¤Î¤Ç¥¹¥­¥Ã¥× */
+      /* å€™è£œå‰²ã‚Šå½“ã¦ã®å¯¾è±¡å¤–ãªã®ã§ã‚¹ã‚­ãƒƒãƒ— */
       continue;
     }
     pos = anthy_wtype_get_pos(elm->wt);
@@ -164,7 +164,7 @@ eval_candidate_by_metaword(struct cand_ent *ce)
   ce->score = score;
 }
 
-/* ¸õÊä¤òÉ¾²Á¤¹¤ë */
+/* å€™è£œã‚’è©•ä¾¡ã™ã‚‹ */
 static void
 eval_candidate(struct cand_ent *ce, int uncertain)
 {
@@ -172,7 +172,7 @@ eval_candidate(struct cand_ent *ce, int uncertain)
        (CEF_OCHAIRE | CEF_SINGLEWORD | CEF_HIRAGANA |
 	CEF_KATAKANA | CEF_GUESS | CEF_COMPOUND | CEF_COMPOUND_PART |
 	CEF_BEST)) == 0) {
-    /* splitter¤«¤é¤Î¾ğÊó(metaword)¤Ë¤è¤Ã¤ÆÀ¸À®¤µ¤ì¤¿¸õÊä */
+    /* splitterã‹ã‚‰ã®æƒ…å ±(metaword)ã«ã‚ˆã£ã¦ç”Ÿæˆã•ã‚ŒãŸå€™è£œ */
     eval_candidate_by_metaword(ce);
   } else if (ce->flag & CEF_OCHAIRE) {
     ce->score = OCHAIRE_BASE;
@@ -188,8 +188,8 @@ eval_candidate(struct cand_ent *ce, int uncertain)
 			 CEF_GUESS)) {
     if (uncertain) {
       /*
-       * ¤³¤ÎÊ¸Àá¤Ï³°Íè¸ì¤Ê¤É¤Î¤è¤¦¤Ê¤Î¤Ç¡¢À¸À®¤·¤¿¸õÊä¤è¤ê¤â
-       * ¤Ò¤é¤¬¤Ê¥«¥¿¥«¥Ê¤Î¸õÊä¤ò½Ğ¤·¤¿Êı¤¬¤è¤¤
+       * ã“ã®æ–‡ç¯€ã¯å¤–æ¥èªãªã©ã®ã‚ˆã†ãªã®ã§ã€ç”Ÿæˆã—ãŸå€™è£œã‚ˆã‚Šã‚‚
+       * ã²ã‚‰ãŒãªã‚«ã‚¿ã‚«ãƒŠã®å€™è£œã‚’å‡ºã—ãŸæ–¹ãŒã‚ˆã„
        */
       ce->score = NOCONV_WITH_BIAS;
       if (CEF_KATAKANA & ce->flag) {
@@ -215,30 +215,30 @@ eval_segment(struct seg_ent *se)
   }
 }
 
-/* ³Ø½¬ÍúÎò¤ÎÆâÍÆ¤Ç½ç°Ì¤òÄ´À°¤¹¤ë */
+/* å­¦ç¿’å±¥æ­´ã®å†…å®¹ã§é †ä½ã‚’èª¿æ•´ã™ã‚‹ */
 static void
 apply_learning(struct segment_list *sl, int nth)
 {
   int i;
 
   /*
-   * Í¥Àè½ç°Ì¤ÎÄã¤¤¤â¤Î¤«¤é½ç¤ËÅ¬ÍÑ¤¹¤ë
+   * å„ªå…ˆé †ä½ã®ä½ã„ã‚‚ã®ã‹ã‚‰é †ã«é©ç”¨ã™ã‚‹
    */
 
-  /* ÍÑÎã¼­½ñ¤Ë¤è¤ë½ç½ø¤ÎÊÑ¹¹ */
+  /* ç”¨ä¾‹è¾æ›¸ã«ã‚ˆã‚‹é †åºã®å¤‰æ›´ */
   anthy_reorder_candidates_by_relation(sl, nth);
-  /* ¸õÊä¤Î¸ò´¹ */
+  /* å€™è£œã®äº¤æ› */
   for (i = nth; i < sl->nr_segments; i++) {
     struct seg_ent *seg = anthy_get_nth_segment(sl, i);
-    /* ¸õÊä¤Î¸ò´¹ */
+    /* å€™è£œã®äº¤æ› */
     anthy_proc_swap_candidate(seg);
-    /* ÍúÎò¤Ë¤è¤ë½ç½ø¤ÎÊÑ¹¹ */
+    /* å±¥æ­´ã«ã‚ˆã‚‹é †åºã®å¤‰æ›´ */
     anthy_reorder_candidates_by_history(anthy_get_nth_segment(sl, i));
   }
 }
 
-/** ³°¤«¤é¸Æ¤Ğ¤ì¤ë¥¨¥ó¥È¥ê¥İ¥¤¥ó¥È
- * @nth°Ê¹ß¤ÎÊ¸Àá¤òÂĞ¾İ¤È¤¹¤ë
+/** å¤–ã‹ã‚‰å‘¼ã°ã‚Œã‚‹ã‚¨ãƒ³ãƒˆãƒªãƒã‚¤ãƒ³ãƒˆ
+ * @nthä»¥é™ã®æ–‡ç¯€ã‚’å¯¾è±¡ã¨ã™ã‚‹
  */
 void
 anthy_sort_candidate(struct segment_list *sl, int nth)
@@ -246,30 +246,30 @@ anthy_sort_candidate(struct segment_list *sl, int nth)
   int i;
   for (i = nth; i < sl->nr_segments; i++) {
     struct seg_ent *seg = anthy_get_nth_segment(sl, i);
-    /* ¤Ş¤ºÉ¾²Á¤¹¤ë */
+    /* ã¾ãšè©•ä¾¡ã™ã‚‹ */
     eval_segment(seg);
-    /* ¤Ä¤®¤Ë¥½¡¼¥È¤¹¤ë */
+    /* ã¤ãã«ã‚½ãƒ¼ãƒˆã™ã‚‹ */
     sort_segment(seg);
-    /* ¥À¥Ö¤Ã¤¿¥¨¥ó¥È¥ê¤ÎÅÀ¤ÎÄã¤¤Êı¤Ë0ÅÀ¤òÉÕ¤±¤ë */
+    /* ãƒ€ãƒ–ã£ãŸã‚¨ãƒ³ãƒˆãƒªã®ç‚¹ã®ä½ã„æ–¹ã«0ç‚¹ã‚’ä»˜ã‘ã‚‹ */
     check_dupl_candidate(seg);
-    /* ¤â¤¦¤¤¤Á¤É¥½¡¼¥È¤¹¤ë */
+    /* ã‚‚ã†ã„ã¡ã©ã‚½ãƒ¼ãƒˆã™ã‚‹ */
     sort_segment(seg);
-    /* É¾²Á0¤Î¸õÊä¤ò²òÊü */
+    /* è©•ä¾¡0ã®å€™è£œã‚’è§£æ”¾ */
     release_redundant_candidate(seg);
   }
 
-  /* ³Ø½¬¤ÎÍúÎò¤òÅ¬ÍÑ¤¹¤ë */
+  /* å­¦ç¿’ã®å±¥æ­´ã‚’é©ç”¨ã™ã‚‹ */
   apply_learning(sl, nth);
 
-  /* ¤Ş¤¿¥½¡¼¥È¤¹¤ë */
+  /* ã¾ãŸã‚½ãƒ¼ãƒˆã™ã‚‹ */
   for ( i = nth ; i < sl->nr_segments ; i++){
     sort_segment(anthy_get_nth_segment(sl, i));
   }
-  /* ¥«¥¿¥«¥Ê¤Î¸õÊä¤¬ÀèÆ¬¤Ç¤Ê¤±¤ì¤ĞºÇ¸å¤Ë²ó¤¹ */
+  /* ã‚«ã‚¿ã‚«ãƒŠã®å€™è£œãŒå…ˆé ­ã§ãªã‘ã‚Œã°æœ€å¾Œã«å›ã™ */
   for (i = nth; i < sl->nr_segments; i++) {
     trim_kana_candidate(anthy_get_nth_segment(sl, i));
   }
-  /* ¤Ş¤¿¥½¡¼¥È¤¹¤ë */
+  /* ã¾ãŸã‚½ãƒ¼ãƒˆã™ã‚‹ */
   for ( i = nth ; i < sl->nr_segments ; i++){
     sort_segment(anthy_get_nth_segment(sl, i));
   }

@@ -1,10 +1,10 @@
-/* ÊÑ´¹·ë²Ì¤Î¥Ç¡¼¥¿¥Ù¡¼¥¹ */
+/* å¤‰æ›çµæœã®ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ */
 #ifndef _convdb_h_included_
 #define _convdb_h_included_
 
 #include <anthy/anthy.h>
 
-/* ÉÔÌÀ, OK, ¸íÊÑ´¹, don't care¤Î4¤Ä¤Î¥«¥Æ¥´¥ê¡¼¤ËÊ¬Îà¤¹¤ë */
+/* ä¸æ˜, OK, èª¤å¤‰æ›, don't careã®4ã¤ã®ã‚«ãƒ†ã‚´ãƒªãƒ¼ã«åˆ†é¡ã™ã‚‹ */
 #define CHK_UNKNOWN 0
 #define CHK_OK 1
 #define CHK_MISS 2
@@ -16,12 +16,12 @@
 #define CONV_CAND_MISS 2
 #define CONV_INVALID 4
 
-/* ÊÑ´¹Á°¤ÈÊÑ´¹¸å¤ÎÊ¸»úÎó¡¢·ë²Ì¤ËÂĞ¤¹¤ëÈ½Äê¤ò³ÊÇ¼¤¹¤ë */
+/* å¤‰æ›å‰ã¨å¤‰æ›å¾Œã®æ–‡å­—åˆ—ã€çµæœã«å¯¾ã™ã‚‹åˆ¤å®šã‚’æ ¼ç´ã™ã‚‹ */
 struct conv_res {
-  /* ¸¡º÷¤Î¥­¡¼ */
+  /* æ¤œç´¢ã®ã‚­ãƒ¼ */
   char *src_str;
   char *res_str;
-  /* ¸õÊä¤ò³ä¤êÅö¤Æ¤¿¤â¤Î */
+  /* å€™è£œã‚’å‰²ã‚Šå½“ã¦ãŸã‚‚ã® */
   char *cand_str;
   /**/
   int *cand_check;
@@ -32,7 +32,7 @@ struct conv_res {
   struct conv_res *next;
 };
 
-/* ÊÑ´¹·ë²Ì¤Î¥«¥¦¥ó¥È */
+/* å¤‰æ›çµæœã®ã‚«ã‚¦ãƒ³ãƒˆ */
 struct res_stat {
   int unknown;
   int ok;
@@ -40,7 +40,7 @@ struct res_stat {
   int dontcare;
 };
 
-/* ÊÑ´¹·ë²Ì¤Î¥Ç¡¼¥¿¥Ù¡¼¥¹ */
+/* å¤‰æ›çµæœã®ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ */
 struct res_db {
   /**/
   struct conv_res res_list;

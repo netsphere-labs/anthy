@@ -1,15 +1,15 @@
 /*
  * Word Dictionary
- * ¥Õ¥¡¥¤¥ë¤Î¼­½ñ¤Î¥¤¥ó¥¿¡¼¥Õ¥§¡¼¥¹¡¢Â¸ºß¤¹¤ë¥Ç¡¼¥¿¤Ï
- * ¥­¥ã¥Ã¥·¥å¤µ¤ì¤ë¤Î¤Ç¤³¤³¤Ç¤ÏÂ¸ºß¤·¤Ê¤¤Ã±¸ì¤Î
- * ¥µ¡¼¥Á¤ò¹âÂ®¤Ë¤¹¤ëÉ¬Í×¤¬¤¢¤ë¡£
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã®è¾æ›¸ã®ã‚¤ãƒ³ã‚¿ãƒ¼ãƒ•ã‚§ãƒ¼ã‚¹ã€å­˜åœ¨ã™ã‚‹ãƒ‡ãƒ¼ã‚¿ã¯
+ * ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã•ã‚Œã‚‹ã®ã§ã“ã“ã§ã¯å­˜åœ¨ã—ãªã„å˜èªã®
+ * ã‚µãƒ¼ãƒã‚’é«˜é€Ÿã«ã™ã‚‹å¿…è¦ãŒã‚ã‚‹ã€‚
  *
- * anthy_gang_fill_seq_ent()¤¬Ãæ¿´¤È¤Ê¤ë´Ø¿ô¤Ç¤¢¤ë
- *  »ØÄê¤·¤¿word_dic¤«¤é»ØÄê¤·¤¿Ê¸»úÎó¤ò¥¤¥ó¥Ç¥Ã¥¯¥¹¤È¤·¤Æ¤â¤Ä¥¨¥ó¥È¥ê¤Ë
- *  ¸ìÈø¤òÉÕ²Ã¤·¤Æseq_ent¤ËÄÉ²Ã¤¹¤ë
+ * anthy_gang_fill_seq_ent()ãŒä¸­å¿ƒã¨ãªã‚‹é–¢æ•°ã§ã‚ã‚‹
+ *  æŒ‡å®šã—ãŸword_dicã‹ã‚‰æŒ‡å®šã—ãŸæ–‡å­—åˆ—ã‚’ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã¨ã—ã¦ã‚‚ã¤ã‚¨ãƒ³ãƒˆãƒªã«
+ *  èªå°¾ã‚’ä»˜åŠ ã—ã¦seq_entã«è¿½åŠ ã™ã‚‹
  *
- * a)¼­½ñ¤Î·Á¼°¤Èb)¼­½ñ¥¢¥¯¥»¥¹¤Î¹âÂ®²½c)¼­½ñ¥Õ¥¡¥¤¥ë¤Î¥¨¥ó¥³¡¼¥Ç¥£¥ó¥°
- *  ¤³¤Î¥½¡¼¥¹Ãæ¤Ç°·¤Ã¤Æ¤ë¤Î¤Ç¤«¤Ê¤êÊ£»¨²½¤·¤Æ¤Ş¤¹¡¥
+ * a)è¾æ›¸ã®å½¢å¼ã¨b)è¾æ›¸ã‚¢ã‚¯ã‚»ã‚¹ã®é«˜é€ŸåŒ–c)è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°
+ *  ã“ã®ã‚½ãƒ¼ã‚¹ä¸­ã§æ‰±ã£ã¦ã‚‹ã®ã§ã‹ãªã‚Šè¤‡é›‘åŒ–ã—ã¦ã¾ã™ï¼
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  * Copyright (C) 2005-2006 YOSHIDA Yuichi
@@ -60,7 +60,7 @@ struct lookup_context {
   int is_reverse;
 };
 
-/* 1¥Ğ¥¤¥ÈÌÜ¤ò¸«¤Æ¡¢Ê¸»ú¤¬²¿¥Ğ¥¤¥È¤¢¤ë¤«¤òÊÖ¤¹ */
+/* 1ãƒã‚¤ãƒˆç›®ã‚’è¦‹ã¦ã€æ–‡å­—ãŒä½•ãƒã‚¤ãƒˆã‚ã‚‹ã‹ã‚’è¿”ã™ */
 static int
 mb_fragment_len(const char *str)
 {
@@ -96,7 +96,7 @@ is_printable(char *str)
   return 0;
 }
 
-/* ¼­½ñ¤Î¥¨¥ó¥³¡¼¥Ç¥£¥ó¥°¤«¤éxchar¤òºî¤ë */
+/* è¾æ›¸ã®ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã‹ã‚‰xcharã‚’ä½œã‚‹ */
 static xchar
 form_mb_char(const char *str)
 {
@@ -129,19 +129,19 @@ wtype_str_len(const char *str)
   return i;
 }
 
-/* ¼­½ñ¤Î¹ÔÃæ¤ò¥¹¥­¥ã¥ó¤¹¤ë¤¿¤á¤Î¾õÂÖÊİ»ı */
+/* è¾æ›¸ã®è¡Œä¸­ã‚’ã‚¹ã‚­ãƒ£ãƒ³ã™ã‚‹ãŸã‚ã®çŠ¶æ…‹ä¿æŒ */
 struct wt_stat {
   wtype_t wt;
   const char *wt_name;
   int feature;
   int freq;
-  int order_bonus;/* ¼­½ñÃæ¤Î½ç½ø¤Ë¤è¤ëÉÑÅÙ¤Î¥Ü¡¼¥Ê¥¹ */
-  int offset;/* Ê¸»úÎóÃæ¤Î¥ª¥Õ¥»¥Ã¥È */
+  int order_bonus;/* è¾æ›¸ä¸­ã®é †åºã«ã‚ˆã‚‹é »åº¦ã®ãƒœãƒ¼ãƒŠã‚¹ */
+  int offset;/* æ–‡å­—åˆ—ä¸­ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ */
   const char *line;
   int encoding;
 };
 /*
- * #XX*123 ¤È¤¤¤¦Cannadic¤Î·Á¼°¤ò¥Ñ¡¼¥º¤¹¤ë
+ * #XX*123 ã¨ã„ã†Cannadicã®å½¢å¼ã‚’ãƒ‘ãƒ¼ã‚ºã™ã‚‹
  *  #XX
  *  #XX*123
  *  #XX,x*123
@@ -154,13 +154,13 @@ parse_wtype_str(struct wt_stat *ws)
   char *freq_part;
   char *feature_part;
   const char *wt_name;
-  /* ¥Ğ¥Ã¥Õ¥¡¤Ø¥³¥Ô¡¼¤¹¤ë */
+  /* ãƒãƒƒãƒ•ã‚¡ã¸ã‚³ãƒ”ãƒ¼ã™ã‚‹ */
   len = wtype_str_len(&ws->line[ws->offset]);
   buf = alloca(len + 1);
   strncpy(buf, &ws->line[ws->offset], len);
   buf[len] = 0;
 
-  /* ÁÇÀ­(Ì¤»ÈÍÑ) */
+  /* ç´ æ€§(æœªä½¿ç”¨) */
   feature_part = strchr(buf, ',');
   if (feature_part) {
     ws->feature = 1;
@@ -168,7 +168,7 @@ parse_wtype_str(struct wt_stat *ws)
     ws->feature = 0;
   }
 
-  /* ÉÑÅÙ¤òparse¤¹¤ë */
+  /* é »åº¦ã‚’parseã™ã‚‹ */
   freq_part = strchr(buf, '*');
   if (freq_part) {
     *freq_part = 0;
@@ -197,7 +197,7 @@ normalize_freq(struct wt_stat* ws)
   return ws->freq + ws->order_bonus;
 }
 
-/* '\\'¤Ë¤è¤ë¥¨¥¹¥±¡¼¥×¤ËÂĞ±ş¤·¤¿¥³¥Ô¡¼ */
+/* '\\'ã«ã‚ˆã‚‹ã‚¨ã‚¹ã‚±ãƒ¼ãƒ—ã«å¯¾å¿œã—ãŸã‚³ãƒ”ãƒ¼ */
 static void
 copy_to_buf(char *buf, const char *src, int char_count)
 {
@@ -218,13 +218,13 @@ copy_to_buf(char *buf, const char *src, int char_count)
   buf[pos] = 0;
 }
 
-/** seq_ent¤Ëdic_ent¤òÄÉ²Ã¤¹¤ë */
+/** seq_entã«dic_entã‚’è¿½åŠ ã™ã‚‹ */
 static int
 add_dic_ent(struct seq_ent *seq, struct wt_stat *ws,
 	    xstr* yomi, int is_reverse)
 {
   int i;
-  /* ¼­½ñ¥Õ¥¡¥¤¥ëÃæ¤Î¥Ğ¥¤¥È¿ô */
+  /* è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ä¸­ã®ãƒã‚¤ãƒˆæ•° */
   int char_count;
   char *buf;
   xstr *xs;
@@ -232,7 +232,7 @@ add_dic_ent(struct seq_ent *seq, struct wt_stat *ws,
   wtype_t w = ws->wt;
   const char *s = &ws->line[ws->offset];
 
-  /* Ã±¸ì¤ÎÊ¸»ú¿ô¤ò·×»» */
+  /* å˜èªã®æ–‡å­—æ•°ã‚’è¨ˆç®— */
   for (i = 0, char_count = 0;
        s[i] && (s[i] != ' ') && (s[i] != '#'); i++) {
     char_count ++;
@@ -242,26 +242,26 @@ add_dic_ent(struct seq_ent *seq, struct wt_stat *ws,
     }
   }
 
-  /* ÉÊ»ì¤¬ÄêµÁ¤µ¤ì¤Æ¤¤¤Ê¤¤¤Î¤ÇÌµ»ë */
+  /* å“è©ãŒå®šç¾©ã•ã‚Œã¦ã„ãªã„ã®ã§ç„¡è¦– */
   if (!ws->wt_name) {
     return char_count;
   }
 
-  /* freq¤¬Éé¤Ê¤Î¤ÏµÕÊÑ´¹ÍÑ */
+  /* freqãŒè² ãªã®ã¯é€†å¤‰æ›ç”¨ */
   if (!is_reverse && ws->freq < 0) {
     return char_count;
   }
 
-  /* buf¤ËÃ±¸ì¤ò¥³¥Ô¡¼ */
+  /* bufã«å˜èªã‚’ã‚³ãƒ”ãƒ¼ */
   buf = alloca(char_count+1);
   copy_to_buf(buf, s, char_count);
 
   xs = anthy_cstr_to_xstr(buf, ws->encoding);
 
-  /* freq¤¬Àµ¤Ê¤Î¤Ï½çÊÑ´¹ÍÑ */
+  /* freqãŒæ­£ãªã®ã¯é †å¤‰æ›ç”¨ */
   if (is_reverse && ws->freq > 0) {
-    /* ºÆÊÑ´¹¤Îºİ¤Ë¡¢ÊÑ´¹ºÑ¤ß¤ÎÉôÊ¬¤ÈÌ¤ÊÑ´¹¤ÎÉôÊ¬¤¬º®¤¸¤Ã¤Æ¤¤¤¿¾ì¹ç¤ËÂĞ±ş¤¹¤ë°Ù¤Ë¡¢
-       Ê¿²¾Ì¾¤Î¤ß¤«¤é¤Ê¤ëÉôÊ¬¤Ï½ç¼­½ñ¤Ë¤½¤ÎÆÉ¤ß¤ò»ı¤ÄÃ±¸ì¤¬¤¢¤ì¤Ğdic_ent¤òÀ¸À®¤¹¤ë¡£
+    /* å†å¤‰æ›ã®éš›ã«ã€å¤‰æ›æ¸ˆã¿ã®éƒ¨åˆ†ã¨æœªå¤‰æ›ã®éƒ¨åˆ†ãŒæ··ã˜ã£ã¦ã„ãŸå ´åˆã«å¯¾å¿œã™ã‚‹ç‚ºã«ã€
+       å¹³ä»®åã®ã¿ã‹ã‚‰ãªã‚‹éƒ¨åˆ†ã¯é †è¾æ›¸ã«ãã®èª­ã¿ã‚’æŒã¤å˜èªãŒã‚ã‚Œã°dic_entã‚’ç”Ÿæˆã™ã‚‹ã€‚
     */
     if (anthy_get_xstr_type(yomi) & XCT_HIRA) {
       freq = normalize_freq(ws);
@@ -275,11 +275,6 @@ add_dic_ent(struct seq_ent *seq, struct wt_stat *ws,
   freq = normalize_freq(ws);
 
   anthy_mem_dic_push_back_dic_ent(seq, 0, xs, w, ws->wt_name, freq, 0);
-  if (anthy_wtype_get_meisi(w)) {
-    /* Ï¢ÍÑ·Á¤¬Ì¾»ì²½¤¹¤ë¤ä¤Ä¤ÏÌ¾»ì²½¤·¤¿¤â¤Î¤âÄÉ²Ã */
-    w = anthy_get_wtype_with_ct(w, CT_MEISIKA);
-    anthy_mem_dic_push_back_dic_ent(seq, 0, xs, w, ws->wt_name, freq, 0);
-  }
   anthy_free_xstr(xs);
   return char_count;
 }
@@ -296,20 +291,20 @@ add_compound_ent(struct seq_ent *seq, struct wt_stat *ws,
 
   (void)yomi;
 
-  /* freq¤¬Éé¤Ê¤Î¤ÏµÕÊÑ´¹ÍÑ */
+  /* freqãŒè² ãªã®ã¯é€†å¤‰æ›ç”¨ */
   if (!is_reverse && ws->freq < 0) {
-    /* ÉáÃÊ¤ÎÊÑ´¹¤Ç¤ÏÍ×¤é¤Ê¤¤ */
+    /* æ™®æ®µã®å¤‰æ›ã§ã¯è¦ã‚‰ãªã„ */
     return len;
   }
 
-  /* freq¤¬Àµ¤Ê¤Î¤Ï½çÊÑ´¹ÍÑ */
+  /* freqãŒæ­£ãªã®ã¯é †å¤‰æ›ç”¨ */
   if (is_reverse && ws->freq > 0) {
 
-    /* ºÆÊÑ´¹¤Îºİ¤Ë¡¢ÊÑ´¹ºÑ¤ß¤ÎÉôÊ¬¤ÈÌ¤ÊÑ´¹¤ÎÉôÊ¬¤¬º®¤¸¤Ã¤Æ¤¤¤¿¾ì¹ç¤ËÂĞ±ş¤¹¤ë°Ù¤Ë¡¢
-       Ê¿²¾Ì¾¤Î¤ß¤«¤é¤Ê¤ëÉôÊ¬¤Ï½ç¼­½ñ¤Ë¤½¤ÎÆÉ¤ß¤ò»ı¤ÄÃ±¸ì¤¬¤¢¤ì¤Ğdic_ent¤òÀ¸À®¤¹¤ë¡£
+    /* å†å¤‰æ›ã®éš›ã«ã€å¤‰æ›æ¸ˆã¿ã®éƒ¨åˆ†ã¨æœªå¤‰æ›ã®éƒ¨åˆ†ãŒæ··ã˜ã£ã¦ã„ãŸå ´åˆã«å¯¾å¿œã™ã‚‹ç‚ºã«ã€
+       å¹³ä»®åã®ã¿ã‹ã‚‰ãªã‚‹éƒ¨åˆ†ã¯é †è¾æ›¸ã«ãã®èª­ã¿ã‚’æŒã¤å˜èªãŒã‚ã‚Œã°dic_entã‚’ç”Ÿæˆã™ã‚‹ã€‚
     */
     /*
-      yomi¤Ë#_Åù¤òÉÕ²Ã¤·¤¿Ê¸»úÎó¤òºî¤ëÉ¬Í×¤¬¤¢¤ë
+      yomiã«#_ç­‰ã‚’ä»˜åŠ ã—ãŸæ–‡å­—åˆ—ã‚’ä½œã‚‹å¿…è¦ãŒã‚ã‚‹
     if (anthy_get_xstr_type(yomi) & (XCT_HIRA | XCT_KATA)) {
       freq = normalize_freq(ws);
       anthy_mem_dic_push_back_compound_ent(seq, xs, ws->wt, freq);
@@ -346,7 +341,7 @@ init_wt_stat(struct wt_stat *ws, char *line)
   }
 }
 
-/** ¼­½ñ¤Î¥¨¥ó¥È¥ê¤Î¾ğÊó¤ò¸µ¤Ëseq_ent¤ò¤¦¤á¤ë */
+/** è¾æ›¸ã®ã‚¨ãƒ³ãƒˆãƒªã®æƒ…å ±ã‚’å…ƒã«seq_entã‚’ã†ã‚ã‚‹ */
 static void
 fill_dic_ent(char *line, struct seq_ent *seq, 
 	     xstr* yomi, int is_reverse)
@@ -357,18 +352,18 @@ fill_dic_ent(char *line, struct seq_ent *seq,
   while (ws.line[ws.offset]) {
     if (ws.line[ws.offset] == '#') {
       if (isalpha(ws.line[ws.offset + 1])) {
-	/* ÉÊ»ì*ÉÑÅÙ */
+	/* å“è©*é »åº¦ */
 	ws.wt_name = parse_wtype_str(&ws);
 	/**/
 	ws.order_bonus = FREQ_RATIO - 1;
       } else {
-	/* Ê£¹ç¸ì¸õÊä */
+	/* è¤‡åˆèªå€™è£œ */
 	ws.offset += add_compound_ent(seq, &ws,
 				      yomi,
 				      is_reverse);
       }
     } else {
-      /* Ã±¸ì */
+      /* å˜èª */
       ws.offset += add_dic_ent(seq, &ws, yomi,
 			       is_reverse);
       if (ws.order_bonus > 0) {
@@ -382,24 +377,24 @@ fill_dic_ent(char *line, struct seq_ent *seq,
 }
 
 /*
- * s¤Ë½ñ¤«¤ì¤¿Ê¸»úÎó¤Ë¤è¤Ã¤Æx¤òÊÑ¹¹¤¹¤ë
- * ÊÖ¤êÃÍ¤ÏÆÉ¤ß¿Ê¤á¤¿¥Ğ¥¤¥È¿ô
+ * sã«æ›¸ã‹ã‚ŒãŸæ–‡å­—åˆ—ã«ã‚ˆã£ã¦xã‚’å¤‰æ›´ã™ã‚‹
+ * è¿”ã‚Šå€¤ã¯èª­ã¿é€²ã‚ãŸãƒã‚¤ãƒˆæ•°
  */
 static int
 mkxstr(char *s, xstr *x)
 {
   int i, len;
-  /* s[0]¤Ë¤Ï´¬¤­Ìá¤·¤ÎÊ¸»ú¿ô */
+  /* s[0]ã«ã¯å·»ãæˆ»ã—ã®æ–‡å­—æ•° */
   x->len -= (s[0] - 1);
   for (i = 1; is_printable(&s[i]); i ++) {
     len = mb_fragment_len(&s[i]);
     if (len > 1) {
-      /* ¥Ş¥ë¥Á¥Ğ¥¤¥È */
+      /* ãƒãƒ«ãƒãƒã‚¤ãƒˆ */
       x->str[x->len] = form_mb_char(&s[i]);
       x->len ++;
       i += (len - 1);
     } else {
-      /* 1¥Ğ¥¤¥ÈÊ¸»ú */
+      /* 1ãƒã‚¤ãƒˆæ–‡å­— */
       x->str[x->len] = s[i];
       x->len ++;
     }
@@ -420,7 +415,7 @@ set_next_idx(struct lookup_context *lc)
   return 0;
 }
 
-/** ¥Ú¡¼¥¸Ãæ¤ÎÃ±¸ì¤Î¾ì½ê¤òÄ´¤Ù¤ë */
+/** ãƒšãƒ¼ã‚¸ä¸­ã®å˜èªã®å ´æ‰€ã‚’èª¿ã¹ã‚‹ */
 static void
 search_words_in_page(struct lookup_context *lc, int page, char *s)
 {
@@ -428,7 +423,7 @@ search_words_in_page(struct lookup_context *lc, int page, char *s)
   xchar *buf;
   xstr xs;
   int nr = 0;
-  /* ¤³¤Î¥Ú¡¼¥¸Ãæ¤Ë¤¢¤ë¤â¤Ã¤È¤âÄ¹¤¤Ã±¸ì¤ò³ÊÇ¼¤·¤¦¤ëÄ¹¤µ */
+  /* ã“ã®ãƒšãƒ¼ã‚¸ä¸­ã«ã‚ã‚‹ã‚‚ã£ã¨ã‚‚é•·ã„å˜èªã‚’æ ¼ç´ã—ã†ã‚‹é•·ã• */
   buf = alloca(sizeof(xchar)*strlen(s)/2);
   xs.str = buf;
   xs.len = 0;
@@ -443,16 +438,16 @@ search_words_in_page(struct lookup_context *lc, int page, char *s)
       if (!set_next_idx(lc)) {
 	return ;
       }
-      /* Æ±¤¸¥Ú¡¼¥¸Æâ¤Ç¼¡¤ÎÃ±¸ì¤òÃµ¤¹ */
+      /* åŒã˜ãƒšãƒ¼ã‚¸å†…ã§æ¬¡ã®å˜èªã‚’æ¢ã™ */
     }
     o ++;
   }
   if (nr == 0) {
-    /* ¤³¤Î¥Ú¡¼¥¸¤Ç1¸ì¤â¸«¤Ä¤«¤é¤Ê¤«¤Ã¤¿¤é¡¢¤³¤ÎÃ±¸ì¤ÏÌµ¤¤ */
+    /* ã“ã®ãƒšãƒ¼ã‚¸ã§1èªã‚‚è¦‹ã¤ã‹ã‚‰ãªã‹ã£ãŸã‚‰ã€ã“ã®å˜èªã¯ç„¡ã„ */
     lc->array[lc->nth]->tmp.idx = NO_WORD;
     set_next_idx(lc);
   }
-  /* ¸½ºß¤ÎÃ±¸ì¤Ï¼¡¤Î¸Æ¤Ó½Ğ¤·¤ÇÃµ¤¹ */
+  /* ç¾åœ¨ã®å˜èªã¯æ¬¡ã®å‘¼ã³å‡ºã—ã§æ¢ã™ */
 }
 
 /**/
@@ -474,11 +469,11 @@ compare_page_index(struct word_dic *wdic, const char *key, int page)
   return strcmp(key ,buf);
 }
 
-/* ºÆµ¢Åª¤Ë¥Ğ¥¤¥Ê¥ê¥µ¡¼¥Á¤ò¤¹¤ë */
+/* å†å¸°çš„ã«ãƒã‚¤ãƒŠãƒªã‚µãƒ¼ãƒã‚’ã™ã‚‹ */
 static int
 get_page_index_search(struct word_dic *wdic, const char *key, int f, int t)
 {
-  /* anthy_xstrcmp¤¬-1¤ÇÌµ¤¯¤Ê¤Ã¤¿¤È¤³¤í¤òÃµ¤¹ */
+  /* anthy_xstrcmpãŒ-1ã§ç„¡ããªã£ãŸã¨ã“ã‚ã‚’æ¢ã™ */
   int c,p;
   c = (f+t)/2;
   if (f+1==t) {
@@ -494,23 +489,23 @@ get_page_index_search(struct word_dic *wdic, const char *key, int f, int t)
   } 
 }
 
-/** key¤ò´Ş¤à²ÄÇ½À­¤Î¤¢¤ë¥Ú¡¼¥¸¤ÎÈÖ¹æ¤òÆÀ¤ë¡¢
- * ÈÏ°Ï¥Á¥§¥Ã¥¯¤ò¤·¤Æ¥Ğ¥¤¥Ê¥ê¥µ¡¼¥Á¤ò¹Ô¤¦get_page_index_search¤ò¸Æ¤Ö
+/** keyã‚’å«ã‚€å¯èƒ½æ€§ã®ã‚ã‚‹ãƒšãƒ¼ã‚¸ã®ç•ªå·ã‚’å¾—ã‚‹ã€
+ * ç¯„å›²ãƒã‚§ãƒƒã‚¯ã‚’ã—ã¦ãƒã‚¤ãƒŠãƒªã‚µãƒ¼ãƒã‚’è¡Œã†get_page_index_searchã‚’å‘¼ã¶
  */
 static int
 get_page_index(struct word_dic *wdic, struct lookup_context *lc)
 {
   int page;
   const char *key = lc->array[lc->nth]->key;
-  /* ºÇ½é¤Î¥Ú¡¼¥¸¤ÎÆÉ¤ß¤è¤ê¤â¾®¤µ¤¤ */
+  /* æœ€åˆã®ãƒšãƒ¼ã‚¸ã®èª­ã¿ã‚ˆã‚Šã‚‚å°ã•ã„ */
   if (compare_page_index(wdic, key, 0) < 0) {
     return -1;
   }
-  /* ºÇ¸å¤Î¥Ú¡¼¥¸¤ÎÆÉ¤ß¤è¤ê¤âÂç¤­¤¤¤Î¤Ç¡¢ºÇ¸å¤Î¥Ú¡¼¥¸¤Ë´Ş¤Ş¤ì¤ë²ÄÇ½À­¤¬¤¢¤ë */
+  /* æœ€å¾Œã®ãƒšãƒ¼ã‚¸ã®èª­ã¿ã‚ˆã‚Šã‚‚å¤§ãã„ã®ã§ã€æœ€å¾Œã®ãƒšãƒ¼ã‚¸ã«å«ã¾ã‚Œã‚‹å¯èƒ½æ€§ãŒã‚ã‚‹ */
   if (compare_page_index(wdic, key, wdic->nr_pages-1) >= 0) {
     return wdic->nr_pages-1;
   }
-  /* ¸¡º÷¤¹¤ë */
+  /* æ¤œç´¢ã™ã‚‹ */
   page = get_page_index_search(wdic, key, 0, wdic->nr_pages);
   return page;
 }
@@ -531,7 +526,7 @@ get_section(struct word_dic *wdic, int section)
   return &wdic->dic_file[offset];
 }
 
-/** ¼­½ñ¥Õ¥¡¥¤¥ë¤òmmap¤·¤Æ¡¢word_dicÃæ¤Î³Æ¥»¥¯¥·¥ç¥ó¤Î¥İ¥¤¥ó¥¿¤ò¼èÆÀ¤¹¤ë */
+/** è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã‚’mmapã—ã¦ã€word_dicä¸­ã®å„ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—ã™ã‚‹ */
 static int
 get_word_dic_sections(struct word_dic *wdic)
 {
@@ -545,14 +540,14 @@ get_word_dic_sections(struct word_dic *wdic)
   return 0;
 }
 
-/** »ØÄê¤µ¤ì¤¿Ã±¸ì¤Î¼­½ñÃæ¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹¤òÄ´¤Ù¤ë */
+/** æŒ‡å®šã•ã‚ŒãŸå˜èªã®è¾æ›¸ä¸­ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ã‚’èª¿ã¹ã‚‹ */
 static void
 search_yomi_index(struct word_dic *wdic, struct lookup_context *lc)
 {
   int p;
   int page_number;
 
-  /* ¤¹¤Ç¤ËÌµ¤¤¤³¤È¤¬Ê¬¤«¤Ã¤Æ¤¤¤ë */
+  /* ã™ã§ã«ç„¡ã„ã“ã¨ãŒåˆ†ã‹ã£ã¦ã„ã‚‹ */
   if (lc->array[lc->nth]->tmp.idx == NO_WORD) {
     set_next_idx(lc);
     return ;
@@ -573,21 +568,21 @@ static void
 find_words(struct word_dic *wdic, struct lookup_context *lc)
 {
   int i;
-  /* ¸¡º÷Á°¤Ë½üµî */
+  /* æ¤œç´¢å‰ã«é™¤å» */
   for (i = 0; i < lc->nr; i++) {
     lc->array[i]->tmp.idx = NO_WORD;
     if (lc->array[i]->xs.len > 31) {
-      /* 32Ê¸»ú°Ê¾åÃ±¸ì¤Ë¤ÏÌ¤ÂĞ±ş */
+      /* 32æ–‡å­—ä»¥ä¸Šå˜èªã«ã¯æœªå¯¾å¿œ */
       continue;
     }
-    /* hash¤Ë¤Ê¤¤¤Ê¤é½üµî */
+    /* hashã«ãªã„ãªã‚‰é™¤å» */
     if (!check_hash_ent(wdic, &lc->array[i]->xs)) {
       continue;
     }
-    /* NO_WORD¤Ç¤Ê¤¤ÃÍ¤òÀßÄê¤¹¤ë¤³¤È¤Ç¸¡º÷ÂĞ¾İ¤È¤¹¤ë */
+    /* NO_WORDã§ãªã„å€¤ã‚’è¨­å®šã™ã‚‹ã“ã¨ã§æ¤œç´¢å¯¾è±¡ã¨ã™ã‚‹ */
     lc->array[i]->tmp.idx = 0;
   }
-  /* ¸¡º÷¤¹¤ë */
+  /* æ¤œç´¢ã™ã‚‹ */
   lc->nth = 0;
   while (lc->nth < lc->nr) {
     search_yomi_index(wdic, lc);
@@ -616,9 +611,9 @@ load_words(struct word_dic *wdic, struct lookup_context *lc)
   }
 }
 
-/** word_dic¤«¤éÃ±¸ì¤ò¸¡º÷¤¹¤ë
- * ¼­½ñ¥­¥ã¥Ã¥·¥å¤«¤é¸Æ¤Ğ¤ì¤ë
- * (gang lookup¤Ë¤¹¤ë¤³¤È¤ò¸¡Æ¤¤¹¤ë)
+/** word_dicã‹ã‚‰å˜èªã‚’æ¤œç´¢ã™ã‚‹
+ * è¾æ›¸ã‚­ãƒ£ãƒƒã‚·ãƒ¥ã‹ã‚‰å‘¼ã°ã‚Œã‚‹
+ * (gang lookupã«ã™ã‚‹ã“ã¨ã‚’æ¤œè¨ã™ã‚‹)
  */
 void
 anthy_gang_fill_seq_ent(struct word_dic *wdic,
@@ -630,9 +625,9 @@ anthy_gang_fill_seq_ent(struct word_dic *wdic,
   lc.nr = nr;
   lc.is_reverse = is_reverse;
 
-  /* ³ÆÃ±¸ì¤Î¾ì½ê¤òÃµ¤¹ */
+  /* å„å˜èªã®å ´æ‰€ã‚’æ¢ã™ */
   find_words(wdic, &lc);
-  /* Ã±¸ì¤Î¾ğÊó¤òÆÉ¤ß¹ş¤à */
+  /* å˜èªã®æƒ…å ±ã‚’èª­ã¿è¾¼ã‚€ */
   load_words(wdic, &lc);
 }
 
@@ -640,23 +635,21 @@ struct word_dic *
 anthy_create_word_dic(void)
 {
   struct word_dic *wdic;
-  char *p;
 
   wdic = anthy_smalloc(word_dic_ator);
   memset(wdic, 0, sizeof(*wdic));
 
-  /* ¼­½ñ¥Õ¥¡¥¤¥ë¤ò¥Ş¥Ã¥×¤¹¤ë */
+  /* è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒãƒƒãƒ—ã™ã‚‹ */
   wdic->dic_file = anthy_file_dic_get_section("word_dic");
 
-  /* ³Æ¥»¥¯¥·¥ç¥ó¤Î¥İ¥¤¥ó¥¿¤ò¼èÆÀ¤¹¤ë */
+  /* å„ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ãƒã‚¤ãƒ³ã‚¿ã‚’å–å¾—ã™ã‚‹ */
   if (get_word_dic_sections(wdic) == -1) {
     anthy_sfree(word_dic_ator, wdic);
     return 0;
   }
   wdic->nr_pages = get_nr_page(wdic);
 
-  /* ÍÑÎã¼­½ñ¤ò¥Ş¥Ã¥×¤¹¤ë */
-  p = wdic->uc_section;
+  /* ç”¨ä¾‹è¾æ›¸ã‚’ãƒãƒƒãƒ—ã™ã‚‹ */
   return wdic;
 }
 

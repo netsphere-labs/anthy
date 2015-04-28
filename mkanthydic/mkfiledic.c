@@ -1,20 +1,20 @@
 /*
- * ¥Õ¥¡¥¤¥ë¤ò¤Ş¤È¤á¤Æ¼­½ñ¥Õ¥¡¥¤¥ë¤òÀ¸À®¤¹¤ë
+ * ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã¾ã¨ã‚ã¦è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ç”Ÿæˆã™ã‚‹
  *
- * ¥Ç¥Õ¥©¥ë¥È¤Ç¤Ï¤Ò¤È¤Ä¾å¤Î¥Ç¥£¥ì¥¯¥È¥ê¡Ö..¡×¤Ë³Æ¥Õ¥¡¥¤¥ë¤Î
- * ¥Ñ¥¹Ì¾¤òÉÕ¤±¤ë¤¬¡¢¤³¤Î¥³¥Ş¥ó¥É¤ËÂĞ¤¹¤ë -p ¥ª¥×¥·¥ç¥ó¤Ç
- * ÊÑ¹¹¤¹¤ë¤³¤È¤¬¤Ç¤­¤ë¡£
+ * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯ã²ã¨ã¤ä¸Šã®ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã€Œ..ã€ã«å„ãƒ•ã‚¡ã‚¤ãƒ«ã®
+ * ãƒ‘ã‚¹åã‚’ä»˜ã‘ã‚‹ãŒã€ã“ã®ã‚³ãƒãƒ³ãƒ‰ã«å¯¾ã™ã‚‹ -p ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§
+ * å¤‰æ›´ã™ã‚‹ã“ã¨ãŒã§ãã‚‹ã€‚
  *
- * entry_num¸Ä¤Î¥Õ¥¡¥¤¥ë¤ËÂĞ¤·¤Æ
- *  0: entry_num ¥Õ¥¡¥¤¥ë¤Î¸Ä¿ô
- *  1: ³Æ¥Õ¥¡¥¤¥ë¤Î¾ğÊó
+ * entry_numå€‹ã®ãƒ•ã‚¡ã‚¤ãƒ«ã«å¯¾ã—ã¦
+ *  0: entry_num ãƒ•ã‚¡ã‚¤ãƒ«ã®å€‹æ•°
+ *  1: å„ãƒ•ã‚¡ã‚¤ãƒ«ã®æƒ…å ±
  *    n * 3    : name_offset
  *    n * 3 + 1: strlen(key)
  *    n * 3 + 2: contents_offset
  *  [name_of_section]*entry_num
- *   : ³Æ¥Õ¥¡¥¤¥ë¤ÎÌ¾Á°
+ *   : å„ãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰
  *  [file]*entry_num
- *   : ³Æ¥Õ¥¡¥¤¥ë¤ÎÆâÍÆ
+ *   : å„ãƒ•ã‚¡ã‚¤ãƒ«ã®å†…å®¹
  *
  * Copyright (C) 2005-2006 YOSHIDA Yuichi
  * Copyright (C) 2006-2007 TABATA Yusuke
@@ -59,7 +59,7 @@ write_nl(FILE* fp, int i)
 }
 
 
-/** ¥Õ¥¡¥¤¥ë¤Î¥µ¥¤¥º¤ò¼èÆÀ¤¹¤ë */
+/** ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹ */
 static int
 get_file_size(const char* fn)
 {
@@ -74,7 +74,7 @@ static char *
 get_file_name(const char *prefix, struct header_entry* entry)
 {
   char *fn = malloc(strlen(prefix) + strlen(entry->file_name) + 4);
-  sprintf(fn, "%s/%s", prefix, entry->file_name);
+  sprintf(fn, "%s%s", prefix, entry->file_name);
   return fn;
 }
 
@@ -95,10 +95,10 @@ write_header(FILE* fp, const char *prefix,
   contents_offset =
     (contents_offset + SECTION_ALIGNMENT - 1) & (-SECTION_ALIGNMENT);
 
-  /* ¥Õ¥¡¥¤¥ë¤Î¿ô */
+  /* ãƒ•ã‚¡ã‚¤ãƒ«ã®æ•° */
   write_nl(fp, entry_num);
 
-  /* ³Æ¥Õ¥¡¥¤¥ë¤Î¾ì½ê¤ò½ĞÎÏ¤¹¤ë */
+  /* å„ãƒ•ã‚¡ã‚¤ãƒ«ã®å ´æ‰€ã‚’å‡ºåŠ›ã™ã‚‹ */
   for (i = 0; i < entry_num; ++i) {
     char *fn = get_file_name(prefix, &entries[i]);
     int file_size = get_file_size(fn);
@@ -118,7 +118,7 @@ write_header(FILE* fp, const char *prefix,
     contents_offset += file_size;
   }
 
-  /* ³Æ¥Õ¥¡¥¤¥ë¤ÎÌ¾Á°¤ò½ĞÎÏ¤¹¤ë */
+  /* å„ãƒ•ã‚¡ã‚¤ãƒ«ã®åå‰ã‚’å‡ºåŠ›ã™ã‚‹ */
   for (i = 0; i < entry_num; ++i) {
     fprintf(fp, "%s", entries[i].key);
   }
@@ -143,9 +143,16 @@ copy_file(FILE *in, FILE *out)
   rewind(in);
   while ((nread = fread (buf, 1, sizeof buf, in)) > 0) {
     if (fwrite (buf, 1, nread, out) < nread) {
+      fprintf (stderr, "failed to write\n");
       exit (1);
     }
   }
+
+  if (feof (in))
+    return;
+
+  fprintf (stderr, "failed to read\n");
+  exit (1);
 }
 
 static void
@@ -159,9 +166,9 @@ write_contents(FILE* fp, const char *prefix,
 
     in_fp = fopen(fn, "r");
     if (in_fp == NULL) {
-      printf("failed to open %s\n", fn);
-      free(fn);
-      break;
+      fprintf (stderr, "failed to open %s\n", fn);
+      free (fn);
+      exit (1);
     }
     printf("  copying %s (%s)\n", fn, entries[i].key);
     free(fn);
@@ -181,48 +188,54 @@ create_file_dic(const char* fn, const char *prefix,
     fprintf(stderr, "failed to open file dictionary file (%s).\n", fn);
     exit(1);
   }
-  /* ¥Ø¥Ã¥À¤ò½ñ¤­½Ğ¤¹ */
+  /* ãƒ˜ãƒƒãƒ€ã‚’æ›¸ãå‡ºã™ */
   res = write_header(fp, prefix, entry_num, entries);
   if (res) {
     exit(1);
   }
 
-  /* ¥Õ¥¡¥¤¥ë¤ÎÃæ¿È¤ò½ñ¤­½Ğ¤¹ */
+  /* ãƒ•ã‚¡ã‚¤ãƒ«ã®ä¸­èº«ã‚’æ›¸ãå‡ºã™ */
   write_contents(fp, prefix, entry_num, entries);
   fclose(fp);
 }
 
+
+static void
+usage (const char* progname)
+{
+  fprintf (stderr, "Usage: %s [-i] [-p PREFIX] [-o OUTPUT]\n", progname);
+  exit (1);
+}
 
 int
 main(int argc, char* argv[])
 {
   int i;
   const char *prefix = "..";
-  const char *prev_arg = "";
-
+  const char *output = DIC_NAME;
   struct header_entry entries[] = {
     {"word_dic", "/mkworddic/anthy.wdic"},
     {"dep_dic", "/depgraph/anthy.dep"},
-    {"trans_info", "/calctrans/anthy.trans_info"},
-    {"cand_info", "/calctrans/anthy.cand_info"},
-    {"weak_words", "/calctrans/anthy.weak_words"},
-    {"corpus_bucket", "/calctrans/anthy.corpus_bucket"},
-    {"corpus_array", "/calctrans/anthy.corpus_array"},
+    /* Following are optional entries */
+    {"trans_info", "/mkanthydic/anthy.trans_info"},
+    {"cand_info", "/mkanthydic/anthy.cand_info"},
+    {"weak_words", "/mkanthydic/anthy.weak_words"},
+    {"corpus_bucket", "/mkanthydic/anthy.corpus_bucket"},
+    {"corpus_array", "/mkanthydic/anthy.corpus_array"},
   };
+  int num_entries = sizeof(entries)/sizeof(struct header_entry);
 
-  for (i = 1; i < argc; i++) {
-    if (!strcmp("-p", prev_arg)) {
-      prefix = argv[i];
-    }
-    /**/
-    prev_arg = argv[i];
-  }
-  printf("file name prefix=[%s] you can change this by -p option.\n", prefix);
+  for (i = 1; i < argc; i++)
+    if (!strcmp ("-i", argv[i]))
+      /* Make initial anthy.dic with no optional entries */
+      num_entries = 2;
+    else if (!strcmp ("-o", argv[i]) && (i+1) < argc)
+      output = argv[++i];
+    else if (!strcmp ("-p", argv[i]) && (i+1) < argc)
+      prefix = argv[++i];
+    else
+      usage (argv[0]);
 
-  create_file_dic(DIC_NAME, prefix,
-		  sizeof(entries)/sizeof(struct header_entry),
-		  entries);
-
-  printf("%s done.\n", argv[0]);
+  create_file_dic(output, prefix, num_entries, entries);
   return 0;
 }

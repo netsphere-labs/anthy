@@ -1,34 +1,34 @@
 /*
- * cannadic·Á¼°¤Î¥Õ¥¡¥¤¥ë¤«¤é¼­½ñ¥Õ¥¡¥¤¥ë¤òºî¤ë
+ * cannadicå½¢å¼ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‹ã‚‰è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œã‚‹
  *
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2002 1/1
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2002 1/1
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  * Copyright (C) 2005 YOSHIDA Yuichi
  * Copyright (C) 2001-2002 TAKAI Kousuke
  */
 /*
- * ¼­½ñ¤ÏÆÉ¤ß¤òindex¤È¤·¡¢ÉÊ»ì¤äÊÑ´¹¸å¤ÎÃ±¸ì(=entry)¤ò¸¡º÷
- * ¤¹¤ë¹½Â¤¤Ë¤Ê¤Ã¤Æ¤¤¤ë¡£
+ * è¾æ›¸ã¯èª­ã¿ã‚’indexã¨ã—ã€å“è©ã‚„å¤‰æ›å¾Œã®å˜èª(=entry)ã‚’æ¤œç´¢
+ * ã™ã‚‹æ§‹é€ ã«ãªã£ã¦ã„ã‚‹ã€‚
  *
- * ÆÉ¤ß -> Ã±¸ì¡¢Ã±¸ì¡¢¡¢
+ * èª­ã¿ -> å˜èªã€å˜èªã€ã€
  *
- * ¼­½ñ¥Õ¥¡¥¤¥ë¤Ï¥Í¥Ã¥È¥ï¡¼¥¯¥Ğ¥¤¥È¥ª¡¼¥À¡¼¤òÍÑ¤¤¤ë¡£
+ * è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã¯ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ãƒã‚¤ãƒˆã‚ªãƒ¼ãƒ€ãƒ¼ã‚’ç”¨ã„ã‚‹ã€‚
  *
- * ¼­½ñ¥Õ¥¡¥¤¥ë¤ÏÊ£¿ô¤Î¥»¥¯¥·¥ç¥ó¤«¤é¹½À®¤µ¤ì¤Æ¤¤¤ë
- *  0 ¥Ø¥Ã¥À 16*4 bytes
- *  2 ÆÉ¤ß¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹ (ÆÉ¤ß512¸Ä¤´¤È)
- *  3 ÆÉ¤ß
- *  4 ¥Ú¡¼¥¸
- *  5 ¥Ú¡¼¥¸¤Î¥¤¥ó¥Ç¥Ã¥¯¥¹
- *  6 ÍÑÎã¼­½ñ(?)
- *  7 ÆÉ¤ß hash
+ * è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã¯è¤‡æ•°ã®ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã‹ã‚‰æ§‹æˆã•ã‚Œã¦ã„ã‚‹
+ *  0 ãƒ˜ãƒƒãƒ€ 16*4 bytes
+ *  2 èª­ã¿ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹ (èª­ã¿512å€‹ã”ã¨)
+ *  3 èª­ã¿
+ *  4 ãƒšãƒ¼ã‚¸
+ *  5 ãƒšãƒ¼ã‚¸ã®ã‚¤ãƒ³ãƒ‡ãƒƒã‚¯ã‚¹
+ *  6 ç”¨ä¾‹è¾æ›¸(?)
+ *  7 èª­ã¿ hash
  *
- * source ¸µ¤Î¼­½ñ¥Õ¥¡¥¤¥ë
- * file_dic À¸À®¤¹¤ë¥Õ¥¡¥¤¥ë
+ * source å…ƒã®è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«
+ * file_dic ç”Ÿæˆã™ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«
  *
- * yomi_hash ¼­½ñ¥Õ¥¡¥¤¥ë¤Ë½ĞÎÏ¤µ¤ì¤ëhash¤Îbitmap
- * index_hash ¤³¤Î¥½¡¼¥¹Ãæ¤Çstruct yomi_entry¤ò¸¡º÷¤¹¤ë¤¿¤á¤Îhash
+ * yomi_hash è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã«å‡ºåŠ›ã•ã‚Œã‚‹hashã®bitmap
+ * index_hash ã“ã®ã‚½ãƒ¼ã‚¹ä¸­ã§struct yomi_entryã‚’æ¤œç´¢ã™ã‚‹ãŸã‚ã®hash
  *
  */
 
@@ -59,16 +59,16 @@
 
 static const char *progname;
 
-/* writewords.c¤«¤é¥¢¥¯¥»¥¹¤¹¤ë¤¿¤á¤Ë¡¢globalÊÑ¿ô */
+/* writewords.cã‹ã‚‰ã‚¢ã‚¯ã‚»ã‚¹ã™ã‚‹ãŸã‚ã«ã€globalå¤‰æ•° */
 FILE *yomi_entry_index_out, *yomi_entry_out;
 FILE *page_out, *page_index_out;
 /**/
 static FILE *uc_out;
 static FILE *yomi_hash_out;
-/* ¥Ï¥Ã¥·¥å¤Î¾×ÆÍ¤Î¿ô¡¢Åı·×¾ğÊó */
+/* ãƒãƒƒã‚·ãƒ¥ã®è¡çªã®æ•°ã€çµ±è¨ˆæƒ…å ± */
 static int yomi_hash_collision;
 
-/* ¥Õ¥¡¥¤¥ëÃæ¤Î½ç½ø¤Ë½¾¤Ã¤ÆÊÂ¤Ù¤ë */
+/* ãƒ•ã‚¡ã‚¤ãƒ«ä¸­ã®é †åºã«å¾“ã£ã¦ä¸¦ã¹ã‚‹ */
 struct file_section {
   FILE **fpp;
   char *fn;
@@ -82,13 +82,13 @@ struct file_section {
   {NULL, NULL},
 };
 
-/* ¼­½ñÀ¸À®¤Î¾õÂÖ */
+/* è¾æ›¸ç”Ÿæˆã®çŠ¶æ…‹ */
 struct mkdic_stat {
-  /* Ã±¸ì¤Î¥ê¥¹¥È */
+  /* å˜èªã®ãƒªã‚¹ãƒˆ */
   struct yomi_entry_list yl;
   /**/
   struct adjust_command ac_list;
-  /* ÍÑÎã¼­½ñ */
+  /* ç”¨ä¾‹è¾æ›¸ */
   struct uc_dict *ud;
   /**/
   const char *output_fn;
@@ -99,7 +99,7 @@ struct mkdic_stat {
   char **excluded_wtypes;
 };
 
-/* ¼­½ñ¤Î½ĞÎÏÀè¤Î¥Õ¥¡¥¤¥ë¤ò¥ª¡¼¥×¥ó¤¹¤ë */
+/* è¾æ›¸ã®å‡ºåŠ›å…ˆã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ã‚ªãƒ¼ãƒ—ãƒ³ã™ã‚‹ */
 static void
 open_output_files(void)
 {
@@ -108,7 +108,7 @@ open_output_files(void)
     char *tmpdir = getenv("TMPDIR");
     fs->fn = NULL;
     if (tmpdir) {
-      /* tmpfile()¤¬TMPDIR¤ò¸«¤Ê¤¤¤¿¤á¡¢TMPDIR¤ò»ØÄê¤µ¤ì¤¿¾ì¹çmkstemp¤ò»È¤¦¡£*/
+      /* tmpfile()ãŒTMPDIRã‚’è¦‹ãªã„ãŸã‚ã€TMPDIRã‚’æŒ‡å®šã•ã‚ŒãŸå ´åˆmkstempã‚’ä½¿ã†ã€‚*/
       char buf[256];
       int fd = -1;
       snprintf(buf, sizeof(buf), "%s/mkanthydic.XXXXXX", tmpdir);
@@ -131,7 +131,7 @@ open_output_files(void)
   }
 }
 
-/* fflush¤¹¤ë */
+/* fflushã™ã‚‹ */
 static void
 flush_output_files (void)
 {
@@ -150,7 +150,7 @@ flush_output_files (void)
   }
 }
 
-/* ¥Í¥Ã¥È¥ï¡¼¥¯byteorder¤Ç4bytes½ñ¤­½Ğ¤¹ */
+/* ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯byteorderã§4bytesæ›¸ãå‡ºã™ */
 void
 write_nl(FILE *fp, int i)
 {
@@ -168,7 +168,7 @@ print_usage(void)
 static char *
 read_line(FILE *fp, char *buf)
 {
-  /* Ä¹¤¹¤®¤ë¹Ô¤òÌµ»ë¤¹¤ë */
+  /* é•·ã™ãã‚‹è¡Œã‚’ç„¡è¦–ã™ã‚‹ */
   int toolong = 0;
 
   while (fgets(buf, MAX_LINE_LEN, fp)) {
@@ -191,7 +191,7 @@ read_line(FILE *fp, char *buf)
   return NULL;
 }
 
-/** cannadic·Á¼°¤Î¼­½ñ¤Î¹Ô¤«¤éindex¤È¤Ê¤ëÉôÊ¬¤ò¼è¤ê½Ğ¤¹ */
+/** cannadicå½¢å¼ã®è¾æ›¸ã®è¡Œã‹ã‚‰indexã¨ãªã‚‹éƒ¨åˆ†ã‚’å–ã‚Šå‡ºã™ */
 static xstr *
 get_index_from_line(struct mkdic_stat *mds, char *buf)
 {
@@ -199,7 +199,7 @@ get_index_from_line(struct mkdic_stat *mds, char *buf)
   xstr *xs;
   sp = strchr(buf, ' ');
   if (!sp) {
-    /* ¼­½ñ¤Î¥Õ¥©¡¼¥Ş¥Ã¥È¤¬¤ª¤«¤·¤¤ */
+    /* è¾æ›¸ã®ãƒ•ã‚©ãƒ¼ãƒãƒƒãƒˆãŒãŠã‹ã—ã„ */
     return NULL;
   }
   *sp = 0;
@@ -208,7 +208,7 @@ get_index_from_line(struct mkdic_stat *mds, char *buf)
   return xs;
 }
 
-/** cannadic·Á¼°¤Î¼­½ñ¤Î¹Ô¤«¤éindex°Ê³°¤ÎÉôÊ¬¤ò¼è¤ê½Ğ¤¹ */
+/** cannadicå½¢å¼ã®è¾æ›¸ã®è¡Œã‹ã‚‰indexä»¥å¤–ã®éƒ¨åˆ†ã‚’å–ã‚Šå‡ºã™ */
 static char *
 get_entry_from_line(char *buf)
 {
@@ -246,7 +246,7 @@ get_wt_name(const char *name)
   return res;
 }
 
-/** ÆÉ¤ß¤ËÂĞ¤·¤Æ¡¢Ã±¸ì¤ò°ì¤Ä¤òÄÉ²Ã¤¹¤ë */
+/** èª­ã¿ã«å¯¾ã—ã¦ã€å˜èªã‚’ä¸€ã¤ã‚’è¿½åŠ ã™ã‚‹ */
 static void
 push_back_word_entry(struct mkdic_stat *mds,
 		     struct yomi_entry *ye, const char *wt_name,
@@ -258,7 +258,7 @@ push_back_word_entry(struct mkdic_stat *mds,
     return ;
   }
   if (!anthy_type_to_wtype(wt_name, &wt)) {
-    /* anthy¤ÎÃÎ¤é¤Ê¤¤ÉÊ»ì */
+    /* anthyã®çŸ¥ã‚‰ãªã„å“è© */
     return ;
   }
   ye->entries = realloc(ye->entries,
@@ -281,14 +281,14 @@ push_back_word_entry(struct mkdic_stat *mds,
 static int
 parse_wtype(char *wtbuf, char *cur)
 {
-  /* ÉÊ»ì */
+  /* å“è© */
   char *t;
   int freq;
   if (strlen(cur) >= MAX_WTYPE_LEN) {
     return 0;
   }
   strcpy(wtbuf, cur);
-  /* ÉÑÅÙ */
+  /* é »åº¦ */
   t = strchr(wtbuf, '*');
   freq = 1;
   if (t) {
@@ -303,7 +303,7 @@ parse_wtype(char *wtbuf, char *cur)
   return freq;
 }
 
-/* Ê£¹ç¸ì¤ÎÍ×ÁÇ¤ÎÄ¹¤µ¤Ï 1,2,3, ... 9,a,b,c */
+/* è¤‡åˆèªã®è¦ç´ ã®é•·ã•ã¯ 1,2,3, ... 9,a,b,c */
 static int
 get_element_len(xchar xc)
 {
@@ -316,11 +316,11 @@ get_element_len(xchar xc)
   return 0;
 }
 
-/** Ê£¹ç¸õÊä¤Î·Á¼°¥Á¥§¥Ã¥¯ */
+/** è¤‡åˆå€™è£œã®å½¢å¼ãƒã‚§ãƒƒã‚¯ */
 static int
 check_compound_candidate(struct mkdic_stat *mds, xstr *index, const char *cur)
 {
-  /* ÆÉ¤ß¤ÎÊ¸»ú¿ô¤Î¹ç·×¤ò¿ô¤¨¤ë */
+  /* èª­ã¿ã®æ–‡å­—æ•°ã®åˆè¨ˆã‚’æ•°ãˆã‚‹ */
   xstr *xs = anthy_cstr_to_xstr(cur, mds->input_encoding);
   int i, total = 0;
   for (i = 0; i < xs->len - 1; i++) {
@@ -329,7 +329,7 @@ check_compound_candidate(struct mkdic_stat *mds, xstr *index, const char *cur)
     }
   }
   anthy_free_xstr(xs);
-  /* Èæ³Ó¤¹¤ë */
+  /* æ¯”è¼ƒã™ã‚‹ */
   if (total != index->len) {
     fprintf(stderr, "Invalid compound candidate (%s, length = %d).\n",
 	    cur, total);
@@ -365,7 +365,7 @@ find_token_end(char *cur)
   return n;
 }
 
-/** ÆÉ¤ß¤ËÂĞ±ş¤¹¤ë¹Ô¤òÊ¬³ä¤·¤Æ¡¢ÇÛÎó¤ò¹½À®¤¹¤ë */
+/** èª­ã¿ã«å¯¾å¿œã™ã‚‹è¡Œã‚’åˆ†å‰²ã—ã¦ã€é…åˆ—ã‚’æ§‹æˆã™ã‚‹ */
 static void
 push_back_word_entry_line(struct mkdic_stat *mds, struct yomi_entry *ye,
 			  const char *ent)
@@ -381,7 +381,7 @@ push_back_word_entry_line(struct mkdic_stat *mds, struct yomi_entry *ye,
   wtbuf[0] = 0;
 
   while (1) {
-    /* ¥È¡¼¥¯¥ó¤ò\0¤ÇÀÚ¤ë¡£cur¤Î¸å¤Î¶õÇò¤«\0¤òÃµ¤¹ */
+    /* ãƒˆãƒ¼ã‚¯ãƒ³ã‚’\0ã§åˆ‡ã‚‹ã€‚curã®å¾Œã®ç©ºç™½ã‹\0ã‚’æ¢ã™ */
     n = find_token_end(cur);
     if (!n) {
       fprintf(stderr, "invalid \\ at the end of line (%s).\n",
@@ -396,20 +396,20 @@ push_back_word_entry_line(struct mkdic_stat *mds, struct yomi_entry *ye,
     /**/
     if (cur[0] == '#') {
       if (isalpha((unsigned char)cur[1])) {
-	/* #XX*?? ¤ò¥Ñ¡¼¥¹ */
+	/* #XX*?? ã‚’ãƒ‘ãƒ¼ã‚¹ */
 	freq = parse_wtype(wtbuf, cur);
       } else {
 	if (cur[1] == '_' &&
 	    check_compound_candidate(mds, ye->index_xstr, &cur[1])) {
-	  /* #_ Ê£¹ç¸õÊä */
+	  /* #_ è¤‡åˆå€™è£œ */
 	  push_back_word_entry(mds, ye, wtbuf, freq, cur, order);
 	  order ++;
 	}
       }
     } else {
-      /* ÉÊ»ì¤¬½üµî¥ê¥¹¥È¤ËÆş¤Ã¤Æ¤¤¤ë¤«¤ò¥Á¥§¥Ã¥¯ */
+      /* å“è©ãŒé™¤å»ãƒªã‚¹ãƒˆã«å…¥ã£ã¦ã„ã‚‹ã‹ã‚’ãƒã‚§ãƒƒã‚¯ */
       if (!is_excluded_wtype(mds, wtbuf)) {
-	/* Ã±¸ì¤òÄÉ²Ã */
+	/* å˜èªã‚’è¿½åŠ  */
 	push_back_word_entry(mds, ye, wtbuf, freq, cur, order);
 	order ++;
       }/* :to extract excluded words
@@ -419,7 +419,7 @@ push_back_word_entry_line(struct mkdic_stat *mds, struct yomi_entry *ye,
 	  }*/
     }
     if (!n) {
-      /* ¹ÔËö */
+      /* è¡Œæœ« */
       return ;
     }
     cur = n;
@@ -427,7 +427,7 @@ push_back_word_entry_line(struct mkdic_stat *mds, struct yomi_entry *ye,
   }
 }
 
-/** Æ±¤¸Ã±¸ì¤¬Ìµ¤¤¤«¥Á¥§¥Ã¥¯ */
+/** åŒã˜å˜èªãŒç„¡ã„ã‹ãƒã‚§ãƒƒã‚¯ */
 static int
 check_same_word(struct yomi_entry *ye, int idx)
 {
@@ -444,13 +444,13 @@ check_same_word(struct yomi_entry *ye, int idx)
     if (strcmp(base->word_utf8, cur->word_utf8)) {
       return 0;
     }
-    /* Æ±¤¸¤À¤Ã¤¿ */
+    /* åŒã˜ã ã£ãŸ */
     return 1;
   }
   return 0;
 }
 
-/** qsortÍÑ¤ÎÈæ³Ó´Ø¿ô */
+/** qsortç”¨ã®æ¯”è¼ƒé–¢æ•° */
 static int
 compare_word_entry_by_freq(const void *p1, const void *p2)
 {
@@ -459,7 +459,7 @@ compare_word_entry_by_freq(const void *p1, const void *p2)
   return e2->raw_freq - e1->raw_freq;
 }
 
-/** qsortÍÑ¤ÎÈæ³Ó´Ø¿ô */
+/** qsortç”¨ã®æ¯”è¼ƒé–¢æ•° */
 static int
 compare_word_entry_by_wtype(const void *p1, const void *p2)
 {
@@ -473,7 +473,7 @@ compare_word_entry_by_wtype(const void *p1, const void *p2)
   }
 }
 
-/** ÆÉ¤ß¤ËÂĞ¤¹¤ëÃ±¸ì¤òÉÑÅÙ½ç¤ËÊÂ¤Ù¡¢¤¤¤é¤Ê¤¤Ã±¸ì¤ò¾Ã¤¹ */
+/** èª­ã¿ã«å¯¾ã™ã‚‹å˜èªã‚’é »åº¦é †ã«ä¸¦ã¹ã€ã„ã‚‰ãªã„å˜èªã‚’æ¶ˆã™ */
 static int
 normalize_word_entry(struct yomi_entry *ye)
 {
@@ -481,25 +481,25 @@ normalize_word_entry(struct yomi_entry *ye)
   if (!ye) {
     return 0;
   }
-  /* Ã±¸ì¤òÊÂ¤Ù¤ë */
+  /* å˜èªã‚’ä¸¦ã¹ã‚‹ */
   qsort(ye->entries, ye->nr_entries,
 	sizeof(struct word_entry),
 	compare_word_entry_by_freq);
-  /* ¥À¥Ö¤Ã¤¿¤é¡¢0ÅÀ */
+  /* ãƒ€ãƒ–ã£ãŸã‚‰ã€0ç‚¹ */
   for (i = 0; i < ye->nr_entries; i++) {
     if (check_same_word(ye, i)) {
       ye->entries[i].raw_freq = 0;
       nr_dup ++;
     }
   }
-  /* ºÆ¤Ó¥½¡¼¥È */
+  /* å†ã³ã‚½ãƒ¼ãƒˆ */
   qsort(ye->entries, ye->nr_entries,
 	sizeof(struct word_entry),
 	compare_word_entry_by_wtype);
   return ye->nr_entries - nr_dup;
 }
 
-/*¤½¤ÎÆÉ¤ß¤ËÂĞ±ş¤¹¤ëyomi_entry¤òÊÖ¤¹
+/*ãã®èª­ã¿ã«å¯¾å¿œã™ã‚‹yomi_entryã‚’è¿”ã™
 **/
 struct yomi_entry *
 find_yomi_entry(struct yomi_entry_list *yl, xstr *index, int create)
@@ -507,7 +507,7 @@ find_yomi_entry(struct yomi_entry_list *yl, xstr *index, int create)
   struct yomi_entry *ye;
   int hash = index_hash(index);
   int search = 0;
-  /* hash chain¤«¤éÃµ¤¹ */
+  /* hash chainã‹ã‚‰æ¢ã™ */
   for (ye = yl->hash[hash];ye ; ye = ye->hash_next) {
     search ++;
     if (!anthy_xstrcmp(ye->index_xstr, index)) {
@@ -518,7 +518,7 @@ find_yomi_entry(struct yomi_entry_list *yl, xstr *index, int create)
     return NULL;
   }
 
-  /* Ìµ¤¤¤Î¤Ç³ÎÊİ */
+  /* ç„¡ã„ã®ã§ç¢ºä¿ */
   ye = malloc(sizeof(struct yomi_entry));
   ye->nr_entries = 0;
   ye->entries = 0;
@@ -526,11 +526,11 @@ find_yomi_entry(struct yomi_entry_list *yl, xstr *index, int create)
   ye->index_xstr = anthy_xstr_dup(index);
   ye->index_str = NULL;
 
-  /* hash chain¤Ë¤Ä¤Ê¤° */
+  /* hash chainã«ã¤ãªã */
   ye->hash_next = yl->hash[hash];
   yl->hash[hash] = ye;
 
-  /* ¥ê¥¹¥È¤Ë¤Ä¤Ê¤° */
+  /* ãƒªã‚¹ãƒˆã«ã¤ãªã */
 
   ye->next = yl->head;
   yl->head = ye;
@@ -540,7 +540,7 @@ find_yomi_entry(struct yomi_entry_list *yl, xstr *index, int create)
   return ye;
 }
 
-/* ¼­½ñ¥Õ¥¡¥¤¥ëÃæ¤Îhash bitmap¤Ë¥Ş¡¼¥¯¤òÉÕ¤±¤ë */
+/* è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ä¸­ã®hash bitmapã«ãƒãƒ¼ã‚¯ã‚’ä»˜ã‘ã‚‹ */
 static void
 mark_hash_array(unsigned char *hash_array, xstr *xs)
 {
@@ -556,7 +556,7 @@ mark_hash_array(unsigned char *hash_array, xstr *xs)
   hash_array[idx] |= mask;
 }
 
-/* ÆÉ¤ßhash¤Î¥Ó¥Ã¥È¥Ş¥Ã¥×¤òºî¤ë */
+/* èª­ã¿hashã®ãƒ“ãƒƒãƒˆãƒãƒƒãƒ—ã‚’ä½œã‚‹ */
 static void
 mk_yomi_hash(FILE *yomi_hash_out, struct yomi_entry_list *yl)
 {
@@ -606,9 +606,9 @@ parse_modify_freq_command(const char *buf)
   }
   cmd = malloc(sizeof(struct adjust_command));
   cmd->type = type;
-  cmd->yomi = anthy_cstr_to_xstr(yomi, ANTHY_EUC_JP_ENCODING);
+  cmd->yomi = anthy_cstr_to_xstr(yomi, ANTHY_UTF8_ENCODING);
   cmd->wt = get_wt_name(wt);
-  cmd->word = anthy_conv_euc_to_utf8(word);
+  cmd->word = strdup (word);
   return cmd;
 }
 
@@ -625,8 +625,8 @@ parse_adjust_command(const char *buf, struct adjust_command *ac_list)
   }
 }
 
-/** ¼­½ñ¤ò°ì¹Ô¤º¤ÄÆÉ¤ß¹ş¤ó¤Ç¥ê¥¹¥È¤òºî¤ë
- * ¤³¤Î¥³¥Ş¥ó¥É¤Î¥³¥¢ */
+/** è¾æ›¸ã‚’ä¸€è¡Œãšã¤èª­ã¿è¾¼ã‚“ã§ãƒªã‚¹ãƒˆã‚’ä½œã‚‹
+ * ã“ã®ã‚³ãƒãƒ³ãƒ‰ã®ã‚³ã‚¢ */
 static void
 parse_dict_file(FILE *fin, struct mkdic_stat *mds)
 {
@@ -635,7 +635,7 @@ parse_dict_file(FILE *fin, struct mkdic_stat *mds)
   char *ent;
   struct yomi_entry *ye = NULL;
 
-  /* £±¹Ô¤º¤Ä½èÍı */
+  /* ï¼‘è¡Œãšã¤å‡¦ç† */
   while (read_line(fin, buf)) {
     if (buf[0] == '\\' && buf[1] != ' ') {
       parse_adjust_command(buf, &mds->ac_list);
@@ -647,7 +647,7 @@ parse_dict_file(FILE *fin, struct mkdic_stat *mds)
     }
     ent = get_entry_from_line(buf);
 
-    /* ÆÉ¤ß¤¬30Ê¸»ú¤ò±Û¤¨¤ë¾ì¹ç¤ÏÌµ»ë */
+    /* èª­ã¿ãŒ30æ–‡å­—ã‚’è¶Šãˆã‚‹å ´åˆã¯ç„¡è¦– */
     if (index_xs->len < 31) {
       ye = find_yomi_entry(&mds->yl, index_xs, 1);
       push_back_word_entry_line(mds, ye, ent);
@@ -658,7 +658,7 @@ parse_dict_file(FILE *fin, struct mkdic_stat *mds)
   }
 }
 
-/* ÆÉ¤ß¡¢ÉÊ»ì¡¢Ã±¸ì¤Î»°¤ÄÁÈ¤«¤éÃ±¸ì¤Î¹½Â¤ÂÎ¤ò¼èÆÀ¤¹¤ë */
+/* èª­ã¿ã€å“è©ã€å˜èªã®ä¸‰ã¤çµ„ã‹ã‚‰å˜èªã®æ§‹é€ ä½“ã‚’å–å¾—ã™ã‚‹ */
 static struct word_entry *
 find_word_entry(struct yomi_entry_list *yl, xstr *yomi,
 		const char *wt, char *word)
@@ -678,7 +678,7 @@ find_word_entry(struct yomi_entry_list *yl, xstr *yomi,
   return NULL;
 }
 		
-/* ÉÑÅÙÄ´À°¤Î¥³¥Ş¥ó¥É¤òÅ¬ÍÑ¤¹¤ë */
+/* é »åº¦èª¿æ•´ã®ã‚³ãƒãƒ³ãƒ‰ã‚’é©ç”¨ã™ã‚‹ */
 static void
 apply_adjust_command(struct yomi_entry_list *yl,
 		     struct adjust_command *ac_list)
@@ -709,7 +709,7 @@ apply_adjust_command(struct yomi_entry_list *yl,
   }
 }
 
-/* qsortÍÑ¤ÎÈæ³Ó´Ø¿ô */
+/* qsortç”¨ã®æ¯”è¼ƒé–¢æ•° */
 static int
 compare_yomi_entry(const void *p1, const void *p2)
 {
@@ -718,14 +718,14 @@ compare_yomi_entry(const void *p1, const void *p2)
   return strcmp((*y1)->index_str, (*y2)->index_str);
 }
 
-/* yomi_entry¤Çsort¤¹¤ë */
+/* yomi_entryã§sortã™ã‚‹ */
 static void
 sort_word_dict(struct yomi_entry_list *yl)
 {
   int i;
   struct yomi_entry *ye;
   yl->nr_valid_entries = 0;
-  /* Ã±¸ì¤ò»ı¤ÄÆÉ¤ß¤À¤±¤ò yl->ye_array¤ËµÍ¤áÄ¾¤¹ */
+  /* å˜èªã‚’æŒã¤èª­ã¿ã ã‘ã‚’ yl->ye_arrayã«è©°ã‚ç›´ã™ */
   yl->ye_array = malloc(sizeof(struct yomi_entry *) * yl->nr_entries);
   for (i = 0, ye = yl->head; i < yl->nr_entries; i++, ye = ye->next) {
     if (ye->nr_entries > 0) {
@@ -738,11 +738,11 @@ sort_word_dict(struct yomi_entry_list *yl)
     struct yomi_entry *ye = yl->ye_array[i];
     ye->index_str = anthy_xstr_to_cstr(ye->index_xstr, yl->index_encoding);
   }
-  /* ¥½¡¼¥È¤¹¤ë */
+  /* ã‚½ãƒ¼ãƒˆã™ã‚‹ */
   qsort(yl->ye_array, yl->nr_valid_entries,
 	sizeof(struct yomi_entry *),
 	compare_yomi_entry);
-  /* ÉÔÍ×¤ÊÃ±¸ì¤ò¾Ã¤¹ */
+  /* ä¸è¦ãªå˜èªã‚’æ¶ˆã™ */
   yl->nr_words = 0;
   for (i = 0; i < yl->nr_valid_entries; i++) {
     struct yomi_entry *ye = yl->ye_array[i];
@@ -750,7 +750,7 @@ sort_word_dict(struct yomi_entry_list *yl)
   }
 }
 
-/** ¥Õ¥¡¥¤¥ë¤Î¥µ¥¤¥º¤ò¼èÆÀ¤¹¤ë */
+/** ãƒ•ã‚¡ã‚¤ãƒ«ã®ã‚µã‚¤ã‚ºã‚’å–å¾—ã™ã‚‹ */
 static int
 get_file_size(FILE *fp)
 {
@@ -792,29 +792,29 @@ generate_header(FILE *fp)
   struct file_section *fs;
   int off;
 
-  /* ½é´ü²½ */
+  /* åˆæœŸåŒ– */
   for (i = 0; i < NR_HEADER_SECTIONS; i++) {
     buf[i] = 0;
   }
 
-  /* ¥Ø¥Ã¥À */
+  /* ãƒ˜ãƒƒãƒ€ */
   buf[0] = NR_HEADER_SECTIONS * sizeof(int);
   buf[1] = 0;
 
-  /* ³Æ¥»¥¯¥·¥ç¥ó¤Î¥ª¥Õ¥»¥Ã¥È */
+  /* å„ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ */
   off = buf[0];
   for (i = 2, fs = file_array; fs->fpp; fs ++, i++) {
     buf[i] = off;
     off += get_file_size(*(fs->fpp));
   }
 
-  /* ¥Õ¥¡¥¤¥ë¤Ø½ĞÎÏ¤¹¤ë */
+  /* ãƒ•ã‚¡ã‚¤ãƒ«ã¸å‡ºåŠ›ã™ã‚‹ */
   for (i = 0; i < NR_HEADER_SECTIONS; i++) {
     write_nl(fp, buf[i]);
   }
 }
 
-/* ³Æ¥»¥¯¥·¥ç¥ó¤Î¥Õ¥¡¥¤¥ë¤ò¥Ş¡¼¥¸¤·¤Æ¡¢¤Ò¤È¤Ä¤Î¼­½ñ¥Õ¥¡¥¤¥ë¤òºî¤ë */
+/* å„ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ãƒãƒ¼ã‚¸ã—ã¦ã€ã²ã¨ã¤ã®è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä½œã‚‹ */
 static void
 link_dics(struct mkdic_stat *mds)
 {
@@ -828,11 +828,11 @@ link_dics(struct mkdic_stat *mds)
       exit (1);
   }
 
-  /* ¥Ø¥Ã¥À¤ò½ĞÎÏ¤¹¤ë */
+  /* ãƒ˜ãƒƒãƒ€ã‚’å‡ºåŠ›ã™ã‚‹ */
   generate_header(fp);
 
   for (fs = file_array; fs->fpp; fs ++) {
-    /* ³Æ¥»¥¯¥·¥ç¥ó¤Î¥Õ¥¡¥¤¥ë¤ò·ë¹ç¤¹¤ë */
+    /* å„ã‚»ã‚¯ã‚·ãƒ§ãƒ³ã®ãƒ•ã‚¡ã‚¤ãƒ«ã‚’çµåˆã™ã‚‹ */
     copy_file(mds, *(fs->fpp), fp);
     if (fs->fn) {
       unlink(fs->fn);
@@ -850,7 +850,7 @@ static void
 read_dict_file(struct mkdic_stat *mds, const char *fn)
 {
   FILE *fp;
-  /* ¥Õ¥¡¥¤¥ëÌ¾¤¬»ØÄê¤µ¤ì¤¿¤Î¤ÇÆÉ¤ß¹ş¤à */
+  /* ãƒ•ã‚¡ã‚¤ãƒ«åãŒæŒ‡å®šã•ã‚ŒãŸã®ã§èª­ã¿è¾¼ã‚€ */
   fp = fopen(fn, "r");
   if (fp) {
     printf("file = %s\n", fn);
@@ -864,21 +864,21 @@ read_dict_file(struct mkdic_stat *mds, const char *fn)
 static void
 complete_words(struct mkdic_stat *mds)
 {
-  /* ÉÑÅÙÊäÀµ¤òÅ¬ÍÑ¤¹¤ë */
+  /* é »åº¦è£œæ­£ã‚’é©ç”¨ã™ã‚‹ */
   apply_adjust_command(&mds->yl, &mds->ac_list);
 
   /**/
   calc_freq(&mds->yl);
 
-  /* ÆÉ¤ß¤ÇÊÂ¤ÓÂØ¤¨¤ë */
+  /* èª­ã¿ã§ä¸¦ã³æ›¿ãˆã‚‹ */
   sort_word_dict(&mds->yl);
 
-  /* ¥Õ¥¡¥¤¥ë¤ò½àÈ÷¤¹¤ë */
+  /* ãƒ•ã‚¡ã‚¤ãƒ«ã‚’æº–å‚™ã™ã‚‹ */
   open_output_files();
-  /* Ã±¸ì¼­½ñ¤ò½ĞÎÏ¤¹¤ë */
+  /* å˜èªè¾æ›¸ã‚’å‡ºåŠ›ã™ã‚‹ */
   output_word_dict(&mds->yl);
 
-  /* ÆÉ¤ß¥Ï¥Ã¥·¥å¤òºî¤ë */
+  /* èª­ã¿ãƒãƒƒã‚·ãƒ¥ã‚’ä½œã‚‹ */
   mk_yomi_hash(yomi_hash_out, &mds->yl);
 }
 
@@ -910,13 +910,13 @@ static void
 reverse_multi_segment_word(struct mkdic_stat *mds, struct word_entry *we)
 {
   /*
-    ¡Ö¤«¤Ê¤«¤ó¤¸¤Ø¤ó¤«¤ó¤¨¤ó¤¸¤ó #T35 #_2²¾Ì¾_3´Á»ú_4ÊÑ´¹_4¥¨¥ó¥¸¥ó¡×
-    ¤«¤é
-    ¡Ö²¾Ì¾´Á»úÊÑ´¹¥¨¥ó¥¸¥ó #T35 #_2¤«¤Ê_2¤«¤ó¤¸_2¤Ø¤ó¤«¤ó_4¤¨¤ó¤¸¤ó¡×
-    ¤òºî¤ë
+    ã€Œã‹ãªã‹ã‚“ã˜ã¸ã‚“ã‹ã‚“ãˆã‚“ã˜ã‚“ #T35 #_2ä»®å_3æ¼¢å­—_4å¤‰æ›_4ã‚¨ãƒ³ã‚¸ãƒ³ã€
+    ã‹ã‚‰
+    ã€Œä»®åæ¼¢å­—å¤‰æ›ã‚¨ãƒ³ã‚¸ãƒ³ #T35 #_2ã‹ãª_2ã‹ã‚“ã˜_2ã¸ã‚“ã‹ã‚“_4ãˆã‚“ã˜ã‚“ã€
+    ã‚’ä½œã‚‹
   */
   int j;
-  /* yomi¤Ï²¾Ì¾´Á»úº®¤¸¤ê word¤ÏÊ¿²¾Ì¾¤Î¤ß¤«¤é¤Ê¤ë */
+  /* yomiã¯ä»®åæ¼¢å­—æ··ã˜ã‚Š wordã¯å¹³ä»®åã®ã¿ã‹ã‚‰ãªã‚‹ */
   int yomi_seg_start = 0;
   int word_seg_start = 0;
   int word_seg_len = 0;
@@ -949,7 +949,7 @@ reverse_multi_segment_word(struct mkdic_stat *mds, struct word_entry *we)
   target_ye = find_yomi_entry(&mds->yl, yomi_xs, 1);
   word = anthy_xstr_to_cstr(word_xs, mds->input_encoding);
 
-  /* µÕÊÑ´¹ÍÑ¤Î¼­½ñ¤Ïfreq¤¬Éé */
+  /* é€†å¤‰æ›ç”¨ã®è¾æ›¸ã¯freqãŒè²  */
   push_back_word_entry(mds, target_ye, we->wt_name, -we->raw_freq,
 		       word, we->source_order);
 
@@ -959,7 +959,7 @@ reverse_multi_segment_word(struct mkdic_stat *mds, struct word_entry *we)
   anthy_free_xstr(word_xs);
 }
 
-/* µÕÊÑ´¹ÍÑ¤Î¼­½ñ¤òºî¤ë */
+/* é€†å¤‰æ›ç”¨ã®è¾æ›¸ã‚’ä½œã‚‹ */
 static void
 build_reverse_dict(struct mkdic_stat *mds)
 {
@@ -968,15 +968,15 @@ build_reverse_dict(struct mkdic_stat *mds)
   struct word_entry *we_array;
   printf("building reverse index\n");
 
-  /* Ã±¸ì¤Î¿ô¤ò¿ô¤¨¤ë */
+  /* å˜èªã®æ•°ã‚’æ•°ãˆã‚‹ */
   n = 0;
   for (ye = mds->yl.head; ye; ye = ye->next) {
     for (i = 0; i < ye->nr_entries; i++) {
       n++;
     }
   }
-  /* ¥³¥Ô¡¼¤¹¤ë
-   * (¸µ¤Î¼­½ñÃæ¤Î¥İ¥¤¥ó¥¿¤Ïrealloc¤ÇÆ°¤¯¤Î¤Ç¥³¥Ô¡¼¤¬É¬Í×)
+  /* ã‚³ãƒ”ãƒ¼ã™ã‚‹
+   * (å…ƒã®è¾æ›¸ä¸­ã®ãƒã‚¤ãƒ³ã‚¿ã¯reallocã§å‹•ãã®ã§ã‚³ãƒ”ãƒ¼ãŒå¿…è¦)
    */
   we_array = malloc(sizeof(struct word_entry )* n);
   n = 0;
@@ -987,7 +987,7 @@ build_reverse_dict(struct mkdic_stat *mds)
     }
   }
 
-  /* ¼­½ñ¤ËÄÉ²Ã¤·¤Æ¤¤¤¯ */
+  /* è¾æ›¸ã«è¿½åŠ ã—ã¦ã„ã */
   for (i = 0; i < n; i++) {
     struct word_entry *we;
     struct yomi_entry *target_ye;
@@ -998,7 +998,7 @@ build_reverse_dict(struct mkdic_stat *mds)
 	reverse_multi_segment_word(mds, we);
       }
     } else {
-      /* yomi¤Ï²¾Ì¾´Á»úº®¤¸¤ê word¤ÏÊ¿²¾Ì¾¤Î¤ß¤«¤é¤Ê¤ë */
+      /* yomiã¯ä»®åæ¼¢å­—æ··ã˜ã‚Š wordã¯å¹³ä»®åã®ã¿ã‹ã‚‰ãªã‚‹ */
       xstr *yomi_xs;
       char *word;
 
@@ -1006,7 +1006,7 @@ build_reverse_dict(struct mkdic_stat *mds)
       target_ye = find_yomi_entry(&mds->yl, yomi_xs, 1);
       word = anthy_xstr_to_cstr(we->ye->index_xstr, mds->input_encoding);
 
-      /* µÕÊÑ´¹ÍÑ¤Î¼­½ñ¤Ïfreq¤¬Éé */
+      /* é€†å¤‰æ›ç”¨ã®è¾æ›¸ã¯freqãŒè²  */
       push_back_word_entry(mds, target_ye, we->wt_name, -we->raw_freq,
 			   word, we->source_order);
 
@@ -1070,10 +1070,10 @@ write_dict_file(struct mkdic_stat *mds)
     exit(1);
   }
 
-  /* ÍÑÎã¼­½ñ¤òºî¤ë */
+  /* ç”¨ä¾‹è¾æ›¸ã‚’ä½œã‚‹ */
   make_ucdict(uc_out, mds->ud);
 
-  /* ¼­½ñ¥Õ¥¡¥¤¥ë¤Ë¤Ş¤È¤á¤ë */
+  /* è¾æ›¸ãƒ•ã‚¡ã‚¤ãƒ«ã«ã¾ã¨ã‚ã‚‹ */
   flush_output_files();
   link_dics(mds);
 }
@@ -1129,7 +1129,7 @@ execute_batch(struct mkdic_stat *mds, const char *fn)
   return 0;
 }
 
-/* ¼­½ñÀ¸À®¤Î¤¿¤á¤ÎÊÑ¿ô¤Î½é´ü²½ */
+/* è¾æ›¸ç”Ÿæˆã®ãŸã‚ã®å¤‰æ•°ã®åˆæœŸåŒ– */
 static void
 init_mds(struct mkdic_stat *mds)
 {
@@ -1137,24 +1137,24 @@ init_mds(struct mkdic_stat *mds)
   mds->output_fn = DEFAULT_FN;
   mds->ud = NULL;
 
-  /* Ã±¸ì¼­½ñ¤ò½é´ü²½¤¹¤ë */
+  /* å˜èªè¾æ›¸ã‚’åˆæœŸåŒ–ã™ã‚‹ */
   mds->yl.head = NULL;
   mds->yl.nr_entries = 0;
   for (i = 0; i < YOMI_HASH; i++) {
     mds->yl.hash[i] = NULL;
   }
   mds->yl.index_encoding = ANTHY_UTF8_ENCODING;
-  mds->yl.body_encoding = ANTHY_EUC_JP_ENCODING;
+  mds->yl.body_encoding = ANTHY_UTF8_ENCODING;
   /**/
   mds->ac_list.next = NULL;
   /**/
-  mds->input_encoding = ANTHY_EUC_JP_ENCODING;
+  mds->input_encoding = ANTHY_UTF8_ENCODING;
   /**/
   mds->nr_excluded = 0;
   mds->excluded_wtypes = NULL;
 }
 
-/* libanthy¤Î»ÈÍÑ¤¹¤ëÉôÊ¬¤À¤±¤ò½é´ü²½¤¹¤ë */
+/* libanthyã®ä½¿ç”¨ã™ã‚‹éƒ¨åˆ†ã ã‘ã‚’åˆæœŸåŒ–ã™ã‚‹ */
 static void
 init_libs(void)
 {

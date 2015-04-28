@@ -1,6 +1,6 @@
 /*
- * ¹½Â¤ÂÎ¥¢¥í¥±¡¼¥¿
- * Funded by IPAÌ¤Æ§¥½¥Õ¥È¥¦¥§¥¢ÁÏÂ¤»ö¶È 2001 8/15
+ * æ§‹é€ ä½“ã‚¢ãƒ­ã‚±ãƒ¼ã‚¿
+ * Funded by IPAæœªè¸ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢å‰µé€ äº‹æ¥­ 2001 8/15
  *
  * Copyright (C) 2005 YOSHIDA Yuichi
  * Copyright (C) 2000-2005 TABATA Yusuke, UGAWA Tomoharu
@@ -8,7 +8,7 @@
  *
  * dtor: destructor
  * 
- * ¥Ú¡¼¥¸Ãæ¤Î¥Õ¥ê¡¼¤Êchunk¤ÏÃ±Êý¸þ¥ê¥¹¥È¤Ë·Ñ¤¬¤ì¤Æ¤¤¤ë
+ * ãƒšãƒ¼ã‚¸ä¸­ã®ãƒ•ãƒªãƒ¼ãªchunkã¯å˜æ–¹å‘ãƒªã‚¹ãƒˆã«ç¶™ãŒã‚Œã¦ã„ã‚‹
  *
  */
 /*
@@ -38,22 +38,22 @@
 #define PAGE_MAGIC 0x12345678
 #define PAGE_SIZE 2048
 
-/* ¥Ú¡¼¥¸»ÈÍÑÎÌ¤Î¹ç·×¡¢¥Ç¥Ð¥Ã¥°¤Î»þÅù¤ËÍÑ¤¤¤ë */
+/* ãƒšãƒ¼ã‚¸ä½¿ç”¨é‡ã®åˆè¨ˆã€ãƒ‡ãƒãƒƒã‚°ã®æ™‚ç­‰ã«ç”¨ã„ã‚‹ */
 static int nr_pages;
 
-/* pageÆâ¤Î¥ª¥Ö¥¸¥§¥¯¥È¤òÉ½¤¹¥ª¥Ö¥¸¥§¥¯¥È */
+/* pageå†…ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‚’è¡¨ã™ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ */
 struct chunk {
   void *storage[1];
 };
 #define CHUNK_HEADER_SIZE ((size_t)&((struct chunk *)0)->storage)
-/* CPU¤â¤·¤¯¤Ï¡¢OS¤Î¼ïÎà¤Ë¤è¤Ã¤ÆÍ×µá¤µ¤ì¤ë¥¢¥é¥¤¥á¥ó¥È */
+/* CPUã‚‚ã—ãã¯ã€OSã®ç¨®é¡žã«ã‚ˆã£ã¦è¦æ±‚ã•ã‚Œã‚‹ã‚¢ãƒ©ã‚¤ãƒ¡ãƒ³ãƒˆ */
 #define CHUNK_ALIGN (sizeof(double))
 
 /*
- * page¤ÎstorageÃæ¤Ë¤Ï 
- * max_obj = (PAGE_SIZE - PAGE_HEADER_SIZE) / (size + CHUNK_HEADER_SIZE)¸Ä¤Î
- * ¥¹¥í¥Ã¥È¤¬¤¢¤ë¡£¤½¤Î¤¦¤Áuse_count¸Ä¤Î¥¹¥í¥Ã¥È¤¬free_list¤Ë¤Ä¤Ê¤¬¤Ã¤Æ¤¤¤ë¡¢
- * ¤â¤·¤¯¤Ï»ÈÍÑÃæ¤Ç¤¢¤ë¡£
+ * pageã®storageä¸­ã«ã¯ 
+ * max_obj = (PAGE_SIZE - PAGE_HEADER_SIZE) / (size + CHUNK_HEADER_SIZE)å€‹ã®
+ * ã‚¹ãƒ­ãƒƒãƒˆãŒã‚ã‚‹ã€‚ãã®ã†ã¡use_countå€‹ã®ã‚¹ãƒ­ãƒƒãƒˆãŒfree_listã«ã¤ãªãŒã£ã¦ã„ã‚‹ã€
+ * ã‚‚ã—ãã¯ä½¿ç”¨ä¸­ã§ã‚ã‚‹ã€‚
  */
 struct page {
   int magic;
@@ -69,21 +69,21 @@ struct page {
 
 /**/
 struct allocator_priv {
-  /* ¹½Â¤ÂÎ¤Î¥µ¥¤¥º */
+  /* æ§‹é€ ä½“ã®ã‚µã‚¤ã‚º */
   int size;
-  /* ¥Ú¡¼¥¸Æâ¤ËÆþ¤ì¤ë¤³¤È¤¬¤Ç¤­¤ë¥ª¥Ö¥¸¥§¥¯¥È¤Î¿ô */
+  /* ãƒšãƒ¼ã‚¸å†…ã«å…¥ã‚Œã‚‹ã“ã¨ãŒã§ãã‚‹ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã®æ•° */
   int max_num;
   /* 
-     ¼ÂºÝ¤Î¥Ç¡¼¥¿¤¬³ÊÇ¼¤µ¤ì»Ï¤á¤ë¾ì½ê¤Î¥ª¥Õ¥»¥Ã¥È 
-     ¥Ú¡¼¥¸Ãæ¤Î¤³¤ì¤è¤ê¼êÁ°¤Ë¤ÏÂÐ±þ¤¹¤ë¾ì½ê¤Î¥Ç¡¼¥¿¤¬»È¤ï¤ì¤Æ¤¤¤ë¤«¤É¤¦¤«¤ò0/1¤ÇÉ½¤¹
-     ¥Ó¥Ã¥È¥Þ¥Ã¥×¤¬¤¢¤ë
+     å®Ÿéš›ã®ãƒ‡ãƒ¼ã‚¿ãŒæ ¼ç´ã•ã‚Œå§‹ã‚ã‚‹å ´æ‰€ã®ã‚ªãƒ•ã‚»ãƒƒãƒˆ 
+     ãƒšãƒ¼ã‚¸ä¸­ã®ã“ã‚Œã‚ˆã‚Šæ‰‹å‰ã«ã¯å¯¾å¿œã™ã‚‹å ´æ‰€ã®ãƒ‡ãƒ¼ã‚¿ãŒä½¿ã‚ã‚Œã¦ã„ã‚‹ã‹ã©ã†ã‹ã‚’0/1ã§è¡¨ã™
+     ãƒ“ãƒƒãƒˆãƒžãƒƒãƒ—ãŒã‚ã‚‹
    */
   int storage_offset;
-  /* ¤³¤Îallocator¤¬»ÈÍÑ¤·¤Æ¤¤¤ë¥Ú¡¼¥¸¤Î¥ê¥¹¥È */
+  /* ã“ã®allocatorãŒä½¿ç”¨ã—ã¦ã„ã‚‹ãƒšãƒ¼ã‚¸ã®ãƒªã‚¹ãƒˆ */
   struct page page_list;
-  /* allocator¤Î¥ê¥¹¥È */
+  /* allocatorã®ãƒªã‚¹ãƒˆ */
   struct allocator_priv *next;
-  /* sfree¤·¤¿ºÝ¤Ë¸Æ¤Ð¤ì¤ë */
+  /* sfreeã—ãŸéš›ã«å‘¼ã°ã‚Œã‚‹ */
   void (*dtor)(void *);
 };
 
@@ -92,7 +92,7 @@ static struct allocator_priv *allocator_list;
 static int bit_test(unsigned char* bits, int pos)
 {
   /*
-     bit_get¤È¤Û¤ÜÆ±¤¸¤À¤¬bit != 0¤Î»þ¤Ë0°Ê³°¤òÊÖ¤¹¤³¤È¤·¤«ÊÝ¾Ú¤·¤Ê¤¤
+     bit_getã¨ã»ã¼åŒã˜ã ãŒbit != 0ã®æ™‚ã«0ä»¥å¤–ã‚’è¿”ã™ã“ã¨ã—ã‹ä¿è¨¼ã—ãªã„
    */
   return bits[pos >> 3] & (1 << (7 - (pos & 0x7)));
 }
@@ -163,8 +163,8 @@ static int
 calc_max_num(int size)
 {
   int area, bits;
-  /* ¥Ó¥Ã¥È¿ô¤Ç·×»»
-   * ¸·Ì©¤ÊºÇÅ¬²ò¤Ç¤Ï¤Ê¤¤
+  /* ãƒ“ãƒƒãƒˆæ•°ã§è¨ˆç®—
+   * åŽ³å¯†ãªæœ€é©è§£ã§ã¯ãªã„
    */
   area = (PAGE_SIZE - PAGE_HEADER_SIZE - CHUNK_ALIGN) * 8;
   bits = (size + CHUNK_HEADER_SIZE) * 8 + 1;
@@ -202,7 +202,7 @@ anthy_free_allocator_internal(allocator a)
 {
   struct page *p, *p_next;
 
-  /* ³Æ¥Ú¡¼¥¸¤Î¥á¥â¥ê¤ò²òÊü¤¹¤ë */
+  /* å„ãƒšãƒ¼ã‚¸ã®ãƒ¡ãƒ¢ãƒªã‚’è§£æ”¾ã™ã‚‹ */
   for (p = a->page_list.next; p != &a->page_list; p = p_next) {
     unsigned char* avail = PAGE_AVAIL(p);
     int i;
@@ -230,7 +230,7 @@ anthy_free_allocator(allocator a)
 {
   allocator a0, *a_prev_p;
 
-  /* ¥ê¥¹¥È¤«¤éa¤ÎÁ°¤ÎÍ×ÁÇ¤ò¸«ÉÕ¤±¤ë */
+  /* ãƒªã‚¹ãƒˆã‹ã‚‰aã®å‰ã®è¦ç´ ã‚’è¦‹ä»˜ã‘ã‚‹ */
   a_prev_p = &allocator_list;
   for (a0 = allocator_list; a0; a0 = a0->next) {
     if (a == a0)
@@ -238,7 +238,7 @@ anthy_free_allocator(allocator a)
     else
       a_prev_p = &a0->next;
   }
-  /* a¤ò¥ê¥¹¥È¤«¤é³°¤¹ */
+  /* aã‚’ãƒªã‚¹ãƒˆã‹ã‚‰å¤–ã™ */
   *a_prev_p = a->next;
 
   anthy_free_allocator_internal(a);
@@ -250,14 +250,14 @@ anthy_smalloc(allocator a)
   struct page *p;
   struct chunk *c;
 
-  /* ¶õ¤¤¤Æ¤ë¥Ú¡¼¥¸¤ò¤µ¤¬¤¹ */
+  /* ç©ºã„ã¦ã‚‹ãƒšãƒ¼ã‚¸ã‚’ã•ãŒã™ */
   for (p = a->page_list.next; p != &a->page_list; p = p->next) {
     c = get_chunk_from_page(a, p);
     if (c) {
       return c->storage;
     }
   }
-  /* ¥Ú¡¼¥¸¤òºî¤Ã¤Æ¡¢¥ê¥ó¥¯¤¹¤ë */
+  /* ãƒšãƒ¼ã‚¸ã‚’ä½œã£ã¦ã€ãƒªãƒ³ã‚¯ã™ã‚‹ */
   p = alloc_page(a);
   if (!p) {
     anthy_log(0, "Fatal error: Failed to allocate memory.\n");
@@ -269,7 +269,7 @@ anthy_smalloc(allocator a)
   p->prev = &a->page_list;
   a->page_list.next->prev = p;
   a->page_list.next = p;
-  /* ¤ä¤êÄ¾¤¹ */
+  /* ã‚„ã‚Šç›´ã™ */
   return anthy_smalloc(a);
 }
 
@@ -279,7 +279,7 @@ anthy_sfree(allocator a, void *ptr)
   struct chunk *c = get_chunk_address(ptr);
   struct page *p;
   int index;
-  /* ¥Ý¥¤¥ó¥¿¤Î´Þ¤Þ¤ì¤ë¥Ú¡¼¥¸¤òÃµ¤¹ */
+  /* ãƒã‚¤ãƒ³ã‚¿ã®å«ã¾ã‚Œã‚‹ãƒšãƒ¼ã‚¸ã‚’æŽ¢ã™ */
   for (p = a->page_list.next; p != &a->page_list; p = p->next) {
     if ((unsigned long)p < (unsigned long)c &&
 	(unsigned long)c < (unsigned long)p + PAGE_SIZE) {
@@ -293,12 +293,12 @@ anthy_sfree(allocator a, void *ptr)
     abort();
   }
 
-  /* ¥Ú¡¼¥¸Ãæ¤Î²¿ÈÖÌÜ¤Î¥ª¥Ö¥¸¥§¥¯¥È¤«¤òµá¤á¤ë */
+  /* ãƒšãƒ¼ã‚¸ä¸­ã®ä½•ç•ªç›®ã®ã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆã‹ã‚’æ±‚ã‚ã‚‹ */
   index = ((unsigned long)c - (unsigned long)PAGE_STORAGE(a, p)) /
     (a->size + CHUNK_HEADER_SIZE);  
   bit_set(PAGE_AVAIL(p), index, 0);
 
-  /* ¥Ç¥¹¥È¥é¥¯¥¿¤ò¸Æ¤Ö */
+  /* ãƒ‡ã‚¹ãƒˆãƒ©ã‚¯ã‚¿ã‚’å‘¼ã¶ */
   if (a->dtor) {
     a->dtor(ptr);
   }

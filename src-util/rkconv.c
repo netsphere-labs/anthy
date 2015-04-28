@@ -1,8 +1,8 @@
 /*
  * roma kana converter
  *
- * Íı²ò¤¹¤ë¤¿¤á¤Ë¤Ï¡¤¹½Ê¸²òÀÏ¤Ë¤Ä¤¤¤Æ½ñ¤«¤ì¤¿¥Æ¥­¥¹¥È¤Ç
- * SLR(1)¤Ë¤Ä¤¤¤ÆÄ´¤Ù¤ë¤è¤í¤·¡¥
+ * ç†è§£ã™ã‚‹ãŸã‚ã«ã¯ï¼Œæ§‹æ–‡è§£æã«ã¤ã„ã¦æ›¸ã‹ã‚ŒãŸãƒ†ã‚­ã‚¹ãƒˆã§
+ * SLR(1)ã«ã¤ã„ã¦èª¿ã¹ã‚‹ã‚ˆã‚ã—ï¼
  *
  * Copyright (C) 2001-2002 UGAWA Tomoharu
  *
@@ -633,7 +633,7 @@ rk_rule_compare_func(const void *p, const void *q)
 }
 
 /*
- * ¥½¡¼¥È¤µ¤ì¤¿rk_rule¤òºî¤Ã¤ÆÊÖ¤¹
+ * ã‚½ãƒ¼ãƒˆã•ã‚ŒãŸrk_ruleã‚’ä½œã£ã¦è¿”ã™
  */
 static struct rk_rule *
 rk_sort_rule(const struct rk_rule *src)
@@ -665,7 +665,7 @@ rk_sort_rule(const struct rk_rule *src)
   return NULL;
 }
 
-/* °ì¤ÄÌÜ¤Î¥ë¡¼¥ë¤¬Í¥Àè¤µ¤ì¤ë */
+/* ä¸€ã¤ç›®ã®ãƒ«ãƒ¼ãƒ«ãŒå„ªå…ˆã•ã‚Œã‚‹ */
 static struct rk_rule*
 rk_do_merge_rules(const struct rk_rule* r1,
 		  const struct rk_rule* r2)
@@ -687,10 +687,10 @@ rk_do_merge_rules(const struct rk_rule* r1,
   r = rules;
   p = (struct rk_rule *)r1;
   q = (struct rk_rule *)r2;
-  /* ¥½¡¼¥ÈºÑ¤ÎÎó¤ËÂĞ¤·¤Æ¥Ş¡¼¥¸¥½¡¼¥È¤ò¤¹¤ë */
+  /* ã‚½ãƒ¼ãƒˆæ¸ˆã®åˆ—ã«å¯¾ã—ã¦ãƒãƒ¼ã‚¸ã‚½ãƒ¼ãƒˆã‚’ã™ã‚‹ */
   for (i = 0; i < size; i++) {
     if (p->lhs && q->lhs) {
-      /* p,q¤òÈæ³Ó¤·¤Æ¤É¤Á¤é¤«¤é¼è¤ê½Ğ¤¹¤«¤òÁª¤Ö */
+      /* p,qã‚’æ¯”è¼ƒã—ã¦ã©ã¡ã‚‰ã‹ã‚‰å–ã‚Šå‡ºã™ã‹ã‚’é¸ã¶ */
       ret = rk_my_strcmp(p->lhs, q->lhs);
       if (ret > 0) {
 	tmp = q;
@@ -699,7 +699,7 @@ rk_do_merge_rules(const struct rk_rule* r1,
 	tmp = p;
 	p++;
       } else {
-	/* ¥­¡¼¤¬Î¾ÊıÆ±¤¸¤Ê¤Î¤Çq¤ÎÊı¤òÍ¥Àè¤¹¤ë */
+	/* ã‚­ãƒ¼ãŒä¸¡æ–¹åŒã˜ãªã®ã§qã®æ–¹ã‚’å„ªå…ˆã™ã‚‹ */
 	tmp = q;
 	p++;q++;
       }
@@ -712,7 +712,7 @@ rk_do_merge_rules(const struct rk_rule* r1,
     } else {
       continue;
     }
-    /* ¤³¤³¤Ş¤Ç¤ËÁªÂò¤·¤¿¤â¤Î¤òcopy¤¹¤ë */
+    /* ã“ã“ã¾ã§ã«é¸æŠã—ãŸã‚‚ã®ã‚’copyã™ã‚‹ */
     ret = rk_rule_copy_to(tmp, r);
     if (ret == -1) {
       r->lhs = NULL;
