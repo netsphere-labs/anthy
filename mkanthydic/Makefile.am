@@ -6,6 +6,7 @@ noinst_PROGRAMS = mkfiledic
 mkfiledic_SOURCES = mkfiledic.c
 mkfiledic_LDADD = ../src-diclib/libdiclib.la
 
+if MAINTAINER_MODE
 anthy.dic: anthy.dic3
 	cp -p anthy.dic3 anthy.dic
 
@@ -65,6 +66,12 @@ anthy.dic5: mkfiledic ../mkworddic/anthy.wdic ../depgraph/anthy.dep \
 	../calctrans/calctrans parsed_data0 parsed_data1 parsed_data2 parsed_data3 parsed_data4 -e -o weak_words
 	../calctrans/calctrans -c corpus_info weak_words
 	./mkfiledic -o anthy.dic5
+else
+anthy.dic: mkfiledic ../mkworddic/anthy.wdic ../depgraph/anthy.dep \
+	   corpus_info weak_words
+	../calctrans/calctrans -c corpus_info weak_words
+	./mkfiledic -o anthy.dic
+endif
 
 # To install 
 pkgdata_DATA = anthy.dic
