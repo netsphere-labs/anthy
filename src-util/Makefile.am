@@ -5,7 +5,8 @@ SUBDIRS =
 ELISP_FILES = anthy.el anthy-dic.el anthy-conf.el leim-list.el \
  anthy-isearch.el anthy-azik.el anthy-kyuri.el
 EXTRA_DIST = $(ELISP_FILES) typetab dic-tool-usage.txt anthy.i
-bin_PROGRAMS = anthy-dic-tool anthy-agent anthy-morphological-analyzer
+bin_PROGRAMS = anthy-dic-tool anthy-agent
+noinst_PROGRAMS = anthy-morphological-analyzer
 if ELISP
 lisp_LISP = $(ELISP_FILES)
 endif
@@ -24,6 +25,6 @@ anthy_morphological_analyzer_LDADD = libconvdb.la ../src-main/libanthy.la ../src
 lib_LTLIBRARIES = libanthyinput.la
 libanthyinput_la_SOURCES = input.c rkconv.c rkhelper.c\
  rkconv.h rkmap.h rkhelper.h
-libanthyinput_la_LIBADD = ../src-main/libanthy.la ../src-worddic/libanthydic.la
+libanthyinput_la_LIBADD = ../src-main/libanthy.la
 
 pkgdata_DATA = typetab dic-tool-usage.txt
