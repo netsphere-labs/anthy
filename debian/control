@@ -3,8 +3,8 @@ Section: utils
 Priority: optional
 Maintainer: Debian Anthy Team <pkg-anthy-devel@lists.alioth.debian.org>
 Uploaders: NOKUBI Takatsugu <knok@daionet.gr.jp>, Hideki Yamane <henrich@debian.org>, NIIBE Yutaka <gniibe@fsij.org>
-Build-Depends: debhelper (>= 9), autotools-dev, debconf (>= 0.5), po-debconf, automake, quilt (>= 0.46-7~)
-Standards-Version: 3.9.6
+Build-Depends: debhelper (>= 10), autotools-dev, debconf (>= 0.5), po-debconf, automake
+Standards-Version: 3.9.8
 Vcs-Git: git://anonscm.debian.org/pkg-anthy/anthy.git
 Vcs-Browser: http://anonscm.debian.org/cgit/pkg-anthy/anthy.git
 Homepage: https://alioth.debian.org/projects/pkg-anthy/

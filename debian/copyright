@@ -1,6 +1,6 @@
 Format: http://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: anthy
-Source: http://sourceforge.jp/projects/anthy/
+Source: http://osdn.net/projects/anthy/
 
 Files: *
 Copyright: 2001-2005, Yusuke Tabata <yusuke@kmc.gr.jp> and Project Heke
@@ -15,17 +15,11 @@ License: LGPL-3+
  Public License can be found in `/usr/share/common-licenses/LGPL-3'.
 
 Files: alt-cannadic/*
-Comment: http://sourceforge.jp/projects/alt-cannadic/
+Comment: http://osdn.net/projects/alt-cannadic/
          Based on Cannadic http://cannadic.oucrc.org/
 Copyright: 2000-2004, すぎもとまさお <sugimoto@oucrc.org>
            2005-2007, vagus <vagus.xyz _at_ gmail.com>
 License: GPL-2
- This package is free software; you can redistribute it and/or
- modify it under the terms of the GNU General Public License as
- published by the Free Software Foundation; version 2 of the License.
- .
- On Debian systems, the complete text of the GNU General Public License
- can be found in `/usr/share/common-licenses/GPL-2'.
 
 Files: mkworddic/zipcode.t
 Copyright: 郵便事業株式会社 (Japan Post Service Co., Ltd.)
@@ -41,6 +35,8 @@ Files: debian/*
 Copyright: 2001-2007, Masahito Omote <omote@debian.org>
            2007-2008, NOKUBI Takatsugu <knok@daionet.gr.jp> 
            2010-2013, Hideki Yamane <henrich@debian.org>
+License: GPL-2
+
 License: GPL-2
  This package is free software; you can redistribute it and/or
  modify it under the terms of the GNU General Public License as

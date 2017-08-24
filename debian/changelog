@@ -1,3 +1,13 @@
+anthy (1:0.3-2) unstable; urgency=medium
+
+  * debian/copyright: Fix URLs.
+  * debian/compat: Update to 10.
+  * debian/rules: Remove --with quilt.
+  * debian/control (Build-Depends): Remove quilt.
+  (Standards-Version): Update.
+
+ -- NIIBE Yutaka <gniibe@fsij.org>  Thu, 24 Aug 2017 14:21:31 +0900
+
 anthy (1:0.3-1) experimental; urgency=low
 
   * New upstream.

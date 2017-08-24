@@ -1,7 +1,8 @@
 anthy-el for Debian
-----------------
-anthy-el is a elisp backend for Anthy. You have only to insert folloing lines
-in your ~/.emacs or ~/.xemacs/init.el
+-------------------
+
+anthy-el is a elisp backend for Anthy. You have only to insert
+following lines in your ~/.emacs or ~/.xemacs/init.el
 
 (set-input-method "japanese-anthy")
 

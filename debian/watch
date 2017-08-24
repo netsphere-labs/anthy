@@ -1,6 +1,6 @@
 version=3
 
-opts="downloadurlmangle=s/sourceforge/iij.dl.sourceforge/;s/downloads\///;s/projects\///;s/gz\//gz/,\
+opts="downloadurlmangle=s/osdn/dl.osdn/;s/downloads\///;s/projects\///;s/gz\//gz/,\
 uversionmangle=s/-beta/~beta/;s/-rc/~rc/;s/-preview/~preview/" \
- http://sourceforge.jp/projects/anthy/releases/ \
+ http://osdn.net/projects/anthy/releases/ \
   /projects/anthy/downloads/.*/anthy-(\d.*)\.tar.gz/ debian uupdate
