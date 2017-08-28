@@ -1,3 +1,9 @@
+anthy (1:0.3-3) unstable; urgency=medium
+
+  * debian/control (Breaks, Replaces): Add (Closes: #789927).
+
+ -- NIIBE Yutaka <gniibe@fsij.org>  Mon, 28 Aug 2017 13:26:04 +0900
+
 anthy (1:0.3-2) unstable; urgency=medium
 
   * debian/copyright: Fix URLs.
