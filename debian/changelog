@@ -1,3 +1,12 @@
+anthy (1:0.3-4) unstable; urgency=medium
+
+  * debian/control (Breaks, Replaces): Fix for libanthyinput0
+    (Closes: #789927).
+  * debian/control (Breaks, Replaces): Add for libantyinput0-dev
+    (Closes: #789934).
+
+ -- NIIBE Yutaka <gniibe@fsij.org>  Tue, 29 Aug 2017 09:12:08 +0900
+
 anthy (1:0.3-3) unstable; urgency=medium
 
   * debian/control (Breaks, Replaces): Add (Closes: #789927).
