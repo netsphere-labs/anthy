@@ -1,3 +1,10 @@
+anthy (1:0.3-6) unstable; urgency=medium
+
+  * Team upload.
+  * Typo fix in debian/control
+
+ -- Osamu Aoki <osamu@debian.org>  Thu, 12 Oct 2017 07:35:54 +0900
+
 anthy (1:0.3-5) unstable; urgency=medium
 
   * debian/control (Breaks, Replaces): Fix version specification using <<,

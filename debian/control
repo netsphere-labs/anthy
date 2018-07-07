@@ -28,7 +28,7 @@ Description: Japanese kana-kanji conversion - dictionary
  hiragana text to mixed kana and kanji.  It is implemented as a library
  and stores private information in ~/.anthy/.
  .
- This package provides common dictonary data files.
+ This package provides common dictionary data files.
 
 Package: anthy-el
 Section: lisp
