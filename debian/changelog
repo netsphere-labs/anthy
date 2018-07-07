@@ -1,3 +1,19 @@
+anthy (1:0.3-7) unstable; urgency=medium
+
+  * Team upload.
+  * Update VCS to new salsa service in compliance to the Debian
+    Policy 5.6.26 (version 4.1.4).
+  * Migrate from alioth to lists.debian.org for the maintainer address.
+    Closes: #899445 
+  * Bump standards version to 4.1.4 and compat to 11.
+  * Drop autotools-dev build depends.
+  * Updated watch file in line with the current reality.
+  * Add osamu to uploaders.
+  * Update homepage URL.
+  * Format with wrap-and-sort.
+
+ -- Osamu Aoki <osamu@debian.org>  Sat, 07 Jul 2018 16:42:30 +0900
+
 anthy (1:0.3-6) unstable; urgency=medium
 
   * Team upload.

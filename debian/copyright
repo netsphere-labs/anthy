@@ -33,7 +33,7 @@ License: public-domain
 
 Files: debian/*
 Copyright: 2001-2007, Masahito Omote <omote@debian.org>
-           2007-2008, NOKUBI Takatsugu <knok@daionet.gr.jp> 
+           2007-2008, NOKUBI Takatsugu <knok@daionet.gr.jp>
            2010-2013, Hideki Yamane <henrich@debian.org>
 License: GPL-2
 

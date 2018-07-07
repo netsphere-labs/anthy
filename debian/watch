@@ -1,6 +1,25 @@
-version=3
-
-opts="downloadurlmangle=s/osdn/dl.osdn/;s/downloads\///;s/projects\///;s/gz\//gz/,\
-uversionmangle=s/-beta/~beta/;s/-rc/~rc/;s/-preview/~preview/" \
- http://osdn.net/projects/anthy/releases/ \
-  /projects/anthy/downloads/.*/anthy-(\d.*)\.tar.gz/ debian uupdate
+# The previous upstream
+#      https://osdn.net/projects/anthy/
+# had the last release anthy-9100 anthy-9100h (Date: 2009-02-09)
+# It hasn't been updated since then.
+#
+# Debian accumulated many patches.
+#
+# On Tue, 28 Apr 2015, Debian maintainer lead by 
+# NIIBE Yutaka <gniibe@fsij.org> took over its maintenance and started to act
+# as upstream with upstream-branch=release on alioth git repo.
+#
+# Osamu Aoki moved this git repository to salsa after closing of the alioth
+# service.
+#
+# Thus watch file is irrelevant now.
+#
+# Sat Jul  7 07:33:34 UTC 2018
+#
+###version=3
+###
+###
+###opts="downloadurlmangle=s/osdn/dl.osdn/;s/downloads\///;s/projects\///;s/gz\//gz/,\
+###uversionmangle=s/-beta/~beta/;s/-rc/~rc/;s/-preview/~preview/" \
+### http://osdn.net/projects/anthy/releases/ \
+###  /projects/anthy/downloads/.*/anthy-(\d.*)\.tar.gz/ debian uupdate

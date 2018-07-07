@@ -1,7 +1,7 @@
 usr/include/anthy/anthy.h
 usr/include/anthy/dicutil.h
 usr/lib/*/libanthy.a
+usr/lib/*/libanthy.so
 usr/lib/*/libanthydic.a
 usr/lib/*/libanthydic.so
-usr/lib/*/libanthy.so
 usr/lib/*/pkgconfig/anthy.pc
