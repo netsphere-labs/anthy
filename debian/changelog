@@ -1,3 +1,11 @@
+anthy (1:0.3-8) UNRELEASED; urgency=medium
+
+  * debian/patches/0001-work-with-emacs-24.3.1.patch: Re-add from
+    https://sources.debian.org/src/anthy/9100h-25/debian/patches/work-with-emacs-24.3.1.patch/
+    (Closes: #919680).
+
+ -- NOKUBI Takatsugu <knok@daionet.gr.jp>  Wed, 23 Jan 2019 14:37:27 +0900
+
 anthy (1:0.3-7) unstable; urgency=medium
 
   * Team upload.
