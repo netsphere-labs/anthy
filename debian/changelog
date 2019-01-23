@@ -1,4 +1,4 @@
-anthy (1:0.3-8) UNRELEASED; urgency=medium
+anthy (1:0.3-8) unstable; urgency=medium
 
   * debian/patches/0001-work-with-emacs-24.3.1.patch: Re-add from
     https://sources.debian.org/src/anthy/9100h-25/debian/patches/work-with-emacs-24.3.1.patch/
