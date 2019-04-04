@@ -19,7 +19,7 @@ test -n "$lispdir" || lispdir="/tmp/"
 
 lispdir="$lispdir/anthy"
 
-test -z "$GCC" || CFLAGS="$CFLAGS -W -Werror -Wall -Wextra -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -pedantic -Wno-long-long"
+test -z "$GCC" || CFLAGS="$CFLAGS -W -Werror=format-security -Wall -Wextra -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -pedantic -Wno-long-long"
 
 AC_OUTPUT(Makefile
  src-diclib/Makefile src-worddic/Makefile 
