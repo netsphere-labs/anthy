@@ -384,6 +384,10 @@ int
 anthy_xstrcmp(xstr *x1, xstr *x2)
 {
   int i, m;
+  if (!x1)
+    return -1;
+  if (!x2)
+    return 1;
   if (x1->len < x2->len) {
     m = x1->len;
   }else{
