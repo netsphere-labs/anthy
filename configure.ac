@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src-main/main.c)
 
-AM_INIT_AUTOMAKE(anthy, 9100h)
+AM_INIT_AUTOMAKE(anthy-unicode, 10000)
 AM_CONFIG_HEADER(config.h)
 AC_CONFIG_MACRO_DIR(m4)
 
@@ -17,7 +17,7 @@ dnl without emacs. install-lispLISP does mkdir /anthy
 dnl dirty hack to avoid it.
 test -n "$lispdir" || lispdir="/tmp/"
 
-lispdir="$lispdir/anthy"
+lispdir="$lispdir/anthy-unicode"
 
 test -z "$GCC" || CFLAGS="$CFLAGS -W -Werror=format-security -Wall -Wextra -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -pedantic -Wno-long-long"
 
