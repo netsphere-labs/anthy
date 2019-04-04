@@ -30,4 +30,4 @@ AC_OUTPUT(Makefile
  mkworddic/dict.args test/Makefile
  alt-cannadic/Makefile
  doc/Makefile calctrans/Makefile
- anthy-conf anthy-test-conf anthy.spec anthy.pc)
+ anthy-unicode.conf anthy-unicode-test.conf anthy-unicode.spec anthy-unicode.pc)

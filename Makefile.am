@@ -1,14 +1,14 @@
 AUTOMAKE_OPTIONS =
-EXTRA_DIST = README.en DIARY anthy-conf.in anthy-test-conf.in anthy.spec.in anthy.pc.in Doxyfile
+EXTRA_DIST = README.en DIARY anthy-unicode.conf.in anthy-unicode-test.conf.in anthy-unicode.spec.in anthy-unicode.pc.in Doxyfile
 
 SRCDIR = src-diclib src-worddic src-splitter src-ordering src-main src-util
 
 SUBDIRS = $(SRCDIR) anthy depgraph mkworddic calctrans mkanthydic doc test alt-cannadic
 
-sysconf_DATA = anthy-conf
+sysconf_DATA = anthy-unicode.conf
 
 pkgconfigdir = $(libdir)/pkgconfig
-pkgconfig_DATA = anthy.pc
+pkgconfig_DATA = anthy-unicode.pc
 
 MOSTLYCLEANFILES = core
 
