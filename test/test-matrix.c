@@ -1,4 +1,4 @@
-/* аб╧тнС╓н╔ф╔╧╔хмя╔Ё║╪╔и */
+/* Г√▌Х║▄Е┬≈Ц│╝Ц┐├Ц┌╧Ц┐┬Г■╗Ц┌ЁЦ┐╪Ц┐┴ */
 #include <stdio.h>
 #include <anthy/dic.h>
 #include <anthy/diclib.h>

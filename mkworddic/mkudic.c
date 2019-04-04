@@ -1,5 +1,5 @@
 /*
- * ÍÑÎã¼­½ñ¤òºî¤ë
+ * ç”¨ä¾‹è¾æ›¸ã‚’ä½œã‚‹
  *
  * Copyright (C) 2003-2005 TABATA Yusuke
  */
@@ -12,20 +12,20 @@
 
 #define LINE_LEN 256
 
-/* ÍÑÎã */
+/* ç”¨ä¾‹ */
 struct use_case {
   int id[2];
   struct use_case *next;
 };
 
-/* ÍÑÎã¼­½ñ */
+/* ç”¨ä¾‹è¾æ›¸ */
 struct uc_dict {
-  /* ÍÑÎã¥ê¥¹¥È */
+  /* ç”¨ä¾‹ãƒªã‚¹ãƒˆ */
   struct use_case uc_head;
   int nr_ucs;
 };
 
-/* ÍÑÎãÄêµÁ¤Î¹Ô¤«¤éÃ±¸ì¤Îid¤òµá¤á¤ë
+/* ç”¨ä¾‹å®šç¾©ã®è¡Œã‹ã‚‰å˜èªã®idã‚’æ±‚ã‚ã‚‹
  */
 static int
 get_id_from_word_line(char *buf)
@@ -63,7 +63,7 @@ commit_uc(struct uc_dict *dict, int x, int y)
   dict->nr_ucs ++;
 }
 
-/* ÍÑÎã¥Ç¡¼¥¿¥Ù¡¼¥¹¤òºî¤ë */
+/* ç”¨ä¾‹ãƒ‡ãƒ¼ã‚¿ãƒ™ãƒ¼ã‚¹ã‚’ä½œã‚‹ */
 struct uc_dict *
 create_uc_dict(void)
 {
@@ -75,7 +75,7 @@ create_uc_dict(void)
   return dict;
 }
 
-/* ÍÑÎã¥Õ¥¡¥¤¥ë¤òÆÉ¤ß¹ş¤à */
+/* ç”¨ä¾‹ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã¿è¾¼ã‚€ */
 void
 read_uc_file(struct uc_dict *dict, const char *fn)
 {
@@ -89,8 +89,8 @@ read_uc_file(struct uc_dict *dict, const char *fn)
     return ;
   }
 
-  /* off=0      : ºÇ½é¤ÎÃ±¸ì
-   * off=1,2..n : ¤½¤ì¤È´Ø·¸¤¢¤ëÃ±¸ì
+  /* off=0      : æœ€åˆã®å˜èª
+   * off=1,2..n : ãã‚Œã¨é–¢ä¿‚ã‚ã‚‹å˜èª
    */
   off = 0;
   while (fgets(buf, LINE_LEN, uc_file)) {
@@ -98,11 +98,11 @@ read_uc_file(struct uc_dict *dict, const char *fn)
     line_number ++;
     /**/
     if (buf[0] == '#') {
-      /* ¥³¥á¥ó¥È */
+      /* ã‚³ãƒ¡ãƒ³ãƒˆ */
       continue;
     }
     if (buf[0] == '-') {
-      /* ¶èÀÚ¤êµ­¹æ */
+      /* åŒºåˆ‡ã‚Šè¨˜å· */
       off = 0;
       continue;
     }
@@ -112,17 +112,17 @@ read_uc_file(struct uc_dict *dict, const char *fn)
     }
     /**/
     if (off == 0) {
-      /* °ì¤Ä¤á¤Î¹àÌÜ */
+      /* ä¸€ã¤ã‚ã®é …ç›® */
       base = cur;
     } else {
-      /* Æó¤Ä¤á°Ê¹ß¤Î¹àÌÜ */
+      /* äºŒã¤ã‚ä»¥é™ã®é …ç›® */
       commit_uc(dict, cur, base);
     }
     off ++;
   }
 }
 
-/* ÍÑÎã¼­½ñ¤ò¥Õ¥¡¥¤¥ë¤Ë½ñ¤­½Ğ¤¹ */
+/* ç”¨ä¾‹è¾æ›¸ã‚’ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã™ */
 void
 make_ucdict(FILE *uc_out, struct uc_dict *dict)
 {
@@ -130,7 +130,7 @@ make_ucdict(FILE *uc_out, struct uc_dict *dict)
   struct sparse_matrix *sm;
   struct matrix_image *mi;
   int i;
-  /* ÁÂ¹ÔÎó¤ËµÍ¤á¹ş¤à */
+  /* ç–è¡Œåˆ—ã«è©°ã‚è¾¼ã‚€ */
   sm = anthy_sparse_matrix_new();
   if (dict) {
     for (uc = dict->uc_head.next; uc; uc = uc->next) {
@@ -138,7 +138,7 @@ make_ucdict(FILE *uc_out, struct uc_dict *dict)
     }
   }
   anthy_sparse_matrix_make_matrix(sm);
-  /* ÁÂ¹ÔÎó¤Î¥¤¥á¡¼¥¸¤òºîÀ®¤·¤Æ¥Õ¥¡¥¤¥ë¤Ë½ñ¤­½Ğ¤¹ */
+  /* ç–è¡Œåˆ—ã®ã‚¤ãƒ¡ãƒ¼ã‚¸ã‚’ä½œæˆã—ã¦ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã™ */
   mi = anthy_matrix_image_new(sm);
   for (i = 0; i < mi->size; i++) {
     write_nl(uc_out, mi->image[i]);

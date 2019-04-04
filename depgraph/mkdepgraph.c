@@ -3,9 +3,9 @@
  * Copyright (C) 2004-2006 YOSHIDA Yuichi
  */
 /*
- * ÉÕÂ°¸ì¥°¥é¥Õ¤ò¥Ğ¥¤¥Ê¥ê²½¤¹¤ë
+ * ä»˜å±èªã‚°ãƒ©ãƒ•ã‚’ãƒã‚¤ãƒŠãƒªåŒ–ã™ã‚‹
  * init_word_seq_tab()
- *   ÉÕÂ°¸ì¥Æ¡¼¥Ö¥ëÃæ¤Î¥Î¡¼¥É¤Ø¤Î¥İ¥¤¥ó¥¿¤Î½é´ü²½
+ *   ä»˜å±èªãƒ†ãƒ¼ãƒ–ãƒ«ä¸­ã®ãƒãƒ¼ãƒ‰ã¸ã®ãƒã‚¤ãƒ³ã‚¿ã®åˆæœŸåŒ–
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -47,7 +47,7 @@ static struct dep_node* gNodes;
 static char** gNodeNames;
 static int nrNodes;
 
-/* Ã±¸ìÀÜÂ³¥ë¡¼¥ë */
+/* å˜èªæ¥ç¶šãƒ«ãƒ¼ãƒ« */
 static struct wordseq_rule *gRules;
 static int nrRules;
 
@@ -55,13 +55,13 @@ static int
 get_node_id_by_name(const char *name)
 {
   int i;
-  /* ÅĞÏ¿ºÑ¤ß¤Î¤â¤Î¤«¤éÃµ¤¹ */
+  /* ç™»éŒ²æ¸ˆã¿ã®ã‚‚ã®ã‹ã‚‰æ¢ã™ */
   for (i = 0; i < nrNodes; i++) {
     if (!strcmp(name,gNodeNames[i])) {
       return i;
     }
   }
-  /* ¤Ê¤«¤Ã¤¿¤Î¤Çºî¤ë */
+  /* ãªã‹ã£ãŸã®ã§ä½œã‚‹ */
   gNodes = realloc(gNodes, sizeof(struct dep_node)*(nrNodes+1));
   gNodeNames = realloc(gNodeNames, sizeof(char*)*(nrNodes+1));
   gNodes[nrNodes].nr_branch = 0;
@@ -72,13 +72,13 @@ get_node_id_by_name(const char *name)
 }
 
 
-/* Á«°Ü¾ò·ï¤«¤ébranch¤òÁÜ¤·½Ğ¤¹ */
+/* é·ç§»æ¡ä»¶ã‹ã‚‰branchã‚’æœã—å‡ºã™ */
 static struct dep_branch *
 find_branch(struct dep_node *node, xstr **strs, int nr_strs)
 {
   struct dep_branch *db;
   int i, j;
-  /* Æ±¤¸Á«°Ü¾ò·ï¤Î¥Ö¥é¥ó¥Á¤òÃµ¤¹ */
+  /* åŒã˜é·ç§»æ¡ä»¶ã®ãƒ–ãƒ©ãƒ³ãƒã‚’æ¢ã™ */
   for (i = 0; i < node->nr_branch; i++) {
     db = &node->branch[i];
     if (nr_strs != db->nr_strs) {
@@ -93,7 +93,7 @@ find_branch(struct dep_node *node, xstr **strs, int nr_strs)
     return db;
   fail:;
   }
-  /* ¿·¤·¤¤¥Ö¥é¥ó¥Á¤ò³ÎÊİ¤¹¤ë */
+  /* æ–°ã—ã„ãƒ–ãƒ©ãƒ³ãƒã‚’ç¢ºä¿ã™ã‚‹ */
   node->branch = realloc(node->branch,
 			 sizeof(struct dep_branch)*(node->nr_branch+1));
   db = &node->branch[node->nr_branch];
@@ -109,8 +109,8 @@ find_branch(struct dep_node *node, xstr **strs, int nr_strs)
 }
 
 /*
- * Á«°Ü¤òparse¤¹¤ë
- *  doc/SPLITTER»²¾È
+ * é·ç§»ã‚’parseã™ã‚‹
+ *  doc/SPLITTERå‚ç…§
  */
 static void
 parse_transition(char *token, struct dep_transition *tr)
@@ -121,7 +121,7 @@ parse_transition(char *token, struct dep_transition *tr)
   char *str = token;
   tr->head_pos = POS_NONE;
   tr->weak = 0;
-  /* Á«°Ü¤ÎÂ°À­¤ò²òÀÏ*/
+  /* é·ç§»ã®å±æ€§ã‚’è§£æ*/
   while (*token != '@') {
     switch(*token){
     case ':':
@@ -129,7 +129,7 @@ parse_transition(char *token, struct dep_transition *tr)
       tr->weak = 1;
       break;
     case 'C':
-      /* ³èÍÑ·Á */
+      /* æ´»ç”¨å½¢ */
       switch (token[1]) {
       case 'z': ct = CT_MIZEN; break;
       case 'y': ct = CT_RENYOU; break;
@@ -142,7 +142,7 @@ parse_transition(char *token, struct dep_transition *tr)
       token ++;
       break;
     case 'H':
-      /* ¼«Î©¸ìÉô¤ÎÉÊ»ì */
+      /* è‡ªç«‹èªéƒ¨ã®å“è© */
       switch (token[1]) {
       case 'n':	tr->head_pos = POS_NOUN; break;
       case 'v':	tr->head_pos = POS_V; break;
@@ -151,7 +151,7 @@ parse_transition(char *token, struct dep_transition *tr)
       token ++;
       break;
     case 'S':
-      /* Ê¸Àá¤ÎÂ°À­ */
+      /* æ–‡ç¯€ã®å±æ€§ */
       switch (token[1]) {
 	/*      case 'n': sc = DEP_NO; break;*/
       case 'f': dc = DEP_FUZOKUGO; break;
@@ -170,7 +170,7 @@ parse_transition(char *token, struct dep_transition *tr)
     }
     token ++;
   }
-  /* @¤«¤é¸å¤Ï¥Î¡¼¥É¤ÎÌ¾Á° */
+  /* @ã‹ã‚‰å¾Œã¯ãƒãƒ¼ãƒ‰ã®åå‰ */
   tr->next_node = get_node_id_by_name(token);
   /**/
   tr->pos = pos;
@@ -179,7 +179,7 @@ parse_transition(char *token, struct dep_transition *tr)
 }
 
 /*
- * ¥Î¡¼¥ÉÌ¾ Á«°Ü¾ò·ï+ Á«°ÜÀè+
+ * ãƒãƒ¼ãƒ‰å é·ç§»æ¡ä»¶+ é·ç§»å…ˆ+
  */
 static void
 parse_dep(char **tokens, int nr)
@@ -190,14 +190,14 @@ parse_dep(char **tokens, int nr)
   int nr_strs;
   xstr **strs = alloca(sizeof(xstr*) * nr);
 
-  /* ¥Î¡¼¥É¤È¤½¤Îid¤ò³ÎÊİ */
+  /* ãƒãƒ¼ãƒ‰ã¨ãã®idã‚’ç¢ºä¿ */
   id = get_node_id_by_name(tokens[row]);
   dn = &gNodes[id];
   row ++;
 
   nr_strs = 0;
 
-  /* Á«°Ü¾ò·ï¤ÎÉÕÂ°¸ì¤ÎÇÛÎó¤òºî¤ë */
+  /* é·ç§»æ¡ä»¶ã®ä»˜å±èªã®é…åˆ—ã‚’ä½œã‚‹ */
   for (; row < nr && tokens[row][0] == '\"'; row++) {
     char *s;
     s = strdup(&tokens[row][1]);
@@ -207,7 +207,7 @@ parse_dep(char **tokens, int nr)
     free(s);
   }
 
-  /* Á«°Ü¾ò·ï¤¬¤Ê¤¤»ş¤Ï·Ù¹ğ¤ò½Ğ¤·¤Æ¡¢¶õ¤ÎÁ«°Ü¾ò·ï¤òÄÉ²Ã¤¹¤ë */
+  /* é·ç§»æ¡ä»¶ãŒãªã„æ™‚ã¯è­¦å‘Šã‚’å‡ºã—ã¦ã€ç©ºã®é·ç§»æ¡ä»¶ã‚’è¿½åŠ ã™ã‚‹ */
   if (nr_strs == 0) {
     char *s;
     anthy_log(0, "node %s has a branch without any transition condition.\n",
@@ -218,7 +218,7 @@ parse_dep(char **tokens, int nr)
     free(s);
   }
 
-  /* ¥Ö¥é¥ó¥Á¤ËÁ«°ÜÀè¤Î¥Î¡¼¥É¤òÄÉ²Ã¤¹¤ë */
+  /* ãƒ–ãƒ©ãƒ³ãƒã«é·ç§»å…ˆã®ãƒãƒ¼ãƒ‰ã‚’è¿½åŠ ã™ã‚‹ */
   db = find_branch(dn, strs, nr_strs);
   for ( ; row < nr; row++){
     struct dep_transition *tr;
@@ -231,7 +231,7 @@ parse_dep(char **tokens, int nr)
   }
 }
 
-/* Ê¸Ë¡ÄêµÁ¥Õ¥¡¥¤¥ëÃæ¤Ë¶õ¤Î¥Î¡¼¥É¤¬¤¢¤ë¤«¥Á¥§¥Ã¥¯¤¹¤ë */
+/* æ–‡æ³•å®šç¾©ãƒ•ã‚¡ã‚¤ãƒ«ä¸­ã«ç©ºã®ãƒãƒ¼ãƒ‰ãŒã‚ã‚‹ã‹ãƒã‚§ãƒƒã‚¯ã™ã‚‹ */
 static void
 check_nodes(void)
 {
@@ -251,7 +251,7 @@ init_depword_tab(void)
   char **tokens;
   int nr;
 
-  /* id 0 ¤ò¶õ¥Î¡¼¥É¤Ë³äÅö¤Æ¤ë */
+  /* id 0 ã‚’ç©ºãƒãƒ¼ãƒ‰ã«å‰²å½“ã¦ã‚‹ */
   get_node_id_by_name("@");
 
   /**/
@@ -264,7 +264,7 @@ init_depword_tab(void)
     anthy_log(0, "Failed to open dep word dict (%s).\n", fn);
     return -1;
   }
-  /* °ì¹Ô¤º¤ÄÉÕÂ°¸ì¥°¥é¥Õ¤òÆÉ¤à */
+  /* ä¸€è¡Œãšã¤ä»˜å±èªã‚°ãƒ©ãƒ•ã‚’èª­ã‚€ */
   while (!anthy_read_line(&tokens, &nr)) {
     parse_dep(tokens, nr);
     anthy_free_line();
@@ -285,10 +285,10 @@ parse_indep(char **tokens, int nr)
   }
   gRules = realloc(gRules, sizeof(struct wordseq_rule)*(nrRules+1));
 
-  /* ¹Ô¤ÎÀèÆ¬¤Ë¤ÏÉÊ»ì¤ÎÌ¾Á°¤¬Æş¤Ã¤Æ¤¤¤ë */
+  /* è¡Œã®å…ˆé ­ã«ã¯å“è©ã®åå‰ãŒå…¥ã£ã¦ã„ã‚‹ */
   gRules[nrRules].wt = anthy_init_wtype_by_name(tokens[0]);
 
-  /* ¤½¤Î¼¡¤Ë¤Ï¥Î¡¼¥ÉÌ¾¤¬Æş¤Ã¤Æ¤¤¤ë */
+  /* ãã®æ¬¡ã«ã¯ãƒãƒ¼ãƒ‰åãŒå…¥ã£ã¦ã„ã‚‹ */
   gRules[nrRules].node_id = get_node_id_by_name(tokens[1]);
 
   if (verbose) {
@@ -298,7 +298,7 @@ parse_indep(char **tokens, int nr)
   nrRules ++;
 }
 
-/** ¼«Î©¸ì¤«¤é¤ÎÁ«°ÜÉ½ */
+/** è‡ªç«‹èªã‹ã‚‰ã®é·ç§»è¡¨ */
 static int 
 init_indep_word_seq_tab(void)
 {
@@ -315,7 +315,7 @@ init_indep_word_seq_tab(void)
     printf("Failed to open indep word dict (%s).\n", fn);
     return -1;
   }
-  /* ¥Õ¥¡¥¤¥ë¤ò°ì¹Ô¤º¤ÄÆÉ¤à */
+  /* ãƒ•ã‚¡ã‚¤ãƒ«ã‚’ä¸€è¡Œãšã¤èª­ã‚€ */
   while (!anthy_read_line(&tokens, &nr)) {
     parse_indep(tokens, nr);
     anthy_free_line();
@@ -326,7 +326,7 @@ init_indep_word_seq_tab(void)
 }
 
 /*  
-    ¥Í¥Ã¥È¥ï¡¼¥¯¥Ğ¥¤¥È¥ª¡¼¥À¡¼¤Ç4byte½ñ¤­½Ğ¤¹
+    ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯ãƒã‚¤ãƒˆã‚ªãƒ¼ãƒ€ãƒ¼ã§4byteæ›¸ãå‡ºã™
 */
 static void
 write_nl(FILE* fp, int i)
@@ -403,9 +403,9 @@ write_file(const char* file_name)
 {
   int i;
   FILE* fp = fopen(file_name, "w");
-  int* node_offset = malloc(sizeof(int) * nrNodes); /* gNodes¤Î¥Õ¥¡¥¤¥ë¾å¤Î°ÌÃÖ */
+  int* node_offset = malloc(sizeof(int) * nrNodes); /* gNodesã®ãƒ•ã‚¡ã‚¤ãƒ«ä¸Šã®ä½ç½® */
 
-  /* ³Æ¥ë¡¼¥ë */
+  /* å„ãƒ«ãƒ¼ãƒ« */
   write_nl(fp, nrRules);
   for (i = 0; i < nrRules; ++i) {
     write_wtype(fp, gRules[i].wt);
@@ -425,15 +425,15 @@ write_file(const char* file_name)
 int 
 main(void)
 {
-  /* ÉÕÂ°¸ì¼­½ñ¤òÆÉ¤ß¹ş¤ó¤Ç¥Õ¥¡¥¤¥ë¤Ë½ñ¤­½Ğ¤¹ */
+  /* ä»˜å±èªè¾æ›¸ã‚’èª­ã¿è¾¼ã‚“ã§ãƒ•ã‚¡ã‚¤ãƒ«ã«æ›¸ãå‡ºã™ */
   anthy_conf_override("CONFFILE", "../anthy-conf");
   anthy_conf_override("ANTHYDIR", SRCDIR "/../depgraph/");
 
   anthy_init_wtypes();
   anthy_do_conf_init();
-  /* ÉÕÂ°¸ì¥°¥é¥Õ */
+  /* ä»˜å±èªã‚°ãƒ©ãƒ• */
   init_depword_tab();
-  /* ¼«Î©¸ì¤«¤é¤ÎÁ«°ÜÉ½ */
+  /* è‡ªç«‹èªã‹ã‚‰ã®é·ç§»è¡¨ */
   init_indep_word_seq_tab();
 
   write_file("anthy.dep");

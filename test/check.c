@@ -1,4 +1,4 @@
-/* ¥ê¥ê¡¼¥¹Á°¤Î¥Á¥§¥Ã¥¯¤ò¹Ô¤¦ */
+/* ãƒªãƒªãƒ¼ã‚¹å‰ã®ãƒã‚§ãƒƒã‚¯ã‚’è¡Œã† */
 #include <stdio.h>
 #include <stdlib.h>
 #include <anthy/anthy.h>
@@ -48,7 +48,7 @@ test1(void)
     printf("failed to create context\n");
     return 1;
   }
-  anthy_set_string(ac, "¤¢¤¤¤¦¤¨¤ª¡¢¤«¤­¤¯¤±¤³¡£");
+  anthy_set_string(ac, "ã‚ã„ã†ãˆãŠã€ã‹ããã‘ã“ã€‚");
   if (anthy_get_segment(ac, 0, NTH_UNCONVERTED_CANDIDATE, buf, 100) > 0) {
     printf("(%s)\n", buf);
   }
@@ -62,7 +62,7 @@ test1(void)
     printf("(%s)\n", buf);
   }
   anthy_release_context(ac);
-  xs = anthy_cstr_to_xstr("¤¢¤¤¤¦¤¨¤ª¤¬¤®¤°¤²¤´", 0);
+  xs = anthy_cstr_to_xstr("ã‚ã„ã†ãˆãŠãŒããã’ã”", 0);
   xs = anthy_xstr_hira_to_half_kata(xs);
   anthy_putxstrln(xs);
   return 0;
@@ -106,7 +106,7 @@ main(int argc, char **argv)
   if (test1()) {
     printf("fail (test1)\n");
   }
-  if (shake_test("¤¢¤¤¤¦¤¨¤ª¤«¤­¤¯¤±¤³")) {
+  if (shake_test("ã‚ã„ã†ãˆãŠã‹ããã‘ã“")) {
     printf("fail (shake_test)\n");
   }
   printf("done\n");

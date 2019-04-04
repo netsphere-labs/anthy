@@ -1,120 +1,120 @@
-[ �Ȥ��� ]
-�� canna �ǤλȤ����ϲ������ˤ���ޤ���
+[ 使い方 ]
+※ canna での使い方は下の方にあります。
 
 << Anthy >>
-�� �ʲ������ƤϤ��Ǥ˸Ť��ʤäƤ��ޤ���
+※ 以下の内容はすでに古くなっています。
 
-��Anthy �Υ������Ȥ����ӥ�ɤ���Ķ���ɬ�פǤ��Τǡ��ޤ�
-��������������Ƥ���������
+・Anthy のソースとそれをビルドする環境が必要ですので、まず
+　それらを準備してください。
 
-1.)��gcanna.ctd�ס�gcannaf.ctd�ס�gtankan.ctd�פ�3��
-�� �� anthy ��������� cannadic/ �ʲ��˥��ԡ�
+1.)「gcanna.ctd」「gcannaf.ctd」「gtankan.ctd」の3つ
+　 を anthy ソース内の cannadic/ 以下にコピー
 
-2.)base.t, katakana.t, placename.t �ϡ���������������
-   gcanna.ctd �˼�����Ǥ���Τǡ��Ȥ��ʤ��褦�����ޤ���
-  anthy ���������
+2.)base.t, katakana.t, placename.t は、誤りを修正した上で
+   gcanna.ctd に取り込んであるので、使われないよう外します。
+  anthy ソース内の
 
-����mkworddic/dict.args.in
-����mkworddic/Makefile.in
+　　mkworddic/dict.args.in
+　　mkworddic/Makefile.in
 
-����2�ĤΥե������ʲ��Τ褦�˽�����
-    ���Ť��С������Ǥϡ�mkworddic�פǤϤʤ�����mkanthydic��
-      �ˤ���ޤ�
+　の2つのファイルを以下のように修正。
+    ※古いバージョンでは「mkworddic」ではなく、「mkanthydic」
+      にあります
 
-��  �����Ǥ� ./configure ���Ƥ�����ϡ��������줿
-��    ��mkanthydic/dict.args
-��  ��  mkanthydic/Makefile
-����  �����������Ƥ���������
+　  ※すでに ./configure してある場合は、生成された
+　    　mkanthydic/dict.args
+　  　  mkanthydic/Makefile
+　　  の方を修正してください。
 
  < dict.args.in >
-  (��ά)
-  # set_exclude_wtypes #CN #CNS    �������ȥ�����
+  (中略)
+  # set_exclude_wtypes #CN #CNS    ←コメントアウト
   read @top_srcdir@/cannadic/gcanna.ctd
-  # clear_exclude_wtypes           �������ȥ�����
+  # clear_exclude_wtypes           ←コメントアウト
   #
   read @top_srcdir@/cannadic/gcannaf.ctd
-  read @top_srcdir@/cannadic/gtankan.ctd     ���ɲ�
-  # read @top_srcdir@/mkanthydic/katakana.t  �������ȥ�����
+  read @top_srcdir@/cannadic/gtankan.ctd     ←追加
+  # read @top_srcdir@/mkanthydic/katakana.t  ←コメントアウト
   read @top_srcdir@/mkanthydic/adjust.t
   read @top_srcdir@/mkanthydic/name.t
   read @top_srcdir@/mkanthydic/compound.t
   read @top_srcdir@/mkanthydic/extra.t
-  # read @top_srcdir@/mkanthydic/base.t       �������ȥ�����
-  # read @top_srcdir@/mkanthydic/placename.t  �������ȥ�����
+  # read @top_srcdir@/mkanthydic/base.t       ←コメントアウト
+  # read @top_srcdir@/mkanthydic/placename.t  ←コメントアウト
   # this command will make reverse dictionary
-  (��ά)
+  (中略)
 
  < Makefile.in >
-    ����CAN�פǸ����򤫤�����ᤤ�Ǥ�
-  EXTRA_DICS ���� base.t, katakana.t, placename.t
-  �Σ��Ĥ���
-��CANNADIC_DIST �ˡ�gtankan.ctd�פ��ɲ�
+    ※「CAN」で検索をかけると早いです
+  EXTRA_DICS から base.t, katakana.t, placename.t
+  の３つを削除
+　CANNADIC_DIST に「gtankan.ctd」を追加
 
-  ��:
+  例:
     EXTRA_DICS = extra.t compound.t name.t adjust.t
     ZIPCODE_DICT = zipcode.t
     CANNADIC_DIST = gcanna.ctd gcannaf.ctd gtankan.ctd
 
-���Ȥ��̾��̤�μ��ǡ�Anthy ��ӥ�ɡ����󥹥ȡ��롣
+あとは通常通りの手順で　Anthy をビルド＆インストール。
 
 
-���Ǥ� Anthy �����󥹥ȡ��뤵��Ƥ�����ϡ�������˽�Ǥ�����
-��make �ޤǤ�Ԥ���root ���¤� mkanthydic/anthy.dic ��
-/usr/share/anthy/ �� mv ������������ľ���פȤ����ΤǤ⤤��
-�Ȼפ��ޤ�(�ĤޤꡢAnthy ���Τ򥤥󥹥ȡ��뤷ľ���ΤǤϤʤ���
-��������֤�������)��
+すでに Anthy がインストールされている場合は、少々乱暴ですが、
+「make までを行い、root 権限で mkanthydic/anthy.dic を
+/usr/share/anthy/ に mv し、ログインし直す」というのでもいい
+と思います(つまり、Anthy 全体をインストールし直すのではなく、
+辞書だけ置き換える)。
 
-���� make ���Ƥ��äƼ���������ľ���������ϡ�
+一度 make してあって辞書だけ作り直したい場合は、
 
   mkanthydic/anthy.dic
   mkworddic/anthy.wdic
 
-����Ĥ�ä��Ƥ��� make ���Ʋ�������
+の二つを消してから make して下さい。
 
   mkworddic/anthy.wdic + depgraph/anthy.dep
-                      ��
+                      ↓
               mkanthydic/anthy.dic
 
-�Ȥ������ˤʤäƤ��ޤ���
+という風になっています。
 
 << Canna >>
 
-��cannadic ��Ʊ���Ǥ��Τǡ��ܤ����� orig-README.ja ����
-���������������Ǥϴ�ñ���������ޤ���
+・cannadic と同じですので、詳しくは orig-README.ja をご覧
+　下さい。ここでは簡単に説明します。
 
-1.)���Υե�����Τ���ǥ��쥯�ȥ�ǡ�
+1.)このファイルのあるディレクトリで、
      $ make maindic
-   �Ȥ���ȡ�gcanna.ctd �ΥХ��ʥ�ե����뤬��������ޤ���
+   とすると、gcanna.ctd のバイナリファイルが生成されます。
 
-2.)cannaserver ��ߤ�ޤ�
+2.)cannaserver を止めます
      $ su
      # /etc/init.d/canna stop
 
-3.) 1.)���������줿 gcanna.cbd,gcanna.cld �ڤӡ�gcannaf.ctd
-   gtankan.ctd ��4�ĤΥե������Canna �μ���ǥ��쥯�ȥ��
-   ���󥹥ȡ���(����ǥ��쥯�ȥ�Υѥ��ϴĶ��ˤ�äư㤦�Τǡ�
-   Ŭ���ѹ����Ʋ�����)��
+3.) 1.)で生成された gcanna.cbd,gcanna.cld 及び、gcannaf.ctd
+   gtankan.ctd の4つのファイルを、Canna の辞書ディレクトリに
+   インストール(辞書ディレクトリのパスは環境によって違うので、
+   適宜変更して下さい)。
      # install -o bin -g bin -m 0664 gcanna.c[bl]d /var/lib/canna/dic/canna/
 
-    ��ñ��� cp ���� chown, chmod �Ǥ��������
+    ※単純に cp して chown, chmod でももちろん可
 
-4.)Canna �μ���ǥ��쥯�ȥ�ˤ��� dics.dir �˰ʲ��ιԤ��ɲ�
+4.)Canna の辞書ディレクトリにある dics.dir に以下の行を追加
 
      gcanna.cbd(gcanna.mwd) -gcanna---
      gcanna.cld(gcanna.mwd) -gcanna---
      gcannaf.ctd(.swd) -gcannaf---
      gtankan.ctd(.swd) -gtankan---
 
-    ��dics.dir ���ɤ߼�����ѤˤʤäƤ���Τǡ��񤭹��߲Ĥ�
-      �����Խ����뤫��vi �ʤ��:w!�פǶ�����¸
+    ※dics.dir は読み取り専用になっているので、書き込み可に
+      して編集するか、vi なら「:w!」で強制保存
 
-5.)ctrl+d ���ƥ桼�����¤���ꡢ~/.canna ��ʲ��Τ褦���Խ�
+5.)ctrl+d してユーザ権限に戻り、~/.canna を以下のように編集
 
     (use-dictionary
-     "gcanna"   ; ����Ω�켭��
-     "gcannaf"  ; ����°�켭��
-     "gtankan"  ; ��ñ��������
-     ;;"iroha"  ; ����̸ߴ��ʤΤǤ��ιԤ򥳥��ȥ�����
+     "gcanna"   ; ←自立語辞書
+     "gcannaf"  ; ←付属語辞書
+     "gtankan"  ; ←単漢字辞書
+     ;;"iroha"  ; ←上位互換なのでこの行をコメントアウト
      "fuzokugo"
      "hojomwd"
      "hojoswd"
@@ -122,34 +122,34 @@
      :user "user"
      )
 
-    ��~/.canna �Ϥʤ���к�����/var/lib/canna/sample �ʲ���
-      ����������ޤ�(�ѥ��ϴĶ��ˤ�äưۤʤ�ޤ�)
+    ※~/.canna はなければ作成。/var/lib/canna/sample 以下に
+      雛型があります(パスは環境によって異なります)
 
-6.)cannaserver ��ư
+6.)cannaserver 起動
      $ su
      # /etc/init.d/canna start
 
 -----------------------------------
 
- ���� ���� ����
-   gtankan �����ʤ�"����ޥ����"���Ƥ��Ȥ�����������ͳ�ϡ�
+ ※※ 注意 ※※
+   gtankan は普段は"アンマウント"してお使い下さい。理由は、
 
-��1.) ñ���������줫����ľ�����������κݡ����ɤ�������
-��   �겾̾�������Ͽ����( cannadic �����겾̾�ʤ�)
-��     �㡡cannadic:     ������ #KJ ��
-��         alt-cannadic: �����餷�� #KJ ��
+　1.) 単漢字辞書を一から作り直したが、その際、訓読み等を送
+　   り仮名ありで登録した( cannadic は送り仮名なし)
+　     例　cannadic:     あたら #KJ 新
+　         alt-cannadic: あたらしい #KJ 新
 
-��2.) ����ȡ�Canna ��Ϣʸ���Ѵ�����ñ���������˴ޤᡢ
-��   �������Ĺ���פʤΤǡ�ñ�����ʤΤ���Ƭ�θ���ˤʤä�
-��   ���ޤ���
-��     �㡡�֤����餷���ۤ��ע��ֿ��ܤ��
-��         �֤����ˤ����ע���в�ӡ�
-��     �� Anthy ��ñ������̵���˸�������˲󤵤��餷����
-         �ǡ����Τ褦�ʤ��ȤϤʤ�
+　2.) すると、Canna は連文節変換時も単漢字を候補に含め、
+　   しかも最長一致なので、単漢字なのに先頭の候補になって
+　   しまう。
+　     例　「あたらしいほんを」→「新本を」
+　         「ここにきめる」→「于决」
+　     ※ Anthy は単漢字は無条件に後ろの方に回されるらしいの
+         で、このようなことはない
 
-��3.) �������򤹤뤿��ˤϡ�ñ������ʬ���̤ˤ��ơ����ʤ�
-��   ����ޥ���Ȥ��Ƥ�����ɬ�פʻ��˥ޥ���Ȥ���Ȥ�������
-��   ����ˡ�����ʤ�(�դˡ�ñ�������ФƤ��ʤ��Τǡ����䥦����
-     �ɥ������å��ꤹ��Ȥ������åȤ⤢��)
+　3.) これを回避するためには、単漢字部分を別にして、普段は
+　   アンマウントしておき、必要な時にマウントするという面倒
+　   な方法しかない(逆に、単漢字が出てこないので、候補ウィン
+     ドウがスッキリするというメリットもある)
 
 

@@ -1,14 +1,14 @@
 /*
- * AnthyÆâÉô¤Ç»È¤¦Ê¸»úÎó¤Î½èÍı
+ * Anthyå†…éƒ¨ã§ä½¿ã†æ–‡å­—åˆ—ã®å‡¦ç†
  *  typedef struct xstr_ {
  *    xstr *str; int len;
  *  } xstr;
  *
- * malloc(0);¤Î°ÕÌ£¤Ï¹Í¤¨¤Ê¤¤¤Ç0Ê¸»ú¤ÎÊ¸»úÎó¤ò°·¤¨¤ë¤è¤¦¤Ê
- * ¥³¡¼¥Ç¥£¥ó¥°¤ò¤¹¤ë¡£free(0)¤ÏÎÉ¤¤¡£
+ * malloc(0);ã®æ„å‘³ã¯è€ƒãˆãªã„ã§0æ–‡å­—ã®æ–‡å­—åˆ—ã‚’æ‰±ãˆã‚‹ã‚ˆã†ãª
+ * ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚°ã‚’ã™ã‚‹ã€‚free(0)ã¯è‰¯ã„ã€‚
  *
- * ¥Ç¥Õ¥©¥ë¥È¤ÎÀßÄê¤Ç¤Ï
- *  cstr¤ÏC¤ÎÉáÄÌ¤ÎEUCÊ¸»úÎó
+ * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®è¨­å®šã§ã¯
+ *  cstrã¯Cã®æ™®é€šã®EUCæ–‡å­—åˆ—
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  *
@@ -40,7 +40,7 @@
 #include <anthy/xchar.h>
 #include "diclib_inner.h"
 
-/* ²èÌÌ¤Ë½ĞÎÏ¤¹¤ë¤È¤­¤Î¥¨¥ó¥³¡¼¥Ç¥£¥ó¥° */
+/* ç”»é¢ã«å‡ºåŠ›ã™ã‚‹ã¨ãã®ã‚¨ãƒ³ã‚³ãƒ¼ãƒ‡ã‚£ãƒ³ã‚° */
 static int print_encoding;
 
 #define MAX_BYTES_PER_XCHAR 10
@@ -51,7 +51,7 @@ xc_isprint(xchar xc)
   return xc > 0;
 }
 
-/** C¤ÎÊ¸»úÎó¤ËÂĞ±ş¤¹¤ëxstr¤ÎÄ¹¤µ¤ò·×»»¤¹¤ë
+/** Cã®æ–‡å­—åˆ—ã«å¯¾å¿œã™ã‚‹xstrã®é•·ã•ã‚’è¨ˆç®—ã™ã‚‹
  */
 static int
 xlengthofcstr(const char *c)
@@ -168,7 +168,7 @@ ucs4_xstr_to_utf8(xstr *xs)
   return strdup(buf);
 }
 
-/** C¤ÎÊ¸»úÎó¤òxstr¤ËÊÑ¹¹¤¹¤ë
+/** Cã®æ–‡å­—åˆ—ã‚’xstrã«å¤‰æ›´ã™ã‚‹
  */
 xstr *
 anthy_cstr_to_xstr(const char *c, int encoding)
@@ -371,7 +371,7 @@ xstr*
 anthy_xstrcpy(xstr *dest, xstr *src)
 {
   int i;
-  /* Ê¸»úÎó¤ò¥³¥Ô¡¼ */
+  /* æ–‡å­—åˆ—ã‚’ã‚³ãƒ”ãƒ¼ */
   dest->len = src->len;
   for (i = 0; i < src->len; i++) {
     dest->str[i] = src->str[i];
@@ -379,7 +379,7 @@ anthy_xstrcpy(xstr *dest, xstr *src)
 
   return dest;
 }
-/* ÊÖ¤êÃÍ¤ÎÉä¹æ¤Ïstrcmp¤ÈÆ±¤¸ */
+/* è¿”ã‚Šå€¤ã®ç¬¦å·ã¯strcmpã¨åŒã˜ */
 int
 anthy_xstrcmp(xstr *x1, xstr *x2)
 {
@@ -406,7 +406,7 @@ anthy_xstrcmp(xstr *x1, xstr *x2)
   return 0;
 }
 
-/* ÊÖ¤êÃÍ¤ÎÉä¹æ¤Ïstrncmp¤ÈÆ±¤¸ */
+/* è¿”ã‚Šå€¤ã®ç¬¦å·ã¯strncmpã¨åŒã˜ */
 int
 anthy_xstrncmp(xstr *x1, xstr *x2, int n)
 {
@@ -446,7 +446,7 @@ anthy_xstrcat(xstr *s, xstr *a)
   }
   l = s->len + a->len;
 
-  if (l < 1) {              /* ¼­½ñ¤â¤·¤¯¤Ï³Ø½¬¥Ç¡¼¥¿¤¬²õ¤ì¤Æ¤¤¤¿»ş¤ÎÂĞºö */
+  if (l < 1) {              /* è¾æ›¸ã‚‚ã—ãã¯å­¦ç¿’ãƒ‡ãƒ¼ã‚¿ãŒå£Šã‚Œã¦ã„ãŸæ™‚ã®å¯¾ç­– */
     free(s->str);
     s->str = NULL;
     s->len = 0;
@@ -477,7 +477,7 @@ anthy_xstrtoll(xstr *x)
 {
   xchar c;
   int i;
-  long long n = 0;/* ¿ô */
+  long long n = 0;/* æ•° */
   if (!x->len || x->len > 16) {
     return -1;
   }
@@ -492,7 +492,7 @@ anthy_xstrtoll(xstr *x)
   return n;
 }
 
-/** Á´³Ñ¤Î¿ô»ú¤òÈ¾³Ñ¤Ë¤¹¤ë
+/** å…¨è§’ã®æ•°å­—ã‚’åŠè§’ã«ã™ã‚‹
  */
 xstr *
 anthy_xstr_wide_num_to_num(xstr* src_xs)
@@ -506,7 +506,7 @@ anthy_xstr_wide_num_to_num(xstr* src_xs)
   return dst_xs;
 }
 
-/** Ê¿²¾Ì¾¤ò¥«¥¿¥«¥Ê¤ËÊÑ´¹¤¹¤ë
+/** å¹³ä»®åã‚’ã‚«ã‚¿ã‚«ãƒŠã«å¤‰æ›ã™ã‚‹
  */
 xstr *
 anthy_xstr_hira_to_kata(xstr *src_xs)
@@ -516,17 +516,17 @@ anthy_xstr_hira_to_kata(xstr *src_xs)
   dst_xs = anthy_xstr_dup(src_xs);
 
   for (i = 0 ,j = 0; i < dst_xs->len; i++, j++) {
-    /* ¡Ö¤¦¡«¡×¤Î¥Á¥§¥Ã¥¯ */
+    /* ã€Œã†ã‚›ã€ã®ãƒã‚§ãƒƒã‚¯ */
     if (i < dst_xs->len - 1 && dst_xs->str[i] == HK_U
 	&& dst_xs->str[i+1] == HK_DDOT) {
-      dst_xs->str[j] = KK_VU;/* ¥ô */
+      dst_xs->str[j] = KK_VU;/* ãƒ´ */
       i++;
       continue ;
     }
     /**/
     dst_xs->str[j] = dst_xs->str[i];
     if ((anthy_ucs_to_euc(dst_xs->str[j]) & 0xff00) == 0xa400) {
-      /* ¤Ò¤é¤¬¤Ê¤À¤Ã¤¿¤é256Â­¤¹ */
+      /* ã²ã‚‰ãŒãªã ã£ãŸã‚‰256è¶³ã™ */
       dst_xs->str[j] = anthy_ucs_to_euc(dst_xs->str[j]);
       dst_xs->str[j] += 256;
       dst_xs->str[j] = anthy_euc_to_ucs(dst_xs->str[j]);
