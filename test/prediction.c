@@ -12,7 +12,7 @@ static void
 init_lib(void)
 {
   /* 既にインストールされているファイルの影響を受けないようにする */
-  anthy_conf_override("CONFFILE", "../anthy-conf");
+  anthy_conf_override("CONFFILE", "../anthy-unicode.conf");
   anthy_conf_override("DEPWORD", "master.depword");
   anthy_conf_override("DEPGRAPH", "../depgraph/anthy.dep");
   anthy_conf_override("DIC_FILE", "../mkanthydic/anthy.dic");

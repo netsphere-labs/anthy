@@ -426,7 +426,7 @@ int
 main(void)
 {
   /* 付属語辞書を読み込んでファイルに書き出す */
-  anthy_conf_override("CONFFILE", "../anthy-conf");
+  anthy_conf_override("CONFFILE", "../anthy-unicode.conf");
   anthy_conf_override("ANTHYDIR", SRCDIR "/../depgraph/");
 
   anthy_init_wtypes();

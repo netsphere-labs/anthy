@@ -235,7 +235,7 @@ anthy_do_conf_init(void)
     add_val("VERSION", VERSION);
     fn = anthy_conf_get_str("CONFFILE");
     if (!fn){
-      add_val("CONFFILE", CONF_DIR"/anthy-conf");
+      add_val("CONFFILE", CONF_DIR"/anthy-unicode.conf");
     }
     pw = getpwuid(getuid());
     add_val("HOME", pw->pw_dir);

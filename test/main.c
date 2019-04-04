@@ -111,7 +111,7 @@ init_lib(int use_utf8)
 {
   anthy_context_t ac;
   /* 既にインストールされているファイルの影響を受けないようにする */
-  anthy_conf_override("CONFFILE", "../anthy-conf");
+  anthy_conf_override("CONFFILE", "../anthy-unicode.conf");
   anthy_conf_override("HOME", TEST_HOME);
   anthy_conf_override("DIC_FILE", "../mkanthydic/anthy.dic");
   anthy_set_logger(log_print, 0);
