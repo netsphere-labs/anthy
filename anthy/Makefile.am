@@ -1,4 +1,5 @@
-pkginclude_HEADERS = anthy.h dicutil.h input.h
+anthyinclude_HEADERS = anthy.h dicutil.h input.h
+anthyincludedir = $(includedir)/$(PACKAGE)-1.0/anthy
 noinst_HEADERS = xstr.h xchar.h dic.h wtype.h\
  conf.h record.h alloc.h\
  ruleparser.h splitter.h \
