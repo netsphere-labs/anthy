@@ -2,7 +2,7 @@
 
 INCLUDES = -I$(top_srcdir)/ -DCONF_DIR=\"$(sysconfdir)\"
 
-libanthydic_la_SOURCES = \
+libanthydic_unicode_la_SOURCES = \
 	word_dic.c dic_util.c \
 	wtype.c\
 	texttrie.c textdict.c record.c\
@@ -14,6 +14,6 @@ libanthydic_la_SOURCES = \
 	ptab.h wtab.h dic_ent.h \
 	mem_dic.h dic_personality.h
 
-libanthydic_la_LIBADD = ../src-diclib/libdiclib.la
-libanthydic_la_LDFLAGS = -version-info 1:0:1
-lib_LTLIBRARIES = libanthydic.la
+libanthydic_unicode_la_LIBADD = ../src-diclib/libdiclib.la
+libanthydic_unicode_la_LDFLAGS = -version-info 1:0:1
+lib_LTLIBRARIES = libanthydic-unicode.la

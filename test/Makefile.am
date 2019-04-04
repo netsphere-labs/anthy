@@ -9,8 +9,8 @@ noinst_PROGRAMS = anthy checklib
 anthy_SOURCES = main.c
 checklib_SOURCES = check.c
 
-anthy_LDADD = ../src-util/libconvdb.la ../src-main/libanthy.la ../src-worddic/libanthydic.la
-checklib_LDADD = ../src-main/libanthy.la ../src-worddic/libanthydic.la
+anthy_LDADD = ../src-util/libconvdb.la ../src-main/libanthy-unicode.la ../src-worddic/libanthydic-unicode.la
+checklib_LDADD = ../src-main/libanthy-unicode.la ../src-worddic/libanthydic-unicode.la
 
 mostlyclean-local:
 	-rm -rf .anthy*
