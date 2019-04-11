@@ -1,7 +1,18 @@
-dnl Process this file with autoconf to produce a configure script.
-AC_INIT(src-main/main.c)
+m4_define([anthy_released], [0])
+m4_define([anthy_major_version], [1])
+m4_define([anthy_minor_version], [0])
+m4_define([anthy_micro_version], [0])
+m4_define(anthy_maybe_datestamp,
+    m4_esyscmd([if test x]anthy_released[ != x1; then date +.%Y%m%d | tr -d '\n\r'; fi]))
 
-AM_INIT_AUTOMAKE(anthy-unicode, 10000)
+m4_define([anthy_version],
+    anthy_major_version.anthy_minor_version.anthy_micro_version[]anthy_maybe_datestamp)
+
+AC_INIT([anthy-unicode], [anthy_version],
+        [https://github.com/fujiwarat/anthy-unicode/issues],
+        [anthy-unicode])
+
+AM_INIT_AUTOMAKE([1.10])
 AM_CONFIG_HEADER(config.h)
 AC_CONFIG_MACRO_DIR(m4)
 
