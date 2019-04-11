@@ -1391,9 +1391,9 @@ open_tmp_in_recorddir(void)
   const char *hd;
   const char *sid;
   sid = anthy_conf_get_str("SESSION-ID");
-  hd = anthy_conf_get_str("HOME");
-  pn = alloca(strlen(hd)+strlen(sid) + 10);
-  sprintf(pn, "%s/.anthy/%s", hd, sid);
+  hd = anthy_get_user_dir(0);
+  pn = alloca(strlen(hd)+strlen(sid) + 2);
+  sprintf(pn, "%s/%s", hd, sid);
   return fopen(pn, "w");
 }
 
@@ -1406,11 +1406,11 @@ update_file(const char *fn)
   const char *hd;
   char *tmp_fn;
   const char *sid;
-  hd = anthy_conf_get_str("HOME");
+  hd = anthy_get_user_dir(0);
   sid = anthy_conf_get_str("SESSION-ID");
-  tmp_fn = alloca(strlen(hd)+strlen(sid) + 10);
+  tmp_fn = alloca(strlen(hd)+strlen(sid) + 2);
 
-  sprintf(tmp_fn, "%s/.anthy/%s", hd, sid);
+  sprintf(tmp_fn, "%s/%s", hd, sid);
   if (rename(tmp_fn, fn)){
     anthy_log(0, "Failed to update record file %s -> %s.\n", tmp_fn, fn);
   }
@@ -2020,18 +2020,18 @@ anthy_init_record(void)
 static void
 setup_filenames(const char *id, struct record_stat *rst)
 {
-  const char *home = anthy_conf_get_str("HOME");
-  int base_len = strlen(home) + strlen(id) + 10;
+  const char *home = anthy_get_user_dir(0);
+  int base_len = strlen(home) + strlen(id) + 5;
 
   /* 基本ファイル */
   rst->base_fn = (char*) malloc(base_len +
-				strlen("/.anthy/last-record1_"));
-  sprintf(rst->base_fn, "%s/.anthy/last-record1_%s",
+				strlen("/last-record1_"));
+  sprintf(rst->base_fn, "%s/last-record1_%s",
 	  home, id);
   /* 差分ファイル */
   rst->journal_fn = (char*) malloc(base_len +
-				   strlen("/.anthy/last-record2_"));
-  sprintf(rst->journal_fn, "%s/.anthy/last-record2_%s",
+				   strlen("/last-record2_"));
+  sprintf(rst->journal_fn, "%s/last-record2_%s",
 	  home, id);
 }
 

@@ -264,5 +264,7 @@ anthy_conf_get_str(const char *var)
 {
   struct val_ent *e;
   e = find_val_ent(var);
+  if (!e->val && var)
+    return getenv (var);
   return e->val;
 }
