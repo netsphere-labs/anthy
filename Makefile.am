@@ -1,5 +1,13 @@
 AUTOMAKE_OPTIONS =
-EXTRA_DIST = README.en DIARY anthy-unicode.conf.in anthy-unicode-test.conf.in anthy-unicode.spec.in anthy-unicode.pc.in Doxyfile
+EXTRA_DIST = \
+    ChangeLog-old \
+    DIARY \
+    Doxyfile \
+    README.en \
+    anthy-unicode.conf.in anthy-unicode-test.conf.in \
+    anthy-unicode.pc.in \
+    anthy-unicode.spec.in \
+    $(NULL)
 
 SRCDIR = src-diclib src-worddic src-splitter src-ordering src-main src-util
 
@@ -21,3 +29,8 @@ update_params0:
 update_params2:
 	make -C calctrans update_params2
 	make
+
+dist-hook:
+	if test -d .git ; then \
+	    git log --name-status --date=iso > $(distdir)/ChangeLog ; \
+	fi
