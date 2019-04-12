@@ -21,6 +21,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <anthy/filemap.h>
+#include <anthy/logger.h>
 #include <anthy/textdict.h>
 #include "dic_main.h"
 
@@ -112,6 +113,7 @@ anthy_textdict_scan(struct textdict *td, int offset, void *ptr,
 		    int (*fun)(void *, int, const char *, const char *))
 {
   FILE *fp;
+  const char *old_path;
   char buf[1024];
   if (!td) {
     return ;
@@ -119,6 +121,14 @@ anthy_textdict_scan(struct textdict *td, int offset, void *ptr,
   fp = fopen(td->fn, "r");
   if (!fp) {
     return ;
+  }
+  old_path = anthy_get_user_dir (1);
+  if (!strncmp (td->fn, old_path, strlen (old_path))) {
+    anthy_log (
+      0,
+      "WARNING: Please move the old dict file %s to the new directory %s\n",
+      td->fn,
+      anthy_get_user_dir (0));
   }
   if (fseek(fp, offset, SEEK_SET)) {
     fclose(fp);
