@@ -1,3 +1,9 @@
+anthy (1:0.3-8.1) UNRELEASED; urgency=medium
+
+  * d/p/0002-new-Japanese-era-reiwa-entry.patch: Reiwa entry
+
+ -- NOKUBI Takatsugu <knok@daionet.gr.jp>  Sat, 20 Apr 2019 16:34:38 +0900
+
 anthy (1:0.3-8) unstable; urgency=medium
 
   * debian/patches/0001-work-with-emacs-24.3.1.patch: Re-add from
