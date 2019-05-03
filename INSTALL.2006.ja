@@ -1,34 +1,34 @@
 This document is written in Japanese(EUC-JP).
 
-�ܥ��եȥ������γ��פˤĤ��Ƥ�README���ɤߤ���������
+本ソフトウェアの概要についてはREADMEをお読みください。
 
-(1)���󥹥ȡ����ɬ�פʤ��
-(2)���󥹥ȡ���μ��
-(3)���󥹥ȡ��뤵���ե�����
-(4)���󥤥󥹥ȡ���μ��
-(5)��­
+(1)インストールに必要なもの
+(2)インストールの手順
+(3)インストールされるファイル
+(4)アンインストールの手順
+(5)補足
 
 
-(1)���󥹥ȡ����ɬ�פʤ��
- ����ѥ���������ӡ�emacs
+(1)インストールに必要なもの
+ コンパイラ等および、emacs
 
-(2)���󥹥ȡ���μ��
-�Ƽ�ץ���������ޤ���
+(2)インストールの手順
+各種プログラムを作ります。
 $ ./configure
 $ make
 
-���ޤ��Ǥ�����
+うまくできたら
 $ su
 # make install
-�ǥ��󥹥ȡ��뤷�ޤ���
+でインストールします。
 
-���뤤�ϥƥ��ȥץ�������¹Ԥ��ޤ���
+あるいはテストプログラムを実行します。
 $ cd test
 $ ./anthy
 
-emacs����Ȥ�����doc/ELISP�򻲾Ȥ��Ƥ���������
+emacsから使う場合はdoc/ELISPを参照してください．
 
-(3)���󥹥ȡ��뤵���ե�����
+(3)インストールされるファイル
 bin/anthy-dic-tool
 bin/anthy-agent
 bin/anthy-morphological-analyzer
@@ -52,17 +52,17 @@ lib/libanthydic.{a,so}
 lib/pkgconfig/anthy.pc
 etc/anthy-conf
 
-(4)���󥤥󥹥ȡ���μ��
- ����ѥ����Ԥä��ǥ��쥯�ȥ�� su ; make uninstall ��Ԥ���
- (3)�ǽҤ٤��ե�������ư�Ǿä��Ƥ���������
- �ƸĿͤ������~/.anthy/�ʲ��ˤ���ΤǤ����ä��Ƥ���������
+(4)アンインストールの手順
+ コンパイルを行ったディレクトリで su ; make uninstall を行うか
+ (3)で述べたファイルを手動で消してください。
+ 各個人の履歴は~/.anthy/以下にあるのでそれも消してください。
 
-(5)��­
---����--
- �ä˥��ץ�������ꤻ����configure��Ԥ��Ⱥ������줿
- �饤�֥���/usr/local/lib �˥��󥹥ȡ��뤵��ޤ���
- ¿���Υǥ����ȥ�ӥ塼�����ϥǥե���Ȥ�����Ǥ�/usr/local/lib��
- ���������ɥ饤�֥����ɤߤޤ���
- */etc/ld.so.conf �� /usr/local/lib ���ɲä��� ldconfig��Ԥ���
- *�Ķ��ѿ� LD_LIBRARY_PATH�� /usr/local/lib �򥻥åȤ��롣
- �Τ����줫����ˡ�ǲ�褹�뤳�Ȥ��Ǥ��ޤ���
+(5)補足
+--注意--
+ 特にオプションを指定せずにconfigureを行うと作成された
+ ライブラリは/usr/local/lib にインストールされますが
+ 多くのディストリビューションはデフォルトの設定では/usr/local/libの
+ シェアードライブラリを読みません。
+ */etc/ld.so.conf に /usr/local/lib を追加して ldconfigを行う。
+ *環境変数 LD_LIBRARY_PATHに /usr/local/lib をセットする。
+ のいずれかの方法で解決することができます。
