@@ -8,7 +8,7 @@
  * コーディングをする。free(0)は良い。
  *
  * デフォルトの設定では
- *  cstrはCの普通のEUC文字列
+ *  cstrはCの普通の文字列 (UTF-8 or EUC)
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  *
@@ -51,7 +51,7 @@ xc_isprint(xchar xc)
   return xc > 0;
 }
 
-/** Cの文字列に対応するxstrの長さを計算する
+/** C文字列(encoding=euc)に対応するxstrの長さを計算する
  */
 static int
 xlengthofcstr(const char *c)
@@ -168,7 +168,7 @@ ucs4_xstr_to_utf8(xstr *xs)
   return strdup(buf);
 }
 
-/** Cの文字列をxstrに変更する
+/** Cの文字列をencodingに従いxstrに変更する
  */
 xstr *
 anthy_cstr_to_xstr(const char *c, int encoding)
@@ -176,8 +176,10 @@ anthy_cstr_to_xstr(const char *c, int encoding)
   xstr *x;
   int i, j, l;
   if (encoding == ANTHY_UTF8_ENCODING) {
+    /* Cの文字列 encoding=UTF-8 */
     return utf8_to_ucs4_xstr(c);
   }
+  /* Cの文字列 encoding=EUC */
   l = xlengthofcstr(c);
   x = (xstr *)malloc(sizeof(struct xstr_));
   if (!x) {
