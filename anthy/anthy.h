@@ -40,10 +40,10 @@ typedef struct anthy_context *anthy_context_t;
 #define NTH_KATAKANA_CANDIDATE -2
 #define NTH_HIRAGANA_CANDIDATE -3
 #define NTH_HALFKANA_CANDIDATE -4
-/* encoding constants */
+/* encoding constants, now console is UTF-8 */
 #define ANTHY_COMPILED_ENCODING 0
+#define ANTHY_UTF8_ENCODING ANTHY_COMPILED_ENCODING
 #define ANTHY_EUC_JP_ENCODING 1
-#define ANTHY_UTF8_ENCODING 2
 /* reconvert mode */
 #define ANTHY_RECONVERT_AUTO 0
 #define ANTHY_RECONVERT_DISABLE 1
