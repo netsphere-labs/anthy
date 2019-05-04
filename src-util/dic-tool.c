@@ -56,6 +56,7 @@
  " --load: Load dictionary\n"\
  " --append: Append dictionary\n"\
  " --utf8: Use utf8 encoding\n"\
+ " --euc: Use EUC-JP encoding\n"\
  " --personality=NAME: use NAME as a name of personality\n"
 
 
@@ -130,9 +131,6 @@ print_usage_text(void)
     return ;
   }
   fprintf(stdout, "#" PACKAGE " " VERSION "\n");
-  if (encoding == ANTHY_UTF8_ENCODING) {
-  } else {
-  }
   /* そのままファイルの内容を出力 */
   while (fgets(buf, 256, fp)) {
     if (encoding == ANTHY_EUC_JP_ENCODING) {
@@ -399,7 +397,9 @@ parse_args(int argc, char **argv)
 	personality = &opt[12];
       } else if (!strcmp(opt, "utf8")) {
 	encoding = ANTHY_UTF8_ENCODING;
-      } else if (!strcmp(opt, "eucjp")) {
+      } else if (!strcmp(opt, "euc")) {
+	encoding = ANTHY_EUC_JP_ENCODING;
+      } else if (!strcmp(opt, "eucjp")) { /* backward compatibility */
 	encoding = ANTHY_EUC_JP_ENCODING;
       } else if (!strcmp(opt, "load")) {
 	command = LOAD_DIC;

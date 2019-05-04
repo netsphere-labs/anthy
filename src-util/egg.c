@@ -69,10 +69,12 @@ new_context (void)
 	c->selection = NULL;
 	return -1;
       }
-      if (!use_utf8)
-	anthy_context_set_encoding(c->ac, ANTHY_EUC_JP_ENCODING);
-      else
+      if (use_utf8) {
 	anthy_context_set_encoding(c->ac, ANTHY_UTF8_ENCODING);
+      }
+      else {
+	anthy_context_set_encoding(c->ac, ANTHY_EUC_JP_ENCODING);
+      }
 
       c->buflen = INITIAL_BUFLEN;
       c->sellen = INITIAL_SELLEN;

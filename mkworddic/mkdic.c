@@ -1049,6 +1049,9 @@ set_dict_encoding(struct mkdic_stat *mds, const char *enc)
   if (!strcmp(enc, "utf8")) {
     mds->yl.body_encoding = ANTHY_UTF8_ENCODING;
   }
+  if (!strcmp(enc, "euc")) {
+    mds->yl.body_encoding = ANTHY_EUC_JP_ENCODING;
+  }
 }
 
 static void
@@ -1057,7 +1060,10 @@ set_input_encoding(struct mkdic_stat *mds, const char *enc)
   if (!strcmp(enc, "utf8")) {
     mds->input_encoding = ANTHY_UTF8_ENCODING;
   }
-  if (!strcmp(enc, "eucjp")) {
+  if (!strcmp(enc, "euc")) {
+    mds->input_encoding = ANTHY_EUC_JP_ENCODING;
+  }
+  if (!strcmp(enc, "eucjp")) { /* backward compatibility */
     mds->input_encoding = ANTHY_EUC_JP_ENCODING;
   }
 }

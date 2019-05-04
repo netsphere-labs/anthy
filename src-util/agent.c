@@ -1091,6 +1091,8 @@ parse_args(int argc, char **argv)
       egg = 1;
     } else if (!strncmp("--personality=", str, 14)) {
       personality = &str[14];
+    } else if (!strcmp("--utf8", str)) {
+      use_utf8 = 1;
     } else if (!strcmp("--euc", str)) {
       use_utf8 = 0;
     } else if (i < argc - 1) {
