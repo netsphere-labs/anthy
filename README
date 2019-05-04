@@ -8,9 +8,13 @@ Anthy is a library for Japanese Kana-Kanji conversion, targeted for
 Japanese text input.
 
 See following page for Anthy development:
-	http://wiki.debian.org/Teams/DebianAnthy
-	http://git.debian.org/?p=pkg-anthy/anthy.git;a=summary
-
+  * http://wiki.debian.org/Teams/DebianAnthy
+  * https://salsa.debian.org/debian/anthy
+  * git with https: https://salsa.debian.org/debian/anthy.git
+  * git with ssh:   git@salsa.debian.org:debian/anthy.git
+      master -- upstream working branch without auto-generated files
+      upstream -- branch tracking the upstream tarball (gbp)
+      debian -- debian packaging branch (gbp)
 
 What's New?
 ===========
@@ -73,9 +77,50 @@ generated.
          (7) calctrans/anthy.weak_words
           ---[mkanthydic/mkfiledic]--->anthy.dic
 
-Note that we need "initial anthy.dic" to generate anthy.dic, that's
-because 'proccorpus' uses Anthy Dictionary to parse text input.
+Here, mkanthydic/mkfiledic roughly concatenates all input files into a
+single file.
 
+Note that:
+
+ 0. Minimalistic anthy.dic may be created simply with (1) depgraph/anthy.dep
+    and (2) mkworddic/anthy.wdic to bootstrap anthy.dic by running mkfiledic
+    with "-i" option.
+ 1. The quality of anthy.dic can be improved by training it with corpus files.
+    This is iterative process which requires "initial anthy.dic" for each
+    iteration.  Training result files are (3.1) corpus_info and (3.2)
+    weak_words.
+ 2. These training result files are analyzed to create learning result summary
+    files (3)...(7) which are used as the updated dictionary data.
+ 3. All the dictionary data files (1)...(7) are concatenated to form
+    a single updated anthy.dic.  This can be used as "initial anthy.dic" for
+    the next iteration. (loop back to step 1)
+
+Thus you need a few iterations to generate a decent quality anthy.dic from a
+scratch, e.g.:
+
+  0 -> 1 -> 2 -> 3 -> [ 1 -> 2 -> 3 ]... -> 1 -> 2 -> 3
+
+If you configure source with "./configure --enable-maintainer-mode ...", the
+above iteration process is enabled.  (Currently, 3 times.  You can adjust this
+by the target "anthy.dic:" in mkanthydic/Makefile.am.  If anthy.dic5 is used
+instead of anthy.dic3, it iterates 5 times.)
+
+For the distribution packaging, you can use normal mode build without using
+"--enable-maintainer-mode" option.  This is because the upstream release
+tarball should contain pre-calculated corpus_info and weak_words files.
+(These pre-calculated files should not committed to the master branch)
+
+  0 -> upstream corpus_info and weak_word -> 2 -> 3
+
+Minor update such as adding a new word to dictionary can also be done by simply
+adding corresponding entries to any one of the *.t, *.ctd, or udict without
+using "--enable-maintainer-mode" option :
+
+  add entry to dictionary -> 0 -> upstream corpus_info and weak_word -> 2 -> 3
+
+If you make major updates such as adding POS, please make sure to run the full
+build procedure with several iterations with using "--enable-maintainer-mode"
+option and commit its training result files.
 
 Licensing
 =========
@@ -112,6 +157,8 @@ git.debian.org, put some of released versions of Anthy and Debian
 packaging code into the repository, and took over the development
 lead.  At alioth.debian.org, pkg-anthy project was created for Anthy
 development and Debian packaging for Anthy and related packages.
+
+Since alioth deprecation, git repository has been moved to salsa,
 
 
 Authors & Credits

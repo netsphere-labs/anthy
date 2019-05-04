@@ -31,8 +31,11 @@ anthy-dic-toolはユーザーの辞書を人間に読める形式(以下これ�
 *--append
  標準入力から辞書の外部形式を読み込んで，自分の辞書に追加する
 
+*--euc
+ EUC-JPエンコーディングを用いる
+
 *--utf8
- UTF8エンコーディングを用いる
+ UTF-8エンコーディングを用いる
 
 *--personality=name
  --persnoalityをnameに設定する

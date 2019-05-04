@@ -14,7 +14,7 @@ anthy_segment_stat 文節の状態を得るために用いる
 anthy_prediction_stat 予測候補の数を得ることができる
 anthy_context_t 変換のコンテキストを識別するために用いる
  ポインタ型である
-char * デフォルトではエンコードにはEUC-JPを利用する。
+char * デフォルトではエンコードにはUTF-8を利用する。
 
 * 関数の概説 *
 初期化関数
@@ -106,7 +106,7 @@ char * デフォルトではエンコードにはEUC-JPを利用する。
  返り値: 成功時には0、失敗時には-1
  *変換コンテキストに文字列を設定する。
  *そのコンテキストに関連するそれまでの情報は破棄される。
- *strはEUC-JPで与える。
+ *strは基本UTF-8で与える。(ac->encodingを設定するとEUC-JPも可能)
  *漢字かな混じり文を渡した場合、各漢字を一旦ひらがなに変換した上で
   再変換を行う。
 
@@ -190,13 +190,13 @@ char * デフォルトではエンコードにはEUC-JPを利用する。
  引数: ac コンテキスト
        encoding エンコーディング
        encodingには次のいずれかの定数を指定する。
-       ANTHY_COMPILED_ENCODING (現時点では動作は不定)
-       ANTHY_EUC_JP_ENCODING EUC-JPを使用します
-       ANTHY_UTF8_ENCODING UTF8を使用します
+       ANTHY_UTF8_ENCODING UTF8を使用します{0)
+       ANTHY_EUC_JP_ENCODING EUC-JPを使用します(1)
+       ANTHY_COMPILED_ENCODING (現時点ではANTHY_UTF8_ENCODINGと同じ)
  返り値: 設定されたエンコーディング
  *変換コンテキストのAPI呼び出しに使用する文字列のエンコーディングを
   指定する。
- *デフォルトではANTHY_EUC_JP_ENCODINGが指定された状態で動作する
+ *デフォルトではANTHY_UTF8_ENCODINGが指定された状態で動作する
 
 
  int anthy_print_context(anthy_context_t ac);

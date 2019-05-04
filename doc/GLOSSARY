@@ -124,7 +124,7 @@ wtype:
 	単語の型情報 -> doc/POSを見よう
 
 xchar:
-	文字(EUC-JPのコード)
+	文字(UCS-4のコード)
 
 xstr:
 	文字列(長さとxcharへのポインタを持つ)
@@ -135,7 +135,7 @@ xstr:
 
 ** xchar **
 anthyではxcharという独自の文字型を作って文字を扱うようにしている。
-xcharは現時点では32bitでUCS4もしくはASCIIのコードが入っている。
+xcharは現時点では32bitでUCS-4コードが入っている。
 
 
 ** context **
