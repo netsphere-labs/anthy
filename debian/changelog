@@ -1,4 +1,4 @@
-anthy (1:0.3-8.1) UNRELEASED; urgency=medium
+anthy (1:0.3-8.1) unstable; urgency=medium
 
   * d/p/0002-new-Japanese-era-reiwa-entry.patch: Reiwa entry
 
