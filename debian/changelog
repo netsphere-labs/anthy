@@ -1,3 +1,12 @@
+anthy (1:0.3-9) experimental; urgency=medium
+
+  * Use UTF-8 for zipcode bug fix. Closes: #927074
+  * Convert depgraph/master.depword to UTF-8. Closes: #923948
+  * Update corpus_info and weak_words after fixing
+    encoding for test/* and calctrans/*. Closes: #928890
+
+ -- Osamu Aoki <osamu@debian.org>  Mon, 13 May 2019 22:57:09 +0900
+
 anthy (1:0.3-8.1) unstable; urgency=medium
 
   * d/p/0002-new-Japanese-era-reiwa-entry.patch: Reiwa entry
