@@ -1,0 +1,54 @@
+From: Osamu Aoki <osamu@debian.org>
+Date: Sat, 4 May 2019 15:17:36 +0900
+Subject: UTF-8 as default encoding (essential change) (code)
+
+Uninitialized variable such as encoding is 0, thus
+ANTHY_UTF8_ENCODING ANTHY should use 0.
+
+Although this problem was spotted for the code in test/*,
+the most significant problem was the code in calctrans/*
+which does statistics.
+
+This problem was identified while trying to rebuild of
+anthy.dep.  With this fix, first conversion candidate improved a lot.
+
+https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=928890
+
+0.3-8.1 (Before)
+世武藤よ位。
+同様で素。
+なくなるか名
+なる歩度。
+読むと良い。
+同様で酢。
+同様です。
+同様です。
+somehow some conversion improves but initial one is very bad.
+
+0.3-9 (After)
+読むとよい。
+同様です。
+Quite reasonable.
+
+Signed-off-by: Osamu Aoki <osamu@debian.org>
+---
+ anthy/anthy.h | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/anthy/anthy.h b/anthy/anthy.h
+index 7bcb212..c006250 100644
+--- a/anthy/anthy.h
++++ b/anthy/anthy.h
+@@ -40,10 +40,10 @@ typedef struct anthy_context *anthy_context_t;
+ #define NTH_KATAKANA_CANDIDATE -2
+ #define NTH_HIRAGANA_CANDIDATE -3
+ #define NTH_HALFKANA_CANDIDATE -4
+-/* encoding constants */
++/* encoding constants, now console is UTF-8 */
+ #define ANTHY_COMPILED_ENCODING 0
++#define ANTHY_UTF8_ENCODING ANTHY_COMPILED_ENCODING
+ #define ANTHY_EUC_JP_ENCODING 1
+-#define ANTHY_UTF8_ENCODING 2
+ /* reconvert mode */
+ #define ANTHY_RECONVERT_AUTO 0
+ #define ANTHY_RECONVERT_DISABLE 1
