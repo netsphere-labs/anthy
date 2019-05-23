@@ -173,7 +173,7 @@ main(int argc, char **argv)
     else
       read_db(db, argv[i]);
 
-  anthy_conf_override("CONFFILE", "../anthy-conf");
+  anthy_conf_override("CONFFILE", "../anthy-test-conf");
   anthy_conf_override("DIC_FILE", dic);
   anthy_init();
   anthy_set_personality("");
