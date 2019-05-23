@@ -35,7 +35,7 @@ in anthy-conf.in (usually it's under /etc/anthy directory).
     ----------------------------------------------------------------
     ANTHYDIR       /usr/share/anthy                # Directory 
     DIC_FILE       /usr/share/anthy/anthy.dic      # Dictionary file
-    ZIPDICT        /usr/share/anthy/dic/zipcode.t  # Zipcode file
+    ZIPDICT_EUC    /usr/share/anthy/dic/zipcode.t  # Zipcode file
 
 
 Anthy Dictionary (anthy.dic)
