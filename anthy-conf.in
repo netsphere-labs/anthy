@@ -4,4 +4,4 @@ datarootdir @datarootdir@
 datadir @datadir@
 ANTHYDIR @datadir@/anthy/
 DIC_FILE @datadir@/anthy/anthy.dic
-ZIPDICT_EUC @datadir@/anthy/zipcode.t
+ZIPDICT @datadir@/anthy/zipcode.t
