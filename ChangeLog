@@ -1,4 +1,4 @@
-2015-04-28  NIIBE Yutaka  <gniibe@fsij.org>
+2015-04-28  NIIBE Yutaka  <gniibe@fsij.org> 78a00ff
 
     * configure.ac: Version 0.3.
     * src-main/Makefile.am (version-info): Bump to 2:2:1.
