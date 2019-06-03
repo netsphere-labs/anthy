@@ -1,3 +1,208 @@
+2019-06-04 Osamu Aoki <osamu@debian.org> ee4b6be
+
+  * update ChangeLog from git log
+
+2019-06-04 Osamu Aoki <osamu@debian.org> 0b517d6
+
+  * Updated README and INSTALL
+
+    Describe the exact procedure to release the new upstream tarball.
+
+2019-06-04 Osamu Aoki <osamu@debian.org> ccd8c4f
+
+  * Update autotool settings for 0.4 release
+
+    Update Makefile.am to ensure all required files are included.
+
+2019-06-04 Osamu Aoki <osamu@debian.org> c71139a
+
+  * Update ChangeLog helper script
+
+    Insert a blank line after the subject line Drop line with
+    "Signed-off-by:".
+
+2019-06-02 Osamu Aoki <osamu@debian.org> 72bc545
+
+  * Fix typo in INSTALL
+
+    Also remind to use --set-maintainer-mode to get updated dictionary
+    data.
+
+2019-06-02 Osamu Aoki <osamu@debian.org> 648f147
+
+  * Update zipcode.t using data from skkdic-20190217
+
+    zipcode dictionary in skkdic is based on the latest address with
+    nice touch ups such as Kyoto city address oddities.
+
+    So let's replace it.
+
+2019-06-01 Osamu Aoki <osamu@debian.org> bdd71e4
+
+  * Ignore problematic line to avoid infinite loop
+
+    Revert "Work around non-optimal corpus"
+
+    This reverts commit d6b113f60d79a81df632521b067441b951c8d466 to the
+    test data while adding a protective code.
+
+2019-05-24 Osamu Aoki <osamu@debian.org> a11cdd7
+
+  * Update Makefile.am
+
+    * Match rename of README_euc.txt to README.txt
+
+2019-05-24 Osamu Aoki <osamu@debian.org> c454b32
+
+  * Update document files (doc only)
+
+    * Now UTF-8 is default for cstr content.
+     (Non-default encoding of EUC-JP may be available by setting --euc.)
+    * Update doc/POS to the current path (doc only)
+     include/* --> anthy/*
+    * Mentions MAINTAINER_MODE
+
+2019-05-24 Osamu Aoki <osamu@debian.org> f7e1609
+
+  * Harmonize UTF-8 / EUCJP selection
+
+    * Now, the default encoding is UTF-8, so initialize as use_utf8=1
+    * Some commands which used to use --utf8 needs to use --euc
+     instead to set them work with the non-default EUCJP data.
+
+2019-05-24 Osamu Aoki <osamu@debian.org> 444782e
+
+  * Add updateLog.sh
+
+    This is a helper script to update ChangeLog for releasing tarball.
+
+2019-05-24 Osamu Aoki <osamu@debian.org> 5c9ca37
+
+  * Add git commit hash to ChangeLog
+
+
+2019-05-23 Osamu Aoki <osamu@debian.org> aab3032
+
+  * Convert document files (*.ja) into UTF-8 (doc only)
+
+2019-05-23 Osamu Aoki <osamu@debian.org> d535446
+
+  * Update src-diclib/xstr.c (comment only)
+
+    Update encoding situation and clarify code path usage.
+
+2019-05-23 Osamu Aoki <osamu@debian.org> 337fb9d
+
+  * Update anthy/input.h (comment only)
+
+    Comments are now in UTF-8
+
+2019-05-23 Osamu Aoki <osamu@debian.org> 52940c1
+
+  * Convert src-util/input.c to UTF-8 (comment only)
+
+2019-05-23 Osamu Aoki <osamu@debian.org> d08834a
+
+  * Update Makefile.am
+
+      * Update Makefile.am to list current file name: gcanna.t
+
+2019-05-23 Osamu Aoki <osamu@debian.org> d6b113f
+
+  * Work around non-optimal corpus
+
+     * This one line caused infinite loop. This shall be reverted
+      after the code in calctrans/* is properly updated.
+
+2019-05-23 Osamu Aoki <osamu@debian.org> 7b64bba
+
+  * Use in-source files via ../anthy-test-conf
+
+    I realize, this is build time script.  So it should use in source
+    dictionary data via ../anthy-test-conf.
+
+2019-05-23 Osamu Aoki <osamu@debian.org> e2ba078
+
+  * UTF-8 as default encoding (essential change) (code)
+
+    Uninitialized variable such as encoding is 0, thus 
+    ANTHY_UTF8_ENCODING ANTHY should use 0.
+
+    Although this problem was spotted for the code in test/*, the most
+    significant problem was the code in calctrans/* which does
+    statistics.
+
+    This problem was identified while trying to rebuild of anthy.dep. 
+    With this fix, first conversion candidate improved a lot.
+
+    https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=928890
+
+    0.3-8.1 (Before)
+    世武藤よ位。
+    同様で素。
+    なくなるか名
+    なる歩度。
+    読むと良い。
+    同様で酢。
+    同様です。
+    同様です。 somehow some conversion improves but initial one is very
+    bad.
+
+    0.3-9 (After)
+    読むとよい。
+    同様です。 Quite reasonable.
+
+2019-05-23 Osamu Aoki <osamu@debian.org> fd5310a
+
+  * Convert depgraph/master.depword to UTF-8 (data)
+
+    This is very odd to see this data file content in non UTF-8 format. 
+    Let's converted this to UTF-8.
+
+    This should change behavior of anthy at least for
+     @接続詞 "" Sy@ Sy@間投助詞
+
+    Since other entries are mostly commented out, this damage was 
+    relatively small.  EUC-JP and UTF-8 encoding mixed.  So this part of
+    depword is broken as it was.
+
+2019-05-23 NOKUBI Takatsugu <knok@daionet.gr.jp> d6b0440
+
+  * New Japanese era reiwa entry
+
+2019-05-23 NOKUBI Takatsugu <knok@daionet.gr.jp> dd928f9
+
+  * Work with emacs 24.3.1
+
+2019-05-23 Osamu Aoki <osamu@debian.org> 8ed2d0d
+
+  * Revert "Revert from ZIPDICT to ZIPDICT_EUC"
+
+    This reverts commit 158cc8971d158f58568721638e76f2f3985239f6.
+
+2019-05-23 Osamu Aoki <osamu@debian.org> 6baa992
+
+  * Exactly match with the 0.3 released tarball
+
+     * Add the new Changelog file from the upstream 0.3 tarball
+      released to Debian buster.
+    * This commit exactly matches what should have been 0.3 tarball.
+
+2019-05-23 Osamu Aoki <osamu@debian.org> 158cc89
+
+  * Revert from ZIPDICT to ZIPDICT_EUC
+
+     * Revert from ZIPDICT to ZIPDICT_EUC to match with the
+      code in the upstream 0.3 tarball released to Debian buster.
+      This partially revert commit: 97f5ef0 ("Use UTF-8 for zipcode
+      conversion.", 2015-04-28).
+
+2019-05-23 Osamu Aoki <osamu@debian.org> e8533e9
+
+  * Add .gitignore
+
+     * List all autotool generated files in .gitignore
+
 2015-04-28  NIIBE Yutaka  <gniibe@fsij.org> 78a00ff
 
     * configure.ac: Version 0.3.
