@@ -19,10 +19,25 @@ From Git repository (master branch)
 Libtool, Automake, Autoconf are required.
 
   $ ./autogen.sh
-  $ ./configure --set-maintainer-mode
+  $ ./configure --enable-maintainer-mode
   $ make
   $ make install
 
 (Before doing install you might need to become root.)
+
+Make release tarball from Git repository (master branch)
+---------------------------------------------------------
+
+Libtool, Automake, Autoconf are required.
+
+  * Bump release version in configure.ac
+  * Update ChangeLog with updateLog.sh
+  * Commit all to git repo
+
+Then:
+  $ ./autogen.sh
+  $ ./configure --enable-maintainer-mode
+  $ make
+  $ make dist
 
 -- 

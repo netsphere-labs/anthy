@@ -16,6 +16,28 @@ See following page for Anthy development:
       upstream -- branch tracking the upstream tarball (gbp)
       debian -- debian packaging branch (gbp)
 
+Note to Developers
+==================
+
+For contributing developers, please make a topic branch off the "master"
+branch.  You shouldn't change he ChangeLog file but use git commit log
+to document your changes.
+
+For upstream developer, there are a few things you need to do before
+releasing the new upstream tarball from the "master" branch.
+
+* Bump the package version number in the configure.ac file.  
+* Don't manually updating the ChangeLog file but run ./updateLog.sh 
+  to update the ChangeLog file.
+* Commit all your changes to git repo with proper commit messages.
+* Follow procedures in INSTALL file to make a released tarball.
+
+For developers making Debian packages, please import the released
+upstream tarball created by "make dist" into the "upstream" branch with
+"gbp import-orig" and work in the "debian" branch.  Please tag uploaded
+content properly.
+
+
 What's New?
 ===========
 
