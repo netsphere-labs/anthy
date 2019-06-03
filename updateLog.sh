@@ -11,8 +11,9 @@ if [ "$LAST_TAG" != "$TOP_TAG" ]; then
     mv ChangeLog ChangeLog.keep
     git log --date=short \
             --abbrev-commit \
-            --format="format:%cd %an <%ae> %h%n%n  * %s%n%w(72,4,4)%b" \
-            ${LAST_TAG}..HEAD >ChangeLog
+            --format="format:%cd %an <%ae> %h%n%n  * %s%n%n%w(72,4,4)%b" \
+            ${LAST_TAG}..HEAD |\
+    grep -v "^\s\s*Signed-off-by:" >ChangeLog
     echo "" >> ChangeLog
     cat ChangeLog.keep >> ChangeLog
     rm  ChangeLog.keep
