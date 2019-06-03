@@ -1,14 +1,14 @@
-2019-06-04 Osamu Aoki <osamu@debian.org> ee4b6be
+2019-06-04 Osamu Aoki <osamu@debian.org> a835c87
 
   * update ChangeLog from git log
 
-2019-06-04 Osamu Aoki <osamu@debian.org> 0b517d6
+2019-06-04 Osamu Aoki <osamu@debian.org> 239b28f
 
   * Updated README and INSTALL
 
     Describe the exact procedure to release the new upstream tarball.
 
-2019-06-04 Osamu Aoki <osamu@debian.org> ccd8c4f
+2019-06-04 Osamu Aoki <osamu@debian.org> 41de06c
 
   * Update autotool settings for 0.4 release
 
