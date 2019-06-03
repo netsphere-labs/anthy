@@ -1,11 +1,13 @@
-AUTOMAKE_OPTIONS =
+AUTOMAKE_OPTIONS = dist-xz no-dist-gzip
 ACLOCAL_AMFLAGS=-I m4
 
 EXTRA_DIST = COPYING.LIB2_1 \
 	README.2007.ja THANKS.2007.ja NEWS.2007.ja INSTALL.2006.ja \
-	ChangeLog.2001-2009 \
+	ChangeLog.2001-2009 ChangeLog.2010 \
 	anthy-conf.in anthy-test-conf.in anthy.spec.in anthy.pc.in Doxyfile \
-	corpus/corpus.?.txt
+	corpus/* \
+        mkanthydic/corpus_info mkanthydic/weak_words \
+        autogen.sh
 
 SRCDIR = src-diclib src-worddic src-splitter src-ordering src-main src-util
 
