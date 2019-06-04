@@ -578,48 +578,54 @@ mk_yomi_hash(FILE *yomi_hash_out, struct yomi_entry_list *yl)
 }
 
 static struct adjust_command *
-parse_modify_freq_command(const char *buf)
+parse_modify_freq_command (const char        *buf,
+                           struct mkdic_stat *mds)
 {
-  char *line = alloca(strlen(buf) + 1);
+  char *line = alloca (strlen (buf) + 1);
   char *yomi, *wt, *word, *type_str;
   struct adjust_command *cmd;
   int type = 0;
-  strcpy(line, buf);
-  yomi = strtok(line, " ");
-  wt = strtok(NULL, " ");
-  word = strtok(NULL, " ");
-  type_str = strtok(NULL, " ");
+  strcpy (line, buf);
+  yomi = strtok (line, " ");
+  wt = strtok (NULL, " ");
+  word = strtok (NULL, " ");
+  type_str = strtok (NULL, " ");
   if (!yomi || !wt || !word || !type_str) {
     return NULL;
   }
-  if (!strcmp(type_str, "up")) {
+  if (!strcmp (type_str, "up")) {
     type = ADJUST_FREQ_UP;
   }
-  if (!strcmp(type_str, "down")) {
+  if (!strcmp (type_str, "down")) {
     type = ADJUST_FREQ_DOWN;
   }
-  if (!strcmp(type_str, "kill")) {
+  if (!strcmp (type_str, "kill")) {
     type = ADJUST_FREQ_KILL;
   }
   if (!type) {
     return NULL;
   }
-  cmd = malloc(sizeof(struct adjust_command));
+  cmd = malloc (sizeof (struct adjust_command));
   cmd->type = type;
-  cmd->yomi = anthy_cstr_to_xstr(yomi, ANTHY_EUC_JP_ENCODING);
+  cmd->yomi = anthy_cstr_to_xstr (yomi, mds->input_encoding);
   cmd->wt = get_wt_name(wt);
-  cmd->word = anthy_conv_euc_to_utf8(word);
+  if (mds->input_encoding == ANTHY_EUC_JP_ENCODING)
+    cmd->word = anthy_conv_euc_to_utf8 (word);
+  else
+    cmd->word = strdup (word);
   return cmd;
 }
 
 static void
-parse_adjust_command(const char *buf, struct adjust_command *ac_list)
+parse_adjust_command (const char        *buf,
+                      struct mkdic_stat *mds)
 {
   struct adjust_command *cmd = NULL;
-  if (!strncmp("\\modify_freq ", buf, 13)) {
-    cmd = parse_modify_freq_command(&buf[13]);
+  if (!strncmp ("\\modify_freq ", buf, 13)) {
+    cmd = parse_modify_freq_command (&buf[13], mds);
   }
   if (cmd) {
+    struct adjust_command *ac_list = &mds->ac_list;
     cmd->next = ac_list->next;
     ac_list->next = cmd;
   }
@@ -638,7 +644,7 @@ parse_dict_file(FILE *fin, struct mkdic_stat *mds)
   /* １行ずつ処理 */
   while (read_line(fin, buf)) {
     if (buf[0] == '\\' && buf[1] != ' ') {
-      parse_adjust_command(buf, &mds->ac_list);
+      parse_adjust_command(buf, mds);
       continue ;
     }
     index_xs = get_index_from_line(mds, buf);
