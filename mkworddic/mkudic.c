@@ -7,6 +7,7 @@
 #include <string.h>
 #include <stdio.h>
 
+#include <anthy/anthy.h>
 #include <anthy/matrix.h>
 #include "mkdic.h"
 
@@ -41,7 +42,7 @@ get_id_from_word_line(char *buf)
   if (res != 4) {
     return -1;
   }
-  xs = anthy_cstr_to_xstr(kanji, 0);
+  xs = anthy_cstr_to_xstr(kanji, ANTHY_UTF8_ENCODING);
   id = anthy_xstr_hash(xs);
   anthy_free_xstr(xs);
   return id;

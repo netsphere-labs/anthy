@@ -177,6 +177,7 @@ main(int argc, char **argv)
   anthy_conf_override("DIC_FILE", dic);
   anthy_init();
   anthy_set_personality("");
+  anthy_xstr_set_print_encoding (ANTHY_UTF8_ENCODING);
   ac = anthy_create_context();
 
   /**/

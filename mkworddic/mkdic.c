@@ -922,8 +922,8 @@ reverse_multi_segment_word(struct mkdic_stat *mds, struct word_entry *we)
   int word_seg_len = 0;
   xstr *yomibuf = anthy_cstr_to_xstr(we->word_utf8, ANTHY_UTF8_ENCODING);
   xstr *wordbuf = we->ye->index_xstr;
-  xstr *yomi_xs = anthy_cstr_to_xstr("", 0);
-  xstr *word_xs = anthy_cstr_to_xstr("#", 0);
+  xstr *yomi_xs = anthy_cstr_to_xstr("", ANTHY_UTF8_ENCODING);
+  xstr *word_xs = anthy_cstr_to_xstr("#", ANTHY_UTF8_ENCODING);
   char *word;
   char ch[256];
   struct yomi_entry *target_ye;

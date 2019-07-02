@@ -116,7 +116,7 @@ search_zipcode_dict(struct zipcode_line *zl, xstr* xs)
   
   /* 半角、全角を吸収する */
   temp = anthy_xstr_wide_num_to_num(xs);
-  index = anthy_xstr_to_cstr(temp, 0);
+  index = anthy_xstr_to_cstr(temp, ANTHY_UTF8_ENCODING);
   len = strlen(index);
 
   /* 全部grepする */
