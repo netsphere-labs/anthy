@@ -1,0 +1,73 @@
+2015-04-28  NIIBE Yutaka  <gniibe@fsij.org>
+
+    * configure.ac: Version 0.3.
+    * src-main/Makefile.am (version-info): Bump to 2:2:1.
+    * src-worddic/Makefile.am (version-info): Ditto.
+
+    * doc/*: Encode in UTF-8.
+
+    * src-util/Makefile.am (anthy-morphological-analyzer): No install.
+    (libanthyinput_la_LIBADD): No dependency to libanthydic.
+
+    * configure.ac (AM_MAINTAINER_MODE): New.
+    * mkanthydic/Makefile.am [MAINTAINER_MODE]: dictionary bootstrap.
+
+    * src-worddic/ext_ent.c (pushback_place_name): Use UTF-8.
+    (search_zipcode_dict): Change the variable name without "EUC".
+    * anthy-conf.in, anthy-test-conf.in: Variable name change.
+
+2015-04-28  NIIBE Yutaka  <gniibe@fsij.org>
+
+    * configure.ac: Version 0.2.
+
+    * depgraph/mkdepgraph.c, src-main/main.c, src-worddic/dic_util.c,
+    src-worddic/matrix.c, src-worddic/priv_dic.c, src-worddic/record.c,
+    src-worddic/textdic.c, src-worddic/word_lookup.c: Clean up.
+
+2015-04-27  NIIBE Yutaka  <gniibe@fsij.org>
+
+    * anthy/*.h: Encode in UTF-8.
+
+    * calctrans/calctrans.c, depgraph/mkdepgraph.c, mkworddic/mkdic.c,
+    src-main/context.c, src-main/main.c, src-util/agent.c,
+    src-util/dic-tool.c, src-worddic/dic_util.c: Encode in UTF-8.
+
+    * src-main/context.c (write_history): Use UTF-8.
+    * src-main/main.c (anthy_init): Default to UTF-8.
+    (anthy_context_set_encoding): Likewise.
+
+    * src-util/agent.c (use_utf8): Initialize as 1.
+    (parse_args): Support --euc.
+    * src-util/egg.c (new_context): Set UTF-8.
+    * src-util/dic-tool.c (encoding): Default to UTF-8.
+    * src-util/dic-tool-usage.txt: Encode in UTF-8.
+
+    * src-worddic/dic_util.c (anthy_dic_util_init): Use UTF-8.
+
+    * mkworddic/mkdic.c (parse_modify_freq_command): It's UTF-8.
+    (init_mds): Use UTF-8.
+    * mkworddic/dict.args.in: Use UTF-8.
+    * alt-cannadic/g_fname.t, alt-cannadic/gcanna.t,
+    alt-cannadic/gcannaf.ctd, alt-cannadic/gtankan.ctd: Encode in UTF-8.
+    * mkworddic/adjust.t, mkworddic/compound.t, mkworddic/extra.t,
+    mkworddic/udict, mkworddic/zipcode.t: Encode in UTF-8.
+
+    * depgraph/mkdepgraph.c (parse_dep, parse_indep): Use UTF-8.
+    * depgraph/*.depword: Encode in UTF-8.
+    * depgraph/{conjugate.table,indepword-wt.txt, indepword.txt}: Likewise.
+
+    * calctrans/calctrans.c (flush_extract_stat): Use UTF-8 encoding.
+    * corpus/*.txt: Encode by UTF-8.
+
+    * src-worddic/Makefile.am (CONF_DIR): Remove.
+
+2015-04-27  NOKUBI Takatsugu <knok@daionet.gr.jp>
+
+    * src-worddic/record.c (read_1_token): check EOF.
+
+2015-04-27  NIIBE Yutaka  <gniibe@fsij.org>
+
+    * configure.ac (AC_INIT, AM_INIT_AUTOMAKE): New style.
+    * */Makefile.am: Use AM_CPPFLAGS (was: INCLUDES).
+    * depgraph/mkdepgraph.c: Support external definition of
+    INDEPWORD_INPUT_FILENAME.
