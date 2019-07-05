@@ -3,7 +3,7 @@ ACLOCAL_AMFLAGS=-I m4
 
 EXTRA_DIST = COPYING.LIB2_1 \
 	README.2007.ja THANKS.2007.ja NEWS.2007.ja INSTALL.2006.ja \
-	ChangeLog.2001-2009 \
+	ChangeLog.2001-2009 ChangeLog.2010 ChangeLog.2015 \
 	anthy-conf.in anthy-test-conf.in anthy.spec.in anthy.pc.in Doxyfile \
 	corpus/corpus.0.txt corpus/corpus.1.txt corpus/corpus.2.txt \
 	corpus/corpus.3.txt corpus/corpus.4.txt corpus/corpus.5.txt
