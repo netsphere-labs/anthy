@@ -1,73 +1,86 @@
-2015-04-28  NIIBE Yutaka  <gniibe@fsij.org>
+2019-07-05  NIIBE Yutaka  <gniibe@fsij.org>
 
-    * configure.ac: Version 0.3.
-    * src-main/Makefile.am (version-info): Bump to 2:2:1.
-    * src-worddic/Makefile.am (version-info): Ditto.
+	Version 0.4.
+	* configure.ac: Version 0.4.
+	* ChangeLog: Dummy file to be replaced in 'make distcheck'.
+	* Makefile.am (EXTRA_DIST): Add ChangeLog.2010 and ChangeLog.2015.
+	* src-worddic/Makefile.am (version-info): Bump the revision.
+	* depgraph/Makefile.am (EXTRA_DIST): Add (now obsolete) indepword.txt.
 
-    * doc/*: Encode in UTF-8.
+2019-07-04  NIIBE Yutaka  <gniibe@fsij.org>
 
-    * src-util/Makefile.am (anthy-morphological-analyzer): No install.
-    (libanthyinput_la_LIBADD): No dependency to libanthydic.
+	dist: Support commits not shown in ChangeLog.
+	* Makefile.am (gen-ChangeLog): Commit message which starts with ';' in
+	the first line won't be included in the ChangeLog.
 
-    * configure.ac (AM_MAINTAINER_MODE): New.
-    * mkanthydic/Makefile.am [MAINTAINER_MODE]: dictionary bootstrap.
+	build: Fix so that 'make distcheck' works.
+	* mkanthydic/Makefile.am (EXTRA_DIST): Add corpus_info and weak_words.
+	[!MAINTAINER_MODE] (anthy.dic): Use srcdir.
+	(CLEANFILES): Remove corpus_info and weak_words.
+	(MAINTAINERCLEANFILES): New with corpus_info and weak_words.
 
-    * src-worddic/ext_ent.c (pushback_place_name): Use UTF-8.
-    (search_zipcode_dict): Change the variable name without "EUC".
-    * anthy-conf.in, anthy-test-conf.in: Variable name change.
+	build: Generate ChangeLog.
+	* Makefile.am (gen-ChangeLog): New.
+	* alt-cannadic/Makefile.am (EXTRA_DIST): Fix README.txt.
+	* configure.ac (AC_CONFIG_AUX_DIR): Add.
+	* build-aux/gitlog-to-changelog: New from gnulib.
 
-2015-04-28  NIIBE Yutaka  <gniibe@fsij.org>
+2019-07-02  Osamu Aoki  <osamu@debian.org>
 
-    * configure.ac: Version 0.2.
+	Update zipcode.t using data from skkdic-20190217.
+	* mkworddic/zipcode.t: Replace from skkdic-20190217.
 
-    * depgraph/mkdepgraph.c, src-main/main.c, src-worddic/dic_util.c,
-    src-worddic/matrix.c, src-worddic/priv_dic.c, src-worddic/record.c,
-    src-worddic/textdic.c, src-worddic/word_lookup.c: Clean up.
+2019-07-02  Osamu Aoki  <osamu@debian.org>
 
-2015-04-27  NIIBE Yutaka  <gniibe@fsij.org>
+	Fix anthy/input.h (comment only).
+	* anthy/input.h: Fix wrong comment about encoding.
 
-    * anthy/*.h: Encode in UTF-8.
 
-    * calctrans/calctrans.c, depgraph/mkdepgraph.c, mkworddic/mkdic.c,
-    src-main/context.c, src-main/main.c, src-util/agent.c,
-    src-util/dic-tool.c, src-worddic/dic_util.c: Encode in UTF-8.
+	Gbp-Pq: Name 0007-Update-anthy-input.h-comment-only.patch
 
-    * src-main/context.c (write_history): Use UTF-8.
-    * src-main/main.c (anthy_init): Default to UTF-8.
-    (anthy_context_set_encoding): Likewise.
+2019-07-02  Osamu Aoki  <osamu@debian.org>
 
-    * src-util/agent.c (use_utf8): Initialize as 1.
-    (parse_args): Support --euc.
-    * src-util/egg.c (new_context): Set UTF-8.
-    * src-util/dic-tool.c (encoding): Default to UTF-8.
-    * src-util/dic-tool-usage.txt: Encode in UTF-8.
+	Convert src-util/input.c to UTF-8 (comment only).
+	* src-util/input.c: Encode in UTF-8.
 
-    * src-worddic/dic_util.c (anthy_dic_util_init): Use UTF-8.
 
-    * mkworddic/mkdic.c (parse_modify_freq_command): It's UTF-8.
-    (init_mds): Use UTF-8.
-    * mkworddic/dict.args.in: Use UTF-8.
-    * alt-cannadic/g_fname.t, alt-cannadic/gcanna.t,
-    alt-cannadic/gcannaf.ctd, alt-cannadic/gtankan.ctd: Encode in UTF-8.
-    * mkworddic/adjust.t, mkworddic/compound.t, mkworddic/extra.t,
-    mkworddic/udict, mkworddic/zipcode.t: Encode in UTF-8.
+	Gbp-Pq: Name 0006-Convert-src-util-input.c-to-UTF-8-comment-only.patch
 
-    * depgraph/mkdepgraph.c (parse_dep, parse_indep): Use UTF-8.
-    * depgraph/*.depword: Encode in UTF-8.
-    * depgraph/{conjugate.table,indepword-wt.txt, indepword.txt}: Likewise.
+2019-07-02  Osamu Aoki  <osamu@debian.org>
 
-    * calctrans/calctrans.c (flush_extract_stat): Use UTF-8 encoding.
-    * corpus/*.txt: Encode by UTF-8.
+	Fix alt-cannadic/Makefile.am.
+	* alt-cannadic/Makefile.am (EXTRA_DIST): Fix to gcanna.t.
 
-    * src-worddic/Makefile.am (CONF_DIR): Remove.
+2019-07-02  NIIBE Yutaka  <gniibe@fsij.org>
 
-2015-04-27  NOKUBI Takatsugu <knok@daionet.gr.jp>
+	Never use encoding=0.
+	* mkworddic/mkdic.c (reverse_multi_segment_word): Use
+	  ANTHY_UTF8_ENCODING.
+	* mkworddic/mkudic.c (get_id_from_word_line): Likewise.
+	* src-worddic/ext_ent.c (search_zipcode_dict): Likewise.
+	* test/check.c (test1): Likewise.
+	* src-worddic/record.c (anthy_create_record): Use EUC-JP
+	as the code assumes.
 
-    * src-worddic/record.c (read_1_token): check EOF.
+	* calctrans/proccorpus.c (main): Call anthy_xstr_set_print_encoding
+	to initialize print encoding.
 
-2015-04-27  NIIBE Yutaka  <gniibe@fsij.org>
+2019-07-02  Osamu Aoki  <osamu@debian.org>
 
-    * configure.ac (AC_INIT, AM_INIT_AUTOMAKE): New style.
-    * */Makefile.am: Use AM_CPPFLAGS (was: INCLUDES).
-    * depgraph/mkdepgraph.c: Support external definition of
-    INDEPWORD_INPUT_FILENAME.
+	build: Use in-source files via ../anthy-test-conf
+	* calctrans/proccorpus.c (main): Use anthy-test-conf.
+
+	calctrans: Ignore problematic line to avoid infinite loop.
+	* calctrans/proccorpus.c (trim_segment): Skip when segment can't
+	be changed longer/shorter.
+
+	depgraph: Convert depgraph/master.depword to UTF-8 (data)
+	* depgraph/master.depword: Convert to UTF-8.
+
+2019-07-02  NOKUBI Takatsugu  <knok@daionet.gr.jp>
+
+	dic: Add Japanese era name entry: Reiwa
+	* alt-cannadic/gcanna.t (reiwa): New.
+
+	anthy.el: Fix for newer Emacs.
+	* src-util/anthy.el (anthy-last-command-char): Use last-command-event.

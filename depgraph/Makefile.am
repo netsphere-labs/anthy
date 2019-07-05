@@ -4,7 +4,7 @@ DEPWORDS = conjugate.table conjugate.depword fix.depword noun.depword \
 	   a.depword  ajv.depword master.depword
 AM_CPPFLAGS = -I$(top_srcdir)/ -DINDEPWORD_INPUT_FILENAME=\"$(srcdir)/indepword-wt.txt\"
 CLEANFILES = anthy.dep all.depword
-EXTRA_DIST = indepword-wt.txt $(DEPWORDS)
+EXTRA_DIST = indepword-wt.txt $(DEPWORDS) indepword.txt
 
 # Generate the dictionary
 noinst_PROGRAMS = mkdepgraph
