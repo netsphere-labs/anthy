@@ -2046,7 +2046,7 @@ anthy_create_record(const char *id)
   rst->cur_section = 0;
   rst->cur_row = 0;
   rst->row_dirty = 0;
-  rst->encoding = 0;
+  rst->encoding = ANTHY_EUC_JP_ENCODING;
 
   /* ファイル名の文字列を作る */
   setup_filenames(id, rst);

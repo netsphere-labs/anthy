@@ -56,7 +56,7 @@ pushback_place_name(struct zipcode_line *zl, char *pn)
     return ;
   }
   zl->strs = realloc(zl->strs, sizeof(xstr *) * (zl->nr + 1));
-  zl->strs[zl->nr] = anthy_cstr_to_xstr(pn, ANTHY_EUC_JP_ENCODING);
+  zl->strs[zl->nr] = anthy_cstr_to_xstr (pn, ANTHY_UTF8_ENCODING);
   zl->nr++;
 }
 
@@ -109,14 +109,14 @@ search_zipcode_dict(struct zipcode_line *zl, xstr* xs)
 
   zl->nr = 0;
   zl->strs = NULL;
-  fp = fopen(anthy_conf_get_str("ZIPDICT_EUC"), "r");
+  fp = fopen(anthy_conf_get_str("ZIPDICT"), "r");
   if (!fp) {
     return ;
   }
   
   /* 半角、全角を吸収する */
   temp = anthy_xstr_wide_num_to_num(xs);
-  index = anthy_xstr_to_cstr(temp, 0);
+  index = anthy_xstr_to_cstr(temp, ANTHY_UTF8_ENCODING);
   len = strlen(index);
 
   /* 全部grepする */

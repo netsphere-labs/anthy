@@ -62,7 +62,7 @@ test1(void)
     printf("(%s)\n", buf);
   }
   anthy_release_context(ac);
-  xs = anthy_cstr_to_xstr("あいうえおがぎぐげご", 0);
+  xs = anthy_cstr_to_xstr("あいうえおがぎぐげご", ANTHY_UTF8_ENCODING);
   xs = anthy_xstr_hira_to_half_kata(xs);
   anthy_putxstrln(xs);
   return 0;

@@ -24,16 +24,26 @@ trim_segment(anthy_context_t ac, struct conv_res *cr,
 {
   int len = strlen(seg);
   int resized = 0;
+  int cur_len = -1; /* dummy initial value */
+  int old_len;
   (void)cr;
 
   while (1) {
     char seg_buf[1024];
-    int cur_len;
 
+    /* "~" may be returned to cause infinite loop when corpus has "～" */
     anthy_get_segment(ac, nth, NTH_UNCONVERTED_CANDIDATE, seg_buf, 1024);
+    old_len = cur_len;
     cur_len = strlen(seg_buf);
     if (len == cur_len) {
       return 1;
+    }
+    if (cur_len == old_len) {
+      /* exit for infinite loop situation  */
+      fprintf(stderr, "\n*** Ignore an infinite loop situation ***\n");
+      fprintf(stderr, ">>> src=(%s) -> cand=(%s), seg=(%s) seg_buf=(%s)\n\n",
+          cr->src_str, cr->cand_str, seg, seg_buf);
+      return 0;
     }
     if (!resized) {
       resized = 1;
@@ -163,10 +173,11 @@ main(int argc, char **argv)
     else
       read_db(db, argv[i]);
 
-  anthy_conf_override("CONFFILE", "../anthy-conf");
+  anthy_conf_override("CONFFILE", "../anthy-test-conf");
   anthy_conf_override("DIC_FILE", dic);
   anthy_init();
   anthy_set_personality("");
+  anthy_xstr_set_print_encoding (ANTHY_UTF8_ENCODING);
   ac = anthy_create_context();
 
   /**/

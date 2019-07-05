@@ -1,6 +1,7 @@
 # Files
 noinst_SCRIPTS =
 AM_CPPFLAGS = -I$(top_srcdir)/ -DSRCDIR=\"$(srcdir)\"
+EXTRA_DIST = corpus_info weak_words
 
 noinst_PROGRAMS = mkfiledic
 mkfiledic_SOURCES = mkfiledic.c
@@ -69,11 +70,15 @@ anthy.dic5: mkfiledic ../mkworddic/anthy.wdic ../depgraph/anthy.dep \
 else
 anthy.dic: mkfiledic ../mkworddic/anthy.wdic ../depgraph/anthy.dep \
 	   corpus_info weak_words
-	../calctrans/calctrans -c corpus_info weak_words
+	../calctrans/calctrans -c $(srcdir)/corpus_info $(srcdir)/weak_words
 	./mkfiledic -o anthy.dic
 endif
 
 # To install 
 pkgdata_DATA = anthy.dic
 
-CLEANFILES = anthy.cand_info anthy.trans_info anthy.corpus_array anthy.corpus_bucket anthy.weak_words parsed_data* anthy.feature_info corpus_info weak_words anthy.dic*
+CLEANFILES = anthy.cand_info anthy.trans_info anthy.corpus_array \
+	anthy.corpus_bucket anthy.weak_words anthy.feature_info \
+	parsed_data* anthy.dic*
+
+MAINTAINERCLEANFILES= corpus_info weak_words
