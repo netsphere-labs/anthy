@@ -1,3 +1,20 @@
+anthy (1:0.4-1) unstable; urgency=medium
+
+  * New upstream.
+  * debian/patches/series: Update.  Now empty.
+  * debian/patches: Remove, because of merge in upstream.
+    0001-work-with-emacs-24.3.1.patch
+    0002-new-Japanese-era-reiwa-entry.patch
+    0003-Use-UTF-8-for-zipcode-conversion-essential-change-co.patch
+    0004-Convert-depgraph-master.depword-to-UTF-8-data.patch
+    0006-use-anthy-test-conf.patch
+    0008-updated-corpus.patch
+  * debian/patches: Remove, because of different change.
+    0005-UTF-8-as-default-encoding-essential-change-code.patch   
+    0007-dayo-n.patch
+
+ -- NIIBE Yutaka <gniibe@fsij.org>  Fri, 05 Jul 2019 11:45:49 +0900
+
 anthy (1:0.3-9) experimental; urgency=medium
 
   * Use UTF-8 for zipcode bug fix. Closes: #927074
