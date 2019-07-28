@@ -91,7 +91,7 @@ open_typetab(void)
 {
   FILE *fp;
   char *fn;
-  fp = fopen(TYPETAB, "r");
+  fp = fopen(TYPETAB, "rb");
   if (fp) {
     return fp;
   }
@@ -99,7 +99,7 @@ open_typetab(void)
   fn = realloc(fn, strlen(fn) + strlen(TYPETAB) + 4);
   strcat(fn, "/");
   strcat(fn, TYPETAB);
-  fp = fopen(fn, "r");
+  fp = fopen(fn, "rb");
   return fp;
 }
 

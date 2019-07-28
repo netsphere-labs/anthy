@@ -6,6 +6,9 @@
  */
 #include <stdlib.h>
 #include <time.h>
+#ifdef _MSC_VER
+  #include <malloc.h> // alloca
+#endif
 
 #include <anthy/ordering.h>
 #include <anthy/record.h>

@@ -23,7 +23,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <arpa/inet.h>
+#ifndef _WIN32
+  #include <arpa/inet.h>
+#else
+  #define STRICT 1
+  #include <winsock2.h>
+#endif
+
 #include <anthy/segclass.h>
 #include <anthy/feature_set.h>
 /* for MW_FEATURE* constants */

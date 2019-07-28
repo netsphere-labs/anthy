@@ -10,6 +10,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _WIN32
+  #define strdup _strdup
+  #ifdef _MSC_VER
+    #include <malloc.h> // alloca
+  #endif
+#endif
 
 #include "rkconv.h"
 
@@ -441,6 +447,10 @@ rk_context_free(struct rk_conv_context* cc)
   free(cc);
 }
 
+/**
+ * After calling this function, you can retrieve the conversion result with
+ * rk_result().
+ */
 int
 rk_push_key(struct rk_conv_context* cc, int c)
 {

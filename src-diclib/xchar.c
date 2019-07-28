@@ -3,8 +3,11 @@
  *
  * Copyright (C) 2001-2006 TABATA Yusuke
  */
+
+#ifndef _MSC_VER
+  #include <config.h>
+#endif
 #include <string.h>
-#include "config.h"
 
 #include <anthy/xstr.h>
 #include <anthy/xchar.h>

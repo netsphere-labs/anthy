@@ -10,7 +10,11 @@ As with other packages, you just have to do
   $ make
   $ make install
 
-(Before doing install you might need to become root.)
+(Before install, you might need to become root.)
+
+On MinGW, you have to add --prefix <real path> option;
+
+  $ ./configure --prefix=d:/git-sdk-64/mingw32
 
 
 

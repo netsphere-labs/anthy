@@ -35,15 +35,31 @@
  * パーソナリティ""は匿名パーソナリティであり，
  * ファイルへの読み書きは行わない．
  */
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#ifndef _MSC_VER
+  #include <config.h>
+#endif
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <errno.h>
-#include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
+#ifndef _WIN32
+  #include <unistd.h>
+#else
+  #ifdef _MSC_VER
+    #include <malloc.h> // alloca
+  #endif
+  #define strdup _strdup
+  #define unlink _unlink
+  #define fileno _fileno
+#endif
 
-#include "config.h"
 #include <anthy/anthy.h>
 #include <anthy/dic.h>
 #include <anthy/alloc.h>
@@ -1169,7 +1185,7 @@ read_journal_record(struct record_stat* rs)
   if (rs->is_anon) {
     return ;
   }
-  fp = fopen(rs->journal_fn, "r");
+  fp = fopen(rs->journal_fn, "rb");
   if (fp == NULL) {
     return;
   }
@@ -1250,7 +1266,7 @@ commit_add_row(struct record_stat* rst,
   if (rst->is_anon)
     return ;
 
-  fp = fopen(rst->journal_fn, "a");
+  fp = fopen(rst->journal_fn, "ab");
   if (fp == NULL) {
     return;
   }
@@ -1389,7 +1405,7 @@ open_tmp_in_recorddir(void)
   hd = anthy_conf_get_str("HOME");
   pn = alloca(strlen(hd)+strlen(sid) + 10);
   sprintf(pn, "%s/.anthy/%s", hd, sid);
-  return fopen(pn, "w");
+  return fopen(pn, "wb");
 }
 
 /*
@@ -1506,7 +1522,7 @@ commit_del_row(struct record_stat* rst,
 {
   FILE* fp;
 
-  fp = fopen(rst->journal_fn, "a");
+  fp = fopen(rst->journal_fn, "ab");
   if (fp == NULL) {
     return;
   }
@@ -1964,7 +1980,7 @@ check_record_encoding(struct record_stat *rst)
     anthy_close_file();
     return ;
   }
-  fp = fopen(rst->journal_fn, "r");
+  fp = fopen(rst->journal_fn, "rb");
   if (fp) {
     /* EUCの差分ファイルがあった */
     fclose(fp);
@@ -2015,6 +2031,9 @@ anthy_init_record(void)
 static void
 setup_filenames(const char *id, struct record_stat *rst)
 {
+  assert(id);
+  assert(rst);
+  
   const char *home = anthy_conf_get_str("HOME");
   int base_len = strlen(home) + strlen(id) + 10;
 

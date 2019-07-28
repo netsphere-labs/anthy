@@ -18,3 +18,8 @@ Makefile.in
 config.h.in
 configure
 m4/*
+
+# backup files
+#
+*~
+*.bak

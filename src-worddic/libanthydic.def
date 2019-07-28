@@ -1,0 +1,137 @@
+
+LIBRARY libanthydic
+EXPORTS
+    ; alloc.c
+    anthy_create_allocator
+    anthy_free_allocator
+    anthy_smalloc
+    anthy_sfree
+
+    ; xstr.c
+    anthy_putxchar
+    anthy_putxstr
+    anthy_xstr_to_cstr
+    anthy_free_xstr
+    anthy_free_xstr_str
+    anthy_xstrcpy
+    anthy_xstr_set_print_encoding
+    anthy_cstr_to_xstr
+    anthy_xstrcmp
+    anthy_xstrcat
+    anthy_xstr_hira_to_half_kata
+    anthy_conv_half_wide
+    anthy_xstr_hira_to_kata
+    anthy_xstr_dup_str
+    anthy_xstr_hash
+    anthy_xstr_dup
+    anthy_xstrappend
+    anthy_init_xstr
+    anthy_conv_euc_to_utf8
+    anthy_conv_utf8_to_euc
+    anthy_sputxchar
+
+    ; xchar.c
+    anthy_get_xchar_type
+    anthy_get_xstr_type
+
+    ; word_dic.c
+    anthy_dic_create_session
+    anthy_dic_release_session
+    anthy_dic_set_personality
+    anthy_init_dic
+    anthy_quit_dic
+    anthy_dic_activate_session
+    anthy_get_nth_dic_ent_freq
+    anthy_dic_check_word_relation
+    anthy_get_nth_dic_ent_str
+    anthy_lock_dic
+    anthy_unlock_dic
+    anthy_get_nr_dic_ents
+    anthy_get_nth_dic_ent_is_compound
+    anthy_compound_get_nr_segments
+    anthy_compound_get_nth_segment_len
+    anthy_compound_get_nth_segment_xstr
+    anthy_get_seq_ent_indep
+    anthy_get_seq_ent_wtype_compound_freq
+    anthy_gang_load_dic
+    anthy_get_seq_ent_wtype_freq
+    anthy_get_nth_compound_ent
+    anthy_has_non_compound_ents
+    anthy_get_seq_ent_from_xstr
+    anthy_get_nth_dic_ent_wtype
+    anthy_get_seq_ent_pos
+    anthy_has_compound_ents
+
+    ; record.c
+    anthy_traverse_record_for_prediction
+    anthy_reload_record
+    anthy_select_section
+    anthy_select_row
+    anthy_truncate_section
+    anthy_get_nr_values
+    anthy_get_nth_xstr
+    anthy_set_nth_value
+    anthy_set_nth_xstr
+    anthy_get_index_xstr
+    anthy_get_nth_value
+    anthy_release_row
+    anthy_mark_row_used
+    anthy_select_longest_row
+
+    ;; wtype.c
+    anthy_wtype_equal
+    anthy_wtype_get_pos
+    anthy_wtype_get_scos
+    anthy_wtype_get_ct
+    anthy_wtype_get_cos
+    anthy_wtype_get_sv
+    anthy_type_to_wtype
+    anthy_print_wtype
+    anthy_init_wtypes
+    ; (global variables)
+    anthy_wt_none
+    anthy_wtype_noun
+    anthy_wtype_a_tail_of_v_renyou
+    
+    ; conf.c
+    anthy_do_conf_override
+
+    ; logger.c
+    anthy_log
+    anthy_set_logger
+
+    ; feature_set.c
+    anthy_find_feature_freq
+    anthy_feature_list_init
+    anthy_feature_list_free
+    anthy_feature_list_sort
+    anthy_feature_list_set_cur_class
+    anthy_feature_list_set_class_trans
+    anthy_feature_list_set_dep_word
+    anthy_feature_list_set_mw_features
+    anthy_feature_list_set_dep_class
+    anthy_feature_list_print
+    anthy_feature_list_set_noun_cos
+
+    ; file_dic.c
+    anthy_file_dic_get_section
+
+    ; priv_dic.c
+    anthy_add_unknown_word
+    anthy_forget_unused_unknown_word
+
+    ; diclib.c
+    anthy_dic_ntohl
+    anthy_dic_htonl
+
+    ; ruleparser.c
+    anthy_open_file
+    anthy_close_file
+    anthy_read_line
+    anthy_free_line
+    
+    ; matrix.c
+    anthy_sparse_matrix_new
+    anthy_sparse_matrix_set
+    anthy_sparse_matrix_make_matrix
+    anthy_matrix_image_new

@@ -19,13 +19,17 @@
  * Copyright (C) 2000-2007 TABATA Yusuke
  * Copyright (C) 2006 YOSHIDA Yuichi
  */
+
+#ifndef _MSC_VER
+  #include <config.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
-#include "config.h"
 #include <anthy/anthy.h>
-
 #include <anthy/conf.h>
 #include <anthy/ruleparser.h>
 #include <anthy/xstr.h>
@@ -245,6 +249,10 @@ read_branch(struct dep_dic* ddic, struct dep_branch* branch, int* offset)
 static void
 read_node(struct dep_dic* ddic, struct dep_node* node, int* offset)
 {
+  assert(ddic);
+  assert(node);
+  assert(offset);
+  
   int i;
   node->nr_branch = anthy_dic_ntohl(*(int*)&ddic->file_ptr[*offset]);
   *offset += sizeof(int);

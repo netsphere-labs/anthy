@@ -32,12 +32,20 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 
+#define _CRT_SECURE_NO_WARNINGS
++
+#ifndef _MSC_VER
+  #include <config.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#ifdef _MSC_VER
+  #include <malloc.h> // alloca
+#endif
 
-#include "config.h"
 #include <anthy/anthy.h>
 #include <anthy/alloc.h>
 #include <anthy/dic.h>

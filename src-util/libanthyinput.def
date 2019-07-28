@@ -1,0 +1,33 @@
+LIBRARY libanthyinput
+EXPORTS
+    ; input.c
+    anthy_input_init
+    anthy_input_set_personality
+    anthy_input_create_context
+    anthy_input_free_context
+    anthy_input_str
+    anthy_input_prev_candidate
+    anthy_input_quit
+    anthy_input_erase_prev
+    anthy_input_erase_next
+    anthy_input_commit
+    anthy_input_move
+    anthy_input_resize
+    anthy_input_beginning_of_line
+    anthy_input_end_of_line
+    anthy_input_cut
+    anthy_input_space
+    anthy_input_get_preedit
+    anthy_input_map_select
+    anthy_input_edit_rk_config
+    anthy_input_clear_rk_config
+    anthy_input_break_into_roman_config
+    anthy_input_preedit_mode_config
+    anthy_input_get_anthy_context
+    anthy_input_free_preedit
+    anthy_input_free_segment
+    anthy_input_get_candidate
+    anthy_input_select_candidate
+    anthy_input_create_config
+    anthy_input_edit_toggle_config
+    anthy_input_change_config
