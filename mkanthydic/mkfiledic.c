@@ -164,7 +164,7 @@ write_contents(FILE* fp, const char *prefix,
     FILE* in_fp;
     char *fn = get_file_name(prefix, &entries[i]);
 
-    in_fp = fopen(fn, "r");
+    in_fp = fopen(fn, "rb");
     if (in_fp == NULL) {
       fprintf (stderr, "failed to open %s\n", fn);
       free (fn);
@@ -182,7 +182,7 @@ static void
 create_file_dic(const char* fn, const char *prefix,
 		int entry_num, struct header_entry* entries)
 {
-  FILE* fp = fopen(fn, "w");
+  FILE* fp = fopen(fn, "wb");
   int res;
   if (!fp) {
     fprintf(stderr, "failed to open file dictionary file (%s).\n", fn);

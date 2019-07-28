@@ -32,9 +32,15 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#ifdef _WIN32
+  #define strdup _strdup
+#endif
 
 #include <anthy/anthy.h>
 #include <anthy/conf.h>

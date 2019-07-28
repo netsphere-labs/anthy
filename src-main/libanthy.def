@@ -1,0 +1,19 @@
+
+LIBRARY libanthy
+EXPORTS
+    ; main.c
+    anthy_init
+    anthy_set_personality
+    anthy_create_context
+    anthy_reset_context
+    anthy_release_context
+    anthy_set_string
+    anthy_resize_segment
+    anthy_get_stat
+    anthy_get_segment_stat
+    anthy_get_segment
+    anthy_commit_segment
+    anthy_context_set_encoding
+    anthy_quit
+    anthy_conf_override
+    anthy_print_context

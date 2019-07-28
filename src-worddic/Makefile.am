@@ -13,5 +13,8 @@ libanthydic_la_SOURCES = \
 	mem_dic.h dic_personality.h
 
 libanthydic_la_LIBADD = ../src-diclib/libdiclib.la
+if OS_WIN32
+  libanthydic_la_LIBADD += -lws2_32
+endif
 libanthydic_la_LDFLAGS = -version-info 2:3:1
 lib_LTLIBRARIES = libanthydic.la

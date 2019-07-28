@@ -16,7 +16,12 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <arpa/inet.h>
+#ifndef _WIN32
+  #include <arpa/inet.h>
+#else
+  #define STRICT 1
+  #include <winsock2.h>
+#endif
 
 #include <anthy/alloc.h>
 #include <anthy/record.h>

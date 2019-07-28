@@ -7,13 +7,18 @@
  * ANTHY Low Level Agent
  */
 
+#ifndef _MSC_VER
+  #include <config.h>
+#else
+  #include <defines.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <anthy/anthy.h>
 
-#include "config.h"
 
 /*
  *            connection        context 

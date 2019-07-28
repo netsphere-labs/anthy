@@ -25,13 +25,22 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
-
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#ifndef _WIN32
+  #include <unistd.h>
+#else
+  #include <io.h> // _chmod()
+  #define strdup _strdup
+  #define chmod _chmod
+#endif
 
 #include <anthy/anthy.h>
 #include <anthy/alloc.h>
@@ -143,6 +152,9 @@ static void
 make_metaword_array(struct anthy_context *ac,
 		    struct seg_ent *se)
 {
+  assert(ac);
+  assert(se);
+  
   int i;
   se->mw_array = NULL;
   for (i = se->len; i > 0; i--) {
@@ -351,6 +363,9 @@ make_candidates(struct anthy_context *ac, int from, int from2, int is_reverse)
 int
 anthy_do_context_set_str(struct anthy_context *ac, xstr *s, int is_reverse)
 {
+  assert(ac);
+  assert(s);
+  
   int i;
 
   /* 文字列をコピー(一文字分余計にして0をセット) */

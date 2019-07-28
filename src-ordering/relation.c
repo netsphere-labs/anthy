@@ -22,8 +22,13 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 
-#include <arpa/inet.h>
 #include <stdlib.h>
+#ifndef _WIN32
+  #include <arpa/inet.h>
+#else
+  #define STRICT 1
+  #include <winsock2.h>
+#endif
 
 #include <anthy/segclass.h>
 #include <anthy/segment.h>
