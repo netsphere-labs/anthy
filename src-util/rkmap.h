@@ -1,4 +1,4 @@
-/*
+/* -*- coding:utf-8 -*-
  * roma kana converter rule structure
  *
  */

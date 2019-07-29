@@ -17,6 +17,7 @@
   <ItemGroup>
     <None Include="libanthyinput.def">
     </None>
+    <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="input.c">
