@@ -1,5 +1,5 @@
 dnl Process this file with autoconf to produce a configure script.
-AC_INIT([anthy], [0.4])
+AC_INIT([anthy],[0.4])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_SRCDIR([src-main/main.c])
 AM_INIT_AUTOMAKE([foreign])
@@ -11,7 +11,8 @@ AM_MAINTAINER_MODE
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
-AM_PROG_LIBTOOL
+# AM_PROG_LIBTOOL is deprecated.
+LT_INIT
 AM_PATH_LISPDIR
 
 AM_CONDITIONAL(ELISP, test x$lispdir != x)
@@ -24,7 +25,7 @@ lispdir="$lispdir/anthy"
 
 test -z "$GCC" || CFLAGS="$CFLAGS -W -Wall -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -pedantic -Wno-long-long"
 
-AC_OUTPUT(Makefile
+AC_CONFIG_FILES([Makefile
  src-diclib/Makefile src-worddic/Makefile 
  src-splitter/Makefile src-ordering/Makefile
  src-main/Makefile src-util/Makefile
@@ -33,4 +34,5 @@ AC_OUTPUT(Makefile
  mkworddic/dict.args test/Makefile
  alt-cannadic/Makefile
  doc/Makefile calctrans/Makefile
- anthy-conf anthy-test-conf anthy.spec anthy.pc)
+ anthy-conf anthy-test-conf anthy.spec anthy.pc])
+AC_OUTPUT
