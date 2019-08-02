@@ -397,13 +397,13 @@ static const struct rk_rule rk_rule_hiragana[] =
 	{"vu", "う゛", NULL},
 	{"ve", "う゛ぇ", NULL},
 	{"vo", "う゛ぉ", NULL},
-
-	{"VA", "ヴァ", NULL},   /* Debian系由来？の「ヴ」パッチの動作試験用 */
+/*
+	{"VA", "ヴァ", NULL},   // Debian系由来？の「ヴ」パッチの動作試験用
 	{"VI", "ヴィ", NULL},
 	{"VU", "ヴ", NULL},
 	{"VE", "ヴェ", NULL},
 	{"VO", "ヴォ", NULL},
-
+*/
 	{NULL, NULL, NULL}
 };
 

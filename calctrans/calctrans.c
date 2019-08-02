@@ -31,10 +31,17 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+
+#define NO_OLDNAMES  // mingw
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
+#include <assert.h>
+#ifdef _WIN32
+  #define strdup _strdup
+#endif
 
 #include <anthy/anthy.h>
 #include <anthy/xstr.h>
@@ -264,10 +271,10 @@ do_read_file(struct input_info *m, FILE *fp)
 }
 
 static void
-read_file(struct input_info *m, char *fn)
+read_file(struct input_info *m, const char* fn)
 {
   FILE *ifp;
-  ifp = fopen(fn, "r");
+  ifp = fopen(fn, "r"); // text mode.
   if (!ifp) {
     fprintf(stderr, "failed to open (%s)\n", fn);
     exit (1);
@@ -277,10 +284,10 @@ read_file(struct input_info *m, char *fn)
 }
 
 static void
-write_nl(FILE *fp, int i)
+write_nl(FILE *fp, uint32_t i)
 {
   i = anthy_dic_htonl(i);
-  fwrite(&i, sizeof(int), 1, fp);
+  fwrite(&i, sizeof(uint32_t), 1, fp);
 }
 
 static void
@@ -390,7 +397,7 @@ convert_file(FILE *ifp)
 	ofp = NULL;
       }
       sscanf(buf, "section %s %d %d", fn, &w, &n);
-      ofp = fopen(fn, "w");
+      ofp = fopen(fn, "wb");
       if (!ofp) {
 	fprintf(stderr, "failed to open (%s)\n", fn);
 	exit (1);
@@ -410,13 +417,13 @@ convert_file(FILE *ifp)
 }
 
 static void
-convert_data(int nr_fn, char **fns)
+convert_data(int nr_fn, const char* fns[])
 {
   FILE *ifp;
   int i;
   /**/
   for (i = 0; i < nr_fn; i++) {
-    ifp = fopen(fns[i], "r");
+    ifp = fopen(fns[i], "rb");
     if (!ifp) {
       fprintf(stderr, "failed to open (%s)\n", fns[i]);
       exit (1);
@@ -492,13 +499,14 @@ string_pool_dump(FILE *ofp, struct string_pool *sp)
 }
 
 static unsigned int
-string_hash(const unsigned char *str)
+string_hash(const char* str)
 {
+  assert(str);
+  
   unsigned int h = 0;
-  while (*str) {
-    h += *str;
+  for (const unsigned char* p = (const unsigned char*) str; *p; p++) {
+    h += *p;
     h *= 13;
-    str ++;
   }
   return h % STRING_HASH_SIZE;
 }
@@ -506,7 +514,10 @@ string_hash(const unsigned char *str)
 static struct string_node *
 find_string_node(struct string_pool *sp, const char *str)
 {
-  int h = (int)string_hash((const unsigned char *)str);
+  assert(sp);
+  assert(str);
+  
+  unsigned int h = string_hash(str);
   struct string_node *node;
   for (node = sp->hash[h].next_hash; node; node = node->next_hash) {
     if (!strcmp(str, node->str)) {
@@ -544,9 +555,17 @@ flush_extract_stat(struct extract_stat *es, struct string_pool *sp)
   es->nr = 0;
 }
 
+
+/**
+ * @param buf a line of text.
+ *     Ex. !indep_word hash=1192764297 features=4,22,204,543,1520 #T 何処か どこか
+ *         indep_word hash=1886886130 features=10,23,40,548,580 #F14 いつも いつも
+ */
 static char *
 get_indep_part(char *buf)
 {
+  assert(buf);
+  
   int len;
   char *c = strchr(buf, '#');
   if (!c) {
@@ -563,19 +582,27 @@ get_indep_part(char *buf)
   }
   c++;
   len = strlen(c);
-  c[len-1] = 0;
+  // cut tail CRLF
+  while (len > 0 && strchr(" \t\r\n", c[len - 1])) {
+    c[len - 1] = '\0';
+    len--;
+  }
   return c;
 }
 
 static void
 fixup_missed_word(struct extract_stat *es, char *buf)
 {
+  assert(es);
+  assert(buf);
+  
   int i;
   char *c = get_indep_part(buf);
   if (!c) {
     return ;
   }
   for (i = 0; i < es->nr; i++) {
+    assert(es->info[i].indep);
     if (!strcmp(es->info[i].indep, c)) {
       es->info[i].valid = 0;
     }
@@ -610,8 +637,7 @@ extract_word_from_file(FILE *ifp, struct string_pool *sp)
     if (buf[0] == '#') {
       continue;
     }
-    if (buf[0] == '\n' ||
-	buf[0] == ' ') {
+    if (buf[0] == '\r' || buf[0] == '\n' || buf[0] == ' ') {
       flush_extract_stat(&es, sp);
       continue;
     }
@@ -636,7 +662,7 @@ extract_word(int nr_fn, char **fns, FILE *ofp)
   string_pool_init(&sp);
   /**/
   for (i = 0; i < nr_fn; i++) {
-    ifp = fopen(fns[i], "r");
+    ifp = fopen(fns[i], "rb");
     if (!ifp) {
       fprintf(stderr, "failed to open (%s)\n", fns[i]);
       exit (1);
@@ -688,7 +714,7 @@ main(int argc, char **argv)
   for (i = 1; i < argc; i++) {
     char *arg = argv[i];
     if (!strcmp(arg, "-o")) {
-      ofp = fopen(argv[i+1], "w");
+      ofp = fopen(argv[i+1], "wb");
       if (!ofp) {
 	fprintf(stderr, "failed to open (%s)\n", argv[i+1]);
 	exit (1);

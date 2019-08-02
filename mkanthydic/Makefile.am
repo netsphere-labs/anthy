@@ -6,6 +6,9 @@ EXTRA_DIST = corpus_info weak_words
 noinst_PROGRAMS = mkfiledic
 mkfiledic_SOURCES = mkfiledic.c
 mkfiledic_LDADD = ../src-diclib/libdiclib.la
+if OS_WIN32
+mkfiledic_LDADD += -lws2_32
+endif
 
 if MAINTAINER_MODE
 anthy.dic: anthy.dic3
@@ -34,7 +37,7 @@ parsed_data4: $(top_srcdir)/corpus/corpus.?.txt ../calctrans/proccorpus anthy.di
 	../calctrans/proccorpus -d anthy.dic4 \
 		$(top_srcdir)/corpus/corpus.?.txt > parsed_data4
 
-anthy.dic1: mkfiledic ../mkworddic/anthy.wdic ../depgraph/anthy.dep parsed_data0
+anthy.dic1 corpus_info: mkfiledic ../mkworddic/anthy.wdic ../depgraph/anthy.dep parsed_data0
 	../calctrans/calctrans parsed_data0 -o corpus_info
 	../calctrans/calctrans parsed_data0 -e -o weak_words
 	../calctrans/calctrans -c corpus_info weak_words

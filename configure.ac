@@ -13,17 +13,28 @@ AC_PROG_CC
 AC_PROG_CPP
 # AM_PROG_LIBTOOL is deprecated.
 LT_INIT
-AM_PATH_LISPDIR
 
+AM_PATH_LISPDIR
 AM_CONDITIONAL(ELISP, test x$lispdir != x)
+
+AC_MSG_CHECKING([for native Win32])
+case "$host" in
+  *-*-mingw*)
+    native_win32=yes
+    ;;
+  *)
+    native_win32=no
+    ;;
+esac
+AC_MSG_RESULT([$native_win32])
+AM_CONDITIONAL(OS_WIN32, test "$native_win32" = "yes")
 
 dnl without emacs. install-lispLISP does mkdir /anthy
 dnl dirty hack to avoid it.
-test -n "$lispdir" || lispdir="/tmp/"
-
+test -n "$lispdir" || lispdir="/tmp"
 lispdir="$lispdir/anthy"
 
-test -z "$GCC" || CFLAGS="$CFLAGS -W -Wall -Wwrite-strings -Wstrict-prototypes -Wmissing-prototypes -pedantic -Wno-long-long"
+test -z "$GCC" || CFLAGS="$CFLAGS -Wextra -Wall -Wcast-align -Wwrite-strings -Wstrict-prototypes -Wmissing-declarations -pedantic -Wno-long-long"
 
 AC_CONFIG_FILES([Makefile
  src-diclib/Makefile src-worddic/Makefile 
