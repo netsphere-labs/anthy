@@ -1,3 +1,6 @@
+
+static struct wttable wt_name_tab[] = {
+
 /*
  * 前半は cannadic-0.90からコピーしてきた。
  * 後の方にAnthy独自の品詞が追加してある。
@@ -172,3 +175,5 @@
 {"#OPEN",POS_OPEN,COS_NONE,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP /* 開き括弧 */},
 {"#CLOSE",POS_CLOSE,COS_NONE,SCOS_NONE,CC_NONE,CT_NONE,WF_INDEP /* 閉じ括弧 */},
 {0,0,0,0,0,0,0},
+
+};

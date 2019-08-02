@@ -21,6 +21,7 @@
  */
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 
 #include <anthy/wtype.h>
 #include "dic_main.h"
@@ -41,9 +42,8 @@ struct wttable {
 };
 
 /* 辞書中の品詞の名前を品詞に変換するテーブル */
-static struct wttable wt_name_tab[]= {
+// static struct wttable wt_name_tab[]
 #include "wtab.h"
-};
 
 static wtype_t
 anthy_get_wtype (int pos, int cos, int scos, int cc, int ct, int wf)
@@ -68,6 +68,9 @@ anthy_get_wtype (int pos, int cos, int scos, int cc, int ct, int wf)
 static struct wttable *
 find_wttab(struct wttable *array, const char *name)
 {
+  assert(array);
+  assert(name);
+    
   struct wttable *w;
   for (w = array; w->name; w++) {
     if (!strcmp(w->name, name)) {
@@ -97,13 +100,18 @@ anthy_init_wtypes(void)
   anthy_type_to_wtype ("#D2KY", &anthy_wtype_a_tail_of_v_renyou); /* exported for metaword.c */
 }
 
-/*
- * 返り値には品詞の名前
- * tには品詞が返される
+/**
+ * Search 品詞 (word class).
+ * @param s  word class name. Ex. "#K5"
+ * @param [out] t  found word class.
+ * @return word class name (= s). If failed, NULL.
  */
 const char *
 anthy_type_to_wtype(const char *s, wtype_t *t)
 {
+  assert(s);
+  assert(t);
+  
   struct wttable *w;
   if (s[0] != '#') {
     *t = anthy_wt_none;

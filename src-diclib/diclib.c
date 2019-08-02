@@ -1,5 +1,10 @@
-#include <sys/types.h>
-#include <netinet/in.h>
+
+#ifndef _WIN32
+  #include <arpa/inet.h>
+#else
+  #define STRICT 1
+  #include <winsock2.h>
+#endif
 
 /**/
 #include <anthy/diclib.h>
@@ -9,14 +14,14 @@
 #include "diclib_inner.h"
 
 
-unsigned int
-anthy_dic_ntohl(unsigned int a)
+uint32_t
+anthy_dic_ntohl(uint32_t a)
 {
   return ntohl(a);
 }
 
-unsigned int
-anthy_dic_htonl(unsigned int a)
+uint32_t
+anthy_dic_htonl(uint32_t a)
 {
   return htonl(a);
 }
