@@ -20,19 +20,34 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
-#include <unistd.h>
-#include <pwd.h>
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#ifndef _MSC_VER
+  #include <config.h>
+#else
+  #include <defines.h>
+#endif
+
 #include <time.h>
 #include <sys/types.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#ifndef _WIN32
+  #include <unistd.h>
+  #include <pwd.h>
+#else
+  #define STRICT 1
+  #include <winsock2.h> // gethostname()
+  #include <shlobj.h>
+  #define strdup _strdup
+#endif
 
 #include <anthy/alloc.h>
 #include <anthy/conf.h>
 #include <anthy/logger.h>
 
-#include <config.h>
 
 /** 設定の変数と値 */
 struct val_ent {
@@ -175,7 +190,7 @@ read_conf_file(void)
   FILE *fp;
   char buf[1024];
   fn = anthy_conf_get_str("CONFFILE");
-  fp = fopen(fn, "r");
+  fp = fopen(fn, "r"); // text mode.
   if (!fp){
     anthy_log(0, "Failed to open %s\n", fn);
     return ;
@@ -212,24 +227,38 @@ static void
 alloc_session_id(void)
 {
   time_t t;
+#ifndef _WIN32
   pid_t pid;
+#else
+  DWORD pid;
+#endif
   char hn[MAX_HOSTNAME];
   char sid[MAX_SID_LEN];
   t = time(0);
+#ifndef _WIN32
   pid = getpid();
+#else
+  pid = GetCurrentProcessId();
+#endif
   gethostname(hn, MAX_HOSTNAME);
   hn[MAX_HOSTNAME-1] = '\0';
-  sprintf(sid, SID_FORMAT, hn, (unsigned int)t & 0xffffffff, pid & 0xffff);
+  sprintf(sid, SID_FORMAT, hn, (unsigned int) (t & 0xffffffff), pid & 0xffff);
   add_val("SESSION-ID", sid);
 }
 
 void
 anthy_do_conf_init(void)
 {
+  const char *fn;
+#ifndef _WIN32
+  struct passwd *pw;
+#else
+  char pw_dir[MAX_PATH + 1];
+#endif
 
-  if (!confIsInit) {
-    const char *fn;
-    struct passwd *pw;
+  if (confIsInit)
+    return;
+    
     val_ent_ator = anthy_create_allocator(sizeof(struct val_ent), val_ent_dtor);
     /*デフォルトの値を設定する。*/
     add_val("VERSION", VERSION);
@@ -237,12 +266,16 @@ anthy_do_conf_init(void)
     if (!fn){
       add_val("CONFFILE", CONF_DIR"/anthy-conf");
     }
+#ifndef _WIN32
     pw = getpwuid(getuid());
     add_val("HOME", pw->pw_dir);
+#else
+  SHGetFolderPathA(NULL, CSIDL_PROFILE, NULL, 0, pw_dir);
+  add_val("HOME", pw_dir);
+#endif
     alloc_session_id();
     read_conf_file();
     confIsInit = 1;
-  }
 }
 
 void

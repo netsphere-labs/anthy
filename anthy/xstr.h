@@ -6,9 +6,12 @@
 #ifndef _xstr_h_included_
 #define _xstr_h_included_
 
-/** 文字型
- * UCS4が入っている */
-typedef int xchar;
+#include <stdint.h>
+
+/** 
+ * Character type. UCS-4 code point.
+ */
+typedef uint32_t xchar;
 
 /** 文字列
  * xstrにtypedefされている

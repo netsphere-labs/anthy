@@ -502,8 +502,8 @@ static unsigned int
 string_hash(const char* str)
 {
   assert(str);
-  
-  unsigned int h = 0;
+
+  unsigned int h = 0; // default to 0
   for (const unsigned char* p = (const unsigned char*) str; *p; p++) {
     h += *p;
     h *= 13;
@@ -516,7 +516,7 @@ find_string_node(struct string_pool *sp, const char *str)
 {
   assert(sp);
   assert(str);
-  
+
   unsigned int h = string_hash(str);
   struct string_node *node;
   for (node = sp->hash[h].next_hash; node; node = node->next_hash) {
@@ -565,7 +565,7 @@ static char *
 get_indep_part(char *buf)
 {
   assert(buf);
-  
+
   int len;
   char *c = strchr(buf, '#');
   if (!c) {
@@ -595,7 +595,7 @@ fixup_missed_word(struct extract_stat *es, char *buf)
 {
   assert(es);
   assert(buf);
-  
+
   int i;
   char *c = get_indep_part(buf);
   if (!c) {
@@ -710,7 +710,7 @@ main(int argc, char **argv)
 
   ofp = NULL;
   input_files = malloc(sizeof(char *) * argc);
-  
+
   for (i = 1; i < argc; i++) {
     char *arg = argv[i];
     if (!strcmp(arg, "-o")) {
