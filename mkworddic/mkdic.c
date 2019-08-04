@@ -152,10 +152,10 @@ flush_output_files (void)
 
 /* ネットワークbyteorderで4bytes書き出す */
 void
-write_nl(FILE *fp, int i)
+write_nl(FILE *fp, uint32_t i)
 {
   i = anthy_dic_htonl(i);
-  fwrite(&i, sizeof(int), 1, fp);
+  fwrite(&i, sizeof(uint32_t), 1, fp);
 }
 
 static void

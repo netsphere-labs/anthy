@@ -90,7 +90,8 @@ anthy_check_user_dir(void)
   const char *hd;
   char *dn;
   struct stat st;
-
+  int r;
+    
   hd = anthy_conf_get_str("HOME");
   dn = alloca(strlen(hd) + 10);
   sprintf(dn, "%s/.anthy", hd);
@@ -101,7 +102,6 @@ anthy_check_user_dir(void)
     }
   }
   else {
-    int r;
     /*fprintf(stderr, "Anthy: Failed to open anthy directory(%s).\n", dn);*/
 #ifndef _WIN32
     r = mkdir(dn, S_IRWXU);
