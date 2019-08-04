@@ -47,7 +47,7 @@ struct rule {
 static struct rule *gRules;
 static int nrRules;
 
-static int 
+static int
 get_node_id_by_name(const char *name)
 {
   int i;
@@ -410,24 +410,24 @@ init_indep_word_seq_tab (void)
     }
 }
 
-/*  
+/*
     ネットワークバイトオーダーで4byte書き出す
 */
 static void
-write_nl(FILE* fp, int i)
+write_nl(FILE* fp, uint32_t i)
 {
   i = anthy_dic_htonl(i);
-  fwrite(&i, sizeof(int), 1, fp);
+  fwrite(&i, sizeof(uint32_t), 1, fp);
 }
 
 static void
 write_transition(FILE* fp, struct dep_transition* transition)
 {
-  write_nl(fp, transition->next_node); 
-  write_nl(fp, transition->ct); 
-  write_nl(fp, transition->dc); 
-  write_nl(fp, transition->head_pos); 
-  write_nl(fp, transition->weak); 
+  write_nl(fp, transition->next_node);
+  write_nl(fp, transition->ct);
+  write_nl(fp, transition->dc);
+  write_nl(fp, transition->head_pos);
+  write_nl(fp, transition->weak);
 }
 
 static void
@@ -492,7 +492,7 @@ static void
 write_file(const char* file_name)
 {
   int i;
-  FILE* fp = fopen(file_name, "w");
+  FILE* fp = fopen(file_name, "wb");
   int* node_offset = malloc(sizeof(int) * nrNodes); /* gNodesのファイル上の位置 */
 
   /* 各ルール */

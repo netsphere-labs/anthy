@@ -76,7 +76,7 @@ struct yomi_entry *find_yomi_entry(struct yomi_entry_list *yl,
 				   xstr *index, int create);
 
 /* 辞書書き出し用の補助 */
-void write_nl(FILE *fp, int i);
+void write_nl(FILE* fp, uint32_t i);
 
 /**/
 const char *get_wt_name(const char *name);

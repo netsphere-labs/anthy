@@ -76,7 +76,7 @@ anthy_mmap (const char *fn)
 #else
   HANDLE fd;
   HANDLE hMap;
-  LARGE_INTERGER st;
+  LARGE_INTEGER st;
 #endif
   void *ptr;
   
