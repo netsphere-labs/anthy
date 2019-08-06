@@ -52,7 +52,9 @@
 #else
   #define STRICT 1
   #define WIN32_LEAN_AND_MEAN
-  #include <malloc.h> // alloca()
+  #ifdef _MSC_VER
+    #include <malloc.h> // alloca()
+  #endif
   #include <windows.h>
   #include <io.h> // _mktemp()
   #define strdup _strdup
@@ -117,34 +119,52 @@ struct mkdic_stat {
   char **excluded_wtypes;
 };
 
-/* 辞書の出力先のファイルをオープンする */
+
+/**
+ * Open temporary files that the dictionary will be stored and store the file
+ * pointers in file_array[].
+ */
 static void
 open_output_files(void)
 {
   struct file_section *fs;
   for (fs = file_array; fs->fpp; fs ++) {
-    char *tmpdir = getenv("TMPDIR");
+#ifndef _WIN32
+    const char* tmpdir = getenv("TMPDIR");
+    if (!tmpdir)
+      tmpdir = "/tmp";
+#else
+    char tmpdir[MAX_PATH + 2];
+    GetTempPathA(sizeof(tmpdir), tmpdir);
+#endif
     fs->fn = NULL;
-    if (tmpdir) {
+
       /* tmpfile()がTMPDIRを見ないため、TMPDIRを指定された場合mkstempを使う。*/
-      char buf[256];
+    char buf[300];
       int fd = -1;
       snprintf(buf, sizeof(buf), "%s/mkanthydic.XXXXXX", tmpdir);
+#ifndef _WIN32
       fd = mkstemp(buf);
       if (fd == -1) {
-	*(fs->fpp) = NULL;
+        *(fs->fpp) = NULL;
       } else {
-	*(fs->fpp) = fdopen(fd, "w+");
-	fs->fn = strdup(buf);
+        *(fs->fpp) = fdopen(fd, "w+b");
+        fs->fn = strdup(buf);
       }
-    } else {
-      *(fs->fpp) = tmpfile();
-    }
+#else
+      if (!_mktemp(buf))
+        *(fs->fpp) = NULL;
+      else {
+        *(fs->fpp) = fopen(buf, "w+b");
+        fs->fn = strdup(buf);
+      }
+#endif
+
     /**/
     if (!(*(fs->fpp))) {
       fprintf (stderr, "%s: cannot open temporary file: %s\n",
 	       progname, strerror (errno));
-      exit (2);
+      abort();
     }
   }
 }
@@ -172,6 +192,8 @@ flush_output_files (void)
 void
 write_nl(FILE* fp, uint32_t i)
 {
+  assert(fp);
+
   i = anthy_dic_htonl(i);
   fwrite(&i, sizeof(uint32_t), 1, fp);
 }
@@ -183,6 +205,13 @@ print_usage(void)
   exit(0);
 }
 
+
+/**
+ * Read a line from the text file. Comment lines and blank lines are skipped.
+ * The trailing newline character is deleted.
+ * @param  buf A buffer with more than MAX_LINE_LEN bytes.
+ * @return buf is returned. If EOF, NULL.
+ */
 static char *
 read_line(FILE *fp, char *buf)
 {
@@ -191,36 +220,54 @@ read_line(FILE *fp, char *buf)
 
   while (fgets(buf, MAX_LINE_LEN, fp)) {
     int len = strlen(buf);
-    if (buf[0] == '#') {
-      continue ;
-    }
-    if (buf[len - 1] != '\n') {
+    if (len == MAX_LINE_LEN - 1 && buf[len - 1] != '\n') {
       toolong = 1;
+      printf("warning: too long: %s\n", buf);
+      abort(); // debug
       continue ;
     }
-
-    buf[len - 1] = 0;
     if (toolong) {
       toolong = 0;
-    } else {
-      return buf;
+      continue;
     }
+    if (buf[0] == '#')
+      continue ;
+
+    // cut tail CRLF
+    while (len > 0 && strchr(" \t\r\n", buf[len - 1])) {
+      buf[len - 1] = '\0';
+      len--;
+    }
+    if (!len)
+      continue;
+
+    return buf;
   }
   return NULL;
 }
 
-/** cannadic形式の辞書の行からindexとなる部分を取り出す */
+
+/**
+ * Extract the index part from a line of the 'cannadic' dictionary.
+ * @return xstr string from the beginning to just before first ' '. Need to
+ *         release it by the caller.
+ */
 static xstr *
 get_index_from_line(struct mkdic_stat *mds, char *buf)
 {
+  assert(mds);
+  assert(buf);
+
   char *sp;
   xstr *xs;
   sp = strchr(buf, ' ');
   if (!sp) {
     /* 辞書のフォーマットがおかしい */
+    printf("warning: invalid line: %s\n", buf);
+    abort(); // debug
     return NULL;
   }
-  *sp = 0;
+  *sp = '\0';
   xs = anthy_cstr_to_xstr(buf, mds->input_encoding);
   *sp = ' ';
   return xs;
@@ -270,13 +317,18 @@ push_back_word_entry(struct mkdic_stat *mds,
 		     struct yomi_entry *ye, const char *wt_name,
 		     int freq, const char *word, int order)
 {
+  assert(ye);
+
   wtype_t wt;
   char *s;
   if (freq == 0) {
+    printf("warning: freq == 0\n");
+    abort(); // debug
     return ;
   }
   if (!anthy_type_to_wtype(wt_name, &wt)) {
     /* anthyの知らない品詞 */
+    printf("warning: word = %s, unknown wtype = %s\n", word, wt_name);
     return ;
   }
   ye->entries = realloc(ye->entries,
@@ -296,13 +348,21 @@ push_back_word_entry(struct mkdic_stat *mds,
   ye->nr_entries ++;
 }
 
+
+/**
+ * Get the word class (品詞) and the frequency.
+ * @param [out] wtbuf   The word class is written.
+ * @param cur           A string like "#T35*100", "#aru*460", or "#W5*402".
+ * @return The frequency. Return 1 if the argument cur has no frequency.
+ */
 static int
-parse_wtype(char *wtbuf, char *cur)
+parse_wtype(char* wtbuf, const char* cur)
 {
   /* 品詞 */
   char *t;
   int freq;
   if (strlen(cur) >= MAX_WTYPE_LEN) {
+    abort(); // invalid format.
     return 0;
   }
   strcpy(wtbuf, cur);
@@ -311,12 +371,13 @@ parse_wtype(char *wtbuf, char *cur)
   freq = 1;
   if (t) {
     int tmp_freq;
-    *t = 0;
+    *t = '\0';
     t++;
     tmp_freq = atoi(t);
-    if (tmp_freq) {
-      freq = tmp_freq;
+    if (!tmp_freq) {
+      abort(); // invalid format.
     }
+    freq = tmp_freq;
   }
   return freq;
 }
@@ -368,15 +429,22 @@ is_excluded_wtype(struct mkdic_stat *mds, char *wt)
   return 0;
 }
 
+
+/**
+ * \x (x is any) is skipped.
+ * @return the pointer to the first space or terminal NUL character.
+ *         If cur ends with '\', NULL.
+ */
 static char *
 find_token_end(char *cur)
 {
+  assert(cur);
+
   char *n;
   for (n = cur; *n != ' ' && *n != '\0'; n++) {
     if (*n == '\\') {
-      if (!n[1]) {
-	return NULL;
-      }
+      if (!n[1])
+        return NULL;
       n++;
     }
   }
@@ -388,6 +456,9 @@ static void
 push_back_word_entry_line(struct mkdic_stat *mds, struct yomi_entry *ye,
 			  const char *ent)
 {
+  assert(ye);
+  assert(ent);
+
   char *buf = alloca(strlen(ent) + 1);
   char *cur = buf;
   char *n;
@@ -396,14 +467,13 @@ push_back_word_entry_line(struct mkdic_stat *mds, struct yomi_entry *ye,
   int order = 0;
 
   strcpy(buf, ent);
-  wtbuf[0] = 0;
+  wtbuf[0] = '\0';
 
   while (1) {
     /* トークンを\0で切る。curの後の空白か\0を探す */
     n = find_token_end(cur);
     if (!n) {
-      fprintf(stderr, "invalid \\ at the end of line (%s).\n",
-	      ent);
+      fprintf(stderr, "invalid \\ at the end of line (%s).\n", ent);
       return ;
     }
     if (*n) {
@@ -413,8 +483,8 @@ push_back_word_entry_line(struct mkdic_stat *mds, struct yomi_entry *ye,
     }
     /**/
     if (cur[0] == '#') {
-      if (isalpha((unsigned char)cur[1])) {
-	/* #XX*?? をパース */
+      if (isalpha(cur[1])) {
+        /* #XX*?? をパース */
 	freq = parse_wtype(wtbuf, cur);
       } else {
 	if (cur[1] == '_' &&
@@ -474,7 +544,9 @@ compare_word_entry_by_freq(const void *p1, const void *p2)
 {
   const struct word_entry *e1 = p1;
   const struct word_entry *e2 = p2;
-  return e2->raw_freq - e1->raw_freq;
+  if (e2->raw_freq != e1->raw_freq)
+    return e2->raw_freq - e1->raw_freq;
+  return e2 - e1;
 }
 
 /** qsort用の比較関数 */
@@ -538,6 +610,9 @@ find_yomi_entry(struct yomi_entry_list *yl, xstr *index, int create)
 
   /* 無いので確保 */
   ye = malloc(sizeof(struct yomi_entry));
+  if (!ye)
+    return NULL;
+
   ye->nr_entries = 0;
   ye->entries = 0;
   ye->next = NULL;
@@ -598,6 +673,8 @@ mk_yomi_hash(FILE *yomi_hash_out, struct yomi_entry_list *yl)
 static struct adjust_command *
 parse_modify_freq_command(const char *buf)
 {
+  assert(buf);
+
   char *line = alloca(strlen(buf) + 1);
   char *yomi, *wt, *word, *type_str;
   struct adjust_command *cmd;
@@ -623,6 +700,8 @@ parse_modify_freq_command(const char *buf)
     return NULL;
   }
   cmd = malloc(sizeof(struct adjust_command));
+  if (!cmd)
+    return NULL;
   cmd->type = type;
   cmd->yomi = anthy_cstr_to_xstr(yomi, ANTHY_UTF8_ENCODING);
   cmd->wt = get_wt_name(wt);
@@ -648,6 +727,9 @@ parse_adjust_command(const char *buf, struct adjust_command *ac_list)
 static void
 parse_dict_file(FILE *fin, struct mkdic_stat *mds)
 {
+  assert(fin);
+  assert(mds);
+
   xstr *index_xs;
   char buf[MAX_LINE_LEN];
   char *ent;
@@ -773,6 +855,7 @@ static int
 get_file_size(FILE *fp)
 {
   if (!fp) {
+    abort(); // debug
     return 0;
   }
   return (ftell (fp) + SECTION_ALIGNMENT - 1) & (-SECTION_ALIGNMENT);
@@ -839,7 +922,7 @@ link_dics(struct mkdic_stat *mds)
   FILE *fp;
   struct file_section *fs;
 
-  fp = fopen (mds->output_fn, "w");
+  fp = fopen (mds->output_fn, "wb");
   if (!fp) {
       fprintf (stderr, "%s: %s: cannot create: %s\n",
 	       progname, mds->output_fn, strerror (errno));
@@ -851,6 +934,7 @@ link_dics(struct mkdic_stat *mds)
 
   for (fs = file_array; fs->fpp; fs ++) {
     /* 各セクションのファイルを結合する */
+    printf("copy: from=%s\n", fs->fn);
     copy_file(mds, *(fs->fpp), fp);
     if (fs->fn) {
       unlink(fs->fn);
@@ -867,15 +951,18 @@ link_dics(struct mkdic_stat *mds)
 static void
 read_dict_file(struct mkdic_stat *mds, const char *fn)
 {
+  assert(fn);
+
   FILE *fp;
   /* ファイル名が指定されたので読み込む */
-  fp = fopen(fn, "r");
+  fp = fopen(fn, "r"); // This is text file.
   if (fp) {
     printf("file = %s\n", fn);
     parse_dict_file(fp, mds);
     fclose(fp);
   } else {
     printf("failed file = %s\n", fn);
+    abort(); // debug
   }
 }
 
@@ -981,6 +1068,8 @@ reverse_multi_segment_word(struct mkdic_stat *mds, struct word_entry *we)
 static void
 build_reverse_dict(struct mkdic_stat *mds)
 {
+  assert(mds);
+
   struct yomi_entry *ye;
   int i, n;
   struct word_entry *we_array;
@@ -993,6 +1082,8 @@ build_reverse_dict(struct mkdic_stat *mds)
       n++;
     }
   }
+  printf("count n = %d\n", n);
+
   /* コピーする
    * (元の辞書中のポインタはreallocで動くのでコピーが必要)
    */
@@ -1107,6 +1198,10 @@ show_command(char **tokens, int nr)
   printf("\n");
 }
 
+
+/**
+ * @return If failed, 1
+ */
 static int
 execute_batch(struct mkdic_stat *mds, const char *fn)
 {
@@ -1140,6 +1235,7 @@ execute_batch(struct mkdic_stat *mds, const char *fn)
       break;
     } else {
       printf("Unknown command(%s).\n", cmd);
+      abort();
     }
     anthy_free_line();
   }
@@ -1184,11 +1280,13 @@ init_libs(void)
   }
 }
 
+// This variable is huge.Local variable makes stack overflow.
+static struct mkdic_stat mds;
+
 /**/
 int
 main(int argc, char **argv)
 {
-  struct mkdic_stat mds;
   int i;
   char *script_fn = NULL;
   int help_mode = 0;
