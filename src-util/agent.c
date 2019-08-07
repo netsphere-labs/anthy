@@ -1,4 +1,4 @@
-/* 
+/*
  * 標準入出力でコマンドを受けたり，変換結果を送るなどの通信を
  * アプリケーション(おもにEmacs)と行うことにより，アプリケーションに
  * Anthyによる入力機能を容易かつ安全に追加できる．
@@ -9,24 +9,38 @@
  */
 /*
  * *マルチコンテキストの扱いを決めかねている
- * *入出力にstdioを使うかfdを使うか決めかねている
+ * *入出力にstdioを使う.
  */
 
-#include <sys/time.h>
+#define NO_OLDNAMES 1  // mingw
+#define _CRT_SECURE_NO_WARNINGS
+
+#ifndef _MSC_VER
+  #include <config.h>
+#else
+  #include <defines.h>
+#endif
+
 #include <sys/types.h>
-#include <unistd.h>
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
 #include <assert.h>
+#ifndef _WIN32
+  #include <sys/time.h>
+  #include <unistd.h>
+#else
+  #define STRICT 1
+  #include <winsock2.h>
+  #define strdup _strdup
+#endif
 
 #include <anthy/anthy.h>
 #include <anthy/input.h>
 
 #include "rkconv.h"
 
-#include <config.h>
 
 extern void egg_main(void);
 
@@ -81,7 +95,7 @@ enum {
   /* キーコマンド */
   CMD_SPACE = 1000,
   CMD_ENTER,
-  CMD_BACKSPACE, 
+  CMD_BACKSPACE,
   CMD_DELETE,
   CMD_UP,
   CMD_ESC,
@@ -130,12 +144,12 @@ struct connection {
   char* rbuf;
   int n_rbuf;
   int s_rbuf;
-  int rfd;
+  //int rfd;
 
   char* wbuf;
   int n_wbuf;
   int s_wbuf;
-  int wfd;
+  //int wfd;
 };
 
 static void send_error(void);
@@ -143,7 +157,7 @@ static void send_error(void);
 static struct connection* conn;
 static struct anthy_input_config* config;
 static struct command* command_queue;
-static int daemon_sock = -1;
+//static int daemon_sock = -1;
 static int anonymous;
 static int egg;
 static char *personality;
@@ -152,6 +166,8 @@ int use_utf8 = 1;
 static char *
 encode_command_arg(char *a)
 {
+  assert(a);
+
   int i, j, len;
   char *s;
 
@@ -217,6 +233,9 @@ kill_connection(struct connection* conn)
   exit(0);
 }
 
+/**
+ * @return a new command. Caller has to free it.
+ */
 static struct command *
 make_command0(int no)
 {
@@ -231,6 +250,9 @@ make_command0(int no)
   return cmd;
 }
 
+/**
+ * @return a new command. Caller has to free it.
+ */
 static struct command *
 make_command1(int no, const char* arg1)
 {
@@ -503,11 +525,11 @@ make_command(char* buf)
 static int
 proc_connection(void)
 {
-  fd_set rfds;
-  fd_set wfds;
-  int max_fd;
+  //fd_set rfds;
+  //fd_set wfds;
+  //int max_fd;
   int ret;
-
+/*
   max_fd = -1;
   FD_ZERO(&rfds);
   FD_ZERO(&wfds);
@@ -529,9 +551,9 @@ proc_connection(void)
   if (ret < 0) {
     return -1;
   }
-  
-  if (conn->n_wbuf > 0 && FD_ISSET(conn->wfd, &wfds)) {
-    ret = write(conn->wfd, conn->wbuf, conn->n_wbuf);
+*/
+  if (conn->n_wbuf > 0 /*&& FD_ISSET(conn->wfd, &wfds)*/) {
+    ret = fwrite(conn->wbuf, 1, conn->n_wbuf, stdout);
     if (ret <= 0) {
       kill_connection (conn);
     } else {
@@ -541,18 +563,18 @@ proc_connection(void)
       }
     }
   }
-  
-  if (FD_ISSET(conn->rfd, &rfds)) {
-    ensure_buffer(&conn->rbuf, &conn->s_rbuf, 
+
+  //if (FD_ISSET(conn->rfd, &rfds)) {
+    ensure_buffer(&conn->rbuf, &conn->s_rbuf,
 		  conn->n_rbuf + BUF_GROW_SIZE);
-    ret = read(conn->rfd, 
-	       conn->rbuf + conn->n_rbuf, conn->s_rbuf - conn->n_rbuf);
+  ret = fread(conn->rbuf + conn->n_rbuf, 1, conn->s_rbuf - conn->n_rbuf,
+              stdin);
     if (ret <= 0) {
       kill_connection (conn);
     } else {
       conn->n_rbuf += ret;
     }
-  }
+    //}
   return 0;
 }
 
@@ -647,7 +669,7 @@ send_quote_string(const char* str)
     default:
       break;
     }
-    
+
     *q++ = *p++;
   }
   *q = '\0';
@@ -694,9 +716,9 @@ send_preedit(struct anthy_input_preedit* pedit)
 	      send_string(" ((UL RV ENUMR) \"");
 	    else
 	      send_string(" ((UL RV) \"");
-	  } else 
+	  } else
 	    send_string(" ((UL) \"");
-	  
+
 	  send_quote_string(seg->str);
 	  send_string("\" ");
 	  send_number10(seg->cand_no);
@@ -708,7 +730,7 @@ send_preedit(struct anthy_input_preedit* pedit)
     }
     break;
   }
-	  
+
   send_string(")\r\n");
 }
 
@@ -748,7 +770,7 @@ new_input_context(int id)
 {
   struct input_context_list* ictxl;
 
-  ictxl = 
+  ictxl =
     (struct input_context_list*) malloc(sizeof (struct input_context_list));
   ictxl->id = id;
   ictxl->ictx = anthy_input_create_context(config);
@@ -780,7 +802,7 @@ cmdh_select_input_context(struct command* cmd)
 {
   int id;
   struct input_context_list** p;
-  
+
   id = atoi(cmd->arg[0]);
   for (p = &ictx_list; *p; p = &(*p)->next) {
     if ((*p)->id == id) {
@@ -861,7 +883,7 @@ cmdh_map_edit(struct command* cmd)
   int map_no = atoi(cmd->arg[0]);
   int ret;
 
-  ret = anthy_input_edit_rk_config(config, map_no, 
+  ret = anthy_input_edit_rk_config(config, map_no,
 				   cmd->arg[1], cmd->arg[2], NULL);
 
   if (ret != 0) {
@@ -951,6 +973,7 @@ cmd_arrow(struct anthy_input_context* ictx, struct command* cmd)
 static void
 cmd_key(struct anthy_input_context* ictx, struct command* cmd)
 {
+  assert(cmd);
   anthy_input_str(ictx, cmd->arg[0]);
 }
 
@@ -958,9 +981,11 @@ cmd_key(struct anthy_input_context* ictx, struct command* cmd)
  * コマンドをディスパッチする
  */
 static void
-dispatch_command(struct anthy_input_context* ictx, 
+dispatch_command(struct anthy_input_context* ictx,
 		 struct command* cmd)
 {
+  assert(cmd);
+
   switch (cmd->cmd) {
   case CMDH_IGNORE_ICTXT:
     send_error();
@@ -968,7 +993,7 @@ dispatch_command(struct anthy_input_context* ictx,
   case CMDH_PRINT_CONTEXT:
     /* Dirty implementation, would cause corrpution.*/
     {
-      anthy_context_t ac = anthy_input_get_anthy_context(ictx); 
+      anthy_context_t ac = anthy_input_get_anthy_context(ictx);
       if (ac) {
 	anthy_print_context(ac);
       }
@@ -1056,7 +1081,7 @@ main_loop(void)
 
   while (1) {
     cmd = read_command();
-    if (!cmd) 
+    if (!cmd)
       break;
     ictx = get_current_input_context();
 
@@ -1121,10 +1146,14 @@ parse_args(int argc, char **argv)
 int
 main(int argc, char **argv)
 {
+  int r;
+
+  anthy_set_logger(NULL, 0);
+
   parse_args(argc, argv);
   if (anthy_input_init()) {
     printf("Failed to init anthy\n");
-    exit(0);
+    exit(1);
   }
   if (anonymous) {
     anthy_input_set_personality("");
@@ -1135,19 +1164,27 @@ main(int argc, char **argv)
   if (egg) {
     egg_main();
     anthy_quit();
-  } else {
+    return 0;
+  }
+
+  r = setvbuf(stdin, NULL, _IONBF, 0); // no buffering.
+  if (r) {
+    printf("Failed setvbuf()\n");
+    return 1;
+  }
+
     config = anthy_input_create_config();
     conn = (struct connection*) malloc(sizeof(struct connection));
     conn->rbuf = NULL;
     conn->n_rbuf = 0;
     conn->s_rbuf = 0;
-    conn->rfd = 0;
+    //conn->rfd = 0;
     conn->wbuf = NULL;
     conn->n_wbuf = 0;
     conn->s_wbuf = 0;
-    conn->wfd = 1;
+    //conn->wfd = 1;
 
     main_loop();
-  }
+
   return 0;
 }
