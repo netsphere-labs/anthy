@@ -105,6 +105,10 @@ rk_rule_copy_to(const struct rk_rule* from, struct rk_rule* to)
   return -1;
 }
 
+
+/**
+ * @return a new rk_rule_set. If failed, NULL.
+ */
 static struct rk_rule_set*
 rk_rule_set_create(const struct rk_rule* rules)
 {
@@ -224,6 +228,10 @@ rk_slr_closure_create(struct rk_rule_set* rs,
   return cl;
 }
 
+
+/**
+ * @return a new rk_map. If failed, NULL.
+ */
 struct rk_map*
 rk_map_create(const struct rk_rule* rules)
 {

@@ -172,10 +172,10 @@ read_rk_result(struct anthy_input_context* ictx)
   if (ret > 0) {
     if (ictx->s_hbuf - ictx->n_hbuf > 0)
       ictx->n_hbuf = ictx->s_hbuf - 1;
-    
+
     ensure_buffer(&ictx->hbuf, &ictx->s_hbuf, ictx->n_hbuf + ret + 1);
-    
-    rk_result(ictx->rkctx, ictx->hbuf + ictx->n_hbuf, 
+
+    rk_result(ictx->rkctx, ictx->hbuf + ictx->n_hbuf,
 	      ictx->s_hbuf - ictx->n_hbuf);
   }
   if (ictx->hbuf)
@@ -194,7 +194,7 @@ static void
 join_noconv_string(struct anthy_input_context* ictx)
 {
   if (ictx->n_hbuf_follow > 0) {
-    ensure_buffer(&ictx->hbuf, &ictx->s_hbuf, 
+    ensure_buffer(&ictx->hbuf, &ictx->s_hbuf,
 		  ictx->n_hbuf + ictx->n_hbuf_follow);
     memcpy(ictx->hbuf + ictx->n_hbuf, ictx->hbuf_follow, ictx->n_hbuf_follow);
     ictx->n_hbuf += ictx->n_hbuf_follow;
@@ -229,7 +229,7 @@ enter_conv_state(struct anthy_input_context* ictx)
 
   ictx->enum_cand_count = 0;
   ictx->actx = anthy_create_context();
-  anthy_context_set_encoding(ictx->actx, ANTHY_EUC_JP_ENCODING);
+  anthy_context_set_encoding(ictx->actx, ANTHY_UTF8_ENCODING);
   if (!ictx->actx) {
     enter_none_state(ictx);
     anthy_input_errno = AIE_NOMEM;
@@ -314,7 +314,7 @@ cmdh_map_select(struct anthy_input_context* ictx, int map)
   return 0;
 }
 
-static struct anthy_input_segment* 
+static struct anthy_input_segment*
 cmdh_get_candidate(struct anthy_input_context* ictx, int cand_no)
 {
   struct a_segment* cs;
@@ -328,13 +328,13 @@ cmdh_get_candidate(struct anthy_input_context* ictx, int cand_no)
   }
   ictx->last_gotten_cand = cand_no;
 
-  seg = (struct anthy_input_segment*) 
+  seg = (struct anthy_input_segment*)
     malloc(sizeof(struct anthy_input_segment));
   len = anthy_get_segment(ictx->actx, cs->index, cand_no, NULL, 0);
   seg->str = (char*) malloc(len + 1);
   anthy_get_segment(ictx->actx, cs->index, cand_no, seg->str, len + 1);
   seg->cand_no = cand_no;
-  seg->noconv_len = anthy_get_segment(ictx->actx, cs->index, 
+  seg->noconv_len = anthy_get_segment(ictx->actx, cs->index,
 				      NTH_UNCONVERTED_CANDIDATE, NULL, 0);
   seg->nr_cand = cs->ass.nr_candidate;
   seg->flag = ANTHY_INPUT_SF_CURSOR;
@@ -352,10 +352,10 @@ do_cmd_commit(struct anthy_input_context* ictx)
 
   for (as = ictx->segment; as; as = as->next) {
     int len;
-    
+
     len = anthy_get_segment(ictx->actx, as->index, as->cand, NULL, 0);
     ensure_buffer(&ictx->commit, &ictx->s_commit, ictx->n_commit + len + 1);
-    anthy_get_segment(ictx->actx, as->index, as->cand, 
+    anthy_get_segment(ictx->actx, as->index, as->cand,
 		      ictx->commit + ictx->n_commit, len + 1);
     ictx->n_commit += len;
     anthy_commit_segment(ictx->actx, as->index, as->cand);
@@ -363,7 +363,7 @@ do_cmd_commit(struct anthy_input_context* ictx)
 }
 
 static int
-cmdh_select_candidate(struct anthy_input_context* ictx, 
+cmdh_select_candidate(struct anthy_input_context* ictx,
 		      int cand_no)
 {
   struct a_segment* cs;
@@ -374,7 +374,7 @@ cmdh_select_candidate(struct anthy_input_context* ictx,
     return -1;
   }
   cs->cand = cand_no;
-  
+
   if (cs->next) {
     ictx->cur_segment = cs->next;
     ictx->last_gotten_cand = ictx->cur_segment->cand;
@@ -420,7 +420,7 @@ cmd_move_cursor(struct anthy_input_context* ictx, int d)
     int len;
     if (ictx->n_hbuf_follow == 0)
       return;
-    for (p = ictx->hbuf_follow; 
+    for (p = ictx->hbuf_follow;
 	 p < ictx->hbuf_follow + ictx->n_hbuf_follow && d > 0; p++, d--) {
       if (p < ictx->hbuf_follow + ictx->n_hbuf_follow - 1 && is_eucchar(p))
 	p++;
@@ -436,13 +436,13 @@ cmd_move_cursor(struct anthy_input_context* ictx, int d)
     int len;
     if (ictx->n_hbuf == 0)
       return;
-    for (p = ictx->hbuf + ictx->n_hbuf; 
+    for (p = ictx->hbuf + ictx->n_hbuf;
 	 p > ictx->hbuf && d < 0; p--, d++) {
       if (p - 1 > ictx->hbuf && is_eucchar(p - 2))
 	p--;
     }
     len = (ictx->hbuf + ictx->n_hbuf) - p;
-    ensure_buffer(&ictx->hbuf_follow, &ictx->s_hbuf_follow, 
+    ensure_buffer(&ictx->hbuf_follow, &ictx->s_hbuf_follow,
 		  ictx->n_hbuf_follow + len);
     if (ictx->n_hbuf_follow > 0)
       memmove(ictx->hbuf_follow + len, ictx->hbuf_follow, ictx->n_hbuf_follow);
@@ -466,7 +466,7 @@ cmd_backspace(struct anthy_input_context* ictx)
     buf = (char*) malloc(len);
     rk_get_pending_str(ictx->rkctx, buf, len);
     rk_flush(ictx->rkctx);
-    do_cmd_push_key(ictx, buf);    
+    do_cmd_push_key(ictx, buf);
     free(buf);
   } else {
     if (brk_roman_get_previous_pending(ictx->rkctx)) {
@@ -520,12 +520,12 @@ cmd_delete(struct anthy_input_context* ictx)
 static void
 cmd_commit_unconv(struct anthy_input_context* ictx)
 {
-  ensure_buffer(&ictx->commit, &ictx->s_commit, 
+  ensure_buffer(&ictx->commit, &ictx->s_commit,
 		ictx->n_commit + ictx->n_hbuf + ictx->n_hbuf_follow);
   memcpy(ictx->commit + ictx->n_commit, ictx->hbuf, ictx->n_hbuf);
   ictx->n_commit += ictx->n_hbuf;
   if (ictx->n_hbuf_follow > 0)
-    memcpy(ictx->commit + ictx->n_commit, 
+    memcpy(ictx->commit + ictx->n_commit,
 	   ictx->hbuf_follow, ictx->n_hbuf_follow);
   ictx->n_commit += ictx->n_hbuf_follow;
 }
@@ -541,21 +541,21 @@ cmd_resize(struct anthy_input_context* ictx, int d)
   anthy_resize_segment(ictx->actx, ictx->cur_segment->index, d);
   anthy_get_stat(ictx->actx, &acs);
 
-  anthy_get_segment_stat(ictx->actx, 
+  anthy_get_segment_stat(ictx->actx,
 			 ictx->cur_segment->index, &ictx->cur_segment->ass);
   ictx->cur_segment->cand = NTH_UNCONVERTED_CANDIDATE;
   last_pos = ictx->cur_segment->ass.seg_len;
   for (as = ictx->cur_segment, i = as->index + 1; i < acs.nr_segment; i++) {
     if (as->next == NULL) {
       struct a_segment* as2;
-      
+
       as2 = (struct a_segment*) malloc(sizeof(struct a_segment));
       as2->index = i;
       as2->prev = as;
       as->next = as2;
       as2->next = NULL;
       as = as2;
-    } else 
+    } else
       as = as->next;
     as->pos = last_pos;
     anthy_get_segment_stat(ictx->actx, i, &as->ass);
@@ -579,10 +579,10 @@ static void
 commit_noconv_string(struct anthy_input_context* ictx)
 {
   join_noconv_string(ictx);
-  ensure_buffer(&ictx->commit, &ictx->s_commit, 
+  ensure_buffer(&ictx->commit, &ictx->s_commit,
 		ictx->n_commit + ictx->n_hbuf + 1);
   	/* +1 is just for an optimization */
-  memcpy(ictx->commit + ictx->n_commit, 
+  memcpy(ictx->commit + ictx->n_commit,
 	 ictx->hbuf, ictx->n_hbuf);
   ictx->n_commit += ictx->n_hbuf;
   ictx->n_hbuf = 0;
@@ -646,7 +646,7 @@ cmd_prev_candidate(struct anthy_input_context* ictx)
     }
     ictx->last_gotten_cand = 0;
   } else {
-    if (--as->cand < 0) 
+    if (--as->cand < 0)
       as->cand = as->ass.nr_candidate - 1;
     ictx->last_gotten_cand = as->cand;
   }
@@ -655,7 +655,7 @@ cmd_prev_candidate(struct anthy_input_context* ictx)
 static void
 cmd_move_selection(struct anthy_input_context* ictx, int d)
 {
-  if (d > 0) 
+  if (d > 0)
     while (d-- > 0 && ictx->cur_segment->next) {
       ictx->enum_cand_count = 0;
       ictx->cur_segment = ictx->cur_segment->next;
@@ -673,7 +673,7 @@ static void
 cmd_move_to_bol_seg(struct anthy_input_context* ictx)
 {
   ictx->cur_segment = ictx->segment;
-  ictx->enum_cand_count = 0;  
+  ictx->enum_cand_count = 0;
   ictx->last_gotten_cand = ictx->cur_segment->cand;
 }
 
@@ -682,7 +682,7 @@ cmd_move_to_eol_seg(struct anthy_input_context* ictx)
 {
   while (ictx->cur_segment->next)
     ictx->cur_segment = ictx->cur_segment->next;
-  ictx->enum_cand_count = 0;  
+  ictx->enum_cand_count = 0;
   ictx->last_gotten_cand = ictx->cur_segment->cand;
 }
 
@@ -712,7 +712,7 @@ cmd_move_to_bol(struct anthy_input_context* ictx)
 
   ensure_buffer(&ictx->hbuf_follow, &ictx->s_hbuf_follow,
 		ictx->n_hbuf + ictx->n_hbuf_follow);
-  memmove(ictx->hbuf_follow + ictx->n_hbuf, 
+  memmove(ictx->hbuf_follow + ictx->n_hbuf,
 	  ictx->hbuf_follow, ictx->n_hbuf_follow);
   memcpy(ictx->hbuf_follow, ictx->hbuf, ictx->n_hbuf);
   ictx->n_hbuf_follow += ictx->n_hbuf;
@@ -734,7 +734,7 @@ cmd_move_to_eol(struct anthy_input_context* ictx)
     return;
   }
 
-  ensure_buffer(&ictx->hbuf, &ictx->s_hbuf, 
+  ensure_buffer(&ictx->hbuf, &ictx->s_hbuf,
 		ictx->n_hbuf + ictx->n_hbuf_follow);
   memcpy(ictx->hbuf + ictx->n_hbuf, ictx->hbuf_follow, ictx->n_hbuf_follow);
   ictx->n_hbuf += ictx->n_hbuf_follow;
@@ -759,17 +759,17 @@ cmd_cut(struct anthy_input_context* ictx)
   ictx->n_hbuf_follow = 0;
   ictx->s_hbuf_follow = tmp_int;
 }
-		
+
 /*****************************************************************/
 
 /* pure function */
-struct anthy_input_context* 
+struct anthy_input_context*
 anthy_input_create_context(struct anthy_input_config* cfg)
 {
   struct anthy_input_context* ictx;
   int i;
 
-  ictx = 
+  ictx =
     (struct anthy_input_context*) malloc(sizeof(struct anthy_input_context));
   ictx->state = ANTHY_INPUT_ST_NONE;
   ictx->rkctx = rk_context_create(cfg->break_into_roman);
@@ -932,7 +932,7 @@ anthy_input_quit(struct anthy_input_context* ictx)
   switch (ictx->state) {
   case ANTHY_INPUT_ST_OFF:
     break;
-  case ANTHY_INPUT_ST_NONE:  
+  case ANTHY_INPUT_ST_NONE:
     break;
   case ANTHY_INPUT_ST_EDIT:
     leave_edit_state(ictx);
@@ -957,7 +957,7 @@ anthy_input_erase_prev(struct anthy_input_context* ictx)
   switch (ictx->state) {
   case ANTHY_INPUT_ST_OFF:
     break;
-  case ANTHY_INPUT_ST_NONE:  
+  case ANTHY_INPUT_ST_NONE:
     break;
   case ANTHY_INPUT_ST_EDIT:
     cmd_backspace(ictx);
@@ -981,7 +981,7 @@ anthy_input_erase_next(struct anthy_input_context* ictx)
   switch (ictx->state) {
   case ANTHY_INPUT_ST_OFF:
     break;
-  case ANTHY_INPUT_ST_NONE:  
+  case ANTHY_INPUT_ST_NONE:
     break;
   case ANTHY_INPUT_ST_EDIT:
     cmd_delete(ictx);
@@ -999,7 +999,7 @@ anthy_input_commit(struct anthy_input_context* ictx)
   switch (ictx->state) {
   case ANTHY_INPUT_ST_OFF:
     break;
-  case ANTHY_INPUT_ST_NONE:  
+  case ANTHY_INPUT_ST_NONE:
     break;
   case ANTHY_INPUT_ST_EDIT:
     terminate_rk(ictx);
@@ -1028,7 +1028,7 @@ anthy_input_move(struct anthy_input_context* ictx, int lr)
   switch (ictx->state) {
   case ANTHY_INPUT_ST_OFF:
     break;
-  case ANTHY_INPUT_ST_NONE:  
+  case ANTHY_INPUT_ST_NONE:
     break;
   case ANTHY_INPUT_ST_EDIT:
     cmd_move_cursor(ictx, lr);
@@ -1051,7 +1051,7 @@ anthy_input_resize(struct anthy_input_context* ictx, int lr)
   switch (ictx->state) {
   case ANTHY_INPUT_ST_OFF:
     break;
-  case ANTHY_INPUT_ST_NONE:  
+  case ANTHY_INPUT_ST_NONE:
     break;
   case ANTHY_INPUT_ST_EDIT:
     break;
@@ -1071,7 +1071,7 @@ anthy_input_beginning_of_line(struct anthy_input_context* ictx)
   switch (ictx->state) {
   case ANTHY_INPUT_ST_OFF:
     break;
-  case ANTHY_INPUT_ST_NONE:  
+  case ANTHY_INPUT_ST_NONE:
     break;
   case ANTHY_INPUT_ST_EDIT:
     cmd_move_to_bol(ictx);
@@ -1082,7 +1082,7 @@ anthy_input_beginning_of_line(struct anthy_input_context* ictx)
   case ANTHY_INPUT_ST_CSEG:
     break;
   }
-}  
+}
 
 void
 anthy_input_end_of_line(struct anthy_input_context* ictx)
@@ -1090,7 +1090,7 @@ anthy_input_end_of_line(struct anthy_input_context* ictx)
   switch (ictx->state) {
   case ANTHY_INPUT_ST_OFF:
     break;
-  case ANTHY_INPUT_ST_NONE:  
+  case ANTHY_INPUT_ST_NONE:
     break;
   case ANTHY_INPUT_ST_EDIT:
     cmd_move_to_eol(ictx);
@@ -1101,7 +1101,7 @@ anthy_input_end_of_line(struct anthy_input_context* ictx)
   case ANTHY_INPUT_ST_CSEG:
     break;
   }
-}  
+}
 
 void
 anthy_input_cut(struct anthy_input_context* ictx)
@@ -1109,7 +1109,7 @@ anthy_input_cut(struct anthy_input_context* ictx)
   switch (ictx->state) {
   case ANTHY_INPUT_ST_OFF:
     break;
-  case ANTHY_INPUT_ST_NONE:  
+  case ANTHY_INPUT_ST_NONE:
     break;
   case ANTHY_INPUT_ST_EDIT:
     cmd_cut(ictx);
@@ -1126,7 +1126,7 @@ void
 anthy_input_key(struct anthy_input_context* ictx, int c)
 {
   char buf[2];
-  
+
   buf[0] = (char) c;
   buf[1] = '\0';
   anthy_input_str(ictx, buf);
@@ -1143,7 +1143,7 @@ anthy_input_space(struct anthy_input_context* ictx)
     do_cmd_push_key(ictx, " ");
     commit_noconv_string(ictx);
     leave_edit_state(ictx);
-    enter_none_state(ictx);      
+    enter_none_state(ictx);
     break;
   case ANTHY_INPUT_ST_EDIT:
     terminate_rk(ictx);
@@ -1223,7 +1223,7 @@ get_edit_mode_preedit(struct anthy_input_context* ictx,
     len = rk_get_pending_str(ictx->rkctx, NULL, 0);
     if (len > 1) {
       *p = alloc_segment(ANTHY_INPUT_SF_PENDING, len, len - 1);
-      
+
       rk_get_pending_str(ictx->rkctx, (*p)->str, len);
       p = &(*p)->next;
     }
@@ -1249,7 +1249,7 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
 {
   struct anthy_input_preedit* pedit;
 
-  pedit = (struct anthy_input_preedit*) 
+  pedit = (struct anthy_input_preedit*)
     malloc(sizeof(struct anthy_input_preedit));
 
   pedit->state = ictx->state;
@@ -1288,12 +1288,12 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
     {
       struct anthy_input_segment** p;
       struct a_segment* as;
-      
+
       for (as = ictx->segment, p = &pedit->segment; as; as = as->next) {
 	/* 各文節に対して */
 	int len, noconv_len;
-	
-	noconv_len = anthy_get_segment(ictx->actx, as->index, 
+
+	noconv_len = anthy_get_segment(ictx->actx, as->index,
 				       NTH_UNCONVERTED_CANDIDATE,
 				       NULL, 0);
 	len = anthy_get_segment(ictx->actx, as->index, as->cand, NULL, 0);
@@ -1303,7 +1303,7 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
 	(*p)->cand_no = as->cand;
 	(*p)->nr_cand = as->ass.nr_candidate;
 	(*p)->next = NULL;
-	
+
 	if (as == ictx->cur_segment) {
 	  pedit->cur_segment = *p;
 	  (*p)->flag |= ANTHY_INPUT_SF_CURSOR;
@@ -1313,7 +1313,7 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
 
 	  if (ictx->state == ANTHY_INPUT_ST_CSEG) {
 	    struct a_segment* as1;
-	    
+
 	    for (as1 = as->next, len = 0; as1; as1 = as1->next)
 	      len += anthy_get_segment(ictx->actx, as1->index,
 				       NTH_UNCONVERTED_CANDIDATE, NULL, 0);
@@ -1323,10 +1323,10 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
 	      p = &(*p)->next;
 	      *p = alloc_segment(ANTHY_INPUT_SF_FOLLOWING, len + 1, len);
 	      for (as1 = as->next, s = (*p)->str; as1; as1 = as1->next) {
-		anthy_get_segment(ictx->actx, as1->index, 
+		anthy_get_segment(ictx->actx, as1->index,
 				  NTH_UNCONVERTED_CANDIDATE,
 				  s, len - (s - (*p)->str) + 1);
-		s += anthy_get_segment(ictx->actx, as1->index, 
+		s += anthy_get_segment(ictx->actx, as1->index,
 				       NTH_UNCONVERTED_CANDIDATE, NULL, 0);
 	      }
 	      (*p)->str[len] = '\0';
@@ -1351,7 +1351,7 @@ anthy_input_map_select(struct anthy_input_context* ictx, int map)
   switch (ictx->state) {
   case ANTHY_INPUT_ST_OFF:
     break;
-  case ANTHY_INPUT_ST_NONE:  
+  case ANTHY_INPUT_ST_NONE:
   case ANTHY_INPUT_ST_EDIT:
   case ANTHY_INPUT_ST_CONV:
   case ANTHY_INPUT_ST_CSEG:
@@ -1369,7 +1369,7 @@ anthy_input_get_selected_map(struct anthy_input_context* ictx)
   return ictx->map_no;
 }
 
-struct anthy_input_segment* 
+struct anthy_input_segment*
 anthy_input_get_candidate(struct anthy_input_context* ictx, int cand_no)
 {
   switch (ictx->state) {
@@ -1377,7 +1377,7 @@ anthy_input_get_candidate(struct anthy_input_context* ictx, int cand_no)
     return cmdh_get_candidate(ictx, cand_no);
     break;
   case ANTHY_INPUT_ST_OFF:
-  case ANTHY_INPUT_ST_NONE:  
+  case ANTHY_INPUT_ST_NONE:
   case ANTHY_INPUT_ST_EDIT:
   case ANTHY_INPUT_ST_CSEG:
     break;
@@ -1392,7 +1392,7 @@ anthy_input_select_candidate(struct anthy_input_context* ictx, int cand)
 {
   switch (ictx->state) {
   case ANTHY_INPUT_ST_OFF:
-  case ANTHY_INPUT_ST_NONE:  
+  case ANTHY_INPUT_ST_NONE:
   case ANTHY_INPUT_ST_EDIT:
     break;
   case ANTHY_INPUT_ST_CONV:
@@ -1469,9 +1469,9 @@ anthy_input_change_config(struct anthy_input_config* cfg)
     reset_anthy_input_context(p);
     rk_register_map(p->rkctx, RKMAP_HIRAGANA, cfg->rk_map[RKMAP_HIRAGANA]);
     rk_register_map(p->rkctx, RKMAP_KATAKANA, cfg->rk_map[RKMAP_KATAKANA]);
-    rk_register_map(p->rkctx, RKMAP_SHIFT_ASCII, 
+    rk_register_map(p->rkctx, RKMAP_SHIFT_ASCII,
 		    cfg->rk_map[RKMAP_SHIFT_ASCII]);
-    rk_register_map(p->rkctx, RKMAP_HANKAKU_KANA, 
+    rk_register_map(p->rkctx, RKMAP_HANKAKU_KANA,
 		    cfg->rk_map[RKMAP_HANKAKU_KANA]);
     rk_select_registered_map(p->rkctx, RKMAP_HIRAGANA);
   }
