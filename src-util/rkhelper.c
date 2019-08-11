@@ -10,15 +10,26 @@
 
 #include <string.h>
 #include <stdlib.h>
+#ifdef _WIN32
+  #define strdup _strdup
+  #ifdef _MSC_VER
+    #include <malloc.h> // alloca
+  #endif
+#endif
+
 #include "rkconv.h"
 #include "rkhelper.h"
 
+/**
+ * Full-width form.
+ * The full-width form of "~" is U+FF5E FULLWIDTH TILDE. Not U+301C WAVE DASH.
+ */
 static const char* rk_default_symbol[128] = {
-  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-  "　", "！", "”", "＃", "＄", "％", "＆", "’", 
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+  "　", "！", "”", "＃", "＄", "％", "＆", "’",
   "（", "）", "＊", "＋", "、", "ー", "。", "／",
   "０", "１", "２", "３", "４", "５", "６", "７",
   "８", "９", "：", "；", "＜", "＝", "＞", "？",
@@ -29,8 +40,8 @@ static const char* rk_default_symbol[128] = {
   NULL, NULL, NULL, "「", "＼", "」", "＾", "＿",
   "‘", NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 
-  NULL, NULL, NULL, "｛", "｜", "｝", "〜", NULL
+  NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
+  NULL, NULL, NULL, "｛", "｜", "｝", "～", NULL
 };
 
 struct rk_conf_ent {
@@ -143,7 +154,7 @@ find_rk_conf_ent(struct rk_option *opt, int map,
  * follow follow集合
  */
 int
-anthy_input_do_edit_rk_option(struct rk_option* opt, int map, 
+anthy_input_do_edit_rk_option(struct rk_option* opt, int map,
 			      const char* from, const char* to, const char *follow)
 {
   struct rk_conf_ent *tab;
@@ -237,7 +248,7 @@ make_rkmap_ascii(struct rk_option* opt)
   char work[2*128];
   char* w;
   int c;
-  
+
   (void)opt;
   p = var_part;
   w = work;
@@ -276,7 +287,7 @@ make_rkmap_shiftascii(struct rk_option* opt)
   char* w;
   int c;
   int toggle_char = opt->toggle;
-  
+
   p = var_part;
   w = work;
   for (c = 0; c < 128; c++) {
@@ -290,7 +301,7 @@ make_rkmap_shiftascii(struct rk_option* opt)
 	w[3] = c;
 	w[4] = '\0';
 	rkrule_set(p++, w + 2, w, NULL);
-	w += 5;	
+	w += 5;
       } else {
 	/* 普通の文字の場合 */
 	w[0] = c;

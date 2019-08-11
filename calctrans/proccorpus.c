@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <anthy/convdb.h>
+#include <anthy/xstr.h>
 
 static int verbose;
 
@@ -119,7 +120,7 @@ for_each_segment(anthy_context_t ac, struct conv_res *cr,
   }
 
   free(str);
-  
+
   return 1;
 }
 

@@ -21,10 +21,21 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-#include <unistd.h>
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
+#ifndef _WIN32
+  #include <unistd.h>
+#else
+  #include <io.h> // _mktemp()
+  #define fdopen _fdopen
+  #define unlink _unlink
+#endif
+
 #include "anthy/textdic.h"
 
 #define BUFSIZE 1024
@@ -36,7 +47,7 @@ anthy_textdic_scan (const char *name, long offset, void *data,
   FILE *fp;
   char buf[BUFSIZE];
 
-  fp = fopen (name, "r");
+  fp = fopen(name, "rb");
   if (!fp)
     return -1;
 
@@ -88,44 +99,72 @@ anthy_textdic_scan (const char *name, long offset, void *data,
   return 0;
 }
 
+
+/**
+ * Open a temporary file to be able to convert file contents.
+ * @param orig_filename  the original file.
+ * @param [out] fp_p   the file pointer of the opened.
+ * @return a new temporary filename. The caller has to free it.
+ *         If mkstemp() failed, NULL.
+ */
 static char *
 tempfile (const char *orig_filename, FILE **fp_p)
 {
-  char *filename = (char *)malloc ((strlen (orig_filename) + 6 + 1));
-  int fd;
-  FILE *fp;
+  assert(fp_p);
+
+  *fp_p = NULL;
+
+  char* filename = (char*) malloc(strlen(orig_filename) + 6 + 1);
+  if (!filename)
+    return NULL;
 
   strcpy (filename, orig_filename);
   strcat (filename, "XXXXXX");
+#ifndef _WIN32
+  int fd;
+  // The permission is S_IRUSR | S_IWUSR (0600).
   fd = mkstemp (filename);
-  if (fd < 0)
-    {
-      free (filename);
-      return NULL;
-    }
+  if (fd < 0) {
+    free (filename);
+    return NULL;
+  }
+  *fp_p = fdopen(fd, "wb");
+#else
+  if (!_mktemp(filename)) {
+    free(filename);
+    return NULL;
+  }
+  *fp_p = fopen(filename, "wb");
+#endif
 
-  if ((fp = fdopen (fd, "w")) == NULL)
-    {
-      close (fd);
-      unlink (filename);
-      free (filename);
-      return NULL;
-    }
+  if ( !*fp_p ) {
+#ifndef _WIN32
+    close(fd);
+#endif
+    unlink (filename);
+    free (filename);
+    return NULL;
+  }
 
-  *fp_p = fp;
   return filename;
 }
 
+
+/**
+ * @return If failed, -1.
+ */
 static int
 do_textdic_at (const char *name, long offset, void *data,
 	       int (*work) (void *, FILE *, FILE *))
 {
+  assert(name);
+
   FILE *fp_r, *fp_w;
   char buf[BUFSIZE];
   char *filename;
   int i, r;
 
-  if ((fp_r = fopen (name, "r")) == NULL)
+  if ((fp_r = fopen (name, "rb")) == NULL)
     return -1;
 
   if ((filename = tempfile (name, &fp_w)) == NULL)
