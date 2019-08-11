@@ -39,7 +39,8 @@ xstr *anthy_cstr_to_xstr(const char *, int );
 char *anthy_xstr_to_cstr(xstr *, int);
 
 /* xstrとstr共にmallocされる */
-xstr *anthy_xstr_dup(xstr *);
+xstr* anthy_xstr_dup(const xstr* s);
+
 void anthy_free_xstr(xstr *);
 
 /* 結果はmallocで確保される */
@@ -50,11 +51,14 @@ void anthy_free_xstr_str(xstr *);
 xstr* anthy_xstrcpy(xstr* dest, const xstr* src);
 
 /* 文字列を比較する。strcmpと同等の動作(返り値の符号に意味がある) */
-int anthy_xstrcmp(xstr *, xstr *);
+int anthy_xstrcmp(const xstr* x1, const xstr* x2);
+
 /* n文字目まで文字列を比較する。strncmpと同等の動作(返り値の符号に意味がある) */
 int anthy_xstrncmp(xstr *, xstr *, int);
+
 /* s->strをreallocする */
-xstr *anthy_xstrcat(xstr *s, xstr *d);
+xstr *anthy_xstrcat(xstr* s, const xstr* a);
+
 /* xs->strをreallocする */
 xstr *anthy_xstrappend(xstr *xs, xchar c);
 

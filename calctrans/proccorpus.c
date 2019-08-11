@@ -81,7 +81,9 @@ find_candidate(anthy_context_t ac, struct conv_res *cr,
     cr->cand_check[nth] = 1;
   }
 
-  anthy_get_segment_stat(ac, nth, &ass);
+  int r = anthy_get_segment_stat(ac, nth, &ass);
+  if (r < 0)
+    return -1;
   for (i = 0; i < ass.nr_candidate; i++) {
     anthy_get_segment(ac, nth, i, seg_buf, 1024);
     if (!strcmp(seg_buf, seg)) {
