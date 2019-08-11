@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 
-/** 
+/**
  * Character type. UCS-4 code point.
  */
 typedef uint32_t xchar;
@@ -47,7 +47,8 @@ xchar *anthy_xstr_dup_str(xstr *);
 void anthy_free_xstr_str(xstr *);
 
 /* 文字列をコピーする */
-xstr* anthy_xstrcpy(xstr *, xstr *);
+xstr* anthy_xstrcpy(xstr* dest, const xstr* src);
+
 /* 文字列を比較する。strcmpと同等の動作(返り値の符号に意味がある) */
 int anthy_xstrcmp(xstr *, xstr *);
 /* n文字目まで文字列を比較する。strncmpと同等の動作(返り値の符号に意味がある) */

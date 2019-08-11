@@ -11,11 +11,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <sys/time.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <string.h>
 #include <assert.h>
+#ifndef _WIN32
+  #include <sys/time.h>
+  #include <unistd.h>
+#else
+  #define strdup _strdup
+#endif
 
 #include <anthy/anthy.h>
 #include <anthy/input.h>

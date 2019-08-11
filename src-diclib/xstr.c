@@ -28,14 +28,23 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#ifndef _MSC_VER
+  #include <config.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
+#ifdef _WIN32
+  #define strdup _strdup
+#endif
 
-#include "config.h"
 /* for ANTHY_*_ENCODING */
 #include <anthy/anthy.h>
-
 #include <anthy/xstr.h>
 #include <anthy/xchar.h>
 #include "diclib_inner.h"
@@ -103,22 +112,44 @@ anthy_utf8_to_ucs4_xchar(const char *s, xchar *res)
   return (const char *)str;
 }
 
+
+/**
+ * Convert utf-8 C string to xstr.
+ * @param s  NUL terminated UTF-8 C string.
+ * @return new xstr. The caller has to free it with anthy_free_xstr().
+ *         If the input is an invalid byte sequence, NULL.
+ */
 static xstr *
 utf8_to_ucs4_xstr(const char *s)
 {
-  const unsigned char *str = (const unsigned char *)s;
-  xstr res;
-  res.str = (xchar *)alloca(sizeof(xchar) * strlen(s));
-  res.len = 0;
+  assert(s);
+
+  const char* str = s;
+  xstr* res = (xstr*) malloc(sizeof(xstr));
+  if (!res)
+    return NULL;
+  res->len = 0;
+  if (*s == '\0') {
+    res->str = NULL;
+    return res;
+  }
+  res->str = (xchar*) malloc(sizeof(xchar) * strlen(s));
+  if (!res->str) {
+    anthy_free_xstr(res);
+    return NULL;
+  }
 
   while (*str) {
     xchar cur;
-    str = (const unsigned char *)anthy_utf8_to_ucs4_xchar((const char *)str,
-							  &cur);
-    res.str[res.len] = cur;
-    res.len ++;
+    str = anthy_utf8_to_ucs4_xchar(str, &cur);
+    if (!str) { // error
+      anthy_free_xstr(res);
+      return NULL;
+    }
+    res->str[res->len] = cur;
+    res->len ++;
   }
-  return anthy_xstr_dup(&res);
+  return res;
 }
 
 static int
@@ -154,10 +185,18 @@ put_xchar_to_utf8_str(xchar xc, char *buf_)
   return len;
 }
 
+/**
+ * Create a new UTF-8 C string.
+ */
 static char *
-ucs4_xstr_to_utf8(xstr *xs)
+ucs4_xstr_to_utf8(const xstr* xs)
 {
-  char *buf = alloca(xs->len * 6 + 1);
+  assert(xs);
+
+  char* buf = malloc(xs->len * 4 + 1);
+  if (!buf)
+    return NULL;
+
   int i, t = 0;
   buf[0] = 0;
   for (i = 0; i < xs->len; i++) {
@@ -165,7 +204,7 @@ ucs4_xstr_to_utf8(xstr *xs)
     put_xchar_to_utf8_str(xc, &buf[t]);
     t = strlen(buf);
   }
-  return strdup(buf);
+  return buf;
 }
 
 /** Cの文字列をxstrに変更する
@@ -367,18 +406,36 @@ anthy_putxstrln(xstr *x)
   printf("\n");
 }
 
+
+/**
+ * Copy src to dest.
+ * @return the pointer to dest
+ */
 xstr*
-anthy_xstrcpy(xstr *dest, xstr *src)
+anthy_xstrcpy(xstr* dest, const xstr* src)
 {
-  int i;
+  assert(src);
+  assert(dest);
+
+  if (src == dest)
+    return dest;
+  if (!src->len) {
+    free(dest->str);
+    dest->str = NULL;
+    return dest;
+  }
+
+  if (src->len > dest->len) {
+    dest->str = realloc(dest->str, sizeof(xchar) * src->len);
+    assert(dest->str);
+  }
   /* 文字列をコピー */
   dest->len = src->len;
-  for (i = 0; i < src->len; i++) {
-    dest->str[i] = src->str[i];
-  }
-  
+  memcpy(dest->str, src->str, sizeof(xchar) * src->len);
+
   return dest;
 }
+
 /* 返り値の符号はstrcmpと同じ */
 int
 anthy_xstrcmp(xstr *x1, xstr *x2)

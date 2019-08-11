@@ -3,6 +3,9 @@
  *
  * Copyright (C) 2003-2005 TABATA Yusuke
  */
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
@@ -69,6 +72,8 @@ struct uc_dict *
 create_uc_dict(void)
 {
   struct uc_dict *dict = malloc(sizeof(struct uc_dict));
+  if (!dict)
+    return NULL;
 
   dict->uc_head.next = NULL;
   dict->nr_ucs = 0;
@@ -85,7 +90,7 @@ read_uc_file(struct uc_dict *dict, const char *fn)
   int off, base = 0, cur;
   int line_number = 0;
 
-  uc_file = fopen(fn, "r");
+  uc_file = fopen(fn, "rb");
   if (!uc_file) {
     return ;
   }

@@ -20,10 +20,18 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <ctype.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
+#ifdef _WIN32
+  #include <malloc.h>  // alloca()
+  #define strdup _strdup
+#endif
 
 #include <anthy/conf.h>
 #include <anthy/ruleparser.h>
@@ -56,6 +64,14 @@ struct line_stat{
   int buf_index;
 };
 
+
+/**
+ * Open a file.
+ *   - If fn is an absolute path or relative one to the current directory, the
+ *     file fn
+ *   - If fn is NULL, standard input
+ *   - Otherwise, the file relative path to 'ANTHYDIR' config value
+ */
 static FILE *
 open_file_in_confdir(const char *fn)
 {
@@ -70,7 +86,7 @@ open_file_in_confdir(const char *fn)
   if (fn[0] == '/' ||
       (fn[0] == '.' && fn[1] == '/')) {
     /* 絶対パスもしくはカレントディレクトリなのでそのままfopen */
-    return fopen(fn, "r");
+    return fopen(fn, "rb");
   }
 
   dn = anthy_conf_get_str("ANTHYDIR");
@@ -81,15 +97,22 @@ open_file_in_confdir(const char *fn)
   full = alloca(dname_len + strlen(fn) + 2);
   sprintf(full, "%s/%s", dn, fn);
 
-  return fopen(full, "r");
+  return fopen(full, "rb");
 }
 
-/** バックスラッシュによるエスケープも処理するgetc
- * エスケープされた文字ならば返り値は1になる。
+/**
+ * Get a byte. Unescape the escaped characters.
+ * @param [out] cc Unescaped byte read, or EOF.
+ *    \\  \
+ *    \n  ' '  * not line feed
+ *    \"  "
+ * @return 1 if unescaped (2 bytes read). 0 otherwise.
  */
 static int
 mygetc (int *cc)
 {
+  assert(cc);
+
   *cc = fgetc(g_ps.fp);
   if (*cc == '\\') {
     int c2 = fgetc(g_ps.fp);
@@ -103,14 +126,15 @@ mygetc (int *cc)
     case '\"':
       *cc = '\"';
       return 1;
-    default:;
+    default:
       /* go through */
+      break;
     }
   }
   return 0;
 }
 
-#define myisblank(c)	((c) == ' ' || (c) == '\t')
+//#define myisblank(c)	((c) == ' ' || (c) == '\t')
 
 /* 行に一文字追加する */
 static void
@@ -138,7 +162,7 @@ get_token_in(struct line_stat *ls)
   /* トークンが始まるまで空白を読み飛ばす */
   do {
     esc = mygetc(&cc);
-  } while (cc > 0 && myisblank(cc) && esc == 0);
+  } while (cc > 0 && isblank(cc) && esc == 0);
   if (cc == -1) {
     return NULL;
   }
@@ -166,7 +190,7 @@ get_token_in(struct line_stat *ls)
       ls->stat = PS_RET;
       return ls->buf;
     }
-    if (!in_quote && myisblank(cc)) {
+    if (!in_quote && isblank(cc)) {
       break;
     }
     if (in_quote && cc == '\"' && !esc) {
@@ -209,7 +233,7 @@ proc_include(void)
     anthy_log(0, "Syntax error in include directive.\n");
     return ;
   }
-  if (g_ps.cur_fpp > MAX_INCLUDE_DEPTH - 1) {
+  if (g_ps.cur_fpp >= MAX_INCLUDE_DEPTH - 1) {
     anthy_log(0, "Too deep include.\n");
     return ;
   }
@@ -236,7 +260,7 @@ static void
 get_line(void)
 {
   int r;
-  
+
  again:
   anthy_free_line();
   g_ps.line_num ++;

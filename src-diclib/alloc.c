@@ -7,7 +7,7 @@
  * Copyright (C) 2002, 2005 NIIBE Yutaka
  *
  * dtor: destructor
- * 
+ *
  * ページ中のフリーなchunkは単方向リストに継がれている
  *
  */
@@ -50,7 +50,7 @@ struct chunk {
 #define CHUNK_ALIGN (sizeof(double))
 
 /*
- * pageのstorage中には 
+ * pageのstorage中には
  * max_obj = (PAGE_SIZE - PAGE_HEADER_SIZE) / (size + CHUNK_HEADER_SIZE)個の
  * スロットがある。そのうちuse_count個のスロットがfree_listにつながっている、
  * もしくは使用中である。
@@ -73,8 +73,8 @@ struct allocator_priv {
   int size;
   /* ページ内に入れることができるオブジェクトの数 */
   int max_num;
-  /* 
-     実際のデータが格納され始める場所のオフセット 
+  /*
+     実際のデータが格納され始める場所のオフセット
      ページ中のこれより手前には対応する場所のデータが使われているかどうかを0/1で表す
      ビットマップがある
    */
@@ -109,11 +109,13 @@ static int bit_set(unsigned char* bits, int pos, int bit)
 }
 
 
+/**
+ * @param s the pointer to any user struct.
+ */
 static struct chunk *
 get_chunk_address(void *s)
 {
-  return (struct chunk *)
-    ((unsigned long)s - CHUNK_HEADER_SIZE);
+  return (struct chunk*) ((unsigned char*)s - CHUNK_HEADER_SIZE);
 }
 
 static struct page *
@@ -121,7 +123,7 @@ alloc_page(struct allocator_priv *ator)
 {
   struct page *p;
   unsigned char* avail;
-    
+
   p = malloc(PAGE_SIZE);
   if (!p) {
     return NULL;
@@ -147,7 +149,7 @@ get_chunk_from_page(allocator a, struct page *p)
       return PAGE_CHUNK(a, p, i);
     }
   }
-  return NULL;  
+  return NULL;
 }
 
 static int
@@ -175,10 +177,11 @@ allocator
 anthy_create_allocator(int size, void (*dtor)(void *))
 {
   allocator a;
-size=roundup_align(size);
+  size = roundup_align(size);
   if (size > (int)(PAGE_SIZE - PAGE_HEADER_SIZE - CHUNK_HEADER_SIZE)) {
     anthy_log(0, "Fatal error: too big allocator is requested.\n");
-    exit(1);
+    //exit(1);
+    abort();
   }
   a = malloc(sizeof(*a));
   if (!a) {
@@ -186,7 +189,7 @@ size=roundup_align(size);
     exit(1);
   }
   a->size = size;
-  a->max_num = calc_max_num(size); 
+  a->max_num = calc_max_num(size);
   a->storage_offset = roundup_align(sizeof(struct page) + a->max_num / 8 + 1);
   /*printf("size=%d max_num=%d offset=%d area=%d\n", size, a->max_num, a->storage_offset, size*a->max_num + a->storage_offset);*/
   a->dtor = dtor;
@@ -281,8 +284,8 @@ anthy_sfree(allocator a, void *ptr)
   int index;
   /* ポインタの含まれるページを探す */
   for (p = a->page_list.next; p != &a->page_list; p = p->next) {
-    if ((unsigned long)p < (unsigned long)c &&
-	(unsigned long)c < (unsigned long)p + PAGE_SIZE) {
+    if ((unsigned char*)p < (unsigned char*)c &&
+        (unsigned char*)c < (unsigned char*)p + PAGE_SIZE) {
       break;
     }
   }
@@ -294,8 +297,8 @@ anthy_sfree(allocator a, void *ptr)
   }
 
   /* ページ中の何番目のオブジェクトかを求める */
-  index = ((unsigned long)c - (unsigned long)PAGE_STORAGE(a, p)) /
-    (a->size + CHUNK_HEADER_SIZE);  
+  index = ((unsigned char*)c - PAGE_STORAGE(a, p)) /
+          (a->size + CHUNK_HEADER_SIZE);
   bit_set(PAGE_AVAIL(p), index, 0);
 
   /* デストラクタを呼ぶ */

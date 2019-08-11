@@ -30,15 +30,27 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#ifndef _MSC_VER
+  #include <config.h>
+#else
+  #include <defines.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#ifdef _WIN32
+  #define strdup _strdup
+#endif
 
 #include <anthy/anthy.h>
 #include <anthy/dicutil.h>
 /**/
 #include <anthy/xstr.h>
-#include "config.h"
+
 
 #define UNSPEC 0
 #define DUMP_DIC 1

@@ -42,9 +42,21 @@
  * Anthyのコードを理解しようとする場合は
  * doc/GLOSSARY で用語を把握することを勧めます
  */
+
+#define _CRT_SECURE_NO_WARNINGS
+
+#ifndef _MSC_VER
+  #include <config.h>
+#else
+  #include <defines.h>
+#endif
+
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#ifdef _WIN32
+  #define strdup _strdup
+#endif
 
 #include <anthy/dic.h>
 #include <anthy/splitter.h>
@@ -56,7 +68,6 @@
 #include <anthy/record.h>
 #include <anthy/xchar.h> /* for KK_VU */
 #include "main.h"
-#include "config.h"
 
 
 /** Anthyの初期化が完了したかどうかのフラグ */
@@ -164,7 +175,7 @@ anthy_release_context(struct anthy_context *ac)
   anthy_do_release_context(ac);
 }
 
-/** 
+/**
  * 再変換が必要かどうかの判定
  */
 static int
@@ -240,7 +251,7 @@ anthy_set_string(struct anthy_context *ac, const char *s)
 
     /* 各文節の第一候補を取得して平仮名列を得る */
     anthy_get_stat(ac, &stat);
-    hira_xs = NULL;
+    hira_xs = anthy_cstr_to_xstr("", ANTHY_UTF8_ENCODING);
     for (i = 0; i < stat.nr_segment; ++i) {
       seg = anthy_get_nth_segment(&ac->seg_list, i);
       hira_xs = anthy_xstrcat(hira_xs, &seg->cands[0]->str);
@@ -444,7 +455,7 @@ anthy_set_prediction_string(struct anthy_context *ac, const char* s)
 }
 
 /** (API) 予測変換の状態の取得 */
-int 
+int
 anthy_get_prediction_stat(struct anthy_context *ac, struct anthy_prediction_stat * ps)
 {
   ps->nr_prediction = ac->prediction.nr_prediction;
