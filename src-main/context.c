@@ -314,17 +314,20 @@ anthy_release_segment_list(struct anthy_context *ac)
 void
 anthy_do_reset_context(struct anthy_context *ac)
 {
+  assert(ac);
+
   /* まず辞書セッションを解放 */
   if (ac->dic_session) {
     anthy_dic_release_session(ac->dic_session);
     ac->dic_session = NULL;
   }
-  if (!ac->str.str) {
+
+  if (ac->str.str) {
     /* 文字列が設定されていなければ解放すべき物はもう無い */
-    return ;
+    free(ac->str.str);
+    ac->str.str = NULL;
+    ac->str.len = 0;
   }
-  free(ac->str.str);
-  ac->str.str = NULL;
   anthy_release_split_context(&ac->split_info);
   anthy_release_segment_list(ac);
 
@@ -361,7 +364,8 @@ make_candidates(struct anthy_context *ac, int from, int from2, int is_reverse)
 }
 
 int
-anthy_do_context_set_str(struct anthy_context *ac, xstr *s, int is_reverse)
+anthy_do_context_set_str(struct anthy_context *ac, const xstr* s,
+                         int is_reverse)
 {
   assert(ac);
   assert(s);
@@ -369,7 +373,7 @@ anthy_do_context_set_str(struct anthy_context *ac, xstr *s, int is_reverse)
   int i;
 
   /* 文字列をコピー(一文字分余計にして0をセット) */
-  ac->str.str = (xchar *)malloc(sizeof(xchar)*(s->len+1));
+  //ac->str.str = (xchar *)malloc(sizeof(xchar)*(s->len+1));
   anthy_xstrcpy(&ac->str, s);
   ac->str.str[s->len] = 0;
 

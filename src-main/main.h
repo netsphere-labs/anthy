@@ -50,7 +50,10 @@ void anthy_init_personality(void);
 void anthy_quit_personality(void);
 int anthy_do_set_personality(const char *id);
 struct anthy_context *anthy_do_create_context(int);
-int anthy_do_context_set_str(struct anthy_context *c, xstr *x, int is_reverse);
+
+int anthy_do_context_set_str(struct anthy_context *c, const xstr* x,
+                             int is_reverse);
+
 void anthy_do_reset_context(struct anthy_context *c);
 void anthy_do_release_context(struct anthy_context *c);
 
