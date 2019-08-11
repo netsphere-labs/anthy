@@ -13,6 +13,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#ifdef _MSC_VER
+  #define strdup _strdup
+#endif
+
 #include <anthy/convdb.h>
 #include <anthy/xstr.h>
 

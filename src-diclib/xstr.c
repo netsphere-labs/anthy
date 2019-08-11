@@ -420,13 +420,15 @@ anthy_xstrcpy(xstr* dest, const xstr* src)
   if (src == dest)
     return dest;
   if (!src->len) {
+    dest->len = 0;
     free(dest->str);
     dest->str = NULL;
     return dest;
   }
 
   if (src->len > dest->len) {
-    dest->str = realloc(dest->str, sizeof(xchar) * src->len);
+    free(dest->str);
+    dest->str = malloc(sizeof(xchar) * src->len);
     assert(dest->str);
   }
   /* 文字列をコピー */

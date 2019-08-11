@@ -24,7 +24,7 @@ From Git repository
 Libtool, Automake, Autoconf are required.
 
   $ ./autogen.sh
-  $ .configure
+  $ .configure --enable-maintainer-mode
   $ make
   $ make install
 
