@@ -54,6 +54,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 #ifdef _WIN32
   #define strdup _strdup
 #endif
@@ -282,11 +283,17 @@ anthy_get_stat(struct anthy_context *ac, struct anthy_conv_stat *s)
   return 0;
 }
 
-/** (API) 文節の状態の取得 */
+/**
+ * (API) 文節の状態の取得 
+ * @param [out] s  returned stat.
+ * @return If found, 0. If not found, -1
+ */
 int
 anthy_get_segment_stat(struct anthy_context *ac, int n,
 		       struct anthy_segment_stat *s)
 {
+  assert(s);
+  
   struct seg_ent *seg;
   seg = anthy_get_nth_segment(&ac->seg_list, n);
   if (seg) {

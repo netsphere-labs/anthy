@@ -375,7 +375,7 @@ anthy_do_context_set_str(struct anthy_context *ac, const xstr* s,
   /* 文字列をコピー(一文字分余計にして0をセット) */
   //ac->str.str = (xchar *)malloc(sizeof(xchar)*(s->len+1));
   anthy_xstrcpy(&ac->str, s);
-  ac->str.str[s->len] = 0;
+  //ac->str.str[s->len] = 0;
 
   /* splitterの初期化*/
   anthy_init_split_context(&ac->str, &ac->split_info, is_reverse);

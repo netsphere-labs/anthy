@@ -35,6 +35,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #ifdef _MSC_VER
   #include <malloc.h> // alloca
 #endif
@@ -75,11 +76,16 @@ metaword_dtor(void *p)
 
 
 static void
-alloc_char_ent(xstr *xs, struct splitter_context *sc)
+alloc_char_ent(const xstr* xs, struct splitter_context *sc)
 {
+  assert(sc);
+  assert(xs);
+  
   int i;
  
   sc->char_count = xs->len;
+  if (sc->ce)
+    free(sc->ce);
   sc->ce = (struct char_ent*)
     malloc(sizeof(struct char_ent)*(xs->len + 1));
   for (i = 0; i <= xs->len; i++) {
@@ -253,11 +259,11 @@ anthy_release_split_context(struct splitter_context *sc)
 {
   if (sc->word_split_info) {
     release_info_cache(sc);
-    sc->word_split_info = 0;
+    sc->word_split_info = NULL;
   }
   if (sc->ce) {
     free(sc->ce);
-    sc->ce = 0;
+    sc->ce = NULL;
   }
 }
 

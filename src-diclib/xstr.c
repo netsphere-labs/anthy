@@ -198,7 +198,7 @@ ucs4_xstr_to_utf8(const xstr* xs)
     return NULL;
 
   int i, t = 0;
-  buf[0] = 0;
+  buf[0] = '\0';
   for (i = 0; i < xs->len; i++) {
     xchar xc = xs->str[i];
     put_xchar_to_utf8_str(xc, &buf[t]);
@@ -275,18 +275,23 @@ anthy_xstr_to_cstr(xstr *s, int encoding)
 }
 
 xstr *
-anthy_xstr_dup(xstr *s)
+anthy_xstr_dup(const xstr* s)
 {
-  int i;
+  assert(s);
+  
   xstr *x = (xstr *)malloc(sizeof(xstr));
+  if (!x)
+    return NULL;
   x->len = s->len;
   if (s->len) {
+    int i;
+     
     x->str = malloc(sizeof(xchar)*s->len);
+    for (i = 0; i < x->len; i++) {
+      x->str[i] = s->str[i];
+    }
   }else{
     x->str = NULL;
-  }
-  for (i = 0; i < x->len; i++) {
-    x->str[i] = s->str[i];
   }
   return x;
 }
@@ -325,6 +330,7 @@ anthy_free_xstr_str(xstr *x)
     return ;
   }
   free(x->str);
+  x->str = NULL;
 }
 
 int
@@ -440,8 +446,11 @@ anthy_xstrcpy(xstr* dest, const xstr* src)
 
 /* 返り値の符号はstrcmpと同じ */
 int
-anthy_xstrcmp(xstr *x1, xstr *x2)
+anthy_xstrcmp(const xstr* x1, const xstr* x2)
 {
+  assert(x1);
+  assert(x2);
+  
   int i, m;
   if (x1->len < x2->len) {
     m = x1->len;
@@ -452,14 +461,14 @@ anthy_xstrcmp(xstr *x1, xstr *x2)
     if (x1->str[i] < x2->str[i]) {
       return -1;
     }
-    if (x1->str[i] > x2->str[i]) {
+    else if (x1->str[i] > x2->str[i]) {
       return 1;
     }
   }
   if (x1->len < x2->len) {
     return -1;
   }
-  if (x1->len > x2->len) {
+  else if (x1->len > x2->len) {
     return 1;
   }
   return 0;
@@ -495,14 +504,17 @@ anthy_xstrncmp(xstr *x1, xstr *x2, int n)
 
 
 xstr *
-anthy_xstrcat(xstr *s, xstr *a)
+anthy_xstrcat(xstr *s, const xstr* a)
 {
+  assert(s);
+  assert(a);
+  
   int i, l;
-  if (!s) {
+/*if (!s) {
     s = malloc(sizeof(xstr));
     s->str = NULL;
     s->len = 0;
-  }
+  } */
   l = s->len + a->len;
 
   if (l < 1) {              /* 辞書もしくは学習データが壊れていた時の対策 */
@@ -511,12 +523,13 @@ anthy_xstrcat(xstr *s, xstr *a)
     s->len = 0;
     return s;
   }
-
-  s->str = realloc(s->str, sizeof(xchar)*l);
-  for (i = 0; i < a->len; i ++) {
-    s->str[s->len+i] = a->str[i];
+  if (a->len > 0) {
+    s->str = realloc(s->str, sizeof(xchar) * l);
+    for (i = 0; i < a->len; i ++) {
+      s->str[s->len+i] = a->str[i];
+    }
+    s->len = l;
   }
-  s->len = l;
   return s;
 }
 
