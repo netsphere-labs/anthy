@@ -462,7 +462,7 @@
 
     (anthy-disable-preedit-keymap)
     ;; insert new preedit
-    (setq anthy-preedit-start (point))
+    (setq anthy-preedit-start (point-marker))
     (setq anthy-enum-candidate-p nil)
     (setq anthy-enum-rcandidate-p nil)
     (if (member stat '(2 3 4))
