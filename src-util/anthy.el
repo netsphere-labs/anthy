@@ -11,49 +11,49 @@
 
 ;;; Commentary:
 ;;
-;; $B$+$J4A;zJQ49%(%s%8%s(B Anthy$B$r(B emacs$B$+$i;H$&$?$a$N%W%m%0%i%`(B
-;; Anthy$B%i%$%V%i%j$r;H$&$?$a$N%3%^%s%I(Banthy-agent$B$r5/F0$7$F!"(B
-;; anthy-agent$B$H%Q%$%W$GDL?.$r$9$k$3$H$K$h$C$FJQ49$NF0:n$r9T$&(B
+;; かな漢字変換エンジン Anthyを emacsから使うためのプログラム
+;; Anthyライブラリを使うためのコマンドanthy-agentを起動して、
+;; anthy-agentとパイプで通信をすることによって変換の動作を行う
 ;;
 ;;
-;; Funded by IPA$BL$F'%=%U%H%&%'%"AOB$;v6H(B 2001 10/10
+;; Funded by IPA未踏ソフトウェア創造事業 2001 10/10
 ;;
-;; $B3+H/$O(Bemacs21.2$B>e$G9T$C$F$$$F(Bminor-mode
-;; $B$b$7$/$O(Bleim$B$H$7$F$b;HMQ$G$-$k(B
+;; 開発はemacs21.2上で行っていてminor-mode
+;; もしくはleimとしても使用できる
 ;; (set-input-method 'japanese-anthy)
 ;;
-;; emacs19(mule),20,21,xemacs$B$GF0:n$9$k(B
+;; emacs19(mule),20,21,xemacsで動作する
 ;;
 ;;
-;; 2003-08-24 XEmacs $B$N8uJdA*Br%b!<%I%P%0$KBP1~(B(suzuki)
+;; 2003-08-24 XEmacs の候補選択モードバグに対応(suzuki)
 ;;
 ;; 2001-11-16 EUC-JP -> ISO-2022-JP
 ;;
 ;; TODO
-;;  $B8uJdA*Br%b!<%I$G8uJd$r$$$C$-$K<!$N%Z!<%8$K$$$+$J$$$h$&$K$9$k(B(2ch$B%9%l(B78)
-;;  minibufffer$B$N07$$(B
-;;  isearch$BBP1~(B
+;;  候補選択モードで候補をいっきに次のページにいかないようにする(2chスレ78)
+;;  minibuffferの扱い
+;;  isearch対応
 ;;
-;; $BMQ8l(B
-;;  commit $BJ8;zNs$r3NDj$9$k$3$H(B
-;;  preedit($B%W%j%(%G%#%C%H(B) $B3NDjA0$NJ8;zNs%"%s%@!<%i%$%s$d6/D4$NB0@-$b4^$`(B
-;;  segment($BJ8@a(B) $BJ8K!E*$JJ8@a$G$O$J$/!$F1$8B0@-$NJ8;zNs$N$+$?$^$j(B
+;; 用語
+;;  commit 文字列を確定すること
+;;  preedit(プリエディット) 確定前の文字列アンダーラインや強調の属性も含む
+;;  segment(文節) 文法的な文節ではなく，同じ属性の文字列のかたまり
 ;;
 
 ;;; Code:
 ;(setq debug-on-error t)
 
 (defvar anthy-default-enable-enum-candidate-p t
-  "$B$3$l$r@_Dj$9$k$H<!8uJd$r?t2s2!$7$?:]$K8uJd$N0lMw$+$iA*Br$9$k%b!<%I$K$J$j$^$9!%(B")
+  "これを設定すると次候補を数回押した際に候補の一覧から選択するモードになります．")
 
 (defvar anthy-personality ""
-  "$B%Q!<%=%J%j%F%#(B")
+  "パーソナリティ")
 
 (defvar anthy-preedit-begin-mark "|"
-  "$BJQ49;~$N@hF,$KIU$/J8;zNs(B")
+  "変換時の先頭に付く文字列")
 
 (defvar anthy-preedit-delim-mark "|"
- "$BJQ49;~$NJ8@a$N6h@Z$j$K;H$o$l$kJ8;zNs(B")
+ "変換時の文節の区切りに使われる文字列")
 
 (defvar anthy-accept-timeout 50)
 (if (string-match "^2[23456789]\." emacs-version)
@@ -61,11 +61,11 @@
 
 (defconst anthy-working-buffer " *anthy*")
 (defvar anthy-agent-process nil
-  "anthy-agent$B$N%W%m%;%9(B")
+  "anthy-agentのプロセス")
 (defvar anthy-use-hankaku-kana t)
 ;;
 (defvar anthy-agent-command-list '("anthy-agent")
-  "anthy-agent$B$N(BPATH$BL>(B")
+  "anthy-agentのPATH名")
 
 ;; face
 (defvar anthy-highlight-face nil)
@@ -82,7 +82,7 @@
     (require 'overlay))
 ;;
 (defvar anthy-mode-map nil
-  "Anthy$B$N(BASCII$B%b!<%I$N%-!<%^%C%W(B")
+  "AnthyのASCIIモードのキーマップ")
 (or anthy-mode-map
     (let ((map (make-keymap))
 	  (i 32))
@@ -94,24 +94,24 @@
       (setq anthy-mode-map map)))
 ;;
 (defvar anthy-preedit-keymap nil
-  "Anthy$B$N(Bpreedit$B$N%-!<%^%C%W(B")
+  "Anthyのpreeditのキーマップ")
 (or anthy-preedit-keymap
     (let ((map (make-keymap))
 	  (i 0))
-      ;; $BDL>o$NJ8;z$KBP$7$F(B
+      ;; 通常の文字に対して
       (while (< i 128)
 	(define-key map (char-to-string i) 'anthy-insert)
 	(setq i (+ 1 i)))
-      ;; $BJ8@a$N?-=L(B
+      ;; 文節の伸縮
       (define-key map [(shift left)] 'anthy-insert)
       (define-key map [(shift right)] 'anthy-insert)
-      ;; $BJ8@a$N0\F0(B
+      ;; 文節の移動
       (define-key map [left] 'anthy-insert)
       (define-key map [right] 'anthy-insert)
       (define-key map [backspace] 'anthy-insert)
       (setq anthy-preedit-keymap map)))
 
-;; anthy-agent$B$KAw$k:]$K%-!<$r%(%s%3!<%I$9$k$?$a$N%F!<%V%k(B
+;; anthy-agentに送る際にキーをエンコードするためのテーブル
 (defvar anthy-keyencode-alist
   '((1 . "(ctrl A)") ;; \C-a
     (2 . "(left)") ;; \C-b
@@ -144,19 +144,19 @@
     ((right) . "(right)")
     ((left) . "(left)")
     ((up) . "(up)"))
-  "$B%-!<$N%$%Y%s%H$r(Banthy-agent$B$KAw$k$?$a$NBP1~I=(B")
+  "キーのイベントをanthy-agentに送るための対応表")
 
-;; $B%b!<%I%i%$%s$NJ8;zNs(B
+;; モードラインの文字列
 (defvar anthy-mode-line-string-alist
-  '(("hiragana" . " $B$"(B")
-    ("katakana" . " $B%"(B")
+  '(("hiragana" . " あ")
+    ("katakana" . " ア")
     ("alphabet" . " A")
-    ("walphabet" . " $B#A(B")
-    ("hankaku_kana" . " (I1(B")
+    ("walphabet" . " Ａ")
+    ("hankaku_kana" . " ｱ")
     )
-  "$B%b!<%IL>$H%b!<%I%i%$%s$NJ8;zNs$NBP1~I=(B")
+  "モード名とモードラインの文字列の対応表")
 
-;; $B:G8e$K3d$jEv$F$?(Bcontext id
+;; 最後に割り当てたcontext id
 (defvar anthy-last-context-id 1)
 
 ;; From skk-macs.el From viper-util.el.  Welcome!
@@ -167,37 +167,37 @@
   )
 
 ;; buffer local variables
-(anthy-deflocalvar anthy-context-id nil "$B%3%s%F%-%9%H$N(Bid")
-; $B%b!<%I$N4IM}(B
+(anthy-deflocalvar anthy-context-id nil "コンテキストのid")
+; モードの管理
 (anthy-deflocalvar anthy-minor-mode nil)
 (anthy-deflocalvar anthy-mode nil)
 (anthy-deflocalvar anthy-leim-active-p nil)
 (anthy-deflocalvar anthy-saved-mode nil)
-; $B%W%j%(%G%#%C%H(B
+; プリエディット
 (anthy-deflocalvar anthy-preedit "")
 (anthy-deflocalvar anthy-preedit-start 0)
 (anthy-deflocalvar anthy-preedit-overlays '())
 (anthy-deflocalvar anthy-mode-line-string " A")
-; $B8uJdNs5s(B
+; 候補列挙
 (anthy-deflocalvar anthy-enum-candidate-p nil)
 (anthy-deflocalvar anthy-enum-rcandidate-p nil)
 (anthy-deflocalvar anthy-candidate-minibuffer "")
 (anthy-deflocalvar anthy-enum-candidate-list '()
-		   "$B:#Ns5s$7$F$$$k8uJd$N>pJs(B(($B2hLLFb$N(Bindex $B8uJd$N(Bindex . $B8uJdJ8;zNs(B) ..)")
+		   "今列挙している候補の情報((画面内のindex 候補のindex . 候補文字列) ..)")
 (anthy-deflocalvar anthy-enable-enum-candidate-p 
   (cons anthy-default-enable-enum-candidate-p nil)
-  "$B$3$N%P%C%U%!$G8uJd$NNs5s$r9T$&$+$I$&$+(B")
+  "このバッファで候補の列挙を行うかどうか")
 (anthy-deflocalvar anthy-current-candidate-index 0)
 (anthy-deflocalvar anthy-current-candidate-layout-begin-index 0)
 (anthy-deflocalvar anthy-current-candidate-layout-end-index 0)
-; $BF~NO>uBV(B
+; 入力状態
 (anthy-deflocalvar anthy-current-rkmap "hiragana")
 ; undo
 (anthy-deflocalvar anthy-buffer-undo-list nil)
 (anthy-deflocalvar anthy-buffer-undo-list-saved nil)
 
 ;;
-(defvar anthy-wide-space "$B!!(B" "$B%9%Z!<%9$r2!$7$?;~$K=P$FMh$kJ8;z(B")
+(defvar anthy-wide-space "　" "スペースを押した時に出て来る文字")
 
 ;;; setup minor-mode
 ;; minor-mode-alist
@@ -217,14 +217,14 @@
 
 ;;
 (defun anthy-process-sentinel (proc stat)
-  "$B%W%m%;%9$N>uBV$,JQ2=$7$?$i;2>H$r>C$7$F!$<!$K:F5/F0$G$-$k$h$&$K$9$k(B"
+  "プロセスの状態が変化したら参照を消して，次に再起動できるようにする"
   (message "%s" stat)
   (anthy-mode-off)
   (setq anthy-agent-process nil))
 
 ;;; status
 (defun anthy-update-mode-line ()
-  "$B%b!<%I%i%$%s$r99?7$9$k(B"
+  "モードラインを更新する"
   (let ((a (assoc anthy-current-rkmap anthy-mode-line-string-alist)))
     (if a
 	(progn
@@ -235,7 +235,7 @@
 
 ;;; preedit control
 (defun anthy-erase-preedit ()
-  "$B%W%j%(%G%#%C%H$rA4It>C$9(B"
+  "プリエディットを全部消す"
   (if (> (string-width anthy-preedit) 0)
       (let* ((str anthy-preedit)
 	     (len (length str))
@@ -247,13 +247,13 @@
   (setq anthy-preedit-overlays nil))
 
 (defun anthy-select-face-by-attr (attr)
-  "$BJ8@a$NB0@-$K1~$8$?(Bface$B$rJV$9(B"
+  "文節の属性に応じたfaceを返す"
   (if (memq 'RV attr)
       'anthy-highlight-face
     'anthy-underline-face))
 
 (defun anthy-enable-preedit-keymap ()
-  "$B%-!<%^%C%W$r%W%j%(%G%#%C%H$NB8:_$9$k;~$N$b$N$K@ZBX$($k(B"
+  "キーマップをプリエディットの存在する時のものに切替える"
 ;  (setq anthy-saved-buffer-undo-list buffer-undo-list)
 ;  (buffer-disable-undo)
   (setcdr
@@ -261,7 +261,7 @@
    anthy-preedit-keymap))
 
 (defun anthy-disable-preedit-keymap ()
-  "$B%-!<%^%C%W$r%W%j%(%G%#%C%H$NB8:_$7$J$$;~$N$b$N$K@ZBX$($k(B"
+  "キーマップをプリエディットの存在しない時のものに切替える"
 ;  (buffer-enable-undo)
 ;  (setq buffer-undo-list anthy-saved-buffer-undo-list)
   (setcdr
@@ -270,17 +270,17 @@
   (anthy-update-mode-line))
 
 (defun anthy-insert-preedit-segment (str attr)
-  "$B%W%j%(%G%#%C%H$r0lJ8@aJ8DI2C$9$k(B"
+  "プリエディットを一文節文追加する"
   (let ((start (point))
 	(end) (ol))
     (cond ((or (memq 'ENUM attr) (memq 'ENUMR attr))
 	   (setq str (concat "<" str ">")))
 	  ((memq 'RV attr) 
 	   (setq str (concat "[" str "]"))))
-    ; $B%W%j%(%G%#%C%H$NJ8;zNs$rDI2C$9$k(B
+    ; プリエディットの文字列を追加する
     (insert-and-inherit str)
     (setq end (point))
-    ;; overlay$B$K$h$C$FB0@-$r@_Dj$9$k(B
+    ;; overlayによって属性を設定する
     (setq ol (make-overlay start end))
     (overlay-put ol 'face (anthy-select-face-by-attr attr))
     (setq anthy-preedit-overlays
@@ -314,7 +314,7 @@
 
 ;;
 (defun anthy-check-context-id ()
-  "$B%P%C%U%!$K%3%s%F%-%9%H(Bid$B$,3d$j?6$i$l$F$$$k$+$r%A%'%C%/$9$k(B"
+  "バッファにコンテキストidが割り振られているかをチェックする"
   (if (null anthy-context-id)
       (progn
 	(setq anthy-context-id anthy-last-context-id)
@@ -322,12 +322,12 @@
 	      (+ anthy-last-context-id 1)))))
 
 (defun anthy-get-candidate (idx)
-  "agent$B$+$i8uJd$r0l$D<hF@$9$k(B"
+  "agentから候補を一つ取得する"
   (anthy-send-recv-command 
    (concat " GET_CANDIDATE "
 	   (number-to-string idx) "\n")))
 
-;; $B8uJd%j%9%H$+$i%_%K%P%C%U%!$KI=<($9$kJ8;zNs$r9=@.$9$k(B
+;; 候補リストからミニバッファに表示する文字列を構成する
 (defun anthy-make-candidate-minibuffer-string ()
   (let ((cand-list anthy-enum-candidate-list)
 	(cur-elm)
@@ -347,7 +347,7 @@
 		    anthy-candidate-minibuffer))
       (setq cand-list (cdr cand-list)))))
 
-;; $BI=<($9$k8uJd$N%j%9%H$K2hLLFb$G$N%$%s%G%C%/%9$rIU$1$k(B
+;; 表示する候補のリストに画面内でのインデックスを付ける
 (defun anthy-add-candidate-index (lst)
   (let ((i 0)
 	(res nil))
@@ -361,7 +361,7 @@
     res))
 
 
-;; $BJ8;z$NI}$r7W;;$7$F!"I=<($9$k8uJd$N%j%9%H$r:n$k(B
+;; 文字の幅を計算して、表示する候補のリストを作る
 (defun anthy-make-candidate-index-list (base nr l2r)
   (let ((width (frame-width))
 	(errorp nil)
@@ -398,22 +398,22 @@
       lst)))
   
 
-;; $BI=<($9$k8uJd$N%j%9%H$r:n$k(B
+;; 表示する候補のリストを作る
 (defun anthy-calc-candidate-layout (base nr l2r)
   (let
       ((lst (anthy-make-candidate-index-list base nr l2r)))
-    ;;$B%+%l%s%H$N8uJdHV9f$r@_Dj$9$k(B
+    ;;カレントの候補番号を設定する
     (if l2r
 	(progn
-	  ;; $B:8$+$i1&$N>l9g(B
-	  ;; index$B$r0lHV1&$N8uJd$K@_Dj$9$k(B
+	  ;; 左から右の場合
+	  ;; indexを一番右の候補に設定する
 	  (anthy-get-candidate (car (car lst)))
 	  (setq lst (reverse lst))
 	  (setq anthy-current-candidate-index (car (car lst))))
       (progn
-	;; $B1&$+$i:8$N>l9g(B
+	;; 右から左の場合
 	(setq anthy-current-candidate-index (car (car (reverse lst))))))
-    ;;$B7k2L$r%;%C%H(B
+    ;;結果をセット
     (setq anthy-enum-candidate-list
 	  (if lst
 	      (anthy-add-candidate-index lst)
@@ -421,15 +421,15 @@
 
 ;;
 (defun anthy-layout-candidate (idx nr)
-  "$B8uJd%j%9%H$r(Bminibuffer$B$X%l%$%"%&%H$9$k(B"
+  "候補リストをminibufferへレイアウトする"
   (setq anthy-candidate-minibuffer "")
   (setq anthy-enum-candidate-list '())
-  ;; $B:8(B->$B1&(B or $B1&(B->$B:8$K%l%$%"%&%H$9$k(B
+  ;; 左->右 or 右->左にレイアウトする
   (if anthy-enum-candidate-p
       (anthy-calc-candidate-layout idx nr 't)
     (anthy-calc-candidate-layout idx nr nil))
   (anthy-make-candidate-minibuffer-string)
-  ;; $B7k2L$rI=<($9$k(B
+  ;; 結果を表示する
   (if anthy-enum-candidate-list
       (progn
 	(message "%s" anthy-candidate-minibuffer)
@@ -441,7 +441,7 @@
     nil))
 
 (defun anthy-update-preedit (stat ps)
-  "$B%W%j%(%G%#%C%H$r99?7$9$k(B"
+  "プリエディットを更新する"
   (let ((cursor-pos nil)
 	(num-candidate 0)
 	(idx-candidate 0)
@@ -451,7 +451,7 @@
     ;; erase old preedit
     (anthy-erase-preedit)
 
-    ;; $BF~NO%-%c%s%;%k;~$K(Bundo$B%j%9%H$r7R$2$k(B
+    ;; 入力キャンセル時にundoリストを繋げる
     (if (and (= (length ps) 0)  anthy-buffer-undo-list-saved )
 	(progn
 ;	  (message "enable")
@@ -462,7 +462,7 @@
 
     (anthy-disable-preedit-keymap)
     ;; insert new preedit
-    (setq anthy-preedit-start (point))
+    (setq anthy-preedit-start (point-marker))
     (setq anthy-enum-candidate-p nil)
     (setq anthy-enum-rcandidate-p nil)
     (if (member stat '(2 3 4))
@@ -471,7 +471,7 @@
 		(concat anthy-preedit anthy-preedit-begin-mark))
 	  (anthy-insert-preedit-segment anthy-preedit-begin-mark '())
 
-	  ;; $BF~NO3+;O$HF1;~$K(Bundo$B%j%9%H$rL58z2=(B
+	  ;; 入力開始と同時にundoリストを無効化
 	  (if (not anthy-buffer-undo-list-saved)
 	      (progn
 		;(message "disable")
@@ -484,7 +484,7 @@
 
 	  ))
 
-    ;; $B3FJ8@a$KBP$7$F(B
+    ;; 各文節に対して
     (while ps
       (let ((cur (car ps)))
 	(setq ps (cdr ps))
@@ -500,12 +500,12 @@
 		(attr (car cur)))
 	    (setq str (anthy-insert-preedit-segment str attr))
 	    (cond ((and (car anthy-enable-enum-candidate-p) (memq 'ENUM attr))
-		   ;; $B=gJ}8~$N8uJdNs5s(B
+		   ;; 順方向の候補列挙
 		   (setq anthy-enum-candidate-p t)
 		   (setq idx-candidate idx)
 		   (setq num-candidate nr))
 		  ((and (car anthy-enable-enum-candidate-p) (memq 'ENUMR attr))
-		   ;; $B5UJ}8~$N8uJdNs5s(B
+		   ;; 逆方向の候補列挙
 		   (setq anthy-enum-rcandidate-p t)
 		   (setq idx-candidate idx)
 		   (setq num-candidate nr)))
@@ -516,19 +516,19 @@
 		  (setq anthy-preedit
 			(concat anthy-preedit anthy-preedit-delim-mark))
 		  (anthy-insert-preedit-segment anthy-preedit-delim-mark '()))))))))
-    ;; $B8uJd0lMw$NI=<(3+;O%A%'%C%/(B
+    ;; 候補一覧の表示開始チェック
     (if (and (not enum-candidate)
 	     (or anthy-enum-candidate-p anthy-enum-rcandidate-p))
 	(setq anthy-current-candidate-layout-begin-index 0))
-    ;; $B8uJd$NNs5s$r9T$&(B
+    ;; 候補の列挙を行う
     (if (or anthy-enum-candidate-p anthy-enum-rcandidate-p)
 	(anthy-layout-candidate idx-candidate num-candidate))
-    ;; preedit$B$N(Bkeymap$B$r99?7$9$k(B
+    ;; preeditのkeymapを更新する
     (if (member stat '(2 3 4))
 	(anthy-enable-preedit-keymap))
     (if cursor-pos (goto-char cursor-pos))))
 
-; suzuki : Emacs / XEmacs $B$G6&DL$N4X?tDj5A(B
+; suzuki : Emacs / XEmacs で共通の関数定義
 (defun anthy-encode-key (ch)
   (let ((c (assoc ch anthy-keyencode-alist)))
     (if c
@@ -555,7 +555,7 @@
        (commit "")
        (commitlen nil)
        (preedit nil))
-    ;; $B3FJ8@a$r=hM}$9$k(B
+    ;; 各文節を処理する
     (while body
       (let* ((cur (car body))
 	     (pe nil))
@@ -574,22 +574,22 @@
 	  (setq pe (list cur)))
 	(if pe
 	    (setq preedit (append preedit pe)))))
-    ;; $B%3%_%C%H$5$l$?J8@a$r=hM}$9$k(B
+    ;; コミットされた文節を処理する
 ;    (anthy-restore-undo-list commit)
     (if (> (string-width commit) 0)
 	(progn
 	  (setq commitlen (length commit))
 	  (anthy-erase-preedit)
 	  (anthy-disable-preedit-keymap)
-	  ; $B@h$K%3%_%C%H$5$;$F$*$/(B
+	  ; 先にコミットさせておく
 	  (insert-and-inherit commit)
 	  (anthy-do-auto-fill)
 
-	  ;; $B%3%_%C%H;~$K7R$2$k(B
+	  ;; コミット時に繋げる
 	  (if anthy-buffer-undo-list-saved 
 	      (progn
 		;(message "enable")
-		; $BI|5"$5$;$kA0$K!$:#(Bcommit$B$7$?FbMF$r%j%9%H$KDI2C(B
+		; 復帰させる前に，今commitした内容をリストに追加
 		(setq anthy-buffer-undo-list
 		      (cons (cons anthy-preedit-start
 				  (+ anthy-preedit-start commitlen))
@@ -665,23 +665,23 @@
 
 ;;
 (defun anthy-insert (&optional arg)
-  "Anthy$B$N%-!<%O%s%I%i(B"
+  "Anthyのキーハンドラ"
   (interactive "*p")
-  ;; suzuki : last-command-char $B$r(B (anthy-last-command-char) $B$KJQ99(B
+  ;; suzuki : last-command-char を (anthy-last-command-char) に変更
   (let* ((ch (anthy-last-command-char))
 	 (chenc (anthy-encode-key ch)))
     (anthy-handle-key ch chenc)))
 
 (defun anthy-handle-key (ch chenc)
   (cond
-   ;; $B8uJdA*Br%b!<%I$+$i8uJd$rA*$V(B
+   ;; 候補選択モードから候補を選ぶ
    ((and (or anthy-enum-candidate-p anthy-enum-rcandidate-p)
 	 (integerp ch)
 	 (assq (car (rassoc (char-to-string ch)
 			    anthy-select-candidate-keybind))
 	       anthy-enum-candidate-list))
     (anthy-insert-select-candidate ch))
-   ;; $B%-!<%^%C%W$rJQ99$9$k%3%^%s%I$r=hM}$9$k(B
+   ;; キーマップを変更するコマンドを処理する
    ((and (anthy-find-rkmap-keybind ch)
 	 (string-equal anthy-preedit ""))
     (let ((mapname (cdr (anthy-find-rkmap-keybind ch))))
@@ -693,11 +693,11 @@
 		    (cdr (assoc (cons anthy-current-rkmap ch)
 				anthy-rkmap-keybind)))
 	      (anthy-update-mode-line))))))
-   ;; $B%"%k%U%!%Y%C%H%b!<%I$N>l9g$OD>@\F~NO(B
+   ;; アルファベットモードの場合は直接入力
    ((and (string-equal anthy-current-rkmap "alphabet")
 	 (string-equal anthy-preedit ""))
     (self-insert-command 1))
-   ;; $B%W%j%(%G%#%C%H$,$J$/$F%9%Z!<%9$,2!$5$l$?(B
+   ;; プリエディットがなくてスペースが押された
    ((and
      (string-equal anthy-preedit "")
      (= ch 32)
@@ -708,7 +708,7 @@
       (anthy-do-auto-fill)))
    ((or anthy-enum-candidate-p anthy-enum-rcandidate-p)
     (anthy-handle-enum-candidate-mode chenc))
-   ;; $BIaDL$NF~NO(B
+   ;; 普通の入力
    (t
     (anthy-handle-normal-key chenc))))
 
@@ -855,13 +855,13 @@
   (anthy-select-map "hankaku_kana"))
 ;;
 ;;
-;; leim $B$N(B inactivate
+;; leim の inactivate
 ;;
 (defun anthy-leim-inactivate ()
   (setq anthy-leim-active-p nil)
   (anthy-update-mode))
 ;;
-;; leim $B$N(B activate
+;; leim の activate
 ;;
 (defun anthy-leim-activate (&optional name)
   (setq inactivate-current-input-method-function 'anthy-leim-inactivate)
@@ -871,7 +871,7 @@
     (add-hook 'minibuffer-exit-hook 'anthy-leim-exit-from-minibuffer)))
 
 ;;
-;; emacs$B$N%P%0Hr$1$i$7$$$G$9(B
+;; emacsのバグ避けらしいです
 ;;
 (defun anthy-leim-exit-from-minibuffer ()
   (inactivate-input-method)
@@ -879,11 +879,11 @@
     (remove-hook 'minibuffer-exit-hook 'anthy-leim-exit-from-minibuffer)))
 
 ;;
-;; Emacs / XEmacs $B%3%s%Q%A%V%k$J(B last-command-char
-;; suzuki : $B?7@_(B
+;; Emacs / XEmacs コンパチブルな last-command-char
+;; suzuki : 新設
 ;;
 (defun anthy-last-command-char ()
-  "$B:G8e$NF~NO%$%Y%s%H$rJV$9!#(BXEmacs $B$G$O(B int $B$KJQ49$9$k(B"
+  "最後の入力イベントを返す。XEmacs では int に変換する"
   (if anthy-xemacs
       (let ((event last-command-event))
 	(cond
