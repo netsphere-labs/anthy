@@ -26,6 +26,7 @@
 
 #include <anthy/anthy.h>
 #include <anthy/convdb.h>
+#include <anthy/xstr.h>
 #include <config.h>
 
 /* Makefile の $(srcdir) (静的データファイルの基準ディレクトリ) */
@@ -91,12 +92,12 @@ read_file(FILE *fp, struct input *in)
 static int
 check_cond(struct condition *cond, struct input *in)
 {
-  if (in->serial == cond->serial) {
+  if (cond->from == -1 && cond->to == -1)
     return 1;
-  }
-  if (in->serial <= cond->to && in->serial >= cond->from) {
+  else if (in->serial == cond->serial)
     return 1;
-  }
+  else if (in->serial <= cond->to && in->serial >= cond->from)
+    return 1;
   return 0;
 }
 
@@ -124,6 +125,7 @@ init_lib(int use_utf8)
   ac = anthy_create_context();
   if (use_utf8) {
     anthy_context_set_encoding(ac, ANTHY_UTF8_ENCODING);
+    anthy_xstr_set_print_encoding (ANTHY_UTF8_ENCODING);
   } else {
     anthy_context_set_encoding(ac, ANTHY_EUC_JP_ENCODING);
   }
@@ -157,17 +159,21 @@ parse_args(struct condition *cond, int argc, char **argv)
 	print_usage();
       }
       if (!strcmp(arg, "all")) {
-	cond->from = 0;
-	cond->to = 100000000;
+	cond->from = -1;
+	cond->to = -1;
+      } else if (!strcmp(arg, "verbose")) {
+	cond->quiet = 0;
+	//cond->miss_only = 0;
       } else if (!strcmp(arg, "quiet")) {
 	cond->quiet = 1;
+	cond->miss_only = 0;
       } else if (!strcmp(arg, "ask") ||
 		 !strcmp(arg, "query")) {
 	cond->ask = 1;
       } else if (!strcmp(arg, "print-miss-only")) {
 	cond->miss_only = 1;
-      } else if (!strcmp(arg, "utf8")) {
-	cond->use_utf8 = 1;
+      } else if (!strcmp(arg, "euc")) {
+	cond->use_utf8 = 0;
       }
 
       if (i + 1 < argc) {
@@ -350,13 +356,13 @@ static void
 init_condition(struct condition *cond)
 {
   cond->serial = 0;
-  cond->from = 0;
-  cond->to = 0;
+  cond->from = -1;
+  cond->to = -1;
   /**/
-  cond->quiet = 0;
+  cond->quiet = 1;
   cond->ask = 0;
-  cond->miss_only = 0;
-  cond->use_utf8 = 0;
+  cond->miss_only = 1;
+  cond->use_utf8 = 1;
 }
 
 int
@@ -367,6 +373,7 @@ main(int argc,char **argv)
   struct input cur_input;
   struct res_db *db;
   struct condition cond;
+  int line = 1;
 
   cur_input.serial = 0;
   cur_input.str = 0;
@@ -389,10 +396,17 @@ main(int argc,char **argv)
   ac = init_lib(cond.use_utf8);
 
   /* ファイルを読んでいくループ */
+  /* anthy_sort_candidate() spends time in anthy_do_context_set_str()
+   */
   while (!read_file(fp, &cur_input)) {
     if (check_cond(&cond, &cur_input)) {
+      if (getenv ("DEBUG") && line % 50 == 1) {
+        printf ("reading #%03d %s\n", line, cur_input.str);
+        fflush (stdout);
+      }
       set_string(&cond, db, &cur_input, ac);
     }
+    line++;
   }
 
   anthy_release_context(ac);

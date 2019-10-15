@@ -48,6 +48,8 @@ test1(void)
     printf("failed to create context\n");
     return 1;
   }
+  anthy_context_set_encoding (ac, ANTHY_UTF8_ENCODING);
+  anthy_xstr_set_print_encoding (ANTHY_UTF8_ENCODING);
   anthy_set_string(ac, "あいうえお、かきくけこ。");
   if (anthy_get_segment(ac, 0, NTH_UNCONVERTED_CANDIDATE, buf, 100) > 0) {
     printf("(%s)\n", buf);
@@ -62,7 +64,7 @@ test1(void)
     printf("(%s)\n", buf);
   }
   anthy_release_context(ac);
-  xs = anthy_cstr_to_xstr("あいうえおがぎぐげご", 0);
+  xs = anthy_cstr_to_xstr("あいうえおがぎぐげご", ANTHY_UTF8_ENCODING);
   xs = anthy_xstr_hira_to_half_kata(xs);
   anthy_putxstrln(xs);
   return 0;
@@ -78,6 +80,7 @@ shake_test(const char *str)
     printf("failed to create context\n");
     return 1;
   }
+  anthy_context_set_encoding(ac, ANTHY_UTF8_ENCODING);
   anthy_set_string(ac, str);
   for (i = 0; i < 50; i++) {
     int nth, rsz;
