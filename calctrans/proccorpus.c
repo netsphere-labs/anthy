@@ -14,6 +14,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <anthy/convdb.h>
+#include <anthy/xstr.h>
 
 static int verbose;
 
@@ -145,6 +146,15 @@ proc_sentence(anthy_context_t ac, struct conv_res *cr)
   print_context_info(ac, cr);
 }
 
+static long int
+get_conv_res_length (struct conv_res *cr)
+{
+    long int length = 0;
+    for (; cr; cr = cr->next)
+        length++;
+    return length;
+}
+
 int
 main(int argc, char **argv)
 {
@@ -152,6 +162,7 @@ main(int argc, char **argv)
   struct conv_res *cr;
   anthy_context_t ac;
   int i;
+  long int length, j;
 
   db = create_db();
   for (i = 1; i < argc; i++) {
@@ -167,10 +178,15 @@ main(int argc, char **argv)
   anthy_init();
   anthy_set_personality("");
   ac = anthy_create_context();
+  anthy_context_set_encoding(ac, ANTHY_UTF8_ENCODING);
+  anthy_xstr_set_print_encoding (ANTHY_UTF8_ENCODING);
 
-  /**/
-  for (cr = db->res_list.next; cr; cr = cr->next) {
+  length = get_conv_res_length (db->res_list.next);
+  for (j = 0, cr = db->res_list.next; cr; cr = cr->next) {
     proc_sentence(ac, cr);
+    if (getenv ("DEBUG") && j % 1000 == 0)
+      printf ("progress: %ld/%ld\n", j, length);
+    j++;
   }
   return 0;
 }
