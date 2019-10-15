@@ -202,7 +202,7 @@ parse_dep(char **tokens, int nr)
     char *s;
     s = strdup(&tokens[row][1]);
     s[strlen(s)-1] =0;
-    strs[nr_strs] = anthy_cstr_to_xstr(s, ANTHY_EUC_JP_ENCODING);
+    strs[nr_strs] = anthy_cstr_to_xstr(s, ANTHY_UTF8_ENCODING);
     nr_strs ++;
     free(s);
   }
@@ -213,7 +213,7 @@ parse_dep(char **tokens, int nr)
     anthy_log(0, "node %s has a branch without any transition condition.\n",
 	      tokens[0]);
     s = strdup("");
-    strs[0] = anthy_cstr_to_xstr(s, ANTHY_EUC_JP_ENCODING);
+    strs[0] = anthy_cstr_to_xstr(s, ANTHY_UTF8_ENCODING);
     nr_strs = 1;
     free(s);
   }
