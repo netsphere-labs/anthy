@@ -44,6 +44,7 @@ set_freq(struct word_entry **array, int nr)
 {
   int i;
   int percent = nr / 100;
+  percent = percent ? percent : 1;
   for (i = 0; i < nr; i++) {
     struct word_entry *we = array[i];
     we->freq = 99 - (i / percent);
