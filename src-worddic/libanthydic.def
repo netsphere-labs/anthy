@@ -29,6 +29,7 @@ EXPORTS
     anthy_conv_euc_to_utf8
     anthy_conv_utf8_to_euc
     anthy_sputxchar
+    anthy_putxstrln
 
     ; xchar.c
     anthy_get_xchar_type
@@ -112,6 +113,8 @@ EXPORTS
     anthy_feature_list_set_dep_class
     anthy_feature_list_print
     anthy_feature_list_set_noun_cos
+    anthy_feature_list_nr
+    anthy_feature_list_nth
 
     ; file_dic.c
     anthy_file_dic_get_section
@@ -135,3 +138,17 @@ EXPORTS
     anthy_sparse_matrix_set
     anthy_sparse_matrix_make_matrix
     anthy_matrix_image_new
+
+    ; dic_util.c
+    anthy_dic_util_init
+    anthy_dic_util_get_anthydir
+    anthy_dic_util_set_encoding
+    anthy_priv_dic_delete
+    anthy_priv_dic_select_first_entry
+    anthy_priv_dic_select_next_entry
+    anthy_priv_dic_get_index
+    anthy_priv_dic_get_freq
+    anthy_priv_dic_get_wtype
+    anthy_priv_dic_get_word
+    anthy_priv_dic_add_entry
+    

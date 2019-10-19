@@ -17,3 +17,7 @@ EXPORTS
     anthy_quit
     anthy_conf_override
     anthy_print_context
+
+    ; context.c
+    anthy_get_nth_segment
+    
