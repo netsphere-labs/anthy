@@ -2021,7 +2021,7 @@ static void
 setup_filenames(const char *id, struct record_stat *rst)
 {
   const char *home = anthy_get_user_dir(0);
-  int base_len = strlen(home) + strlen(id) + 5;
+  int base_len = strlen (home) + strlen (id) + strlen (ENCODING_SUFFIX) + 1;
 
   /* 基本ファイル */
   rst->base_fn = (char*) malloc(base_len +
