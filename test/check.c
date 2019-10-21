@@ -9,6 +9,9 @@ init(void)
 {
   int res;
 
+  anthy_conf_override("CONFFILE", "../anthy-unicode.conf");
+  anthy_conf_override("HOME", TEST_HOME);
+  anthy_conf_override("DIC_FILE", "../mkanthydic/anthy.dic");
   res = anthy_init();
   if (res) {
     printf("failed to init\n");
@@ -16,6 +19,9 @@ init(void)
   }
   anthy_quit();
   /* init again */
+  anthy_conf_override("CONFFILE", "../anthy-unicode.conf");
+  anthy_conf_override("HOME", TEST_HOME);
+  anthy_conf_override("DIC_FILE", "../mkanthydic/anthy.dic");
   res = anthy_init();
   if (res) {
     printf("failed to init\n");
@@ -85,6 +91,7 @@ shake_test(const char *str)
   for (i = 0; i < 50; i++) {
     int nth, rsz;
     struct anthy_conv_stat cs;
+    anthy_get_stat(ac, &cs);
     nth = rand() % cs.nr_segment;
     rsz = (rand() % 3) - 1;
     anthy_resize_segment(ac, nth, rsz);
