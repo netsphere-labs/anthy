@@ -3,7 +3,7 @@
 #include <anthy/anthy.h>
 
 
-/* Makefile $B$N(B $(srcdir) ($B@EE*%G!<%?%U%!%$%k$N4p=`%G%#%l%/%H%j(B) */
+/* Makefile の $(srcdir) (静的データファイルの基準ディレクトリ) */
 #ifndef SRCDIR
 # define SRCDIR "."
 #endif
@@ -11,7 +11,7 @@
 static void
 init_lib(void)
 {
-  /* $B4{$K%$%s%9%H!<%k$5$l$F$$$k%U%!%$%k$N1F6A$r<u$1$J$$$h$&$K$9$k(B */
+  /* 既にインストールされているファイルの影響を受けないようにする */
   anthy_conf_override("CONFFILE", "../anthy-unicode.conf");
   anthy_conf_override("DEPWORD", "master.depword");
   anthy_conf_override("DEPGRAPH", "../depgraph/anthy.dep");
