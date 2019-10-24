@@ -63,6 +63,7 @@
  */
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include <anthy/diclib.h>
 /* public APIs */
@@ -109,7 +110,9 @@ static struct sparse_array *
 sparse_array_new(void)
 {
   struct sparse_array *a = malloc(sizeof(struct sparse_array));
-  /**/
+  if (!a)
+    return NULL;
+
   a->elm_count = 0;
   a->head.next = NULL;
   a->head.orig_next = NULL;
@@ -301,6 +304,9 @@ struct sparse_matrix *
 anthy_sparse_matrix_new()
 {
   struct sparse_matrix *m = malloc(sizeof(struct sparse_matrix));
+  if (!m)
+    return NULL;
+
   m->row_array = sparse_array_new();
   m->nr_rows = 0;
   return m;
@@ -309,6 +315,8 @@ anthy_sparse_matrix_new()
 static struct sparse_array *
 find_row(struct sparse_matrix *m, int row, int create)
 {
+  assert(m);
+
   struct sparse_array *a;
   a = sparse_array_get_ptr(m->row_array, row);
   if (a) {
@@ -356,6 +364,8 @@ anthy_sparse_matrix_get_int(struct sparse_matrix *m, int row, int column)
 void
 anthy_sparse_matrix_make_matrix(struct sparse_matrix *m)
 {
+  assert(m);
+
   struct array_elm *ae;
   int i;
   int offset = 0;

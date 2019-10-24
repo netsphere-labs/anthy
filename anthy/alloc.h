@@ -8,12 +8,12 @@
 /** アロケータのハンドル */
 typedef struct allocator_priv * allocator;
 
-/*
+/**
  * allocatorを作る
- * s: 構造体のsize(バイト数)
- * dtor: =destructor 確保したオブジェクトが解放されるときに呼ばれる関数
+ * @param s    構造体のsize(バイト数)
+ * @param dtor destructor 確保したオブジェクトが解放されるときに呼ばれる関数
  *  dtorの引数は解放されるオブジェクト
- * 返り値: 作成したallocator 
+ * @return 作成したallocator
  */
 allocator anthy_create_allocator(int s, void (*dtor)(void *));
 

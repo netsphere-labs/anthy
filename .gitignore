@@ -26,3 +26,12 @@ m4/*
 *.obj
 Debug/
 *.vcxproj.user
+
+# mingw
+Makefile
+.deps
+*.o
+.libs
+*.exe
+*.lo
+*.la

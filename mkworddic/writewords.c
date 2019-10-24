@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include <anthy/anthy.h>
 #include <anthy/word_dic.h>
 #include "mkdic.h"
@@ -71,7 +72,8 @@ compare_word_entry(struct word_entry *prev_we,
 }
 
 /** 一つの読みに対する単語の内容を出力する
- * 返り値は出力したバイト数
+ * @param ye NULL のことがある.
+ * @return 出力したバイト数
  */
 static int
 output_word_entry_for_a_yomi(struct yomi_entry *ye, int encoding)
@@ -217,6 +219,8 @@ generate_yomi_to_offset_map(struct yomi_entry_list *yl)
 void
 output_word_dict(struct yomi_entry_list *yl)
 {
+  assert(yl);
+
   int entry_index = 0;
   int i;
   struct yomi_entry *ye = NULL;
@@ -225,6 +229,7 @@ output_word_dict(struct yomi_entry_list *yl)
   for (i = 0; i < yl->nr_valid_entries; i++) {
     /* 単語を出力して、ファイル中の位置(offset)を計算する */
     ye = yl->ye_array[i];
+    assert(ye);
     ye->offset = entry_index;
     entry_index += output_word_entry_for_a_yomi(ye, yl->body_encoding);
   }

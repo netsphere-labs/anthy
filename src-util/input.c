@@ -36,7 +36,10 @@ struct anthy_input_context {
   int map_no;  /* RKMAP_* */
   /* 変換する文字列のバッファ*/
   char* hbuf;
+
+  // hbuf 内の有効なバイト数.
   int n_hbuf;
+
   int s_hbuf;
   char* hbuf_follow;
   int n_hbuf_follow;
@@ -94,9 +97,17 @@ struct a_segment {
   struct a_segment* next, * prev;
 };
 
+
+/**
+ * *buf を, 少なくとも to_size の大きさを持つように拡張する.
+ * @return 成功したら0, 失敗は -1
+ */
 static int
 ensure_buffer(char** buf, int* size, int to_size)
 {
+  assert(buf);
+  assert(size);
+
   if (*size < to_size) {
     *buf = (char*) realloc(*buf, to_size);
     if (*buf == NULL) {
@@ -775,6 +786,9 @@ anthy_input_create_context(struct anthy_input_config* cfg)
 
   ictx =
     (struct anthy_input_context*) malloc(sizeof(struct anthy_input_context));
+  if (!ictx)
+    return NULL;
+
   ictx->state = ANTHY_INPUT_ST_NONE;
   ictx->rkctx = rk_context_create(cfg->break_into_roman);
   for (i = 0; i < NR_RKMAP; i++)
@@ -1182,6 +1196,9 @@ alloc_segment(int flag, int len, int noconv_len)
   struct anthy_input_segment *seg;
   seg = (struct anthy_input_segment*)
     malloc(sizeof(struct anthy_input_segment));
+  if (!seg)
+    return NULL;
+
   seg->flag = flag;
   seg->cand_no = -1;
   seg->nr_cand = -1;
@@ -1255,6 +1272,8 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
 
   pedit = (struct anthy_input_preedit*)
     malloc(sizeof(struct anthy_input_preedit));
+  if (!pedit)
+    return NULL;
 
   pedit->state = ictx->state;
 
@@ -1492,6 +1511,8 @@ anthy_input_create_config(void)
   struct anthy_input_config* cfg;
 
   cfg = (struct anthy_input_config*) malloc(sizeof(struct anthy_input_config));
+  if (!cfg)
+    return NULL;
 
   cfg->rk_option = anthy_input_create_rk_option();
   cfg->break_into_roman = 0;

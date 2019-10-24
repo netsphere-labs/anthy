@@ -77,36 +77,58 @@ xlengthofcstr(const char *c)
   return ll;
 }
 
+/**
+ * Convert bytes of one code point.
+ * @param [out] res converted Unicode code point. If invalid sequence,
+ *                  (xchar) -1.
+ * @return pointer advanced by one code point from s. If there was an invalid
+ *         sequence, NULL.
+ */
 const char *
 anthy_utf8_to_ucs4_xchar(const char *s, xchar *res)
 {
+  assert(s);
+  assert(res);
+
   const unsigned char *str = (const unsigned char *)s;
   int i, len;
   xchar cur;
   cur = str[0];
   if (str[0] < 0x80) {
     len = 1;
-  } else if (str[0] < 0xe0) {
+  }
+  else if (*str <= 0xc1) {
+    *res = (xchar) -1;
+    return NULL;
+  }
+  else if (str[0] < 0xe0) {
     cur &= 0x1f;
     len = 2;
   } else if (str[0] < 0xf0) {
     cur &= 0x0f;
     len = 3;
-  } else if (str[0] < 0xf8) {
+  } else if (str[0] <= 0xf4) {
     cur &= 0x07;
     len = 4;
-  } else if (str[0] < 0xfc) {
-    cur &= 0x03;
-    len = 5;
-  } else {
-    cur &= 0x01;
-    len = 6;
   }
+  else {
+    *res = (xchar) -1;
+    return NULL;
+  }
+
   str ++;
   for (i = 1; i < len; i++) {
+    if ((*str & 0xc0) != 0x80) { // Byte 2-4 is 10xxxxxx
+      *res = (xchar) -1;
+      return NULL;
+    }
     cur <<= 6;
     cur |= (str[0] & 0x3f);
     str++;
+  }
+  if (cur >= 0xd800 && cur <= 0xdfff) { // surrogate pair
+    *res = (xchar) -1;
+    return NULL;
   }
   *res = cur;
   return (const char *)str;
@@ -114,7 +136,7 @@ anthy_utf8_to_ucs4_xchar(const char *s, xchar *res)
 
 
 /**
- * Convert utf-8 C string to xstr.
+ * Convert UTF-8 C string to xstr.
  * @param s  NUL terminated UTF-8 C string.
  * @return new xstr. The caller has to free it with anthy_free_xstr().
  *         If the input is an invalid byte sequence, NULL.
@@ -155,6 +177,9 @@ utf8_to_ucs4_xstr(const char *s)
 static int
 put_xchar_to_utf8_str(xchar xc, char *buf_)
 {
+  assert( xc <= 0x1fffff );
+  assert( !(xc >= 0xd800 && xc <= 0xdfff) );
+
   int i, len;
   unsigned char *buf = (unsigned char *)buf_;
   if (xc < 0x80) {
@@ -169,19 +194,20 @@ put_xchar_to_utf8_str(xchar xc, char *buf_)
   } else if (xc < 0x200000) {
     buf[0] = 0xf0;
     len = 4;
-  } else if (xc < 0x400000) {
+  } /*else if (xc < 0x400000) {
     buf[0] = 0xf8;
     len = 5;
   } else {
     buf[0] = 0xfc;
     len = 6;
   }
+    */
   for (i = len - 1; i > 0; i--) {
     buf[i] = (xc & 0x3f) | 0x80;
     xc >>= 6;
   }
   buf[0] += xc;
-  buf[len] = 0;
+  buf[len] = '\0';
   return len;
 }
 
@@ -207,7 +233,10 @@ ucs4_xstr_to_utf8(const xstr* xs)
   return buf;
 }
 
-/** Cの文字列をxstrに変更する
+/**
+ * Cの文字列 (encoding に従う) をxstrに変更する
+ * @return 新しく生成された xstr. 呼出し側で anthy_free_xstr() すること。
+ *         c が不正なバイト列だった場合, NULL.
  */
 xstr *
 anthy_cstr_to_xstr(const char *c, int encoding)
@@ -239,8 +268,13 @@ anthy_cstr_to_xstr(const char *c, int encoding)
   return x;
 }
 
+
+/**
+ * Convert xstr to new C string under specific encoding.
+ * @return new C string. The caller has to free() it.
+ */
 char *
-anthy_xstr_to_cstr(xstr *s, int encoding)
+anthy_xstr_to_cstr(const xstr* s, int encoding)
 {
   int i, j, l;
   char *p;
@@ -257,6 +291,8 @@ anthy_xstr_to_cstr(xstr *s, int encoding)
     }
   }
   p = (char *)malloc(l + 1);
+  if (!p)
+    return NULL;
   p[l] = 0;
   j = 0;
   for (i =  0; i < s->len; i++) {
@@ -274,18 +310,23 @@ anthy_xstr_to_cstr(xstr *s, int encoding)
   return p;
 }
 
+
+/**
+ * Duplicate a xstr.
+ * @return If failed, NULL.
+ */
 xstr *
 anthy_xstr_dup(const xstr* s)
 {
   assert(s);
-  
+
   xstr *x = (xstr *)malloc(sizeof(xstr));
   if (!x)
     return NULL;
   x->len = s->len;
   if (s->len) {
     int i;
-     
+
     x->str = malloc(sizeof(xchar)*s->len);
     for (i = 0; i < x->len; i++) {
       x->str[i] = s->str[i];
@@ -333,9 +374,15 @@ anthy_free_xstr_str(xstr *x)
   x->str = NULL;
 }
 
+
+/**
+ * @return the number of bytes written to buf (except terminal NUL).
+ */
 int
 anthy_sputxchar(char *buf, xchar x, int encoding)
 {
+  assert(buf);
+
   if (!xc_isprint(x)) {
     sprintf(buf, "??");
     return 2;
@@ -425,6 +472,7 @@ anthy_xstrcpy(xstr* dest, const xstr* src)
 
   if (src == dest)
     return dest;
+
   if (!src->len) {
     dest->len = 0;
     free(dest->str);
@@ -450,7 +498,7 @@ anthy_xstrcmp(const xstr* x1, const xstr* x2)
 {
   assert(x1);
   assert(x2);
-  
+
   int i, m;
   if (x1->len < x2->len) {
     m = x1->len;
@@ -476,8 +524,11 @@ anthy_xstrcmp(const xstr* x1, const xstr* x2)
 
 /* 返り値の符号はstrncmpと同じ */
 int
-anthy_xstrncmp(xstr *x1, xstr *x2, int n)
+anthy_xstrncmp(const xstr* x1, const xstr* x2, int n)
 {
+  assert(x1);
+  assert(x2);
+
   int i, m;
   if (x1->len < x2->len) {
     m = x1->len;
@@ -508,7 +559,7 @@ anthy_xstrcat(xstr *s, const xstr* a)
 {
   assert(s);
   assert(a);
-  
+
   int i, l;
 /*if (!s) {
     s = malloc(sizeof(xstr));
@@ -525,14 +576,17 @@ anthy_xstrcat(xstr *s, const xstr* a)
   }
   if (a->len > 0) {
     s->str = realloc(s->str, sizeof(xchar) * l);
-    for (i = 0; i < a->len; i ++) {
-      s->str[s->len+i] = a->str[i];
-    }
+    assert(s->str);
+    memcpy(s->str + s->len, a->str, sizeof(xchar) * a->len);
     s->len = l;
   }
   return s;
 }
 
+
+/**
+ * Append a xchar.
+ */
 xstr *
 anthy_xstrappend(xstr *xs, xchar xc)
 {
@@ -673,6 +727,10 @@ anthy_xstr_hash(xstr *xs)
   return h;
 }
 
+
+/**
+ * @return If failed, NULL.
+ */
 static char *
 conv_cstr(const char *s, int from, int to)
 {
