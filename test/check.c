@@ -94,6 +94,8 @@ shake_test(const char *str)
 int
 main(int argc, char **argv)
 {
+  anthy_set_logger(NULL, 0);
+
   (void)argc;
   (void)argv;
   printf("checking\n");

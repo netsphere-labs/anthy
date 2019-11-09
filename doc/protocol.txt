@@ -74,6 +74,11 @@ Command Semantics and Syntax
 			     / success-with-number
 			     ; number: context-descriptor
 
+    実行例; 厳密に次のテキストでないと失敗する;
+	NEW-CONTEXT INPUT=#18 OUTPUT=#18
+	+OK 0
+	
+
 2. コンテクスト解放
   Command:
 	command-release-context = "RELEASE-CONTEXT" SP context-desc CRLF
@@ -88,6 +93,15 @@ Command Semantics and Syntax
 
   Reply:
 	reply-of-convert = error / segments
+
+    実行例;
+        CONVERT 0 わたしのなまえはなかのです。
+        +DATA 0 0 4
+        5 私の わたしの
+        5 名前は なまえは
+        12 中のです なかのです
+        3 。 。
+	
 
 4. 変換結果コミット/キャンセル
   Command:
