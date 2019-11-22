@@ -6,7 +6,7 @@ From source tar ball
 
 As with other packages, you just have to do
 
-  $ .configure
+  $ .configure --disable-static
   $ make
   $ make install
 
@@ -24,7 +24,7 @@ From Git repository
 Libtool, Automake, Autoconf are required.
 
   $ ./autogen.sh
-  $ .configure --enable-maintainer-mode
+  $ .configure --enable-maintainer-mode --disable-static
   $ make
   $ make install
 

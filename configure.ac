@@ -31,6 +31,8 @@ esac
 AC_MSG_RESULT([$native_win32])
 AM_CONDITIONAL(OS_WIN32, test "$native_win32" = "yes")
 
+AC_ENABLE_STATIC(no)
+
 dnl without emacs. install-lispLISP does mkdir /anthy
 dnl dirty hack to avoid it.
 test -n "$lispdir" || lispdir="/tmp"

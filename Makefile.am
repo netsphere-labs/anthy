@@ -36,3 +36,6 @@ gen-ChangeLog:
 	    { rm -f $(distdir)/ChangeLog &&				\
 	      mv $(distdir)/cl-t $(distdir)/ChangeLog; }		\
 	fi
+
+install-exec-hook:
+	find $(DESTDIR)$(libdir) -type f -name \*.la -delete
