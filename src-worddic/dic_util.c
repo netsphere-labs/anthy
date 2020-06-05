@@ -270,7 +270,7 @@ anthy_priv_dic_get_word(char *buf, int len)
 static int
 find_cb(void *p, long next_offset, const char *key, const char *n)
 {
-  struct scan_context *sc = p;
+  struct scan_context *sc = (struct scan_context*) p;
   struct word_line res;
   if (strcmp(key, sc->yomi)) {
     sc->offset = next_offset;
@@ -289,7 +289,7 @@ find_cb(void *p, long next_offset, const char *key, const char *n)
 static int
 order_cb(void *p, long next_offset, const char *key, const char *n)
 {
-  struct scan_context *sc = p;
+  struct scan_context *sc = (struct scan_context*) p;
   (void)n;
   if (strcmp(key, sc->yomi) >= 0) {
     sc->found_word = 1;
@@ -305,7 +305,7 @@ do_add_word_to_textdic(const char *td, int offset,
 		       const char *yomi, const char *word,
 		       const char *wt_name, int freq)
 {
-  char *buf = malloc(strlen(yomi) + strlen(word) + strlen(wt_name) + 20);
+  char *buf = (char*) malloc(strlen(yomi) + strlen(word) + strlen(wt_name) + 20);
   int rv;
   if (!buf) {
     return -1;

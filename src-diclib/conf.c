@@ -67,7 +67,7 @@ static allocator val_ent_ator;
 static void
 val_ent_dtor(void *p)
 {
-  struct val_ent *v = p;
+  struct val_ent *v = (struct val_ent*) p;
   free((void *)v->var);
   if (v->val) {
     free((void *)v->val);
@@ -84,10 +84,10 @@ find_val_ent(const char *v)
       return e;
     }
   }
-  e = malloc(sizeof(struct val_ent));
-  if (!e) {
+  e = (struct val_ent*) malloc(sizeof(struct val_ent));
+  if (!e)
     return NULL;
-  }
+
   e->var = strdup(v);
   e->val = 0;
   e->next = ent_list;
@@ -129,7 +129,7 @@ ensure_buffer(struct expand_buf *eb, int count)
   int required = count - (eb->size - eb->len) + 16;
   if (required > 0) {
     eb->size += required;
-    eb->buf = realloc(eb->buf, eb->size);
+    eb->buf = (char*) realloc(eb->buf, eb->size);
     eb->cur = &eb->buf[eb->len];
   }
 }
@@ -140,7 +140,7 @@ expand_string(const char *s)
   struct expand_buf eb;
   char *res;
   eb.size = 256;
-  eb.buf = malloc(eb.size);
+  eb.buf = (char*) malloc(eb.size);
   eb.cur = eb.buf;
   eb.len = 0;
 
@@ -258,7 +258,7 @@ anthy_do_conf_init(void)
 
   if (confIsInit)
     return;
-    
+
     val_ent_ator = anthy_create_allocator(sizeof(struct val_ent), val_ent_dtor);
     /*デフォルトの値を設定する。*/
     add_val("VERSION", VERSION);

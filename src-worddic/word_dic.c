@@ -106,22 +106,24 @@ do_get_seq_ent_from_xstr(xstr *xs, int is_reverse)
   return seq;
 }
 
+
+// @return 新しく生成された xstr.
 static xstr *
-convert_vu(xstr *xs)
+convert_vu(const xstr* xs)
 {
   int i, v = 0;
   int j;
 
-    /* 「ヴ」の出現を数える */
+  /* 「ヴ」の出現を数える */
   for (i = 0; i < xs->len; i++) {
     if (xs->str[i] == KK_VU) {
       v++;
     }
   }
   if (v > 0) {
-    xstr *nx = malloc(sizeof(xstr));
+    xstr *nx = (xstr*) malloc(sizeof(xstr));
     nx->len = xs->len + v;
-    nx->str = malloc(sizeof(xchar)*nx->len);
+    nx->str = (xchar*) malloc(sizeof(xchar)*nx->len);
     j = 0;
     /* 「ヴ」を「う゛」に変換しつつコピーする */
     for (i = 0; i < xs->len; i++) {
@@ -164,13 +166,16 @@ anthy_get_seq_ent_from_xstr(xstr *xs, int is_reverse)
   return do_get_seq_ent_from_xstr(xs, is_reverse);
 }
 
+
 static void
 gang_elm_dtor(void *p)
 {
-  struct gang_elm *ge = p;
+  struct gang_elm *ge = (struct gang_elm*) p;
   free(ge->key);
 }
 
+
+// 新しい gang_elm 要素を生成し, head->tmp.next に挿入する.
 static int
 find_gang_elm(allocator ator, struct gang_elm *head, xstr *xs)
 {
@@ -193,8 +198,8 @@ find_gang_elm(allocator ator, struct gang_elm *head, xstr *xs)
 static int
 gang_elm_compare_func(const void *p1, const void *p2)
 {
-  const struct gang_elm * const *s1 = p1;
-  const struct gang_elm * const *s2 = p2;
+  const struct gang_elm ** s1 = (const struct gang_elm**) p1;
+  const struct gang_elm ** s2 = (const struct gang_elm**) p2;
   return strcmp((*s1)->key, (*s2)->key);
 }
 
@@ -257,7 +262,7 @@ load_word(xstr *xs, const char *n, int is_reverse)
 static int
 gang_scan(void *p, long offset, const char *key, const char *n)
 {
-  struct gang_scan_context *gsc = p;
+  struct gang_scan_context *gsc = (struct gang_scan_context*) p;
   struct gang_elm *elm;
   int r;
   (void)offset;
@@ -325,7 +330,7 @@ do_gang_load_dic(xstr *sentence, int is_reverse)
       nr += find_gang_elm(ator, &head, &xs);
     }
   }
-  array = malloc(sizeof(struct gang_elm *) * nr);
+  array = (struct gang_elm**) malloc(sizeof(struct gang_elm*) * nr);
   cur = head.tmp.next;
   for (i = 0; i < nr; i++) {
     array[i] = cur;

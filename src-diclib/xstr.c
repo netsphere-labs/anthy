@@ -219,7 +219,7 @@ ucs4_xstr_to_utf8(const xstr* xs)
 {
   assert(xs);
 
-  char* buf = malloc(xs->len * 4 + 1);
+  char* buf = (char*) malloc(xs->len * 4 + 1);
   if (!buf)
     return NULL;
 
@@ -252,7 +252,7 @@ anthy_cstr_to_xstr(const char *c, int encoding)
     return NULL;
   }
   x->len = l;
-  x->str = malloc(sizeof(xchar)*l);
+  x->str = (xchar*) malloc(sizeof(xchar)*l);
   for (i = 0, j = 0; i < l; i++) {
     if (!(c[j] & 0x80)){
       x->str[i] = c[j];
@@ -327,7 +327,7 @@ anthy_xstr_dup(const xstr* s)
   if (s->len) {
     int i;
 
-    x->str = malloc(sizeof(xchar)*s->len);
+    x->str = (xchar*) malloc(sizeof(xchar)*s->len);
     for (i = 0; i < x->len; i++) {
       x->str[i] = s->str[i];
     }
@@ -343,7 +343,7 @@ anthy_xstr_dup_str(xstr *s)
   xchar *c;
   int i;
   if (s->len) {
-    c = malloc(sizeof(xchar)*s->len);
+    c = (xchar*) malloc(sizeof(xchar)*s->len);
   }else{
     c = 0;
   }
@@ -482,7 +482,7 @@ anthy_xstrcpy(xstr* dest, const xstr* src)
 
   if (src->len > dest->len) {
     free(dest->str);
-    dest->str = malloc(sizeof(xchar) * src->len);
+    dest->str = (xchar*) malloc(sizeof(xchar) * src->len);
     assert(dest->str);
   }
   /* 文字列をコピー */
@@ -575,7 +575,7 @@ anthy_xstrcat(xstr *s, const xstr* a)
     return s;
   }
   if (a->len > 0) {
-    s->str = realloc(s->str, sizeof(xchar) * l);
+    s->str = (xchar*) realloc(s->str, sizeof(xchar) * l);
     assert(s->str);
     memcpy(s->str + s->len, a->str, sizeof(xchar) * a->len);
     s->len = l;
@@ -674,9 +674,9 @@ anthy_xstr_hira_to_half_kata(xstr *src_xs)
       len ++;
     }
   }
-  xs = malloc(sizeof(xstr));
+  xs = (xstr*) malloc(sizeof(xstr));
   xs->len = len;
-  xs->str = malloc(sizeof(xchar) * len);
+  xs->str = (xchar*) malloc(sizeof(xchar) * len);
   j = 0;
   for (i = 0; i < src_xs->len; i++) {
     const struct half_kana_table *tab = anthy_find_half_kana(src_xs->str[i]);

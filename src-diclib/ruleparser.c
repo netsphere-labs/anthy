@@ -94,7 +94,7 @@ open_file_in_confdir(const char *fn)
     return 0;
   }
   dname_len =  strlen(dn);
-  full = alloca(dname_len + strlen(fn) + 2);
+  full = (char*) alloca(dname_len + strlen(fn) + 2);
   sprintf(full, "%s/%s", dn, fn);
 
   return fopen(full, "rb");
@@ -220,7 +220,7 @@ get_line_in(void)
       return 0;
     }
     g_ps.nr_token++;
-    g_ps.tokens = realloc(g_ps.tokens, sizeof(char *)*g_ps.nr_token);
+    g_ps.tokens = (char**) realloc(g_ps.tokens, sizeof(char *)*g_ps.nr_token);
     g_ps.tokens[g_ps.nr_token-1] = strdup(t);
   } while(1);
 }

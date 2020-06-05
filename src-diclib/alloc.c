@@ -118,16 +118,16 @@ get_chunk_address(void *s)
   return (struct chunk*) ((unsigned char*)s - CHUNK_HEADER_SIZE);
 }
 
+// @return If failed, NULL.
 static struct page *
 alloc_page(struct allocator_priv *ator)
 {
   struct page *p;
   unsigned char* avail;
 
-  p = malloc(PAGE_SIZE);
-  if (!p) {
+  p = (struct page*) malloc(PAGE_SIZE);
+  if (!p)
     return NULL;
-  }
 
   p->magic = PAGE_MAGIC;
   avail = PAGE_AVAIL(p);
@@ -183,7 +183,7 @@ anthy_create_allocator(int size, void (*dtor)(void *))
     //exit(1);
     abort();
   }
-  a = malloc(sizeof(*a));
+  a = (allocator) malloc(sizeof(*a));
   if (!a) {
     anthy_log(0, "Fatal error: Failed to allocate memory.\n");
     exit(1);
