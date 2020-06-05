@@ -329,6 +329,11 @@ cmdh_map_select(struct anthy_input_context* ictx, int map)
   return 0;
 }
 
+
+/**
+ * @return a new segment. The caller has to free it by
+ *         anthy_input_free_segment().
+ */
 static struct anthy_input_segment*
 cmdh_get_candidate(struct anthy_input_context* ictx, int cand_no)
 {
@@ -344,7 +349,10 @@ cmdh_get_candidate(struct anthy_input_context* ictx, int cand_no)
   ictx->last_gotten_cand = cand_no;
 
   seg = (struct anthy_input_segment*)
-    malloc(sizeof(struct anthy_input_segment));
+        malloc(sizeof(struct anthy_input_segment));
+  if (!seg)
+    return NULL;
+
   len = anthy_get_segment(ictx->actx, cs->index, cand_no, NULL, 0);
   seg->str = (char*) malloc(len + 1);
   anthy_get_segment(ictx->actx, cs->index, cand_no, seg->str, len + 1);
@@ -858,8 +866,10 @@ anthy_input_free_preedit(struct anthy_input_preedit* pedit)
 void
 anthy_input_free_segment(struct anthy_input_segment* seg)
 {
-  free(seg->str);
-  free(seg);
+  if (seg) {
+    free(seg->str);
+    free(seg);
+  }
 }
 
 void

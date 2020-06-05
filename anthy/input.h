@@ -108,8 +108,10 @@ anthy_input_get_preedit(struct anthy_input_context* ictx);
 void anthy_input_free_preedit(struct anthy_input_preedit* pedit);
 int anthy_input_map_select(struct anthy_input_context* ictx, int map);
 int anthy_input_get_selected_map(struct anthy_input_context* ictx);
-struct anthy_input_segment* 
+
+struct anthy_input_segment*
 anthy_input_get_candidate(struct anthy_input_context* ictx, int cand_no);
+
 void anthy_input_free_segment(struct anthy_input_segment* cand);
 int anthy_input_select_candidate(struct anthy_input_context* ictx, int cand);
 
