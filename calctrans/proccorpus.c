@@ -1,10 +1,10 @@
 /*
- * ¥³¡¼¥Ñ¥¹¤È¤Ê¤ëÊ¸¾Ï¤òÆÉ¤ó¤Ç¡¢Ê¸Àá¤ÎÄ¹¤µ¤òÄ´À°¤·¤Æ
- * ·ÁÂÖÁÇ²òÀÏ¤Î·ë²Ì¤ò½ĞÎÏ¤¹¤ë
+ * ã‚³ãƒ¼ãƒ‘ã‚¹ã¨ãªã‚‹æ–‡ç« ã‚’èª­ã‚“ã§ã€æ–‡ç¯€ã®é•·ã•ã‚’èª¿æ•´ã—ã¦
+ * å½¢æ…‹ç´ è§£æã®çµæœã‚’å‡ºåŠ›ã™ã‚‹
  *
- * ½ĞÎÏ·Á¼°¤Ë¤Ä¤¤¤Æ
- *  ¤Ş¤º¿­½Ì¤ò¹Ô¤Ã¤¿Ê¸Àá¤¬ºÇ½é¤ÎÄ¹¤µ¤Ç½ĞÎÏ¤µ¤ì¤ë
- *  ¼¡¤Ë³ÆÊ¸ÀáËè¤Ë(¤¢¤ì¤Ğ)¸í¤Ã¤¿¸õÊä¡¢Àµ¤·¤¤¸õÊä¤Î½ç¤Ç¾ğÊó¤ò½ĞÎÏ¤¹¤ë
+ * å‡ºåŠ›å½¢å¼ã«ã¤ã„ã¦
+ *  ã¾ãšä¼¸ç¸®ã‚’è¡Œã£ãŸæ–‡ç¯€ãŒæœ€åˆã®é•·ã•ã§å‡ºåŠ›ã•ã‚Œã‚‹
+ *  æ¬¡ã«å„æ–‡ç¯€æ¯ã«(ã‚ã‚Œã°)èª¤ã£ãŸå€™è£œã€æ­£ã—ã„å€™è£œã®é †ã§æƒ…å ±ã‚’å‡ºåŠ›ã™ã‚‹
  *
  *
  * Copyright (C) 2006-2007 TABATA Yusuke
@@ -14,10 +14,11 @@
 #include <string.h>
 #include <stdlib.h>
 #include <anthy/convdb.h>
+#include <anthy/xstr.h>
 
 static int verbose;
 
-/* Ê¸Àá¤ÎÄ¹¤µ¤òÎãÊ¸¤Ë¤¢¤ï¤»¤ë */
+/* æ–‡ç¯€ã®é•·ã•ã‚’ä¾‹æ–‡ã«ã‚ã‚ã›ã‚‹ */
 static int
 trim_segment(anthy_context_t ac, struct conv_res *cr,
 	     int nth, char *seg)
@@ -37,7 +38,7 @@ trim_segment(anthy_context_t ac, struct conv_res *cr,
     }
     if (!resized) {
       resized = 1;
-      /* ¿­½ÌÁ°¤ÎÊ¸Àá¤Î¾ğÊó¤òÉ½¼¨¤¹¤ë */
+      /* ä¼¸ç¸®å‰ã®æ–‡ç¯€ã®æƒ…å ±ã‚’è¡¨ç¤ºã™ã‚‹ */
       print_size_miss_segment_info(ac, nth);
     }
     if (len > cur_len) {
@@ -50,7 +51,7 @@ trim_segment(anthy_context_t ac, struct conv_res *cr,
 }
 
 /*
- * nthÈÖÌÜ¤ÎÊ¸Àá¤Ç¸õÊäseg¤òÃµ¤·¤Æ³ÎÄê¤¹¤ë
+ * nthç•ªç›®ã®æ–‡ç¯€ã§å€™è£œsegã‚’æ¢ã—ã¦ç¢ºå®šã™ã‚‹
  */
 static int
 find_candidate(anthy_context_t ac, struct conv_res *cr,
@@ -61,7 +62,7 @@ find_candidate(anthy_context_t ac, struct conv_res *cr,
   struct anthy_segment_stat ass;
 
   if (seg[0] == '~') {
-    /* ¸õÊä¥ß¥¹¤Î¥Ş¡¼¥¯¡Ö~¡×¤ò¥¹¥­¥Ã¥×¤¹¤ë */
+    /* å€™è£œãƒŸã‚¹ã®ãƒãƒ¼ã‚¯ã€Œ~ã€ã‚’ã‚¹ã‚­ãƒƒãƒ—ã™ã‚‹ */
     seg++;
     cr->cand_check[nth] = 1;
   }
@@ -70,7 +71,7 @@ find_candidate(anthy_context_t ac, struct conv_res *cr,
   for (i = 0; i < ass.nr_candidate; i++) {
     anthy_get_segment(ac, nth, i, seg_buf, 1024);
     if (!strcmp(seg_buf, seg)) {
-      /* °ìÃ×¤¹¤ë¸õÊä¤ò¸«¤Ä¤±¤¿¤Î¤Ç³ÎÄê¤¹¤ë */
+      /* ä¸€è‡´ã™ã‚‹å€™è£œã‚’è¦‹ã¤ã‘ãŸã®ã§ç¢ºå®šã™ã‚‹ */
       anthy_commit_segment(ac, nth, i);
       return 0;
     }
@@ -78,7 +79,7 @@ find_candidate(anthy_context_t ac, struct conv_res *cr,
   return 0;
 }
 
-/* '|' ¤ÇÊ¸Àá¤Ë¶èÀÚ¤é¤ì¤¿Ê¸»úÎó¤Î³ÆÊ¸Àá¤ò°ú¿ô¤Ëfn¤ò¸Æ¤Ö */
+/* '|' ã§æ–‡ç¯€ã«åŒºåˆ‡ã‚‰ã‚ŒãŸæ–‡å­—åˆ—ã®å„æ–‡ç¯€ã‚’å¼•æ•°ã«fnã‚’å‘¼ã¶ */
 static int
 for_each_segment(anthy_context_t ac, struct conv_res *cr,
 		 const char *res_str,
@@ -120,7 +121,7 @@ proc_sentence(anthy_context_t ac, struct conv_res *cr)
   struct anthy_conv_stat acs;
   /*printf("(%s)\n", cr->src_str);*/
   anthy_set_string(ac, cr->src_str);
-  /* Ê¸Àá¤ÎÄ¹¤µ¤òÄ´Àá¤¹¤ë */
+  /* æ–‡ç¯€ã®é•·ã•ã‚’èª¿ç¯€ã™ã‚‹ */
   if (!for_each_segment(ac, cr, cr->res_str, trim_segment)) {
     return ;
   }
@@ -133,7 +134,7 @@ proc_sentence(anthy_context_t ac, struct conv_res *cr)
     cr->cand_check[i] = 0;
   }
 
-  /* ¸õÊä¤òÁªÂò¤¹¤ë */
+  /* å€™è£œã‚’é¸æŠã™ã‚‹ */
   if (cr->cand_str) {
     for_each_segment(ac, cr, cr->cand_str, find_candidate);
   }
@@ -141,8 +142,17 @@ proc_sentence(anthy_context_t ac, struct conv_res *cr)
   if (verbose) {
     anthy_print_context(ac);
   }
-  /* ½ĞÎÏ¤¹¤ë */
+  /* å‡ºåŠ›ã™ã‚‹ */
   print_context_info(ac, cr);
+}
+
+static long int
+get_conv_res_length (struct conv_res *cr)
+{
+    long int length = 0;
+    for (; cr; cr = cr->next)
+        length++;
+    return length;
 }
 
 int
@@ -152,6 +162,7 @@ main(int argc, char **argv)
   struct conv_res *cr;
   anthy_context_t ac;
   int i;
+  long int length, j;
 
   db = create_db();
   for (i = 1; i < argc; i++) {
@@ -162,15 +173,20 @@ main(int argc, char **argv)
     }
   }
 
-  anthy_conf_override("CONFFILE", "../anthy-conf");
+  anthy_conf_override("CONFFILE", "../anthy-unicode.conf");
   anthy_conf_override("DIC_FILE", "../mkanthydic/anthy.dic");
   anthy_init();
   anthy_set_personality("");
   ac = anthy_create_context();
+  anthy_context_set_encoding(ac, ANTHY_UTF8_ENCODING);
+  anthy_xstr_set_print_encoding (ANTHY_UTF8_ENCODING);
 
-  /**/
-  for (cr = db->res_list.next; cr; cr = cr->next) {
+  length = get_conv_res_length (db->res_list.next);
+  for (j = 0, cr = db->res_list.next; cr; cr = cr->next) {
     proc_sentence(ac, cr);
+    if (getenv ("DEBUG") && j % 1000 == 0)
+      printf ("progress: %ld/%ld\n", j, length);
+    j++;
   }
   return 0;
 }

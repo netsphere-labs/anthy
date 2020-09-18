@@ -1,10 +1,10 @@
 #
-# ����ե�������������뤿��Υ�����ץ�
+# 辞書ファイルを生成するためのスクリプト
 #
 # ./mkworddic -f dict.args
 # 
-# (euc �ʼ���Τߤ�Ȥ���anthy�μ���� euc �ˤ��뤳�Ȥ�
-#  anthy.dic �Υ��������ޤ�����Υ���ץ�)
+# (euc な辞書のみを使い、anthyの辞書も euc にすることで
+#  anthy.dic のサイズを抑える場合のサンプル)
 #
 set_input_encoding eucjp
 read @top_srcdir@/alt-cannadic/gcanna.ctd

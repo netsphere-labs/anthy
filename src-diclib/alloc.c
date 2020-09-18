@@ -179,13 +179,13 @@ anthy_create_allocator(int size, void (*dtor)(void *))
   allocator a;
 size=roundup_align(size);
   if (size > (int)(PAGE_SIZE - PAGE_HEADER_SIZE - CHUNK_HEADER_SIZE)) {
-    anthy_log(0, "Fatal error: too big allocator is requested.\n");
-    exit(1);
+    anthy_log (0, "Fatal error: too big allocator is requested.\n");
+    abort ();
   }
   a = malloc(sizeof(*a));
   if (!a) {
-    anthy_log(0, "Fatal error: Failed to allocate memory.\n");
-    exit(1);
+    anthy_log (0, "Fatal error: Failed to allocate memory.\n");
+    abort ();
   }
   a->size = size;
   a->max_num = calc_max_num(size);

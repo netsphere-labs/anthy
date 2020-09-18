@@ -1,68 +1,68 @@
 This document is written in Japanese(EUC-JP).
 
-ËÜ¥½¥Õ¥È¥¦¥§¥¢¤Î³µÍ×¤Ë¤Ä¤¤¤Æ¤ÏREADME¤ò¤ªÆÉ¤ß¤¯¤À¤µ¤¤¡£
+æœ¬ã‚½ãƒ•ãƒˆã‚¦ã‚§ã‚¢ã®æ¦‚è¦ã«ã¤ã„ã¦ã¯READMEã‚’ãŠèª­ã¿ãã ã•ã„ã€‚
 
-(1)¥¤¥ó¥¹¥È¡¼¥ë¤ËÉ¬Í×¤Ê¤â¤Î
-(2)¥¤¥ó¥¹¥È¡¼¥ë¤Î¼ê½ç
-(3)¥¤¥ó¥¹¥È¡¼¥ë¤µ¤ì¤ë¥Õ¥¡¥¤¥ë
-(4)¥¢¥ó¥¤¥ó¥¹¥È¡¼¥ë¤Î¼ê½ç
-(5)ÊäÂ­
+(1)ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã«å¿…è¦ãªã‚‚ã®
+(2)ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã®æ‰‹é †
+(3)ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚Œã‚‹ãƒ•ã‚¡ã‚¤ãƒ«
+(4)ã‚¢ãƒ³ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã®æ‰‹é †
+(5)è£œè¶³
 
 
-(1)¥¤¥ó¥¹¥È¡¼¥ë¤ËÉ¬Í×¤Ê¤â¤Î
- ¥³¥ó¥Ñ¥¤¥éÅù¤ª¤è¤Ó¡¢emacs
+(1)ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã«å¿…è¦ãªã‚‚ã®
+ ã‚³ãƒ³ãƒ‘ã‚¤ãƒ©ç­‰ãŠã‚ˆã³ã€emacs
 
-(2)¥¤¥ó¥¹¥È¡¼¥ë¤Î¼ê½ç
-³Æ¼ï¥×¥í¥°¥é¥à¤òºî¤ê¤Ş¤¹¡£
+(2)ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã®æ‰‹é †
+å„ç¨®ãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚’ä½œã‚Šã¾ã™ã€‚
 $ ./configure
 $ make
 
-¤¦¤Ş¤¯¤Ç¤­¤¿¤é
+ã†ã¾ãã§ããŸã‚‰
 $ su
 # make install
-¤Ç¥¤¥ó¥¹¥È¡¼¥ë¤·¤Ş¤¹¡£
+ã§ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã—ã¾ã™ã€‚
 
-¤¢¤ë¤¤¤Ï¥Æ¥¹¥È¥×¥í¥°¥é¥à¤ò¼Â¹Ô¤·¤Ş¤¹¡£
+ã‚ã‚‹ã„ã¯ãƒ†ã‚¹ãƒˆãƒ—ãƒ­ã‚°ãƒ©ãƒ ã‚’å®Ÿè¡Œã—ã¾ã™ã€‚
 $ cd test
 $ ./anthy
 
-emacs¤«¤é»È¤¦¾ì¹ç¤Ïdoc/ELISP¤ò»²¾È¤·¤Æ¤¯¤À¤µ¤¤¡¥
+emacsã‹ã‚‰ä½¿ã†å ´åˆã¯doc/ELISPã‚’å‚ç…§ã—ã¦ãã ã•ã„ï¼
 
-(3)¥¤¥ó¥¹¥È¡¼¥ë¤µ¤ì¤ë¥Õ¥¡¥¤¥ë
-bin/anthy-dic-tool
-bin/anthy-agent
-bin/anthy-morphological-analyzer
-share/emacs/site-lisp/anthy/leim-list.{el,elc}
-share/emacs/site-lisp/anthy/anthy.{el,elc}
-share/emacs/site-lisp/anthy/anthy-dic.{el,elc}
-share/emacs/site-lisp/anthy/anthy-isearch.{el,elc}
-share/emacs/site-lisp/anthy/anthy-kyuri.{el,elc}
-share/emacs/site-lisp/anthy/anthy-conf.{el,elc}
-share/emacs/site-lisp/anthy/anthy-azik.{el,elc}
-share/anthy/zipcode.t
-share/anthy/anthy.dic
-share/anthy/typetab
-share/anthy/dic-tool-usage.txt
-include/anthy/anthy.h
-include/anthy/dicutil.h
-include/anthy/input.h
-lib/libanthyinput.{a,so}
-lib/libanthy.{a,so}
-lib/libanthydic.{a,so}
-lib/pkgconfig/anthy.pc
-etc/anthy-conf
+(3)ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚Œã‚‹ãƒ•ã‚¡ã‚¤ãƒ«
+bin/anthy-dic-tool-utf
+bin/anthy-agent-utf
+bin/anthy-morphological-analyzer-utf
+share/emacs/site-lisp/anthy-utf/leim-list.{el,elc}
+share/emacs/site-lisp/anthy-utf/anthy.{el,elc}
+share/emacs/site-lisp/anthy-utf/anthy-dic.{el,elc}
+share/emacs/site-lisp/anthy-utf/anthy-isearch.{el,elc}
+share/emacs/site-lisp/anthy-utf/anthy-kyuri.{el,elc}
+share/emacs/site-lisp/anthy-utf/anthy-conf.{el,elc}
+share/emacs/site-lisp/anthy-utf/anthy-azik.{el,elc}
+share/anthy-utf/zipcode.t
+share/anthy-utf/anthy.dic
+share/anthy-utf/typetab
+share/anthy-utf/dic-tool-usage.txt
+include/anthy-utf/anthy.h
+include/anthy-utf/dicutil.h
+include/anthy-utf/input.h
+lib/libanthyinput-utf.{a,so}
+lib/libanthy-utf.{a,so}
+lib/libanthydic-utf.{a,so}
+lib/pkgconfig/anthy-utf.pc
+etc/anthy-utf.conf
 
-(4)¥¢¥ó¥¤¥ó¥¹¥È¡¼¥ë¤Î¼ê½ç
- ¥³¥ó¥Ñ¥¤¥ë¤ò¹Ô¤Ã¤¿¥Ç¥£¥ì¥¯¥È¥ê¤Ç su ; make uninstall ¤ò¹Ô¤¦¤«
- (3)¤Ç½Ò¤Ù¤¿¥Õ¥¡¥¤¥ë¤ò¼êÆ°¤Ç¾Ã¤·¤Æ¤¯¤À¤µ¤¤¡£
- ³Æ¸Ä¿Í¤ÎÍúÎò¤Ï~/.anthy/°Ê²¼¤Ë¤¢¤ë¤Î¤Ç¤½¤ì¤â¾Ã¤·¤Æ¤¯¤À¤µ¤¤¡£
+(4)ã‚¢ãƒ³ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã®æ‰‹é †
+ ã‚³ãƒ³ãƒ‘ã‚¤ãƒ«ã‚’è¡Œã£ãŸãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã§ su ; make uninstall ã‚’è¡Œã†ã‹
+ (3)ã§è¿°ã¹ãŸãƒ•ã‚¡ã‚¤ãƒ«ã‚’æ‰‹å‹•ã§æ¶ˆã—ã¦ãã ã•ã„ã€‚
+ å„å€‹äººã®å±¥æ­´ã¯~/.anthy/ä»¥ä¸‹ã«ã‚ã‚‹ã®ã§ãã‚Œã‚‚æ¶ˆã—ã¦ãã ã•ã„ã€‚
 
-(5)ÊäÂ­
---Ãí°Õ--
- ÆÃ¤Ë¥ª¥×¥·¥ç¥ó¤ò»ØÄê¤»¤º¤Ëconfigure¤ò¹Ô¤¦¤ÈºîÀ®¤µ¤ì¤¿
- ¥é¥¤¥Ö¥é¥ê¤Ï/usr/local/lib ¤Ë¥¤¥ó¥¹¥È¡¼¥ë¤µ¤ì¤Ş¤¹¤¬
- Â¿¤¯¤Î¥Ç¥£¥¹¥È¥ê¥Ó¥å¡¼¥·¥ç¥ó¤Ï¥Ç¥Õ¥©¥ë¥È¤ÎÀßÄê¤Ç¤Ï/usr/local/lib¤Î
- ¥·¥§¥¢¡¼¥É¥é¥¤¥Ö¥é¥ê¤òÆÉ¤ß¤Ş¤»¤ó¡£
- */etc/ld.so.conf ¤Ë /usr/local/lib ¤òÄÉ²Ã¤·¤Æ ldconfig¤ò¹Ô¤¦¡£
- *´Ä¶­ÊÑ¿ô LD_LIBRARY_PATH¤Ë /usr/local/lib ¤ò¥»¥Ã¥È¤¹¤ë¡£
- ¤Î¤¤¤º¤ì¤«¤ÎÊıË¡¤Ç²ò·è¤¹¤ë¤³¤È¤¬¤Ç¤­¤Ş¤¹¡£
+(5)è£œè¶³
+--æ³¨æ„--
+ ç‰¹ã«ã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’æŒ‡å®šã›ãšã«configureã‚’è¡Œã†ã¨ä½œæˆã•ã‚ŒãŸ
+ ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã¯/usr/local/lib ã«ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚Œã¾ã™ãŒ
+ å¤šãã®ãƒ‡ã‚£ã‚¹ãƒˆãƒªãƒ“ãƒ¥ãƒ¼ã‚·ãƒ§ãƒ³ã¯ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã®è¨­å®šã§ã¯/usr/local/libã®
+ ã‚·ã‚§ã‚¢ãƒ¼ãƒ‰ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã‚’èª­ã¿ã¾ã›ã‚“ã€‚
+ */etc/ld.so.conf ã« /usr/local/lib ã‚’è¿½åŠ ã—ã¦ ldconfigã‚’è¡Œã†ã€‚
+ *ç’°å¢ƒå¤‰æ•° LD_LIBRARY_PATHã« /usr/local/lib ã‚’ã‚»ãƒƒãƒˆã™ã‚‹ã€‚
+ ã®ã„ãšã‚Œã‹ã®æ–¹æ³•ã§è§£æ±ºã™ã‚‹ã“ã¨ãŒã§ãã¾ã™ã€‚

@@ -7,9 +7,9 @@ noinst_PROGRAMS = calctrans proccorpus
 INCLUDES = -I$(top_srcdir)/
 
 calctrans_SOURCES = calctrans.c input_set.c input_set.h corpus.c
-calctrans_LDADD = ../src-main/libanthy.la ../src-worddic/libanthydic.la -lm
+calctrans_LDADD = ../src-main/libanthy-unicode.la ../src-worddic/libanthydic-unicode.la -lm
 proccorpus_SOURCES = proccorpus.c
-proccorpus_LDADD = ../src-util/libconvdb.la ../src-main/libanthy.la ../src-worddic/libanthydic.la
+proccorpus_LDADD = ../src-util/libconvdb.la ../src-main/libanthy-unicode.la ../src-worddic/libanthydic-unicode.la
 
 dict_source_files = anthy.cand_info anthy.trans_info anthy.corpus_array anthy.corpus_bucket anthy.weak_words
 

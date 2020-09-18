@@ -1,14 +1,14 @@
 /*
- * Ê¸Àá¤ÎÁ«°Ü¹ÔÎó¤òºîÀ®¤¹¤ë
+ * æ–‡ç¯€ã®é·ç§»è¡Œåˆ—ã‚’ä½œæˆã™ã‚‹
  *
- * ¤³¤Î¥³¥Ş¥ó¥É¤ÏÆó¤Ä¤Îµ¡Ç½¤ò»ı¤Ã¤Æ¤¤¤ë¡£(-c¥ª¥×¥·¥ç¥ó¤ÇÀ©¸æ)
- * (1) proccorpus¤Î·ë²Ì¤«¤é¥Æ¥­¥¹¥È·Á¼°¤Ç·Ğ¸³Åª³ÊÎ¨¤ÎÉ½¤òºî¤ë
- * (2) ¥Æ¥­¥¹¥È·Á¼°¤ÎÉ½¤«¤é¥Ğ¥¤¥Ê¥ê·Á¼°¤ËÊÑ´¹¤¹¤ë
+ * ã“ã®ã‚³ãƒãƒ³ãƒ‰ã¯äºŒã¤ã®æ©Ÿèƒ½ã‚’æŒã£ã¦ã„ã‚‹ã€‚(-cã‚ªãƒ—ã‚·ãƒ§ãƒ³ã§åˆ¶å¾¡)
+ * (1) proccorpusã®çµæœã‹ã‚‰ãƒ†ã‚­ã‚¹ãƒˆå½¢å¼ã§çµŒé¨“çš„æ ¼ç‡ã®è¡¨ã‚’ä½œã‚‹
+ * (2) ãƒ†ã‚­ã‚¹ãƒˆå½¢å¼ã®è¡¨ã‹ã‚‰ãƒã‚¤ãƒŠãƒªå½¢å¼ã«å¤‰æ›ã™ã‚‹
  *
- * morphological-analyzer¤Î½ĞÎÏ¤Ë¤Ï²¼µ­¤Î¥Ş¡¼¥¯¤¬ÉÕ¤±¤Æ¤¢¤ë
- * ~ ¸õÊä¤Î¸í¤ê
- * ! Ê¸ÀáÄ¹¤Î¸í¤ê
- * ^ Ê£¹çÊ¸Àá¤Î2¤Ä¤á°Ê¹ß¤ÎÍ×ÁÇ
+ * morphological-analyzerã®å‡ºåŠ›ã«ã¯ä¸‹è¨˜ã®ãƒãƒ¼ã‚¯ãŒä»˜ã‘ã¦ã‚ã‚‹
+ * ~ å€™è£œã®èª¤ã‚Š
+ * ! æ–‡ç¯€é•·ã®èª¤ã‚Š
+ * ^ è¤‡åˆæ–‡ç¯€ã®2ã¤ã‚ä»¥é™ã®è¦ç´ 
  *
  * generate transition matrix
  *
@@ -64,13 +64,13 @@ struct sentence_info {
   struct segment_info segs[MAX_SEGMENT];
 };
 
-/* ³ÎÎ¨¤Î¥Æ¡¼¥Ö¥ë */
+/* ç¢ºç‡ã®ãƒ†ãƒ¼ãƒ–ãƒ« */
 struct input_info {
-  /* ¸õÊäÁ´ÂÎ¤ÎÁÇÀ­ */
+  /* å€™è£œå…¨ä½“ã®ç´ æ€§ */
   struct input_set *cand_is;
-  /* Ê¸Àá¤ÎÁÇÀ­ */
+  /* æ–‡ç¯€ã®ç´ æ€§ */
   struct input_set *seg_is;
-  /* ¼«Î©¸ì¤ÎÁ´Ê¸¸¡º÷ÍÑ¾ğÊó */
+  /* è‡ªç«‹èªã®å…¨æ–‡æ¤œç´¢ç”¨æƒ…å ± */
   struct corpus *indep_corpus;
 
   /**/
@@ -79,7 +79,7 @@ struct input_info {
   /**/
   int nth_input_file;
 
-  /* ÆşÎÏ¤µ¤ì¤¿ÎãÊ¸¤ÎÎÌ¤Ë´Ø¤¹¤ë¾ğÊó */
+  /* å…¥åŠ›ã•ã‚ŒãŸä¾‹æ–‡ã®é‡ã«é–¢ã™ã‚‹æƒ…å ± */
   int nr_sentences;
   int nr_connections;
 };
@@ -99,7 +99,7 @@ init_input_info(void)
   return m;
 }
 
-/* features=1,2,3,,¤Î·Á¼°¤òparse¤¹¤ë */
+/* features=1,2,3,,ã®å½¢å¼ã‚’parseã™ã‚‹ */
 static void
 parse_features(struct array *features, char *s)
 {
@@ -150,7 +150,7 @@ compare_array(struct array *a1, struct array *a2)
   return 0;
 }
 
-/* ¼«Î©¸ì¤Î¹Ô¤òparse¤¹¤ë */
+/* è‡ªç«‹èªã®è¡Œã‚’parseã™ã‚‹ */
 static void
 parse_indep(struct input_info *m, struct sentence_info *sinfo,
 	    char *line, char *buf, int error_class)
@@ -171,23 +171,23 @@ parse_indep(struct input_info *m, struct sentence_info *sinfo,
     set_hash(sinfo, error_class, line[0], atoi(s));
   }
 
-  /* ²Ã»»¤¹¤ë */
+  /* åŠ ç®—ã™ã‚‹ */
   if (error_class) {
     if (line[0] == '~') {
-      /* ¸í¤Ã¤¿¸õÊä¤Î¹½Â¤¤òÊİÂ¸ */
+      /* èª¤ã£ãŸå€™è£œã®æ§‹é€ ã‚’ä¿å­˜ */
       m->missed_cand_features = features;
     }
     if (line[0] == '!') {
-      /* Ê¸ÀáÄ¹¤Î¸í¤ê */
+      /* æ–‡ç¯€é•·ã®èª¤ã‚Š */
       input_set_set_features(m->seg_is, features.f, features.len, -weight);
     }
   } else {
-    /* ÀÜÂ³¹ÔÎó */
+    /* æ¥ç¶šè¡Œåˆ— */
     input_set_set_features(m->seg_is, features.f, features.len, weight);
-    /* ¸õÊä¤Î¹½Â¤ */
+    /* å€™è£œã®æ§‹é€  */
     if (m->missed_cand_features.len != 0 &&
 	compare_array(&features, &m->missed_cand_features)) {
-      /* Àµ²ò¤È°Û¤Ê¤ë¹½Â¤¤Ê¤éÊ¬Êì¤Ë²Ã»» */
+      /* æ­£è§£ã¨ç•°ãªã‚‹æ§‹é€ ãªã‚‰åˆ†æ¯ã«åŠ ç®— */
       add_seg_struct_info(m, &m->missed_cand_features, -weight);
     }
     m->missed_cand_features.len = 0;
@@ -206,14 +206,14 @@ init_sentence_info(struct sentence_info *sinfo)
   }
 }
 
-/* °ì¤Ä¤ÎÊ¸¤òÆÉ¤ó¤À¤È¤­¤ËÁ´Ê¸¸¡º÷ÍÑ¤Î¥Ç¡¼¥¿¤òºî¤ë
+/* ä¸€ã¤ã®æ–‡ã‚’èª­ã‚“ã ã¨ãã«å…¨æ–‡æ¤œç´¢ç”¨ã®ãƒ‡ãƒ¼ã‚¿ã‚’ä½œã‚‹
  */
 static void
 complete_sentence_info(struct input_info *m, struct sentence_info *sinfo)
 {
   int i;
   if (m->nth_input_file > 0) {
-    /* Æó¤Ä¤á°Ê¹ß¤ÎÆşÎÏ¥Õ¥¡¥¤¥ë¤Ï»È¤ï¤Ê¤¤ */
+    /* äºŒã¤ã‚ä»¥é™ã®å…¥åŠ›ãƒ•ã‚¡ã‚¤ãƒ«ã¯ä½¿ã‚ãªã„ */
     return ;
   }
   for (i = 0; i < sinfo->nr_segments; i++) {
@@ -648,7 +648,7 @@ extract_word(int nr_fn, char **fns, FILE *ofp)
   string_pool_dump(ofp, &sp);
 }
 
-/* ÊÑ´¹·ë²Ì¤«¤é³ÎÎ¨¤Î¥Æ¡¼¥Ö¥ë¤òºî¤ë */
+/* å¤‰æ›çµæœã‹ã‚‰ç¢ºç‡ã®ãƒ†ãƒ¼ãƒ–ãƒ«ã‚’ä½œã‚‹ */
 static void
 proc_corpus(int nr_fn, char **fns, FILE *ofp)
 {

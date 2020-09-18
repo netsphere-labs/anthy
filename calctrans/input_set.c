@@ -1,4 +1,4 @@
-/* ÆşÎÏ¤Î¥»¥Ã¥È¤ò´ÉÍı¤¹¤ë¥³¡¼¥É
+/* å…¥åŠ›ã®ã‚»ãƒƒãƒˆã‚’ç®¡ç†ã™ã‚‹ã‚³ãƒ¼ãƒ‰
  *
  * Copyright (C) 2006 HANAOKA Toshiyuki
  * Copyright (C) 2006-2007 TABATA Yusuke
@@ -104,7 +104,7 @@ add_feature_count(struct int_map *im, int nr, int *features, int weight)
   }
 }
 
-/* input_set¤ËÆşÎÏ¤ò°ì¤Ä²Ã¤¨¤ë */
+/* input_setã«å…¥åŠ›ã‚’ä¸€ã¤åŠ ãˆã‚‹ */
 void
 input_set_set_features(struct input_set *is, int *features,
 		       int nr, int weight)
@@ -253,14 +253,14 @@ int_map_flatten(struct int_map *im)
   int i;
   struct int_map_node *node;
   int max_n = 0;
-  /* ÇÛÎó¤ò½àÈ÷¤¹¤ë */
+  /* é…åˆ—ã‚’æº–å‚™ã™ã‚‹ */
   im->array_size = im->nr * 2;
   im->array = malloc(sizeof(struct int_map_node *) * 
 		     im->array_size);
   for (i = 0; i < im->array_size; i++) {
     im->array[i] = NULL;
   }
-  /* Í×ÁÇ¤òÃÖ¤¤¤Æ¤¤¤¯ */
+  /* è¦ç´ ã‚’ç½®ã„ã¦ã„ã */
   for (i = 0; i < HASH_SIZE; i++) {
     for (node = im->hash_head[i].next; node; node = node->next) {
       int n = 0;

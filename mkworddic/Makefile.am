@@ -28,7 +28,7 @@ DIC_FILES = @top_srcdir@/alt-cannadic/gcanna.ctd \
 # Generate the dictionary
 noinst_PROGRAMS = mkworddic
 mkworddic_SOURCES = mkdic.c writewords.c mkudic.c calcfreq.c mkdic.h
-mkworddic_LDADD = ../src-worddic/libanthydic.la
+mkworddic_LDADD = ../src-worddic/libanthydic-unicode.la
 
 noinst_DATA = anthy.wdic
 

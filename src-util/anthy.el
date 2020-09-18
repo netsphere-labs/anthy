@@ -71,7 +71,7 @@
 (defvar anthy-highlight-face nil)
 (defvar anthy-underline-face nil)
 (copy-face 'highlight 'anthy-highlight-face)
-(set-face-underline-p 'anthy-highlight-face t)
+(set-face-underline 'anthy-highlight-face t)
 (copy-face 'underline 'anthy-underline-face)
 
 ;;
@@ -160,12 +160,15 @@
 (defvar anthy-last-context-id 1)
 
 ;; From skk-macs.el From viper-util.el.  Welcome!
+;; Fixed emacs batch-byte-compile of anthy.el about the below warning:
+;; "anthy.el:163:1:Warning: !! The file uses old-style backquotes !!"
+;; https://stackoverflow.com/questions/8109665/how-fix-emacs-error-old-style-backquotes-detected
 (defmacro anthy-deflocalvar (var default-value &optional documentation)
-  (` (progn
-       (defvar (, var) (, default-value)
-	 (, (format "%s\n\(buffer local\)" documentation)))
-       (make-variable-buffer-local '(, var))
-       )))
+  `(progn
+       (defvar ,var ,default-value
+	 ,(format "%s\n\(buffer local\)" documentation))
+       (make-variable-buffer-local ',var)
+       ))
 
 ;; buffer local variables
 (anthy-deflocalvar anthy-context-id nil "コンテキストのid")
@@ -243,7 +246,7 @@
 	(delete-region start (+ start len))
 	(goto-char start)))
   (setq anthy-preedit "")
-  (mapcar 'delete-overlay anthy-preedit-overlays)
+  (mapc 'delete-overlay anthy-preedit-overlays)
   (setq anthy-preedit-overlays nil))
 
 (defun anthy-select-face-by-attr (attr)
@@ -745,7 +748,7 @@
 	(if anthy-agent-process
 	    (kill-process anthy-agent-process))
 	(setq anthy-agent-process proc)
-	(process-kill-without-query proc)
+	(process-query-on-exist-flag proc)
 	(if anthy-xemacs
 	    (if (coding-system-p (find-coding-system 'euc-japan))
 		(set-process-coding-system proc 'euc-japan 'euc-japan))
@@ -864,7 +867,7 @@
 ;; leim の activate
 ;;
 (defun anthy-leim-activate (&optional name)
-  (setq inactivate-current-input-method-function 'anthy-leim-inactivate)
+  (setq deactivate-current-input-method-function 'anthy-leim-inactivate)
   (setq anthy-leim-active-p t)
   (anthy-update-mode)
   (when (eq (selected-window) (minibuffer-window))
@@ -874,7 +877,7 @@
 ;; emacsのバグ避けらしいです
 ;;
 (defun anthy-leim-exit-from-minibuffer ()
-  (inactivate-input-method)
+  (deactivate-input-method)
   (when (<= (minibuffer-depth) 1)
     (remove-hook 'minibuffer-exit-hook 'anthy-leim-exit-from-minibuffer)))
 
@@ -892,7 +895,7 @@
 	 ((event-matches-key-specifier-p event 'backspace) 8)
 	 (t
 	  (char-to-int (event-to-character event)))))
-    last-command-char))
+    last-command-event))
 
 ;;
 ;;

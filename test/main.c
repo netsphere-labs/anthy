@@ -1,17 +1,17 @@
-/* ¥é¥¤¥Ö¥é¥ê¤Î´Ø¿ô¸Æ¤Ó½Ğ¤·¤Î¥Æ¥¹¥È
+/* ãƒ©ã‚¤ãƒ–ãƒ©ãƒªã®é–¢æ•°å‘¼ã³å‡ºã—ã®ãƒ†ã‚¹ãƒˆ
  *
- * ¥Ç¥Õ¥©¥ë¥È¤Ç¤Ï¡¢test.txt¤«¤é1¹Ô¤º¤ÄÆÉ¤ß¹ş¤ó¤ÇÊÑ´¹¤ò¹Ô¤¦¡£
- * ÊÑ´¹Á°¤ÎÊ¸»úÎó¤ÈÊÑ´¹¤ò¹Ô¤Ã¤¿·ë²Ì¤òtest.exp¤«¤éÃµ¤·¡¢
- * ÊÑ´¹·ë²Ì¤¬¹ç¤Ã¤Æ¤¤¤ë¤«¤ò¥«¥¦¥ó¥È¤·¤ÆºÇ¸å¤Ë½ĞÎÏ¤¹¤ë¡£
+ * ãƒ‡ãƒ•ã‚©ãƒ«ãƒˆã§ã¯ã€test.txtã‹ã‚‰1è¡Œãšã¤èª­ã¿è¾¼ã‚“ã§å¤‰æ›ã‚’è¡Œã†ã€‚
+ * å¤‰æ›å‰ã®æ–‡å­—åˆ—ã¨å¤‰æ›ã‚’è¡Œã£ãŸçµæœã‚’test.expã‹ã‚‰æ¢ã—ã€
+ * å¤‰æ›çµæœãŒåˆã£ã¦ã„ã‚‹ã‹ã‚’ã‚«ã‚¦ãƒ³ãƒˆã—ã¦æœ€å¾Œã«å‡ºåŠ›ã™ã‚‹ã€‚
  *
- * ./anthy --from 1 --to 10 ¤Î¤è¤¦¤Ë¼Â¹Ô¤¹¤ë¤Ètest.txt¤ÎºÇ½é¤Î10¸Ä¤Î
- *  ¹Ô¤ÎÊÑ´¹¥Æ¥¹¥È¤¬¹Ô¤ï¤ì¤Ş¤¹¡£
+ * ./anthy --from 1 --to 10 ã®ã‚ˆã†ã«å®Ÿè¡Œã™ã‚‹ã¨test.txtã®æœ€åˆã®10å€‹ã®
+ *  è¡Œã®å¤‰æ›ãƒ†ã‚¹ãƒˆãŒè¡Œã‚ã‚Œã¾ã™ã€‚
  *
- * --ask¥ª¥×¥·¥ç¥ó¤òÉÕ¤±¤Æ¼Â¹Ô¤¹¤ë¤È¡¢·ë²Ì¤¬¹ç¤Ã¤Æ¤¤¤ë¤«¤ÎÈ½ÃÇ¤ò
- * ÀßÄê¤¹¤ë¥â¡¼¥É¤Ë¤Ê¤ë¤Î¤Ç¡¢É½¼¨¤µ¤ì¤¿·ë²Ì¤ËÂĞ¤¹¤ëÈ½ÃÇ¤ò
- * É¸½àÆşÎÏ¤«¤é'y', 'n', 'd', 'q'¤ÇÆşÎÏ¤·¤Æ¤¯¤À¤µ¤¤¡£
+ * --askã‚ªãƒ—ã‚·ãƒ§ãƒ³ã‚’ä»˜ã‘ã¦å®Ÿè¡Œã™ã‚‹ã¨ã€çµæœãŒåˆã£ã¦ã„ã‚‹ã‹ã®åˆ¤æ–­ã‚’
+ * è¨­å®šã™ã‚‹ãƒ¢ãƒ¼ãƒ‰ã«ãªã‚‹ã®ã§ã€è¡¨ç¤ºã•ã‚ŒãŸçµæœã«å¯¾ã™ã‚‹åˆ¤æ–­ã‚’
+ * æ¨™æº–å…¥åŠ›ã‹ã‚‰'y', 'n', 'd', 'q'ã§å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚
  * 'd' dont care, 'q' quit
- * È½ÃÇ¤Ç¤­¤Ê¤¤¾ì¹ç¤Ï¤½¤ÎÂ¾¤ÎÊ¸»ú¤òÆşÎÏ¤·¤Æ¤¯¤À¤µ¤¤¡£
+ * åˆ¤æ–­ã§ããªã„å ´åˆã¯ãã®ä»–ã®æ–‡å­—ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚
  *
  * Copyright (C) 2000-2006 TABATA Yusuke
  * Copyright (C) 2004-2006 YOSHIDA Yuichi
@@ -26,22 +26,23 @@
 
 #include <anthy/anthy.h>
 #include <anthy/convdb.h>
+#include <anthy/xstr.h>
 #include <config.h>
 
-/* Makefile ¤Î $(srcdir) (ÀÅÅª¥Ç¡¼¥¿¥Õ¥¡¥¤¥ë¤Î´ğ½à¥Ç¥£¥ì¥¯¥È¥ê) */
+/* Makefile ã® $(srcdir) (é™çš„ãƒ‡ãƒ¼ã‚¿ãƒ•ã‚¡ã‚¤ãƒ«ã®åŸºæº–ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª) */
 #ifndef SRCDIR
 # define SRCDIR "."
 #endif
-/* ¥Ó¥ë¥É»ş¤Î¥«¥ì¥ó¥È¥Ç¥£¥ì¥¯¥È¥ê (¤³¤³¤Ë .anthy ¤òºî¤ë) */
+/* ãƒ“ãƒ«ãƒ‰æ™‚ã®ã‚«ãƒ¬ãƒ³ãƒˆãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª (ã“ã“ã« .anthy ã‚’ä½œã‚‹) */
 #ifndef TEST_HOME
-# define TEST_HOME "."		/* FIXME: ¼Âºİ¤ÏÁêÂĞ¥Ñ¥¹¤À¤È¸íÆ°ºî¤¹¤ë */
+# define TEST_HOME "."		/* FIXME: å®Ÿéš›ã¯ç›¸å¯¾ãƒ‘ã‚¹ã ã¨èª¤å‹•ä½œã™ã‚‹ */
 #endif
 
-/* ¥Æ¥¹¥È¥Ç¡¼¥¿¤È¤Ê¤ëÊÑ´¹Á°¤ÎÊ¸»úÎó */
+/* ãƒ†ã‚¹ãƒˆãƒ‡ãƒ¼ã‚¿ã¨ãªã‚‹å¤‰æ›å‰ã®æ–‡å­—åˆ— */
 #define TESTDATA "test.txt"
 const char *testdata = SRCDIR "/" TESTDATA;
 
-/* ÊÑ´¹¸å¤ÎÊ¸»úÎó¤¬ÂÅÅö¤«¤É¤¦¤«¤ò¥Á¥§¥Ã¥¯¤¹¤ë¤¿¤á¤Î¥Ç¡¼¥¿ */
+/* å¤‰æ›å¾Œã®æ–‡å­—åˆ—ãŒå¦¥å½“ã‹ã©ã†ã‹ã‚’ãƒã‚§ãƒƒã‚¯ã™ã‚‹ãŸã‚ã®ãƒ‡ãƒ¼ã‚¿ */
 #define EXPDATA "test.exp"
 const char *expdata = SRCDIR "/" EXPDATA;
 
@@ -50,7 +51,7 @@ struct input {
   int serial;
 };
 
-/* ¥Æ¥¹¥È¤ò¹Ô¤¦¾ò·ï */
+/* ãƒ†ã‚¹ãƒˆã‚’è¡Œã†æ¡ä»¶ */
 struct condition {
   /* conversion condition */
   int serial;
@@ -91,12 +92,12 @@ read_file(FILE *fp, struct input *in)
 static int
 check_cond(struct condition *cond, struct input *in)
 {
-  if (in->serial == cond->serial) {
+  if (cond->from == -1 && cond->to == -1)
     return 1;
-  }
-  if (in->serial <= cond->to && in->serial >= cond->from) {
+  else if (in->serial == cond->serial)
     return 1;
-  }
+  else if (in->serial <= cond->to && in->serial >= cond->from)
+    return 1;
   return 0;
 }
 
@@ -110,8 +111,8 @@ static anthy_context_t
 init_lib(int use_utf8)
 {
   anthy_context_t ac;
-  /* ´û¤Ë¥¤¥ó¥¹¥È¡¼¥ë¤µ¤ì¤Æ¤¤¤ë¥Õ¥¡¥¤¥ë¤Î±Æ¶Á¤ò¼õ¤±¤Ê¤¤¤è¤¦¤Ë¤¹¤ë */
-  anthy_conf_override("CONFFILE", "../anthy-conf");
+  /* æ—¢ã«ã‚¤ãƒ³ã‚¹ãƒˆãƒ¼ãƒ«ã•ã‚Œã¦ã„ã‚‹ãƒ•ã‚¡ã‚¤ãƒ«ã®å½±éŸ¿ã‚’å—ã‘ãªã„ã‚ˆã†ã«ã™ã‚‹ */
+  anthy_conf_override("CONFFILE", "../anthy-unicode.conf");
   anthy_conf_override("HOME", TEST_HOME);
   anthy_conf_override("DIC_FILE", "../mkanthydic/anthy.dic");
   anthy_set_logger(log_print, 0);
@@ -124,6 +125,7 @@ init_lib(int use_utf8)
   ac = anthy_create_context();
   if (use_utf8) {
     anthy_context_set_encoding(ac, ANTHY_UTF8_ENCODING);
+    anthy_xstr_set_print_encoding (ANTHY_UTF8_ENCODING);
   } else {
     anthy_context_set_encoding(ac, ANTHY_EUC_JP_ENCODING);
   }
@@ -157,17 +159,21 @@ parse_args(struct condition *cond, int argc, char **argv)
 	print_usage();
       }
       if (!strcmp(arg, "all")) {
-	cond->from = 0;
-	cond->to = 100000000;
+	cond->from = -1;
+	cond->to = -1;
+      } else if (!strcmp(arg, "verbose")) {
+	cond->quiet = 0;
+	//cond->miss_only = 0;
       } else if (!strcmp(arg, "quiet")) {
 	cond->quiet = 1;
+	cond->miss_only = 0;
       } else if (!strcmp(arg, "ask") ||
 		 !strcmp(arg, "query")) {
 	cond->ask = 1;
       } else if (!strcmp(arg, "print-miss-only")) {
 	cond->miss_only = 1;
-      } else if (!strcmp(arg, "utf8")) {
-	cond->use_utf8 = 1;
+      } else if (!strcmp(arg, "euc")) {
+	cond->use_utf8 = 0;
       }
 
       if (i + 1 < argc) {
@@ -350,13 +356,13 @@ static void
 init_condition(struct condition *cond)
 {
   cond->serial = 0;
-  cond->from = 0;
-  cond->to = 0;
+  cond->from = -1;
+  cond->to = -1;
   /**/
-  cond->quiet = 0;
+  cond->quiet = 1;
   cond->ask = 0;
-  cond->miss_only = 0;
-  cond->use_utf8 = 0;
+  cond->miss_only = 1;
+  cond->use_utf8 = 1;
 }
 
 int
@@ -367,6 +373,7 @@ main(int argc,char **argv)
   struct input cur_input;
   struct res_db *db;
   struct condition cond;
+  int line = 1;
 
   cur_input.serial = 0;
   cur_input.str = 0;
@@ -388,18 +395,25 @@ main(int argc,char **argv)
   
   ac = init_lib(cond.use_utf8);
 
-  /* ¥Õ¥¡¥¤¥ë¤òÆÉ¤ó¤Ç¤¤¤¯¥ë¡¼¥× */
+  /* ãƒ•ã‚¡ã‚¤ãƒ«ã‚’èª­ã‚“ã§ã„ããƒ«ãƒ¼ãƒ— */
+  /* anthy_sort_candidate() spends time in anthy_do_context_set_str()
+   */
   while (!read_file(fp, &cur_input)) {
     if (check_cond(&cond, &cur_input)) {
+      if (getenv ("DEBUG") && line % 50 == 1) {
+        printf ("reading #%03d %s\n", line, cur_input.str);
+        fflush (stdout);
+      }
       set_string(&cond, db, &cur_input, ac);
     }
+    line++;
   }
 
   anthy_release_context(ac);
   anthy_quit();
 
   if (cond.ask) {
-    /* ¥æ¡¼¥¶¤ËÊ¹¤¯ */
+    /* ãƒ¦ãƒ¼ã‚¶ã«èã */
     ask_results(db);
   }
 

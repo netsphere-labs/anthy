@@ -1,20 +1,20 @@
 /*
- * е╒ебедеыдЄд▐д╚дсд╞╝н╜ёе╒ебедеыдЄ└╕└од╣ды
+ * уГХуВбуВдуГлуВТуБ╛уБиуВБуБжш╛ЮцЫ╕уГХуВбуВдуГлуВТчФЯцИРуБЩуВЛ
  *
- * е╟е╒ейеые╚д╟д╧д╥д╚д─╛хд╬е╟егеьепе╚еъб╓..б╫д╦│╞е╒ебедеыд╬
- * е╤е╣╠╛дЄ╔╒д▒дыдмбвд│д╬е│е▐еєе╔д╦┬╨д╣ды -p еке╫е╖ечеєд╟
- * ╩╤╣╣д╣дыд│д╚дмд╟дндыбг
+ * уГЗуГХуВйуГлуГИуБзуБпуБ▓уБиуБдф╕КуБоуГЗуВгуГмуВпуГИуГкуАМ..уАНуБлхРДуГХуВбуВдуГлуБо
+ * уГСуВ╣хРНуВТф╗ШуБСуВЛуБМуАБуБУуБоуВ│уГЮуГ│уГЙуБлхп╛уБЩуВЛ -p уВкуГЧуВ╖уГзуГ│уБз
+ * хдЙцЫ┤уБЩуВЛуБУуБиуБМуБзуБНуВЛуАВ
  *
- * entry_num╕─д╬е╒ебедеыд╦┬╨д╖д╞
- *  0: entry_num е╒ебедеыд╬╕─┐Ї
- *  1: │╞е╒ебедеыд╬╛Ё╩є
+ * entry_numхАЛуБоуГХуВбуВдуГлуБлхп╛уБЧуБж
+ *  0: entry_num уГХуВбуВдуГлуБохАЛцХ░
+ *  1: хРДуГХуВбуВдуГлуБоцГЕха▒
  *    n * 3    : name_offset
  *    n * 3 + 1: strlen(key)
  *    n * 3 + 2: contents_offset
  *  [name_of_section]*entry_num
- *   : │╞е╒ебедеыд╬╠╛┴░
+ *   : хРДуГХуВбуВдуГлуБохРНхЙН
  *  [file]*entry_num
- *   : │╞е╒ебедеыд╬╞т═╞
+ *   : хРДуГХуВбуВдуГлуБохЖЕхо╣
  *
  * Copyright (C) 2005-2006 YOSHIDA Yuichi
  * Copyright (C) 2006-2007 TABATA Yusuke
@@ -59,7 +59,7 @@ write_nl(FILE* fp, int i)
 }
 
 
-/** е╒ебедеыд╬е╡еде║дЄ╝ш╞└д╣ды */
+/** уГХуВбуВдуГлуБоуВ╡уВдуВ║уВТхПЦх╛ЧуБЩуВЛ */
 static int
 get_file_size(const char* fn)
 {
@@ -95,10 +95,10 @@ write_header(FILE* fp, const char *prefix,
   contents_offset =
     (contents_offset + SECTION_ALIGNMENT - 1) & (-SECTION_ALIGNMENT);
 
-  /* е╒ебедеыд╬┐Ї */
+  /* уГХуВбуВдуГлуБоцХ░ */
   write_nl(fp, entry_num);
 
-  /* │╞е╒ебедеыд╬╛ь╜ъдЄ╜╨╬╧д╣ды */
+  /* хРДуГХуВбуВдуГлуБоха┤цЙАуВТхЗ║хКЫуБЩуВЛ */
   for (i = 0; i < entry_num; ++i) {
     char *fn = get_file_name(prefix, &entries[i]);
     int file_size = get_file_size(fn);
@@ -118,7 +118,7 @@ write_header(FILE* fp, const char *prefix,
     contents_offset += file_size;
   }
 
-  /* │╞е╒ебедеыд╬╠╛┴░дЄ╜╨╬╧д╣ды */
+  /* хРДуГХуВбуВдуГлуБохРНхЙНуВТхЗ║хКЫуБЩуВЛ */
   for (i = 0; i < entry_num; ++i) {
     fprintf(fp, "%s", entries[i].key);
   }
@@ -181,13 +181,13 @@ create_file_dic(const char* fn, const char *prefix,
     fprintf(stderr, "failed to open file dictionary file (%s).\n", fn);
     exit(1);
   }
-  /* е╪е├е└дЄ╜ёдн╜╨д╣ */
+  /* уГШуГГуГАуВТцЫ╕уБНхЗ║уБЩ */
   res = write_header(fp, prefix, entry_num, entries);
   if (res) {
     exit(1);
   }
 
-  /* е╒ебедеыд╬├ц┐╚дЄ╜ёдн╜╨д╣ */
+  /* уГХуВбуВдуГлуБоф╕нш║луВТцЫ╕уБНхЗ║уБЩ */
   write_contents(fp, prefix, entry_num, entries);
   fclose(fp);
 }

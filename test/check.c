@@ -1,4 +1,4 @@
-/* ¥ê¥ê¡¼¥¹Á°¤Î¥Á¥§¥Ã¥¯¤ò¹Ô¤¦ */
+/* ãƒªãƒªãƒ¼ã‚¹å‰ã®ãƒã‚§ãƒƒã‚¯ã‚’è¡Œã† */
 #include <stdio.h>
 #include <stdlib.h>
 #include <anthy/anthy.h>
@@ -9,6 +9,9 @@ init(void)
 {
   int res;
 
+  anthy_conf_override("CONFFILE", "../anthy-unicode.conf");
+  anthy_conf_override("HOME", TEST_HOME);
+  anthy_conf_override("DIC_FILE", "../mkanthydic/anthy.dic");
   res = anthy_init();
   if (res) {
     printf("failed to init\n");
@@ -16,6 +19,9 @@ init(void)
   }
   anthy_quit();
   /* init again */
+  anthy_conf_override("CONFFILE", "../anthy-unicode.conf");
+  anthy_conf_override("HOME", TEST_HOME);
+  anthy_conf_override("DIC_FILE", "../mkanthydic/anthy.dic");
   res = anthy_init();
   if (res) {
     printf("failed to init\n");
@@ -48,7 +54,9 @@ test1(void)
     printf("failed to create context\n");
     return 1;
   }
-  anthy_set_string(ac, "¤¢¤¤¤¦¤¨¤ª¡¢¤«¤­¤¯¤±¤³¡£");
+  anthy_context_set_encoding (ac, ANTHY_UTF8_ENCODING);
+  anthy_xstr_set_print_encoding (ANTHY_UTF8_ENCODING);
+  anthy_set_string(ac, "ã‚ã„ã†ãˆãŠã€ã‹ããã‘ã“ã€‚");
   if (anthy_get_segment(ac, 0, NTH_UNCONVERTED_CANDIDATE, buf, 100) > 0) {
     printf("(%s)\n", buf);
   }
@@ -62,7 +70,7 @@ test1(void)
     printf("(%s)\n", buf);
   }
   anthy_release_context(ac);
-  xs = anthy_cstr_to_xstr("¤¢¤¤¤¦¤¨¤ª¤¬¤®¤°¤²¤´", 0);
+  xs = anthy_cstr_to_xstr("ã‚ã„ã†ãˆãŠãŒããã’ã”", ANTHY_UTF8_ENCODING);
   xs = anthy_xstr_hira_to_half_kata(xs);
   anthy_putxstrln(xs);
   return 0;
@@ -78,10 +86,12 @@ shake_test(const char *str)
     printf("failed to create context\n");
     return 1;
   }
+  anthy_context_set_encoding(ac, ANTHY_UTF8_ENCODING);
   anthy_set_string(ac, str);
   for (i = 0; i < 50; i++) {
     int nth, rsz;
     struct anthy_conv_stat cs;
+    anthy_get_stat(ac, &cs);
     nth = rand() % cs.nr_segment;
     rsz = (rand() % 3) - 1;
     anthy_resize_segment(ac, nth, rsz);
@@ -106,7 +116,7 @@ main(int argc, char **argv)
   if (test1()) {
     printf("fail (test1)\n");
   }
-  if (shake_test("¤¢¤¤¤¦¤¨¤ª¤«¤­¤¯¤±¤³")) {
+  if (shake_test("ã‚ã„ã†ãˆãŠã‹ããã‘ã“")) {
     printf("fail (shake_test)\n");
   }
   printf("done\n");

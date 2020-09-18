@@ -499,7 +499,7 @@ anthy_commit_prediction(struct anthy_context *ac, int nth)
 void
 anthy_print_context(struct anthy_context *ac)
 {
-  anthy_do_print_context(ac, default_encoding);
+  anthy_do_print_context(ac, ac->encoding);
 }
 
 /** (API) Anthy ライブラリのバージョンを表す文字列を返す
