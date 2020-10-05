@@ -53,7 +53,7 @@
 /**/
 static allocator context_ator;
 
-/** 現在のpersonality 
+/** 現在のpersonality
  * 未設定時: null
  * 未設定のまま変換を開始した場合: "default"
  * anonymousの場合: ""
@@ -69,7 +69,11 @@ context_dtor(void *p)
   anthy_do_reset_context((struct anthy_context *)p);
 }
 
-/** 現在のpersonalityを返す */
+
+/**
+ * 現在のpersonalityを返す
+ * もし、personality が設定されていなかった場合は, "default" を設定する(!)
+ */
 static char *
 get_personality(void)
 {
@@ -94,7 +98,7 @@ release_segment(struct seg_ent *s)
     free(s->mw_array);
   }
   free(s);
-  
+
 }
 
 /** 文節リストの最後の要素を削除する */
@@ -154,7 +158,7 @@ make_metaword_array(struct anthy_context *ac,
 {
   assert(ac);
   assert(se);
-  
+
   int i;
   se->mw_array = NULL;
   for (i = se->len; i > 0; i--) {
@@ -369,7 +373,7 @@ anthy_do_context_set_str(struct anthy_context *ac, const xstr* s,
 {
   assert(ac);
   assert(s);
-  
+
   int i;
 
   /* 文字列をコピー(一文字分余計にして0をセット) */
@@ -382,7 +386,7 @@ anthy_do_context_set_str(struct anthy_context *ac, const xstr* s,
 
   /* 解の候補を作成 */
   make_candidates(ac, 0, 0, is_reverse);
-  
+
   /* 最初に設定した文節境界を覚えておく */
   for (i = 0; i < ac->seg_list.nr_segments; i++) {
     struct seg_ent *s = anthy_get_nth_segment(&ac->seg_list, i);
@@ -603,7 +607,7 @@ anthy_print_candidate(struct cand_ent *ce)
   }
   printf(",%d,", seg_score);
 
-    
+
   if (ce->mw) {
     printf("%s,%d", anthy_seg_class_sym(ce->mw->seg_class),
 	   ce->mw->struct_score);
@@ -682,6 +686,8 @@ anthy_release_cand_ent(struct cand_ent *ce)
   free(ce);
 }
 
+
+// @return すでに personality が設定されていた場合, -1.
 int
 anthy_do_set_personality(const char *id)
 {

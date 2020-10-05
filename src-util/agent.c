@@ -160,7 +160,7 @@ static struct command* command_queue;
 //static int daemon_sock = -1;
 static int anonymous;
 static int egg;
-static char *personality;
+static const char* personality = NULL;
 int use_utf8 = 1;
 
 static char *
@@ -1104,7 +1104,6 @@ parse_args(int argc, char **argv)
 {
   int i;
   char *conffile = NULL, *dir = NULL, *dic = NULL;
-
 
   for (i = 1; i < argc; i++) {
     char *str = argv[i];

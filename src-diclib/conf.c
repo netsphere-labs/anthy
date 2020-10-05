@@ -34,6 +34,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <assert.h>
 #ifndef _WIN32
   #include <unistd.h>
   #include <pwd.h>
@@ -297,5 +298,6 @@ anthy_conf_get_str(const char *var)
 {
   struct val_ent *e;
   e = find_val_ent(var);
+  assert(e);
   return e->val;
 }

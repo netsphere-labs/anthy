@@ -78,6 +78,9 @@ Command Semantics and Syntax
 	NEW-CONTEXT INPUT=#18 OUTPUT=#18
 	+OK 0
 	
+    RELEASE-CONTEXT しなければ、コンテキストは解放されない。
+    現在の実装では, コンテキストは高々16ヶしか保持されない
+
 
 2. コンテクスト解放
   Command:
@@ -85,6 +88,7 @@ Command Semantics and Syntax
 
   Reply:
 	reply-of-release-context = error / success
+
 
 3. 変換
   Command:

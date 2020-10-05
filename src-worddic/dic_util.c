@@ -119,14 +119,17 @@ anthy_dic_util_quit(void)
   gIsInit = 0;
 }
 
-/** 辞書ユーティリティAPIのエンコーディングを設定する */
+
+/**
+ * 辞書ユーティリティAPIのエンコーディングを設定する
+ * @return enc がサポート対象外の値だったとき  -1
+ */
 int
 anthy_dic_util_set_encoding(int enc)
 {
-  if (enc == ANTHY_UTF8_ENCODING ||
-      enc == ANTHY_EUC_JP_ENCODING) {
-    dic_util_encoding = enc;
-  }
+  if (enc != ANTHY_UTF8_ENCODING && enc != ANTHY_EUC_JP_ENCODING)
+    return -1;
+  dic_util_encoding = enc;
   return dic_util_encoding;
 }
 

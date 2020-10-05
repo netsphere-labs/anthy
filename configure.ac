@@ -38,7 +38,7 @@ dnl dirty hack to avoid it.
 test -n "$lispdir" || lispdir="/tmp"
 lispdir="$lispdir/anthy"
 
-test -z "$GCC" || CFLAGS="$CFLAGS -Wextra -Wall -Wformat-security -Wcast-align -Wwrite-strings -Wstrict-prototypes -Wmissing-declarations -pedantic -Wno-long-long -fstack-protector-strong -fstack-clash-protection"
+test -z "$GCC" || CFLAGS="$CFLAGS -Wextra -Wall -Wformat-security -Wcast-align -Wwrite-strings -Wstrict-prototypes -pedantic -Wno-long-long -fstack-protector-strong -fstack-clash-protection"
 
 AC_CONFIG_FILES([Makefile
  src-diclib/Makefile src-worddic/Makefile 
