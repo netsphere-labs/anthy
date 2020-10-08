@@ -12,6 +12,7 @@ AM_MAINTAINER_MODE
 
 dnl Checks for programs.
 AC_PROG_CC
+AC_PROG_CXX
 AC_PROG_CPP
 # AM_PROG_LIBTOOL is deprecated.
 LT_INIT
