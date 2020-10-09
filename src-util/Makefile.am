@@ -18,10 +18,12 @@ AM_CPPFLAGS = -I$(top_srcdir)/
 anthy_dic_tool_SOURCES = dic-tool.c
 anthy_dic_tool_LDADD = ../src-worddic/libanthydic.la
 anthy_agent_SOURCES = agent.c egg.c
+anthy_agent_LDADD = libanthyinput.la ../src-main/libanthy.la ../src-worddic/libanthydic.la
 if OS_WIN32
 anthy_agent_SOURCES += egg-windows.cpp
+anthy_agent_LDADD += -lssp
 endif
-anthy_agent_LDADD = libanthyinput.la ../src-main/libanthy.la ../src-worddic/libanthydic.la
+
 anthy_morphological_analyzer_SOURCES= morph-main.c
 anthy_morphological_analyzer_LDADD = libconvdb.la ../src-main/libanthy.la ../src-worddic/libanthydic.la
 
