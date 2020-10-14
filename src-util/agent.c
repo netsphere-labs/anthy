@@ -41,8 +41,12 @@
 
 #include "rkconv.h"
 
-
+#ifndef _WIN32
 extern void egg_main(void);
+#else
+extern int egg_windows();
+#endif
+
 
 /* 何回次候補を押すと候補の列挙を一覧モードに切替えるか？ */
 #define DEFAULT_ENUM_CAND_LIMIT 3
@@ -1161,7 +1165,11 @@ main(int argc, char **argv)
   }
 
   if (egg) {
+#ifndef _WIN32
     egg_main();
+#else
+    egg_windows();
+#endif
     anthy_quit();
     return 0;
   }

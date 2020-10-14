@@ -46,7 +46,7 @@ static int dispatch_request( HANDLE hPipe )
   TCHAR user_name[100];
   GetNamedPipeHandleState( hPipe, NULL, NULL, NULL, NULL, user_name,
                                 sizeof(user_name) / sizeof(TCHAR));
-  wprintf(L"user_name = %s\n", user_name);
+  printf("user_name = %s\n", user_name);
 
   // 返信
   char write_buf[2000];
@@ -73,22 +73,24 @@ struct PipeData
 
 
 // @return 成功時 0, エラー時 -1
-static int listen_pipe( PipeData* pipe_data )
+static int listen_pipe( PipeData* pipe_listened )
 {
-  assert( pipe_data );
-  assert( pipe_data->hPipe != INVALID_HANDLE_VALUE);
+  assert( pipe_listened );
+  assert( pipe_listened->hPipe != INVALID_HANDLE_VALUE);
 
   // FILE_FLAG_OVERLAPPED pipe では, 直ちに戻る.
-  BOOL fConnected = ConnectNamedPipe(pipe_data->hPipe, &pipe_data->overlap);
+  BOOL fConnected = ConnectNamedPipe(pipe_listened->hPipe, &pipe_listened->overlap);
   assert( !fConnected );
 
   DWORD err = GetLastError();
   switch (err)
   {
   case ERROR_IO_PENDING:
+    printf("ERROR_IO_PENDING\n");
     // この場合は, signaled になっていない.
     break;
   case ERROR_PIPE_CONNECTED:
+    printf("ERROR_PIPE_CONNECTED\n");
     // A client connects in the interval between the call to
     // CreateNamedPipe() and the call to ConnectNamedPipe().
     break;
@@ -201,23 +203,23 @@ constexpr int BUFSIZE = 4000;
 static TCHAR krnlobj_sddl[1000];
 
 // @return 失敗時 -1
-int create_my_pipe( const TCHAR* pipeName, PipeData* pipe_data )
+int create_my_pipe( const TCHAR* pipeName, PipeData* pipe_listened )
 {
-  assert(pipe_data);
+  assert(pipe_listened);
 
-  memset(pipe_data, 0, sizeof(PipeData));
+  memset(pipe_listened, 0, sizeof(PipeData));
       
   // ConnectNamedPipe() に渡すのは, manual-reset event objectでなければな
   // らない.
   HANDLE hEvent = CreateEvent(NULL, // lpEventAttributes
-                                TRUE, // bManualReset
-                                FALSE, // bInitialState. ここ重要.
-                                NULL); // lpName
+			      TRUE, // bManualReset
+			      FALSE, // bInitialState. ここ重要.
+			      NULL); // lpName
   if ( !hEvent ) { // INVALID_HANDLE_VALUE ではない
     printf("CreateEvent() failed: %d\n", GetLastError());
     return -1;
   }
-  pipe_data->overlap.hEvent = hEvent;
+  pipe_listened->overlap.hEvent = hEvent;
 
   create_sddl(krnlobj_sddl, sizeof(krnlobj_sddl) / sizeof(TCHAR));
 
@@ -227,8 +229,8 @@ int create_my_pipe( const TCHAR* pipeName, PipeData* pipe_data )
                                 SDDL_REVISION_1, &psd, nullptr)) {
     printf("ConvertStringSecurityDescriptorToSecurityDescriptor() failed: %d\n",
             GetLastError());
-    CloseHandle(pipe_data->overlap.hEvent);
-    pipe_data->overlap.hEvent = NULL;
+    CloseHandle(pipe_listened->overlap.hEvent);
+    pipe_listened->overlap.hEvent = NULL;
     return -1;
   }
   sa.nLength = sizeof(sa);
@@ -236,7 +238,7 @@ int create_my_pipe( const TCHAR* pipeName, PipeData* pipe_data )
   sa.bInheritHandle = FALSE;
 
   // Non-blocking mode is only for LAN Man 2.0
-  pipe_data->hPipe = CreateNamedPipe(pipeName,
+  pipe_listened->hPipe = CreateNamedPipe(pipeName,
                                 PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED,
                                 PIPE_TYPE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS |
                                        PIPE_WAIT, // blocking mode
@@ -246,10 +248,10 @@ int create_my_pipe( const TCHAR* pipeName, PipeData* pipe_data )
                                 0, // 0 (default) = 50 ms. 長い方がいい?
                                 &sa); // lpSecurityAttributes
   LocalFree(psd);
-  if (pipe_data->hPipe == INVALID_HANDLE_VALUE) {
+  if (pipe_listened->hPipe == INVALID_HANDLE_VALUE) {
     printf("CreateNamedPipe() failed: %d\n", GetLastError());
-    CloseHandle(pipe_data->overlap.hEvent);
-    pipe_data->overlap.hEvent = NULL;
+    CloseHandle(pipe_listened->overlap.hEvent);
+    pipe_listened->overlap.hEvent = NULL;
     return -1;
   }
 
@@ -263,25 +265,31 @@ int create_my_pipe( const TCHAR* pipeName, PipeData* pipe_data )
 // the pipe name.
 const TCHAR* pipeName = _T("\\\\.\\pipe\\my_test_pipe");
 
-// 同時接続可能数
-constexpr int LISTEN_INSTANCES = 250;
+// 同時接続可能数. 最大値は MAXIMUM_WAIT_OBJECTS
+constexpr int LISTEN_INSTANCES = 30;
 
-static PipeData pipe_data[LISTEN_INSTANCES];
+static PipeData pipe_listened[LISTEN_INSTANCES];
+
+extern "C" {
+int egg_windows();
+}
 
 int egg_windows()
 {
+  printf("egg_windows() enter.\n");
+  
   HANDLE wait_objects[LISTEN_INSTANCES];
 
   for (int i = 0; i < LISTEN_INSTANCES; i++) {
-    if ( create_my_pipe(pipeName, pipe_data + i) < 0 ) {
+    if ( create_my_pipe(pipeName, pipe_listened + i) < 0 ) {
       printf("create_my_pipe() failed.\n");
       return -1;
     }
-    assert(pipe_data[i].hPipe != INVALID_HANDLE_VALUE);
-    assert(pipe_data[i].overlap.hEvent);
-    wait_objects[i] = pipe_data[i].overlap.hEvent;
+    assert(pipe_listened[i].hPipe != INVALID_HANDLE_VALUE);
+    assert(pipe_listened[i].overlap.hEvent);
+    wait_objects[i] = pipe_listened[i].overlap.hEvent;
 
-    if ( listen_pipe(&pipe_data[i]) < 0 ) {
+    if ( listen_pipe(&pipe_listened[i]) < 0 ) {
       printf("listen_pipe() failed.\n");
       return -1;
     }
@@ -299,11 +307,11 @@ int egg_windows()
       return -1;
     }
 
-    int r = dispatch_request(pipe_data[i].hPipe);
+    int r = dispatch_request(pipe_listened[i].hPipe);
     if (r < 0) {
-      DisconnectNamedPipe(pipe_data[i].hPipe);  // shutdown
+      DisconnectNamedPipe(pipe_listened[i].hPipe);  // shutdown
       //CloseHandle(hPipe);
-      if ( listen_pipe(&pipe_data[i]) < 0 ) {
+      if ( listen_pipe(&pipe_listened[i]) < 0 ) {
 	printf("listen_pipe() in main-loop failed.\n");
 	return -1;
       }	

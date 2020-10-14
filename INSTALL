@@ -6,7 +6,7 @@ From source tar ball
 
 As with other packages, you just have to do
 
-  $ .configure --disable-static
+  $ ./configure --disable-static
   $ make
   $ make install
 
@@ -14,7 +14,7 @@ As with other packages, you just have to do
 
 On MinGW, you have to add --prefix <real path> option;
 
-  $ ./configure --prefix=d:/git-sdk-64/mingw32
+  $ ./configure --prefix=d:/git-sdk-64/mingw32 --enable-maintainer-mode --disable-static
 
 
 
@@ -24,7 +24,7 @@ From Git repository
 Libtool, Automake, Autoconf are required.
 
   $ ./autogen.sh
-  $ .configure --enable-maintainer-mode --disable-static
+  $ ./configure --enable-maintainer-mode --disable-static
   $ make
   $ make install
 
