@@ -11,10 +11,14 @@
 #include <sddl.h>
 #include <versionhelpers.h>
 
+// mingw workaround
 #ifndef SDDL_ALL_APP_PACKAGES
-#define SDDL_ALL_APP_PACKAGES               TEXT("AC")      // All applications running in an app package context
+#define SDDL_ALL_APP_PACKAGES   TEXT("AC") // All applications running in an app package context
 #endif
 
+
+static char* req_buf = nullptr;
+static int req_bufsiz = 0;
 
 // @return -1 ReadFile() error. パイプを作り直せ.
 //         0  EOF
@@ -22,26 +26,43 @@ static int dispatch_request( HANDLE hPipe )
 {
   assert(hPipe != INVALID_HANDLE_VALUE );
 
-  char buf[2000];
+  // 先に大きさを確認
+  DWORD bytes_ready = 0;
+  BOOL r = PeekNamedPipe( hPipe,  nullptr, 0, nullptr, &bytes_ready, nullptr);
+  if ( !r ) {
+    printf("PeekNamedPipe() failed: %d\n", GetLastError());
+    return -1;
+  }
+  if ( !bytes_ready )
+    return 0; // EOF
+
+  if ( req_bufsiz < bytes_ready + 1 ) {
+    req_bufsiz = bytes_ready + 1;
+    req_buf = (char*) realloc(req_buf, req_bufsiz);
+  }
   
-  // 1行読む
   DWORD bytes_read = 0;
-  BOOL r = ReadFile(hPipe, buf, sizeof(buf) - 1, &bytes_read, NULL);
+  r = ReadFile(hPipe, req_buf, req_bufsiz - 1, &bytes_read, NULL);
   if ( !r ) {
     printf("ReadFile() failed: %d\n", GetLastError());
     return -1;
   }
-  if (bytes_read == 0)
-    return 0;
-  
-  buf[bytes_read] = '\0';
+  assert( bytes_read > 0 );
 
-  if (strstr(buf, "BYE")) {
+  req_buf[bytes_read] = '\0';
+  // 行末の改行を削除
+  if (req_buf[bytes_read - 1] == '\n') 
+    req_buf[--bytes_read] = '\0';
+  if (req_buf[bytes_read - 1] == '\r') 
+    req_buf[--bytes_read] = '\0';
+
+  // ここからテスト..............
+    
+  if (strstr(req_buf, "BYE")) { // DEBUG
     printf("Normaly BYE\n");
     return 0;
   }
 
-  // ここからテスト..............
   // 接続元情報
   TCHAR user_name[100];
   GetNamedPipeHandleState( hPipe, NULL, NULL, NULL, NULL, user_name,
@@ -50,7 +71,7 @@ static int dispatch_request( HANDLE hPipe )
 
   // 返信
   char write_buf[2000];
-  strcpy(write_buf, buf); // echo
+  strcpy(write_buf, req_buf); // echo
   strcat(write_buf, "\nhogehoge\nEND\n");
 
   DWORD bytes_written = 0;
@@ -238,15 +259,17 @@ int create_my_pipe( const TCHAR* pipeName, PipeData* pipe_listened )
   sa.bInheritHandle = FALSE;
 
   // Non-blocking mode is only for LAN Man 2.0
-  pipe_listened->hPipe = CreateNamedPipe(pipeName,
-                                PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED,
-                                PIPE_TYPE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS |
-                                       PIPE_WAIT, // blocking mode
-                                PIPE_UNLIMITED_INSTANCES, // 最大値
-                                BUFSIZE,
-                                BUFSIZE,
-                                0, // 0 (default) = 50 ms. 長い方がいい?
-                                &sa); // lpSecurityAttributes
+  // PIPE_READMODE_* と PIPE_WAIT/NOWAIT のみ, 後から変更可能.
+  pipe_listened->hPipe =
+    CreateNamedPipe(pipeName,
+		    PIPE_ACCESS_DUPLEX | FILE_FLAG_OVERLAPPED,
+		    PIPE_TYPE_MESSAGE | PIPE_REJECT_REMOTE_CLIENTS |
+                             PIPE_READMODE_MESSAGE | PIPE_WAIT, // blocking mode
+		    PIPE_UNLIMITED_INSTANCES, // 最大値 (255)
+		    BUFSIZE,
+		    BUFSIZE,
+		    0, // 0 (default) = 50 ms. 長い方がいい?
+		    &sa); // lpSecurityAttributes
   LocalFree(psd);
   if (pipe_listened->hPipe == INVALID_HANDLE_VALUE) {
     printf("CreateNamedPipe() failed: %d\n", GetLastError());
@@ -265,7 +288,8 @@ int create_my_pipe( const TCHAR* pipeName, PipeData* pipe_listened )
 // the pipe name.
 const TCHAR* pipeName = _T("\\\\.\\pipe\\my_test_pipe");
 
-// 同時接続可能数. 最大値は MAXIMUM_WAIT_OBJECTS
+// 同時接続可能数. 最大値は MAXIMUM_WAIT_OBJECTS (高々64).
+// 上限が低い。これを超えそうなら、最初からマルチスレッドで作るべき.
 constexpr int LISTEN_INSTANCES = 30;
 
 static PipeData pipe_listened[LISTEN_INSTANCES];
@@ -301,6 +325,10 @@ int egg_windows()
                                         wait_objects,
                                         FALSE, // does not wait for all
                                         INFINITE);
+    if ( dwWait == WAIT_FAILED ) {
+      printf("WaitForMultipleObjects() error: %d\n", GetLastError());
+      return -1;
+    }
     int i = dwWait - WAIT_OBJECT_0;
     if (i < 0 || i > (LISTEN_INSTANCES - 1)) {
       printf("Index out of range.\n");
@@ -308,7 +336,7 @@ int egg_windows()
     }
 
     int r = dispatch_request(pipe_listened[i].hPipe);
-    if (r < 0) {
+    if ( r < 0 || r == 0 ) {
       DisconnectNamedPipe(pipe_listened[i].hPipe);  // shutdown
       //CloseHandle(hPipe);
       if ( listen_pipe(&pipe_listened[i]) < 0 ) {
