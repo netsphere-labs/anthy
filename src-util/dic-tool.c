@@ -55,12 +55,13 @@
  " --dump: Dump dictionary\n"\
  " --load: Load dictionary\n"\
  " --append: Append dictionary\n"\
- " --utf8: Use utf8 encoding\n"\
- " --personality=NAME: use NAME as a name of personality\n"
+ " --eucjp: Use EUC-JP encoding\n"\
+ " --personality=NAME: use NAME as a name of personality\n"\
+ ""
 
 
 static int command = UNSPEC;
-static int encoding = ANTHY_EUC_JP_ENCODING;
+static int encoding = ANTHY_UTF8_ENCODING;
 static FILE *fp_in;
 static char *fn;
 static const char *personality = "";
@@ -135,9 +136,9 @@ print_usage_text(void)
   }
   /* そのままファイルの内容を出力 */
   while (fgets(buf, 256, fp)) {
-    if (encoding == ANTHY_UTF8_ENCODING) {
+    if (encoding == ANTHY_EUC_JP_ENCODING) {
       char *s;
-      s = anthy_conv_euc_to_utf8(buf);
+      s = anthy_conv_utf8_to_euc(buf);
       printf("%s", s);
       free(s);
     } else {
@@ -181,10 +182,10 @@ read_typetab_var(struct var *head, FILE *fp, int table)
   }
 
   v = malloc(sizeof(struct var));
-  if (encoding == ANTHY_UTF8_ENCODING && table) {
+  if (encoding == ANTHY_EUC_JP_ENCODING && table) {
     /* UTF-8 */
-    v->var_name = anthy_conv_euc_to_utf8(var);
-    v->val = anthy_conv_euc_to_utf8(val);
+    v->var_name = anthy_conv_utf8_to_euc(var);
+    v->val = anthy_conv_utf8_to_euc(val);
   } else {
     /* do not change */
     v->var_name = strdup(var);

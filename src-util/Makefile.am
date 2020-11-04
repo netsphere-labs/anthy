@@ -5,8 +5,11 @@ SUBDIRS =
 # Files
 # Dictionary utilities
 ELISP_FILES = anthy.el anthy-dic.el anthy-conf.el leim-list.el \
- anthy-isearch.el anthy-azik.el anthy-kyuri.el
-EXTRA_DIST = $(ELISP_FILES) typetab dic-tool-usage.txt anthy.i
+    anthy-isearch.el anthy-azik.el anthy-kyuri.el \
+    $(NULL)
+EXTRA_DIST = $(ELISP_FILES) \
+    typetab dic-tool-input.txt dic-tool-usage.txt anthy.i \
+    $(NULL)
 bin_PROGRAMS = \
     anthy-dic-tool-unicode \
     anthy-agent-unicode \
