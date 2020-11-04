@@ -14,6 +14,7 @@
  * Funded by IPA未踏ソフトウェア創造事業 2001 9/22
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
+ * Copyright (C) 2020 Takao Fujiwara
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -30,20 +31,31 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #include <anthy/anthy.h>
 #include <anthy/dicutil.h>
 /**/
+#include <anthy/textdict.h>
 #include <anthy/xstr.h>
 #include "config.h"
+
+#ifndef TRUE
+#define TRUE 1
+#endif
+#ifndef FALSE
+#define FALSE 0
+#endif
 
 #define UNSPEC 0
 #define DUMP_DIC 1
 #define LOAD_DIC 2
 #define APPEND_DIC 3
+#define MIGRATE_DIC 4
 
 #define TYPETAB "typetab"
 #define USAGE_TEXT "dic-tool-usage.txt"
@@ -55,15 +67,28 @@
  " --dump: Dump dictionary\n"\
  " --load: Load dictionary\n"\
  " --append: Append dictionary\n"\
+ " --migrate: Migrate Anthy dictionary to Anthy-Unicode dictionary\n"\
  " --eucjp: Use EUC-JP encoding\n"\
  " --personality=NAME: use NAME as a name of personality\n"\
+ " --src=FILE: Use FILE as a source file\n"\
+ " --dest=FILE: Use FILE as a destination file\n"\
  ""
 
+
+struct textdict {
+  char *fn;
+  char *ptr;
+  struct filemapping *mapping;
+};
+
+extern struct textdict *anthy_private_text_dic;
+extern struct textdict *old_anthy_private_text_dic;
 
 static int command = UNSPEC;
 static int encoding = ANTHY_UTF8_ENCODING;
 static FILE *fp_in;
-static char *fn;
+static const char *src;
+static const char *dest;
 static const char *personality = "";
 
 /* 変数名と値のペア */
@@ -79,6 +104,14 @@ struct trans_tab {
   char *type_name; /* 内部での型の名前 T35とか */
   struct var var_list; /* 型を決定するためのパラメータ */
 }trans_tab_list;
+
+struct dict_entry {
+  char              *yomi;
+  char              *word;
+  char              *wtype;
+  int                freq;
+  struct dict_entry *next;
+};
 
 static void
 print_usage(void)
@@ -146,6 +179,58 @@ print_usage_text(void)
     }
   }
   fclose(fp);
+}
+
+static void
+backup_file (const char *path, int do_rename)
+{
+  FILE *in = NULL;
+  FILE *out = NULL;
+  time_t t;
+  struct tm *tmp;
+  size_t nread;
+  char *backup = NULL;
+  char ext[20];
+  char buf[BUFSIZ];
+
+  if (!(in = fopen (path, "r")))
+    return;
+  t = time (NULL);
+  if ((tmp = localtime (&t)) == NULL) {
+    perror ("localtime");
+    exit (EXIT_FAILURE);
+  }
+  if (!strftime (ext, sizeof (ext), "%Y%m%d%H%M%S", tmp)) {
+    fprintf (stderr, "strftime error");
+    exit (EXIT_FAILURE);
+  }
+  backup = malloc (strlen (path) + strlen (ext) + 2);
+  sprintf (backup, "%s.%s", path, ext);
+  if (do_rename) {
+    fclose (in);
+    /* Should not exit with the source file copy */
+    if (rename (path, backup))
+      fprintf (stderr, "Fail to rename %s: %s\n", path, strerror (errno));
+    free (backup);
+    return;
+  } else if (!(out = fopen (backup, "w")))  {
+    fprintf (stderr, "Fail to write %s", backup);
+    fclose (in);
+    free (backup);
+    exit (EXIT_FAILURE);
+  }
+  while ((nread = fread (buf, 1, sizeof buf, in)) > 0) {
+    if (fwrite (buf, 1, nread, out) < nread) {
+      fprintf (stderr, "Fail to copy %s: %s\n", path, strerror (errno));
+      fclose (out);
+      fclose (in);
+      free (backup);
+      exit (EXIT_FAILURE);
+    }
+  }
+  fclose (out);
+  fclose (in);
+  free (backup);
 }
 
 static char *
@@ -289,10 +374,10 @@ dump_dic(void)
 static void
 open_input_file(void)
 {
-  if (!fn) {
+  if (!src) {
     fp_in = stdin;
   } else {
-    fp_in = fopen(fn, "r");
+    fp_in = fopen(src, "r");
     if (!fp_in) {
       exit(1);
     }
@@ -375,6 +460,75 @@ load_dic(void)
 }
 
 static void
+migrate_dic (void)
+{
+#define LINE_SIZE 1024
+  struct textdict *orig_new_dic = anthy_private_text_dic;
+  struct textdict *src_dic = NULL;
+  struct textdict *dest_dic = NULL;
+  static char buf[LINE_SIZE + 1];
+  char *yomi = NULL;
+  struct dict_entry *dict_head = NULL;
+  struct dict_entry *d, *p;
+
+  src_dic = src ? anthy_textdict_open (src)
+            : anthy_textdict_open (old_anthy_private_text_dic->fn);
+  anthy_private_text_dic = src_dic;
+  if (anthy_priv_dic_select_first_entry () == ANTHY_DIC_UTIL_ERROR) {
+    anthy_textdict_close (src_dic);
+    anthy_private_text_dic = orig_new_dic;
+    printf ("No update dict file\n");
+    return;
+  }
+  do {
+    yomi = strdup (anthy_priv_dic_get_index (buf, LINE_SIZE));
+    if (*yomi == '#') {
+      free (yomi);
+      continue;
+    }
+    if (!dict_head) {
+      d = dict_head = calloc (sizeof (struct dict_entry), 1);
+    } else {
+      d->next = calloc (sizeof (struct dict_entry), 1);
+      d = d->next;
+    }
+    d->yomi = yomi;
+    d->word = strdup (anthy_priv_dic_get_word (buf, LINE_SIZE));
+    d->wtype = strdup (anthy_priv_dic_get_wtype (buf, LINE_SIZE));
+    d->freq = anthy_priv_dic_get_freq ();
+  } while (anthy_priv_dic_select_next_entry () != ANTHY_DIC_UTIL_ERROR);
+  dest_dic = dest ? anthy_textdict_open (dest)
+            : anthy_textdict_open (orig_new_dic->fn);
+  anthy_private_text_dic = dest_dic;
+  if (dict_head) {
+    backup_file (dest_dic->fn, FALSE);
+    backup_file (src_dic->fn, TRUE);
+  } else {
+    anthy_textdict_close (src_dic);
+    anthy_textdict_close (dest_dic);
+    anthy_private_text_dic = orig_new_dic;
+    printf ("No update dict file\n");
+    return;
+  }
+  anthy_textdict_close (src_dic);
+  for (d = dict_head; d;) {
+    int ret = anthy_priv_dic_add_entry(d->yomi, d->word, d->wtype, d->freq);
+    if (ret == -1)
+      printf("Failed to register %s %s\n", d->yomi, d->word);
+    free (d->yomi);
+    free (d->word);
+    free (d->wtype);
+    p = d->next;
+    free (d);
+    d = p;
+  }
+  printf ("Update dict file %s\n", dest_dic->fn);
+  anthy_textdict_close (dest_dic);
+  anthy_private_text_dic = orig_new_dic;
+#undef LINE_SIZE
+}
+
+static void
 print_version(void)
 {
   printf("Anthy-dic-util "VERSION".\n");
@@ -389,24 +543,30 @@ parse_args(int argc, char **argv)
     if (!strncmp(argv[i], "--", 2)) {
       char *opt = &argv[i][2];
       if (!strcmp(opt, "help")) {
-	print_usage();
+        print_usage ();
       } else if (!strcmp(opt, "version")){
-	print_version();
+        print_version ();
       } else if (!strcmp(opt, "dump")) {
-	command = DUMP_DIC;
+        command = DUMP_DIC;
       } else if (!strcmp(opt,"append") ){
-	command = APPEND_DIC;
+        command = APPEND_DIC;
       } else if (!strncmp(opt, "personality=", 12)) {
-	personality = &opt[12];
+        personality = &opt[12];
       } else if (!strcmp(opt, "utf8")) {
-	encoding = ANTHY_UTF8_ENCODING;
+        encoding = ANTHY_UTF8_ENCODING;
       } else if (!strcmp(opt, "eucjp")) {
-	encoding = ANTHY_EUC_JP_ENCODING;
+        encoding = ANTHY_EUC_JP_ENCODING;
       } else if (!strcmp(opt, "load")) {
-	command = LOAD_DIC;
+        command = LOAD_DIC;
+      } else if (!strcmp(opt,"migrate") ){
+        command = MIGRATE_DIC;
+      } else if (!strncmp(opt, "src=", 4)) {
+        src = &opt[4];
+      } else if (!strncmp(opt, "dest=", 5)) {
+        dest = &opt[5];
       }
-    }else{
-      fn = argv[i];
+    } else {
+      src = argv[i];
     }
   }
 }
@@ -423,27 +583,31 @@ int
 main(int argc,char **argv)
 {
   fp_in = stdin;
-  parse_args(argc, argv);
+  parse_args (argc, argv);
 
   switch (command) {
   case DUMP_DIC:
-    init_lib();
-    dump_dic();
+    init_lib ();
+    dump_dic ();
     break;
   case LOAD_DIC:
-    init_lib();
-    anthy_priv_dic_delete();
-    open_input_file();
-    load_dic();
+    init_lib ();
+    anthy_priv_dic_delete ();
+    open_input_file ();
+    load_dic ();
     break;
   case APPEND_DIC:
-    init_lib();
-    open_input_file();
-    load_dic();
+    init_lib ();
+    open_input_file ();
+    load_dic ();
+    break;
+  case MIGRATE_DIC:
+    init_lib ();
+    migrate_dic ();
     break;
   case UNSPEC:
   default:
-    print_usage();
+    print_usage ();
   }
   return 0;
 }
