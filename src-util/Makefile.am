@@ -8,7 +8,7 @@ ELISP_FILES = anthy.el anthy-dic.el anthy-conf.el leim-list.el \
     anthy-isearch.el anthy-azik.el anthy-kyuri.el \
     $(NULL)
 EXTRA_DIST = $(ELISP_FILES) \
-    typetab dic-tool-input.txt dic-tool-usage.txt anthy.i \
+    typetab dic-tool-input dic-tool-result dic-tool-usage.txt anthy.i \
     $(NULL)
 bin_PROGRAMS = \
     anthy-dic-tool-unicode \

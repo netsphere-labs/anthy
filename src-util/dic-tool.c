@@ -56,6 +56,7 @@
 #define LOAD_DIC 2
 #define APPEND_DIC 3
 #define MIGRATE_DIC 4
+#define TEXT_DIC 4
 
 #define TYPETAB "typetab"
 #define USAGE_TEXT "dic-tool-usage.txt"
@@ -67,9 +68,10 @@
  " --dump: Dump dictionary\n"\
  " --load: Load dictionary\n"\
  " --append: Append dictionary\n"\
- " --migrate: Migrate Anthy dictionary to Anthy-Unicode dictionary\n"\
+ " --migrate: Migrate Anthy text dictionary to Anthy-Unicode text dictionary\n"\
  " --eucjp: Use EUC-JP encoding\n"\
  " --personality=NAME: use NAME as a name of personality\n"\
+ " --text: Use text dictionary with --append or --load option\n"\
  " --src=FILE: Use FILE as a source file\n"\
  " --dest=FILE: Use FILE as a destination file\n"\
  ""
@@ -90,6 +92,7 @@ static FILE *fp_in;
 static const char *src;
 static const char *dest;
 static const char *personality = "";
+static int use_text_dic = FALSE;
 
 /* 変数名と値のペア */
 struct var{
@@ -374,12 +377,14 @@ dump_dic(void)
 static void
 open_input_file(void)
 {
+  if (use_text_dic)
+    return;
   if (!src) {
     fp_in = stdin;
   } else {
-    fp_in = fopen(src, "r");
+    fp_in = fopen (src, "r");
     if (!fp_in) {
-      exit(1);
+      exit (EXIT_FAILURE);
     }
   }
 }
@@ -440,27 +445,34 @@ find_head(char *yomi, char *freq, char *w)
 }
 
 static void
-load_dic(void)
+load_tt_dic (void)
 {
   char yomi[256], freq[256], w[256];
+  int has_entry = FALSE;
   while (!find_head(yomi, freq, w)) {
     char *wt = find_wt();
     if (wt) {
       int ret;
       ret = anthy_priv_dic_add_entry(yomi, w, wt, atoi(freq));
       if (ret == -1) {
-	printf("Failed to register %s\n", yomi);
+        printf("Failed to register %s\n", yomi);
       }else {
-	printf("Word %s is registered as %s\n", yomi, wt);
+        has_entry = TRUE;
+        printf("Word %s is registered as %s\n", yomi, wt);
       }
     } else {
       printf("Failed to find the type of %s.\n", yomi);
     }
   }
+  if (has_entry && (command == MIGRATE_DIC)) {
+    backup_file (anthy_private_text_dic->fn, FALSE);
+    if (src)
+      backup_file (src, TRUE);
+  }
 }
 
 static void
-migrate_dic (void)
+load_text_dic (void)
 {
 #define LINE_SIZE 1024
   struct textdict *orig_new_dic = anthy_private_text_dic;
@@ -471,13 +483,19 @@ migrate_dic (void)
   struct dict_entry *dict_head = NULL;
   struct dict_entry *d, *p;
 
+  if ((command != MIGRATE_DIC) && !src) {
+    fprintf (stderr, "Do not support the stdin dictionary with text format. " \
+                     "Please append \"--src=FILE\" option in the command "    \
+                     "arguments.");
+    return;
+  }
   src_dic = src ? anthy_textdict_open (src)
             : anthy_textdict_open (old_anthy_private_text_dic->fn);
   anthy_private_text_dic = src_dic;
   if (anthy_priv_dic_select_first_entry () == ANTHY_DIC_UTIL_ERROR) {
     anthy_textdict_close (src_dic);
     anthy_private_text_dic = orig_new_dic;
-    printf ("No update dict file\n");
+    fprintf (stdout, "No update dict file\n");
     return;
   }
   do {
@@ -501,20 +519,22 @@ migrate_dic (void)
             : anthy_textdict_open (orig_new_dic->fn);
   anthy_private_text_dic = dest_dic;
   if (dict_head) {
-    backup_file (dest_dic->fn, FALSE);
-    backup_file (src_dic->fn, TRUE);
+    if (command == MIGRATE_DIC) {
+      backup_file (dest_dic->fn, FALSE);
+      backup_file (src_dic->fn, TRUE);
+    }
   } else {
     anthy_textdict_close (src_dic);
     anthy_textdict_close (dest_dic);
     anthy_private_text_dic = orig_new_dic;
-    printf ("No update dict file\n");
+    fprintf (stdout, "No update dict file\n");
     return;
   }
   anthy_textdict_close (src_dic);
   for (d = dict_head; d;) {
     int ret = anthy_priv_dic_add_entry(d->yomi, d->word, d->wtype, d->freq);
     if (ret == -1)
-      printf("Failed to register %s %s\n", d->yomi, d->word);
+      fprintf(stderr, "Failed to register %s %s\n", d->yomi, d->word);
     free (d->yomi);
     free (d->word);
     free (d->wtype);
@@ -522,10 +542,19 @@ migrate_dic (void)
     free (d);
     d = p;
   }
-  printf ("Update dict file %s\n", dest_dic->fn);
+  fprintf (stdout, "Update dict file %s\n", dest_dic->fn);
   anthy_textdict_close (dest_dic);
   anthy_private_text_dic = orig_new_dic;
 #undef LINE_SIZE
+}
+
+static void
+load_dic(void)
+{
+  if (use_text_dic)
+    load_text_dic ();
+  else
+    load_tt_dic ();
 }
 
 static void
@@ -560,6 +589,10 @@ parse_args(int argc, char **argv)
         command = LOAD_DIC;
       } else if (!strcmp(opt,"migrate") ){
         command = MIGRATE_DIC;
+        /* tt_dic migration is not supported. */
+        use_text_dic = TRUE;
+      } else if (!strcmp(opt,"text") ){
+        use_text_dic = TRUE;
       } else if (!strncmp(opt, "src=", 4)) {
         src = &opt[4];
       } else if (!strncmp(opt, "dest=", 5)) {
@@ -603,7 +636,7 @@ main(int argc,char **argv)
     break;
   case MIGRATE_DIC:
     init_lib ();
-    migrate_dic ();
+    load_dic ();
     break;
   case UNSPEC:
   default:
