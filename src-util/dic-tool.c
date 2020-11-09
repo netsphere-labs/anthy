@@ -38,18 +38,12 @@
 #include <time.h>
 
 #include <anthy/anthy.h>
+#include <anthy/diclib.h>
 #include <anthy/dicutil.h>
 /**/
 #include <anthy/textdict.h>
 #include <anthy/xstr.h>
 #include "config.h"
-
-#ifndef TRUE
-#define TRUE 1
-#endif
-#ifndef FALSE
-#define FALSE 0
-#endif
 
 #define UNSPEC 0
 #define DUMP_DIC 1

@@ -34,6 +34,7 @@
 #include <anthy/anthy.h>
 #include <anthy/alloc.h>
 #include <anthy/dic.h>
+#include <anthy/diclib.h>
 #include <anthy/record.h>
 #include <anthy/dicutil.h>
 #include <anthy/conf.h>
@@ -106,7 +107,7 @@ anthy_check_user_dir(void)
   if (stat(dn, &st) || !S_ISDIR(st.st_mode)) {
     int r;
     /*fprintf(stderr, "Anthy: Failed to open anthy directory(%s).\n", dn);*/
-    r = mkdir(dn, S_IRWXU);
+    r = anthy_mkdir_with_parents(dn, S_IRWXU);
     if (r == -1){
       anthy_log(0, "Failed to create profile directory\n");
       return ;
