@@ -16,12 +16,15 @@
 #ifndef _wtype_h_included_
 #define _wtype_h_included_
 
-/*品詞 Part Of Speech */
+/**
+ * 品詞 Part Of Speech
+ */
 #define POS_NONE 0
  /* 名詞 */
 #define POS_NOUN 1
  /* 助詞(不使用?) */
 #define POS_PRT 2
+
 #define POS_XV 3
  /* 動詞 */
 #define POS_V 4
@@ -49,13 +52,17 @@
 #define POS_D2KY 15
  /* 数詞 */
 #define POS_NUMBER 16
+
 #define POS_INVAL 17
  /* 開き括弧 */
 #define POS_OPEN 18
  /* 閉じ括弧 */
 #define POS_CLOSE 19
 
-/* 活用形 Conjugate Type */
+
+/**
+ * 活用形 Conjugate Type
+ */
 #define CT_NONE 0
 #define CT_SYUSI 1
 #define CT_MIZEN 2
@@ -65,8 +72,12 @@
 #define CT_MEIREI 6
  /* 語幹 */
 #define CT_HEAD 7
+#define CT_MEISIKA 8
 
-/* 動詞の活用クラス Conjugate Class */
+
+/**
+ * 動詞の活用クラス Conjugate Class
+ */
 #define CC_NONE 0
  /* カ行五段 */
 #define CC_K5 1
@@ -133,7 +144,10 @@
  /* 連語「非ず」 add by vagus */
 #define CC_RZ 30
 
-/* 副品詞 Class Of Speech */
+
+/**
+ * 副品詞 Class Of Speech
+ */
 #define COS_NONE 0
  /* 地名 */
 #define COS_CN 1
@@ -149,7 +163,10 @@
 #define COS_SVSUFFIX 6
 /**/
 
-/* 副々品詞 Sub Class Of Speech*/
+
+/**
+ * 副々品詞 Sub Class Of Speech
+ */
 #define SCOS_NONE 0
 #define SCOS_FAMNAME 1
 #define SCOS_FSTNAME 2
@@ -247,7 +264,7 @@
 /* 29bits */
 
 /** 品詞 */
-struct wtype{
+struct wtype {
   unsigned int pos  : POS_BITS;
   unsigned int cos  : COS_BITS;
   unsigned int scos : SCOS_BITS;
@@ -257,6 +274,9 @@ struct wtype{
 };
 
 typedef struct wtype wtype_t;
+
+/** anthy_wtype_include(名詞、人名)は真、逆は偽 */
+int anthy_wtype_include(wtype_t haystack, wtype_t needle);
 
 /* 二つの品詞が完全に一致するかどうかを見る */
 int anthy_wtype_equal(wtype_t lhs, wtype_t rhs);
@@ -277,6 +297,17 @@ int anthy_wtype_get_wf(wtype_t w);
 /* フラグの取得 */
 int anthy_wtype_get_indep(wtype_t w);
 int anthy_wtype_get_sv(wtype_t w);
+int anthy_wtype_get_meisi(wtype_t w);
+int anthy_wtype_get_ajv(wtype_t w);
+
+wtype_t anthy_get_wtype_with_ct(wtype_t base, int ct);
+
+void anthy_wtype_set_pos(wtype_t *w, int pos);
+void anthy_wtype_set_cc(wtype_t *w, int cc);
+void anthy_wtype_set_ct(wtype_t *w, int ct);
+void anthy_wtype_set_cos(wtype_t *w, int cs);
+void anthy_wtype_set_scos(wtype_t *w, int scos);
+void anthy_wtype_set_dep(wtype_t *w, int isDep);
 
 void anthy_init_wtypes(void);
 

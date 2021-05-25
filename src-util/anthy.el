@@ -1,3 +1,4 @@
+;;; -*- coding:utf-8 -*-
 ;;; anthy.el -- Anthy
 
 ;; Copyright (C) 2001 - 2007 KMC(Kyoto University Micro Computer Club)

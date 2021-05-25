@@ -1,0 +1,19 @@
+Description: adjust dictionary location for Debian
+Author: Hideki Yamane <henrich@debian.org>
+
+---
+Origin: vendor
+Forwarded: not-needed
+Last-Update: <2010-03-29>
+
+--- anthy-9100h.orig/anthy-conf.in
++++ anthy-9100h/anthy-conf.in
+@@ -3,7 +3,7 @@ prefix @prefix@
+ datadir @datadir@
+ ANTHYDIR @datadir@/anthy/
+ DIC_FILE /var/lib/anthy/anthy.dic
+-ZIPDICT_EUC @datadir@/anthy/zipcode.t
++ZIPDICT_EUC @datadir@/anthy/dic/zipcode.t
+ WORDS_FILE /usr/share/dict/words
+ # for compilation and testing
+ INDEPWORD indepword.txt

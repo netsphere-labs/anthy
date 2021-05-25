@@ -34,9 +34,11 @@ int anthy_get_nth_dic_ent_is_compound(seq_ent_t se, int nth);
 /* caller should free @res */
 int anthy_get_nth_dic_ent_str(seq_ent_t, xstr *orig, int, xstr *res);
 int anthy_get_nth_dic_ent_freq(seq_ent_t, int nth);
-int anthy_get_nth_dic_ent_wtype(seq_ent_t, xstr *, int nth, wtype_t *w);
+int anthy_get_nth_dic_ent_wtype(const seq_ent_t se, const xstr *xs,
+                                int nth, wtype_t *w);
 /*  品詞 */
 int anthy_get_seq_ent_pos(seq_ent_t, int pos);
+int anthy_get_seq_ent_ct(seq_ent_t, int pos, int ct);
 int anthy_get_seq_ent_wtype_freq(seq_ent_t, wtype_t);
 int anthy_get_seq_ent_indep(seq_ent_t se);
 /* 複合語 */

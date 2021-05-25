@@ -185,7 +185,7 @@ match_branch(struct splitter_context *sc,
     } else {
       struct word_list *wl;
 
-      /* 
+      /*
        * 終端ノードに到達したので、
        * それをword_listとしてコミット
        */
@@ -246,17 +246,18 @@ read_branch(struct dep_dic* ddic, struct dep_branch* branch, int* offset)
   *offset += sizeof(struct dep_transition) * branch->nr_transitions;
 }
 
+
 static void
 read_node(struct dep_dic* ddic, struct dep_node* node, int* offset)
 {
   assert(ddic);
   assert(node);
   assert(offset);
-  
+
   int i;
   node->nr_branch = anthy_dic_ntohl(*(int*)&ddic->file_ptr[*offset]);
   *offset += sizeof(int);
-    
+
   node->branch = malloc(sizeof(struct dep_branch) * node->nr_branch);
   for (i = 0; i < node->nr_branch; ++i) {
     read_branch(ddic, &node->branch[i], offset);
@@ -299,6 +300,8 @@ anthy_get_nr_dep_rule()
 void
 anthy_get_nth_dep_rule(int index, struct wordseq_rule *rule)
 {
+  assert(rule);
+
   /* ファイル上の情報からデータを取り出す */
   struct ondisk_wordseq_rule *r = &ddic.rules[index];
   anthy_type_to_wtype (r->wt, &rule->wt);
@@ -322,4 +325,3 @@ anthy_quit_depword_tab(void)
   }
   free(ddic.nodes);
 }
-

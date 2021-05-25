@@ -82,7 +82,7 @@ alloc_char_ent(const xstr* xs, struct splitter_context *sc)
   assert(xs);
   
   int i;
- 
+
   sc->char_count = xs->len;
   if (sc->ce)
     free(sc->ce);
@@ -95,13 +95,15 @@ alloc_char_ent(const xstr* xs, struct splitter_context *sc)
     sc->ce[i].best_seg_class = SEG_HEAD;
     sc->ce[i].best_mw = NULL;
   }
- 
+
   /* 左右両端は文節の境界である */
   sc->ce[0].seg_border = 1;
   sc->ce[xs->len].seg_border = 1;
 }
 
-/*  ここで確保した内容はrelease_info_cacheで解放される 
+
+/**
+ * ここで確保した内容はrelease_info_cacheで解放される
  */
 static void
 alloc_info_cache(struct splitter_context *sc)

@@ -24,6 +24,7 @@
  */
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include <anthy/anthy.h>
 #include <anthy/dic.h>
@@ -241,7 +242,7 @@ load_word(xstr *xs, const char *n, int is_reverse)
 {
   struct seq_ent *seq = anthy_get_seq_ent_from_xstr(xs, 0);
   xstr *word_xs;
-  wtype_t wt;  
+  wtype_t wt;
   struct word_line wl;
   if (!seq || is_ext_ent(seq)) {
     seq = anthy_mem_dic_alloc_seq_ent_by_xstr(anthy_current_personal_dic_cache,
@@ -418,16 +419,25 @@ anthy_get_nth_dic_ent_freq(seq_ent_t se, int nth)
   return se->dic_ents[nth]->freq;
 }
 
+
 int
-anthy_get_nth_dic_ent_wtype (seq_ent_t se, xstr *xs, int n, wtype_t *w)
+anthy_get_nth_dic_ent_wtype(const seq_ent_t se, const xstr *xs,
+                            int n, wtype_t *w)
 {
+  assert(w);
+
   if (!se) {
     *w = anthy_wt_none;
     return -1;
   }
 
-  if (n >= se->nr_dic_ents)
-    return anthy_get_nth_dic_ent_wtype_of_ext_ent(xs, w);
+  if (n >= se->nr_dic_ents) {
+    int r;
+    r = anthy_get_nth_dic_ent_wtype_of_ext_ent(xs, w);
+    if (r == -1)
+      *w = anthy_wt_none;
+    return r;
+  }
 
   *w = se->dic_ents[n]->type;
   return 0;
@@ -743,4 +753,3 @@ anthy_quit_dic(void)
   anthy_quit_mem_dic();
   anthy_quit_diclib();
 }
-

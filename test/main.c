@@ -26,6 +26,7 @@
 
 #include <anthy/anthy.h>
 #include <anthy/convdb.h>
+#include <anthy/xstr.h>
 #include <config.h>
 
 /* Makefile の $(srcdir) (静的データファイルの基準ディレクトリ) */

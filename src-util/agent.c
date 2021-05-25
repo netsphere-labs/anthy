@@ -165,7 +165,7 @@ static struct command* command_queue;
 static int anonymous;
 static int egg;
 static const char* personality = NULL;
-int use_utf8 = 1;
+int use_utf8 = 1;  // default = UTF-8
 
 static char *
 encode_command_arg(char *a)
@@ -237,6 +237,7 @@ kill_connection(struct connection* conn)
   exit(0);
 }
 
+
 /**
  * @return a new command. Caller has to free it.
  */
@@ -253,6 +254,7 @@ make_command0(int no)
 
   return cmd;
 }
+
 
 /**
  * @return a new command. Caller has to free it.
@@ -973,6 +975,7 @@ cmd_arrow(struct anthy_input_context* ictx, struct command* cmd)
   int lr = atoi(cmd->arg[0]);
   anthy_input_move(ictx, lr);
 }
+
 
 static void
 cmd_key(struct anthy_input_context* ictx, struct command* cmd)

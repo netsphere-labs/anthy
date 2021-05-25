@@ -1,0 +1,47 @@
+# Portuguese translation of anthy's debconf messages.
+# Copyright (C) 2007 Carlos Lisboa
+# This file is distributed under the same license as the anthy package.
+# Carlos Lisboa <carloslisboa@gmail.com>, 2007, 2008.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: anthy\n"
+"Report-Msgid-Bugs-To: anthy@packages.debian.org\n"
+"POT-Creation-Date: 2008-02-12 15:54+0900\n"
+"PO-Revision-Date: 2008-02-27 23:00+0000\n"
+"Last-Translator: Carlos Lisboa <carloslisboa@gmail.com>\n"
+"Language-Team: Portuguese <traduz@debianpt.org>\n"
+"Language: pt\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:2001
+msgid "Extra dictionaries to use:"
+msgstr "Dicionários extra a utilizar:"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:2001
+msgid ""
+"The anthy package can use add-on dictionaries in addition to the system "
+"dictionary. The following are currently available:"
+msgstr ""
+"O pacote anthy pode usar dicionários 'add-on' além do dicionário do sistema. "
+"Os estão disponíveis os seguintes:"
+
+#. Type: multiselect
+#. Description
+#: ../anthy.templates:2001
+msgid ""
+" - base.t : Anthy-specific words which are compatible with cannadic;\n"
+" - extra.t: Anthy-specific words which are not compatible with cannadic;\n"
+" - 2ch.t  : Slang used in 2ch, the web's biggest Japanese discussion forum."
+msgstr ""
+" - base.t : Palavras específicas do Anthy que são compatíveis com cannadic;\n"
+" - extra.t: Palavras específicas do Anthy que são não compatíveis com "
+"cannadic;\n"
+"  - 2ch.t : Dialectos usados em 2ch, o maior fórum de discussão de japonês "
+"da web."

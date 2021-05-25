@@ -1,7 +1,7 @@
 /*
  * 文節の最小単位であるwordlistを構成する
  *
- * anthy_make_word_list_all() 
+ * anthy_make_word_list_all()
  * 文節の形式を満たす部分文字列を列挙する
  *  いくかの経路で列挙されたword_listは
  *  anthy_commit_word_listでsplitter_contextに追加される
@@ -137,7 +137,7 @@ set_features(struct word_list *wl)
 }
 
 /** 作ったword_listのスコアを計算してからコミットする */
-void 
+void
 anthy_commit_word_list(struct splitter_context *sc,
 		       struct word_list *wl)
 {
@@ -232,7 +232,7 @@ push_part_back(struct word_list *tmpl, int len,
 }
 
 /* 接尾辞をくっつける */
-static void 
+static void
 make_suc_words(struct splitter_context *sc,
 	       struct word_list *tmpl)
 {
@@ -273,19 +273,19 @@ make_suc_words(struct splitter_context *sc,
       /* 右側の文字列は付属語なので、自立語の品詞にあわせてチェック */
       struct word_list new_tmpl;
       if (core_is_num &&
-	  anthy_get_seq_ent_wtype_freq (suc, anthy_wtype_num_postfix)) {
+	  anthy_get_seq_ent_wtype_freq(suc, anthy_wtype_num_postfix)) {
 	new_tmpl = *tmpl;
 	push_part_back(&new_tmpl, i, suc, anthy_wtype_num_postfix);
 	make_following_word_list(sc, &new_tmpl);
       }
       if (core_is_name &&
-	  anthy_get_seq_ent_wtype_freq (suc, anthy_wtype_name_postfix)) {
+	  anthy_get_seq_ent_wtype_freq(suc, anthy_wtype_name_postfix)) {
 	new_tmpl = *tmpl;
 	push_part_back(&new_tmpl, i, suc, anthy_wtype_name_postfix);
 	make_following_word_list(sc, &new_tmpl);
       }
       if (core_is_sv_noun &&
-	  anthy_get_seq_ent_wtype_freq (suc, anthy_wtype_sv_postfix)) {
+	  anthy_get_seq_ent_wtype_freq(suc, anthy_wtype_sv_postfix)) {
 	new_tmpl = *tmpl;
 	push_part_back(&new_tmpl, i, suc, anthy_wtype_sv_postfix);
 	make_following_word_list(sc, &new_tmpl);
@@ -319,7 +319,7 @@ make_pre_words(struct splitter_context *sc,
     core_is_num = 1;
   }
   /* 接頭辞を列挙する */
-  for (i = 1; 
+  for (i = 1;
        i <= sc->word_split_info->rev_seq_len[tmpl->part[PART_CORE].from];
        i++) {
     seq_ent_t pre;
@@ -406,9 +406,9 @@ make_word_list(struct splitter_context *sc,
     int freq;
     anthy_get_nth_dep_rule(i, &rule);
     if (!is_compound) {
-      freq = anthy_get_seq_ent_wtype_freq (se, rule.wt);
+      freq = anthy_get_seq_ent_wtype_freq(se, rule.wt);
     } else {
-      freq = anthy_get_seq_ent_wtype_compound_freq (se, rule.wt);
+      freq = anthy_get_seq_ent_wtype_compound_freq(se, rule.wt);
     }
 
     if (freq) {

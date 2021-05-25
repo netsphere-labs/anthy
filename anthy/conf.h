@@ -1,3 +1,4 @@
+﻿// -*- coding:utf-8-with-signature -*-
 /* 設定を取得するためのインタフェース */
 #ifndef _conf_h_included_
 #define _conf_h_included_

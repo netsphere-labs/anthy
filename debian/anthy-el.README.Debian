@@ -1,0 +1,11 @@
+anthy-el for Debian
+----------------
+anthy-el is a elisp backend for Anthy. You have only to insert folloing lines
+in your ~/.emacs or ~/.xemacs/init.el
+
+(set-input-method "japanese-anthy")
+
+Anthy is Japanese input method created by Heke Project.
+
+Documentations for this package are only available in Japanese.
+ -- Masahito Omote <omote@debian.org>, Sat, 7 Oct 2006 21:36:00 +0900

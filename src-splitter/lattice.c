@@ -9,7 +9,7 @@
  * Copyright (C) 2006-2007 TABATA Yusuke
  * Copyright (C) 2004-2006 YOSHIDA Yuichi
  * Copyright (C) 2006 HANAOKA Toshiyuki
- * 
+ *
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -158,7 +158,7 @@ build_feature_list(struct lattice_node *node,
     pc = SEG_HEAD;
   }
   anthy_feature_list_set_class_trans(features, pc, cc);
-  
+
   if (node && node->mw) {
     struct meta_word *mw = node->mw;
     anthy_feature_list_set_dep_class(features, mw->dep_class);
@@ -236,7 +236,7 @@ static void
 calc_node_parameters(struct lattice_node *node)
 {
   /* 対応するmetawordが無い場合は文頭と判断する */
-  node->seg_class = node->mw ? node->mw->seg_class : SEG_HEAD; 
+  node->seg_class = node->mw ? node->mw->seg_class : SEG_HEAD;
 
   if (node->before_node) {
     /* 左に隣接するノードがある場合 */
@@ -268,7 +268,7 @@ alloc_lattice_node(struct lattice_info *info,
   return node;
 }
 
-static void 
+static void
 release_lattice_node(struct lattice_info *info, struct lattice_node* node)
 {
   anthy_sfree(info->node_allocator, node);

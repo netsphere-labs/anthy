@@ -6,11 +6,11 @@
 #include "wordborder.h"
 
 const char *seg_class_tab[] = {
-  "H",		/* Head of sentence: Buntou */
-  "T",		/* Tail of sentence: Bunmatsu */
-  "B",		/* Segment: Bunsetsu */
-  "C",		/* Setsuzokugo */
-  "Nk",		/* Meishi+Kakujoshi */
+  "H",		/* Head of sentence: 文頭 */
+  "T",		/* Tail of sentence: 文末 */
+  "B",		/* Segment: 文節 */
+  "C",		/* Setsuzokugo 接続語 */
+  "Nk",		/* Meishi+Kakujoshi 名詞+格助詞 */
   "Ne",		/* Meishi+Shuutan */
   "Vf",		/* Doushi+Fuzokugo */
   "Ve",		/* Doushi+Shuutan */

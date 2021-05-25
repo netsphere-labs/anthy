@@ -1,0 +1,27 @@
+#!/usr/bin/make -f
+# Uncomment this to turn on verbose mode.
+# export DH_VERBOSE=1
+
+export DEB_BUILD_MAINT_OPTIONS = hardening=+all
+DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+
+%:
+	dh $@ --parallel --with autotools-dev
+
+override_dh_auto_configure:
+	dh_autoreconf
+	dh_auto_configure -- --sysconfdir=/etc/anthy
+
+override_dh_clean:
+	debconf-updatepo
+	dh_clean -Xalt-cannadic/Makefile.orig
+
+override_dh_install:
+#	cd  $(CURDIR)/nokuno-dictionary-20120103-dfsg && \
+	for i in wikipedia social-ime ; do iconv -f UTF-8 -t EUC-JP $$i -c -o $$i.ctd; done
+	dh_install
+
+override_dh_builddeb:
+	dh_builddeb -Nanthy-common
+# it reduces anthy-common's size
+	dh_builddeb -panthy-common -- -Zxz

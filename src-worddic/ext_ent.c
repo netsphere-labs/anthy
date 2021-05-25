@@ -28,6 +28,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
 
 #include <anthy/anthy.h> /* for ANTHY_*_ENCODING */
 #include <anthy/conf.h>
@@ -66,7 +67,7 @@ pushback_place_name(struct zipcode_line *zl, char *pn)
 
 /*
  * This comment is written by NIIBE Yutaka -- 2010-05-17
- * 
+ *
  * XXX: The implementation of search_zipcode_dict is quite bad.
  * XXX: Every call of search_zipcode_dict opens/parse the file, amazing...
  *
@@ -117,7 +118,7 @@ search_zipcode_dict(struct zipcode_line *zl, xstr* xs)
   if (!fp) {
     return ;
   }
-  
+
   /* 半角、全角を吸収する */
   temp = anthy_xstr_wide_num_to_num(xs);
   index = anthy_xstr_to_cstr(temp, ANTHY_UTF8_ENCODING);
@@ -461,7 +462,7 @@ int
 anthy_get_ext_seq_ent_ct(struct seq_ent *se, int pos, int ct)
 {
   if (anthy_get_ext_seq_ent_pos(se, pos) && ct == CT_NONE) {
-    /* 品詞が合っていてかつ無活用の場合 
+    /* 品詞が合っていてかつ無活用の場合
        (ext_entは活用しない) */
     return 10;
   }
@@ -514,16 +515,23 @@ anthy_get_ext_seq_ent_from_xstr(xstr *x, int is_reverse)
   return 0;
 }
 
+
+/**
+ * xs の type から品詞 wt に格納する
+ * @return 正常のとき0. 不明のとき -1.
+ */
 int
-anthy_get_nth_dic_ent_wtype_of_ext_ent (xstr *xs, wtype_t *wt)
+anthy_get_nth_dic_ent_wtype_of_ext_ent(const xstr* xs, wtype_t *wt)
 {
+  assert(wt);
   int type = anthy_get_xstr_type(xs);
 
   if (type & (XCT_NUM | XCT_WIDENUM)) {
-    *wt = anthy_wtype_num_noun;
+    *wt = anthy_wtype_num_noun; // #NN "数詞"
     return 0;
-  } else if (type & XCT_KATA) {
-    *wt = anthy_wtype_noun;
+  }
+  else if (type & XCT_KATA) {
+    *wt = anthy_wtype_noun; // #T "名詞35"
     return 0;
   }
 
