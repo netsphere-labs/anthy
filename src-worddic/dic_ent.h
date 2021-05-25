@@ -47,7 +47,7 @@ void anthy_init_ext_ent(void);
 /**/
 int anthy_get_nr_dic_ents_of_ext_ent(struct seq_ent *se,xstr *xs);
 int anthy_get_nth_dic_ent_str_of_ext_ent(seq_ent_t ,xstr *,int ,xstr *);
-int anthy_get_nth_dic_ent_wtype_of_ext_ent(xstr *,int ,wtype_t *);
+int anthy_get_nth_dic_ent_wtype_of_ext_ent(const xstr* xs, wtype_t* wt);
 int anthy_get_nth_dic_ent_freq_of_ext_ent(struct seq_ent *se, int nth);
 int anthy_get_ext_seq_ent_wtype(struct seq_ent *, wtype_t );
 seq_ent_t anthy_get_ext_seq_ent_from_xstr(xstr *x, int is_reverse);

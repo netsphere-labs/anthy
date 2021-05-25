@@ -47,6 +47,22 @@ static struct wttable wt_name_tab[]= {
 #include "wtab.h"
 };
 
+
+static wtype_t
+anthy_get_wtype(int pos, int cos, int scos, int cc, int ct, int wf)
+{
+  wtype_t w;
+
+  w.pos = pos;
+  w.cos = cos;
+  w.scos = scos;
+  w.cc = cc;
+  w.ct = ct;
+  w.wf = wf;
+
+  return w;
+}
+
 static struct wttable *
 find_wttab(struct wttable *array, const char *name)
 {
@@ -276,17 +292,3 @@ anthy_get_wtype_with_ct(wtype_t base, int ct)
   return w;
 }
 
-wtype_t
-anthy_get_wtype(int pos, int cos, int scos, int cc, int ct, int wf)
-{
-  wtype_t w;
-
-  w.pos = pos;
-  w.cos = cos;
-  w.scos = scos;
-  w.cc = cc;
-  w.ct = ct;
-  w.wf = wf;
-
-  return w;
-}

@@ -88,7 +88,7 @@ char * エンコードにはEUC-JPを利用する。
  設定構造体を解放する。この設定を共有する全ての入力コンテキ
  ストを事前に解放する事。
 
- anthy_input_set_personality(char *personality);
+ anthy_input_set_personality(const char* personality);
  引数: personality パーソナリティの名前
  返り値: 無し
 

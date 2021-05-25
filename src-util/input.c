@@ -6,18 +6,20 @@
  * Funded by IPA未踏ソフトウェア創造事業 2002 1/23
  * Copyright (C) 2001-2002 UGAWA Tomoharu
  *
- * $Id: input.c,v 1.25 2002/11/16 03:35:21 yusuke Exp $
- *
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
-#include <sys/time.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <string.h>
 #include <assert.h>
+#ifndef _WIN32
+  #include <sys/time.h>
+  #include <unistd.h>
+#else
+  #define strdup _strdup
+#endif
 
 #include <anthy/anthy.h>
 #include <anthy/input.h>
@@ -34,7 +36,10 @@ struct anthy_input_context {
   int map_no;  /* RKMAP_* */
   /* 変換する文字列のバッファ*/
   char* hbuf;
+
+  // hbuf 内の有効なバイト数.
   int n_hbuf;
+
   int s_hbuf;
   char* hbuf_follow;
   int n_hbuf_follow;
@@ -92,9 +97,17 @@ struct a_segment {
   struct a_segment* next, * prev;
 };
 
+
+/**
+ * *buf を, 少なくとも to_size の大きさを持つように拡張する.
+ * @return 成功したら0, 失敗は -1
+ */
 static int
 ensure_buffer(char** buf, int* size, int to_size)
 {
+  assert(buf);
+  assert(size);
+
   if (*size < to_size) {
     *buf = (char*) realloc(*buf, to_size);
     if (*buf == NULL) {
@@ -316,6 +329,11 @@ cmdh_map_select(struct anthy_input_context* ictx, int map)
   return 0;
 }
 
+
+/**
+ * @return a new segment. The caller has to free it by
+ *         anthy_input_free_segment().
+ */
 static struct anthy_input_segment*
 cmdh_get_candidate(struct anthy_input_context* ictx, int cand_no)
 {
@@ -331,7 +349,10 @@ cmdh_get_candidate(struct anthy_input_context* ictx, int cand_no)
   ictx->last_gotten_cand = cand_no;
 
   seg = (struct anthy_input_segment*)
-    malloc(sizeof(struct anthy_input_segment));
+        malloc(sizeof(struct anthy_input_segment));
+  if (!seg)
+    return NULL;
+
   len = anthy_get_segment(ictx->actx, cs->index, cand_no, NULL, 0);
   seg->str = (char*) malloc(len + 1);
   anthy_get_segment(ictx->actx, cs->index, cand_no, seg->str, len + 1);
@@ -773,6 +794,9 @@ anthy_input_create_context(struct anthy_input_config* cfg)
 
   ictx =
     (struct anthy_input_context*) malloc(sizeof(struct anthy_input_context));
+  if (!ictx)
+    return NULL;
+
   ictx->state = ANTHY_INPUT_ST_NONE;
   ictx->rkctx = rk_context_create(cfg->break_into_roman);
   for (i = 0; i < NR_RKMAP; i++)
@@ -842,8 +866,10 @@ anthy_input_free_preedit(struct anthy_input_preedit* pedit)
 void
 anthy_input_free_segment(struct anthy_input_segment* seg)
 {
-  free(seg->str);
-  free(seg);
+  if (seg) {
+    free(seg->str);
+    free(seg);
+  }
 }
 
 void
@@ -1180,6 +1206,9 @@ alloc_segment(int flag, int len, int noconv_len)
   struct anthy_input_segment *seg;
   seg = (struct anthy_input_segment*)
     malloc(sizeof(struct anthy_input_segment));
+  if (!seg)
+    return NULL;
+
   seg->flag = flag;
   seg->cand_no = -1;
   seg->nr_cand = -1;
@@ -1253,6 +1282,8 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
 
   pedit = (struct anthy_input_preedit*)
     malloc(sizeof(struct anthy_input_preedit));
+  if (!pedit)
+    return NULL;
 
   pedit->state = ictx->state;
 
@@ -1490,6 +1521,8 @@ anthy_input_create_config(void)
   struct anthy_input_config* cfg;
 
   cfg = (struct anthy_input_config*) malloc(sizeof(struct anthy_input_config));
+  if (!cfg)
+    return NULL;
 
   cfg->rk_option = anthy_input_create_rk_option();
   cfg->break_into_roman = 0;

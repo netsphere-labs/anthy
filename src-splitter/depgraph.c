@@ -19,13 +19,17 @@
  * Copyright (C) 2000-2007 TABATA Yusuke
  * Copyright (C) 2006 YOSHIDA Yuichi
  */
+
+#ifndef _MSC_VER
+  #include <config.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
-#include "config.h"
 #include <anthy/anthy.h>
-
 #include <anthy/conf.h>
 #include <anthy/ruleparser.h>
 #include <anthy/xstr.h>
@@ -243,9 +247,14 @@ read_branch(struct dep_dic* ddic, struct dep_branch* branch, int* offset)
   *offset += sizeof(struct dep_transition) * branch->nr_transitions;
 }
 
+
 static void
 read_node(struct dep_dic* ddic, struct dep_node* node, int* offset)
 {
+  assert(ddic);
+  assert(node);
+  assert(offset);
+  
   int i;
   node->nr_branch = anthy_dic_ntohl(*(int*)&ddic->file_ptr[*offset]);
   *offset += sizeof(int);
@@ -292,10 +301,12 @@ anthy_get_nr_dep_rule()
 void
 anthy_get_nth_dep_rule(int index, struct wordseq_rule *rule)
 {
+  assert(rule);
+
   /* ファイル上の情報からデータを取り出す */
   struct ondisk_wordseq_rule *r = &ddic.rules[index];
   rule->wt = anthy_get_wtype(r->wt[0], r->wt[1], r->wt[2],
-			     r->wt[3], r->wt[4], r->wt[5]);
+			     r->wt[3], r->wt[4], r->wt[5]); ●このコードは正しい?
   rule->node_id = anthy_dic_ntohl(r->node_id);
 }
 

@@ -65,7 +65,7 @@ char * デフォルトではエンコードにはEUC-JPを利用する。
  *anthy_initの前に呼ぶことによって、動作を変えることもできる。
 
 
- int anthy_set_personality(char *id);
+ int anthy_set_personality(const char* id);
  引数: var 変数名
  返り値: 成功時には0、失敗時には-1
  *カレントpersonalityを変更する。最初にcontextを作成するまでに

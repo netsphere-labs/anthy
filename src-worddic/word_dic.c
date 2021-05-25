@@ -24,6 +24,7 @@
  */
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include <anthy/anthy.h>
 #include <anthy/dic.h>
@@ -421,24 +422,27 @@ anthy_get_nth_dic_ent_freq(seq_ent_t se, int nth)
   return s->dic_ents[nth]->freq;
 }
 
+
 int
-anthy_get_nth_dic_ent_wtype(seq_ent_t se, xstr *xs,
-			    int n, wtype_t *w)
+anthy_get_nth_dic_ent_wtype(const seq_ent_t se, const xstr *xs,
+                            int n, wtype_t *w)
 {
-  struct seq_ent *s = se;
-  if (!s) {
+  assert(w);
+
+  if (!se) {
     *w = anthy_wt_none;
     return -1;
   }
-  if (s->nr_dic_ents <= n) {
+  
+  if (se->nr_dic_ents <= n) {
     int r;
-    r = anthy_get_nth_dic_ent_wtype_of_ext_ent(xs, n - s->nr_dic_ents, w);
-    if (r == -1) {
+    r = anthy_get_nth_dic_ent_wtype_of_ext_ent(xs, w);
+    if (r == -1)
       *w = anthy_wt_none;
-    }
     return r;
   }
-  *w =  s->dic_ents[n]->type;
+
+  *w =  se->dic_ents[n]->type;
   return 0;
 }
 

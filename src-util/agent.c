@@ -146,12 +146,14 @@ static struct command* command_queue;
 static int daemon_sock = -1;
 static int anonymous;
 static int egg;
-static char *personality;
-int use_utf8;
+static const char* personality = NULL;
+int use_utf8 = 1;  // default = UTF-8
 
 static char *
 encode_command_arg(char *a)
 {
+  assert(a);
+
   int i, j, len;
   char *s;
 
@@ -217,6 +219,10 @@ kill_connection(struct connection* conn)
   exit(0);
 }
 
+
+/**
+ * @return a new command. Caller has to free it.
+ */
 static struct command *
 make_command0(int no)
 {
@@ -231,6 +237,10 @@ make_command0(int no)
   return cmd;
 }
 
+
+/**
+ * @return a new command. Caller has to free it.
+ */
 static struct command *
 make_command1(int no, const char* arg1)
 {
@@ -948,9 +958,11 @@ cmd_arrow(struct anthy_input_context* ictx, struct command* cmd)
   anthy_input_move(ictx, lr);
 }
 
+
 static void
 cmd_key(struct anthy_input_context* ictx, struct command* cmd)
 {
+  assert(cmd);
   anthy_input_str(ictx, cmd->arg[0]);
 }
 
@@ -961,6 +973,8 @@ static void
 dispatch_command(struct anthy_input_context* ictx,
 		 struct command* cmd)
 {
+  assert(cmd);
+
   switch (cmd->cmd) {
   case CMDH_IGNORE_ICTXT:
     send_error();
@@ -1080,7 +1094,6 @@ parse_args(int argc, char **argv)
   int i;
   char *conffile = NULL, *dir = NULL, *dic = NULL;
 
-
   for (i = 1; i < argc; i++) {
     char *str = argv[i];
     if (!strcmp("--version", str)) {
@@ -1091,8 +1104,8 @@ parse_args(int argc, char **argv)
       egg = 1;
     } else if (!strncmp("--personality=", str, 14)) {
       personality = &str[14];
-    } else if (!strcmp("--utf8", str)) {
-      use_utf8 = 1;
+    } else if (!strcmp("--euc", str)) {
+      use_utf8 = 0;
     } else if (i < argc - 1) {
       char *arg = argv[i+1];
       if (!strcmp("--dir", str)) {

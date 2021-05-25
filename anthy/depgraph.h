@@ -49,7 +49,7 @@ struct wordseq_rule {
 struct ondisk_wordseq_rule {
   char wt[8];
   /* ネットワークバイトオーダー */
-  int node_id;
+  uint32_t node_id;
 };
 
 /* 付属語グラフ */

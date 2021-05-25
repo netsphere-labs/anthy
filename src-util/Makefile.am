@@ -1,4 +1,3 @@
-## $Id: Makefile.am,v 1.10 2002/08/08 07:20:45 gniibe Exp $
 
 SUBDIRS =
 

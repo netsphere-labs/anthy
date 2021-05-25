@@ -11,14 +11,17 @@
  * Copyright (C) 2004-2006 YOSHIDA Yuichi
  * Copyright (C) 2000-2003 UGAWA Tomoharu
  *
- * $Id: wordlist.c,v 1.50 2002/11/17 14:45:47 yusuke Exp $
- *
  */
 
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <arpa/inet.h>
+#ifndef _WIN32
+  #include <arpa/inet.h>
+#else
+  #define STRICT 1
+  #include <winsock2.h>
+#endif
 
 #include <anthy/alloc.h>
 #include <anthy/record.h>
@@ -34,6 +37,15 @@
 #define HF_THRESH 784
 
 static void *weak_word_array;
+
+static wtype_t anthy_wtype_name_noun;
+#if 0
+static wtype_t anthy_wtype_prefix;
+#endif
+static wtype_t anthy_wtype_num_prefix;
+static wtype_t anthy_wtype_num_postfix;
+static wtype_t anthy_wtype_name_postfix;
+static wtype_t anthy_wtype_sv_postfix;
 
 /* デバッグ用 */
 void

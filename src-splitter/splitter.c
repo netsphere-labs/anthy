@@ -14,7 +14,6 @@
  * Copyright (C) 2000-2004 TABATA Yusuke
  * Copyright (C) 2000-2001 UGAWA Tomoharu
  *
- * $Id: splitter.c,v 1.48 2002/11/18 11:39:18 yusuke Exp $
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -31,8 +30,15 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
+#ifdef _MSC_VER
+  #include <malloc.h> // alloca
+#endif
 
 #include <anthy/alloc.h>
 #include <anthy/record.h>
@@ -86,11 +92,16 @@ metaword_dtor(void *p)
 
 
 static void
-alloc_char_ent(xstr *xs, struct splitter_context *sc)
+alloc_char_ent(const xstr* xs, struct splitter_context *sc)
 {
+  assert(sc);
+  assert(xs);
+  
   int i;
 
   sc->char_count = xs->len;
+  if (sc->ce)
+    free(sc->ce);
   sc->ce = (struct char_ent*)
     malloc(sizeof(struct char_ent)*(xs->len + 1));
   for (i = 0; i <= xs->len; i++) {
@@ -106,7 +117,9 @@ alloc_char_ent(xstr *xs, struct splitter_context *sc)
   sc->ce[xs->len].seg_border = 1;
 }
 
-/*  ここで確保した内容はrelease_info_cacheで解放される
+
+/**
+ * ここで確保した内容はrelease_info_cacheで解放される
  */
 static void
 alloc_info_cache(struct splitter_context *sc)
@@ -268,7 +281,7 @@ anthy_release_split_context(struct splitter_context *sc)
   }
   if (sc->ce) {
     free(sc->ce);
-    sc->ce = 0;
+    sc->ce = NULL;
   }
 }
 

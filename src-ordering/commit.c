@@ -6,6 +6,9 @@
  */
 #include <stdlib.h>
 #include <time.h>
+#ifdef _MSC_VER
+  #include <malloc.h> // alloca
+#endif
 
 #include <anthy/ordering.h>
 #include <anthy/record.h>
@@ -36,11 +39,11 @@ learn_swapped_candidates(struct segment_list *sl)
   anthy_cand_swap_ageup();
 }
 
+
 /* 長さが変わった文節の変更後に対して */
 static void
 learn_resized_segment(struct splitter_context *sc,
 		      struct segment_list *sl)
-
 {
   int i;
   struct meta_word **mw

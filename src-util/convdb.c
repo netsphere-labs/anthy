@@ -3,9 +3,15 @@
  * layer violationを放置している。
  *
  */
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#ifdef _MSC_VER
+  #define strdup _strdup
+#endif
 
 #include <anthy/anthy.h>
 #include <anthy/convdb.h>

@@ -22,9 +22,14 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <assert.h>
+
 #include <anthy/anthy.h> /* for ANTHY_*_ENCODING */
 #include <anthy/conf.h>
 #include <anthy/xstr.h>
@@ -503,22 +508,27 @@ anthy_get_ext_seq_ent_from_xstr(xstr *x, int is_reverse)
   return 0;
 }
 
+
+/**
+ * xs の type から品詞 wt に格納する
+ * @return 正常のとき0. 不明のとき -1.
+ */
 int
-anthy_get_nth_dic_ent_wtype_of_ext_ent(xstr *xs, int nth,
-				       wtype_t *wt)
+anthy_get_nth_dic_ent_wtype_of_ext_ent(const xstr* xs, wtype_t* wt)
 {
-  int type;
-  (void)nth;
-  type = anthy_get_xstr_type(xs);
+  assert(wt);
+  int type = anthy_get_xstr_type(xs);
+
   if (type & (XCT_NUM | XCT_WIDENUM)) {
-    *wt = wt_num;
+    *wt = anthy_wtype_num_noun; // #NN "数詞"
     return 0;
   }
-  if (type & XCT_KATA) {
-    *wt = anthy_get_wtype(POS_NOUN, COS_NONE, SCOS_NONE, CC_NONE,
-			  CT_NONE, WF_INDEP);
+  else if (type & XCT_KATA) {
+    *wt = anthy_wtype_noun; // #T "名詞35"
     return 0;
   }
+
+  *wt = anthy_wt_none;
   return -1;
 }
 
