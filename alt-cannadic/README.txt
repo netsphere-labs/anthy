@@ -8,11 +8,11 @@
 Anthy、Canna 用の自家製変換辞書です。
 cannadic-0.95c をベースに、大幅に手を加えてあります。
 
-エントリ数 (2009/12/30)
-Canna         : 247,869
-Anthy all     : 270,531
-      (main)  : 244,294
-      (extra) :  26,237
+エントリ数 (2011/2/8)
+Canna         : 260,087
+Anthy all     : 284,319
+      (main)  : 256,241
+      (extra) :  28,078
 
 ※変換精度の確認は Anthy で行い、Canna では行っていません。
 
@@ -54,23 +54,6 @@ anthy/
   以下のファイルは anthy のものと置き換えて使います。
   mkworddic/compound.t     複合語辞書(修正版)
   mkworddic/extra.t        anthy 独自の品詞コードのもの
-  mkworddic/dict.args.in   どの辞書を読み込むかの設定
-  calctrans/corpus_info    コーパスパラメータ
-  calctrans/weak_words     コーパスパラメータ
-
-./prepare.sh は、このパッケージ内の辞書を使って anthy をビルド
-  するための準備をするスクリプトです。
-  単に、anthy/ 以下にあるファイルをオリジナルのものと置き換えて
-  るだけです。
-  以下のような感じで使います:
-
-  $ tar xzf anthy-9100h.tar.gz
-  $ tar xjf alt-cannadic-091230.tar.bz2
-  $ cd alt-cannadic-091230/
-  $ ./prepare.sh
-  $ cd ../anthy-9100h/
-  $ ./configure && make
-  ...
 
 [ 使い方 ]
 
@@ -98,7 +81,7 @@ http://sourceforge.jp/projects/alt-cannadic/wiki/
 
 
 ○ほぼ全品詞を強化。主なものは以下
-   ・敬語丁寧語表現強化(「お〜」「ご〜」、時候挨拶等。まだ
+   ・敬語丁寧語表現強化(「お～」「ご～」、時候挨拶等。まだ
      まだ十分とは言えない)
    ・ことわざ、慣用表現強化
    ・動詞、形容詞の整備(誤りの修正や表記の整備)。
@@ -122,7 +105,7 @@ http://sourceforge.jp/projects/alt-cannadic/wiki/
    誤りは残っている。特に普通名詞あたりは伏魔殿。また、私が
    新たに入れてしまった誤りもあるかと思います)
  ・頻度の調整(まだまだ見てない部分が殆ど)
- ・「N2〜」「D2〜」のタイプのものは、「ありえない候補を作
+ ・「N2～」「D2～」のタイプのものは、「ありえない候補を作
    ってしまう」「その場合、区切り直さなければ出したいものが
    出せない」というデメリットの方が大きいと思われるので、
    今のところほぼ外してある → 必要そうなものは戻したが、
@@ -175,6 +158,7 @@ http://sourceforge.jp/projects/alt-cannadic/wiki/
   Tonibi_ko さん
   x さん
   TAKADA Yoshihito さん
+  Iida Masanari さん
 
 [ 連絡先 ]
 何かありましたら下記まで。

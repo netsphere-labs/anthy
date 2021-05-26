@@ -1,3 +1,4 @@
+;; -*- coding:utf-8 -*-
 ;; anthy-dic.el -- Anthy
 
 ;; Copyright (C) 2001 - 2005

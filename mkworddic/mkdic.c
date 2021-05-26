@@ -960,8 +960,9 @@ read_dict_file(struct mkdic_stat *mds, const char *fn)
     printf("file = %s\n", fn);
     parse_dict_file(fp, mds);
     fclose(fp);
-  } else {
-    printf("failed file = %s\n", fn);
+  }
+  else {
+    printf("failed to open file = %s\n", fn);
     abort(); // debug
   }
 }

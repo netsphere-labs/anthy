@@ -76,9 +76,11 @@ void anthy_init_private_dic(const char *id);
 void anthy_copy_words_from_private_dic(struct seq_ent *seq, xstr *xs,
 				       int is_reverse);
 void anthy_release_private_dic(void);
+const char *anthy_get_user_dir(int is_old);
 void anthy_check_user_dir(void);
 void anthy_priv_dic_lock(void);
 void anthy_priv_dic_unlock(void);
+void anthy_priv_dic_update(void);
 struct word_line {
   char wt[10];
   int freq;

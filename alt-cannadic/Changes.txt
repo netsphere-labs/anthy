@@ -1,5 +1,18 @@
 [ 履歴 ]
 
+2011/02/08
+ * 新語追加&誤登録修正(G-HAL さん、Iida さん)
+ * anthy/mkworddic/zipcode.t: 別にしたので削除
+ * 以下のファイルを削除
+   - anthy/mkworddic/dict.args.in
+   - anthy/calctrans/
+   - prepare.sh
+
+Canna         : 260,087
+Anthy all     : 284,319
+      (main)  : 256,241
+      (extra) :  28,078
+
 2009/12/30
  * 新語追加&誤登録修正
  * anthy/mkworddic/zipcode.t: 新規追加

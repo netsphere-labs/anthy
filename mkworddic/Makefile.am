@@ -14,7 +14,7 @@ EXTRA_DIST = \
  udict dict.args.in
 
 # Files, to build dictionay, not to pack sources.
-DIC_FILES = @top_srcdir@/alt-cannadic/gcanna.t \
+DIC_FILES = @top_srcdir@/alt-cannadic/gcanna.ctd \
 	    @top_srcdir@/alt-cannadic/gcannaf.ctd \
 	    @top_srcdir@/alt-cannadic/gtankan.ctd \
 	    @top_srcdir@/mkworddic/adjust.t \

@@ -1,3 +1,4 @@
+;; -*- coding:utf-8 -*-
 ;; anthy-isearch.el -- Anthy
 
 ;; Copyright (C) 2003
