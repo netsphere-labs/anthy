@@ -1,3 +1,4 @@
+;; -*- coding:utf-8 -*-
 ;; anthy-dic.el -- Anthy
 
 ;; Copyright (C) 2001 - 2005
@@ -11,7 +12,7 @@
 ;; tooo experimental
 ;;
 ;;
-;; Funded by IPA$BL$F'%=%U%H%&%'%"AOB$;v6H(B 2001 11/10
+;; Funded by IPA未踏ソフトウェア創造事業 2001 11/10
 
 ;;; Code
 (defvar anthy-dic-util-command "anthy-dic-tool")
@@ -54,44 +55,44 @@
 
 (defun anthy-dic-get-noun-category (word)
   (let
-      ((res '(("$BIJ;l(B" "$BL>;l(B")))
-       (na (y-or-n-p (concat "$B!V(B" word "$B$J!W$H8@$$$^$9$+(B? ")))
-       (sa (y-or-n-p (concat "$B!V(B" word "$B$5!W$H8@$$$^$9$+(B? ")))
-       (suru (y-or-n-p (concat "$B!V(B" word "$B$9$k!W$H8@$$$^$9$+(B? ")))
-       (ind (y-or-n-p (concat "$B!V(B" word "$B!W$OC1FH$GJ8@a$K$J$j$^$9$+(B? ")))
-       (kaku (y-or-n-p (concat "$B!V(B" word "$B$H!W$H8@$$$^$9$+(B? "))))
-    (setq res (cons `("$B$J@\B3(B" ,na) res))
-    (setq res (cons `("$B$5@\B3(B" ,sa) res))
-    (setq res (cons `("$B$9$k@\B3(B" ,suru) res))
-    (setq res (cons `("$B8l44$N$_$GJ8@a(B" ,ind) res))
-    (setq res (cons `("$B3J=u;l@\B3(B" ,kaku) res))
+      ((res '(("品詞" "名詞")))
+       (na (y-or-n-p (concat "「" word "な」と言いますか? ")))
+       (sa (y-or-n-p (concat "「" word "さ」と言いますか? ")))
+       (suru (y-or-n-p (concat "「" word "する」と言いますか? ")))
+       (ind (y-or-n-p (concat "「" word "」は単独で文節になりますか? ")))
+       (kaku (y-or-n-p (concat "「" word "と」と言いますか? "))))
+    (setq res (cons `("な接続" ,na) res))
+    (setq res (cons `("さ接続" ,sa) res))
+    (setq res (cons `("する接続" ,suru) res))
+    (setq res (cons `("語幹のみで文節" ,ind) res))
+    (setq res (cons `("格助詞接続" ,kaku) res))
     res))
 
 (defun anthy-dic-get-special-noun-category (word)
   (let 
       ((res '())
        (cat (string-to-int
-	     (read-from-minibuffer "1:$B?ML>(B 2:$BCOL>(B: "))))
+	     (read-from-minibuffer "1:人名 2:地名: "))))
     (cond ((= cat 1)
-	   (setq res '(("$BIJ;l(B" "$B?ML>(B"))))
+	   (setq res '(("品詞" "人名"))))
 	  ((= cat 2)
-	   (setq res '(("$BIJ;l(B" "$BCOL>(B")))))
+	   (setq res '(("品詞" "地名")))))
     res))
 
 (defun anthy-dic-get-adjective-category (word)
-  '(("$BIJ;l(B" "$B7AMF;l(B")))
+  '(("品詞" "形容詞")))
 
 (defun anthy-dic-get-av-category (word)
   (let
-      ((res '(("$BIJ;l(B" "$BI{;l(B")))
-       (to (y-or-n-p (concat "$B!V(B" word "$B$H!W$H8@$$$^$9$+(B?")))
-       (taru (y-or-n-p (concat "$B!V(B" word "$B$?$k!W$H8@$$$^$9$+(B?")))
-       (suru (y-or-n-p (concat "$B!V(B" word "$B$9$k!W$H8@$$$^$9$+(B?")))
-       (ind (y-or-n-p (concat "$B!V(B" word "$B!W$OC1FH$GJ8@a$K$J$j$^$9$+(B?"))))
-    (setq res (cons `("$B$H@\B3(B" ,to) res))
-    (setq res (cons `("$B$?$k@\B3(B" ,taru) res))
-    (setq res (cons `("$B$9$k@\B3(B" ,suru) res))
-    (setq res (cons `("$B8l44$N$_$GJ8@a(B" ,ind) res))
+      ((res '(("品詞" "副詞")))
+       (to (y-or-n-p (concat "「" word "と」と言いますか?")))
+       (taru (y-or-n-p (concat "「" word "たる」と言いますか?")))
+       (suru (y-or-n-p (concat "「" word "する」と言いますか?")))
+       (ind (y-or-n-p (concat "「" word "」は単独で文節になりますか?"))))
+    (setq res (cons `("と接続" ,to) res))
+    (setq res (cons `("たる接続" ,taru) res))
+    (setq res (cons `("する接続" ,suru) res))
+    (setq res (cons `("語幹のみで文節" ,ind) res))
     res))
 
 ;; taken from tooltip.el
@@ -111,11 +112,11 @@
 	       ""))
        yomi cat)
     (and (string= word "")
-	 (setq word (read-from-minibuffer "$BC18l(B($B8l44$N$_(B): ")))
-    (setq yomi (read-from-minibuffer (concat "$BFI$_(B (" word "): ")))
+	 (setq word (read-from-minibuffer "単語(語幹のみ): ")))
+    (setq yomi (read-from-minibuffer (concat "読み (" word "): ")))
     (setq cat (string-to-int
 	       (read-from-minibuffer
-		"$B%+%F%4%j!<(B 1:$B0lHLL>;l(B 2:$B$=$NB>$NL>;l(B 3:$B7AMF;l(B 4:$BI{;l(B: ")))
+		"カテゴリー 1:一般名詞 2:その他の名詞 3:形容詞 4:副詞: ")))
     (cond ((= cat 1)
 	   (setq param (anthy-dic-get-noun-category word)))
 	  ((= cat 2)
@@ -127,6 +128,6 @@
     (if param
 	(setq res (anthy-add-word yomi 1 word param)))
     (if res
-	(message (concat word "(" yomi ")$B$rEPO?$7$^$7$?(B")))))
+	(message (concat word "(" yomi ")を登録しました")))))
 
 (provide 'anthy-dic)

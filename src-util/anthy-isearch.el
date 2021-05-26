@@ -1,3 +1,4 @@
+;; -*- coding:utf-8 -*-
 ;; anthy-isearch.el -- Anthy
 
 ;; Copyright (C) 2003
@@ -15,20 +16,20 @@
 
 (defvar anthy-isearch-mode-map nil)
 
-;; $B8!:wBP>]$NJ8;zNs$H%W%j%(%G%#%C%H$rF~$l$k%P%C%U%!(B
+;; 検索対象の文字列とプリエディットを入れるバッファ
 (defconst anthy-isearch-working-buffer " *anthy-isearch*")
 
-;; $B8!:wBP>]$NJ8;zNs$r<hF@$9$k(B
+;; 検索対象の文字列を取得する
 (defun anthy-isearch-search-string ()
   (with-current-buffer (get-buffer-create anthy-isearch-working-buffer)
     (if (string-equal anthy-preedit "")
-	;; $B%W%j%(%G%#%C%H$,L5$$;~$O(B
+	;; プリエディットが無い時は
 	(buffer-string)
       (save-restriction
 	(narrow-to-region (point-min) anthy-preedit-start)
 	(buffer-string)))))
 
-;; $B8!:wBP>]$NJ8;zNs(B + $BF~NOESCf$NJ8;zNs(B
+;; 検索対象の文字列 + 入力途中の文字列
 (defun anthy-isearch-search-message ()
   (with-current-buffer (get-buffer-create anthy-isearch-working-buffer)
     (buffer-string)))
@@ -82,7 +83,7 @@
     map))
 
 (defun anthy-isearch-mode-setup ()
-  ;; $B:G=i$O%-!<%^%C%W$r=`Hw$9$k(B
+  ;; 最初はキーマップを準備する
   (or (keymapp anthy-isearch-mode-map)
       (setq anthy-isearch-mode-map
 	    (anthy-isearch-setup-keymap (copy-keymap isearch-mode-map))))
