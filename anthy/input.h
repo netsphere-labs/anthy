@@ -3,7 +3,7 @@
  *
  * Funded by IPA未踏ソフトウェア創造事業 2001
  *
- * Comments are in Japanese(UTF-8)
+ * Comments are in Japanese (UTF-8)
  * doc/ILIB 参照
  */
 

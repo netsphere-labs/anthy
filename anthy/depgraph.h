@@ -2,6 +2,7 @@
 #ifndef _depgraph_h_included_
 #define _depgraph_h_included_
 
+#include <stdint.h>
 #include <anthy/segclass.h>
 #include <anthy/wtype.h>
 

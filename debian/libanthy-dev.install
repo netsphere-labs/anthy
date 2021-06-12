@@ -1,6 +1,0 @@
-anthy/xstr.h                    usr/include/anthy/
-anthy/wtype.h                   usr/include/anthy/
-usr/include/anthy/*.h		usr/include/anthy/
-usr/lib/*/libanthy*.a
-usr/lib/*/pkgconfig/anthy.pc
-usr/lib/*/lib*.so	

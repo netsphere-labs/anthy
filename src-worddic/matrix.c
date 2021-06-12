@@ -268,6 +268,7 @@ sparse_array_get(struct sparse_array *s, int index, struct array_elm *arg)
   }
 }
 
+/* Orphan function */
 #if 0
 static int
 sparse_array_get_int(struct sparse_array *s, int index)
@@ -279,6 +280,7 @@ sparse_array_get_int(struct sparse_array *s, int index)
   return 0;
 }
 #endif
+
 
 static void *
 sparse_array_get_ptr(struct sparse_array *s, int index)

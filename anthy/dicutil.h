@@ -38,6 +38,10 @@ char *anthy_priv_dic_get_word(char *buf, int len);
 int anthy_priv_dic_add_entry(const char *yomi, const char *word,
 			     const char *wt, int freq);
 
+/* experimental and unstable /usr/share/dict/wordsから単語を探す */
+#define HAS_ANTHY_DIC_SEARCH_WORDS_FILE
+char *anthy_dic_search_words_file(const char *word);
+
 #ifdef __cplusplus
 }
 #endif
