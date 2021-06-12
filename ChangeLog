@@ -1,0 +1,11 @@
+ChangeLog is only in releases
+=============================
+
+We do not modify the ChangeLog file, but we record our changes as
+comment in GIT commits.  The ChangeLog file is is generated from GIT
+commits on release.
+
+Local Variables:
+buffer-read-only: t
+mode: text
+End:

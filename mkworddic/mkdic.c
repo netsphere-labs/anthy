@@ -32,15 +32,35 @@
  *
  */
 
+#define _CRT_SECURE_NO_WARNINGS
+
+#ifndef _MSC_VER
+  #include <config.h>
+#else
+  #include <defines.h>
+#endif
+
 #include <sys/types.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <errno.h>
 #include <ctype.h>
-
-#include <config.h>
+#include <assert.h>
+#ifndef _WIN32
+  #include <unistd.h>
+#else
+  #define STRICT 1
+  #define WIN32_LEAN_AND_MEAN
+  #ifdef _MSC_VER
+    #include <malloc.h> // alloca()
+  #endif
+  #include <windows.h>
+  #include <io.h> // _mktemp()
+  #define strdup _strdup
+  #define fdopen _fdopen
+  #define unlink _unlink
+#endif
 
 #include <anthy/anthy.h>
 #include <anthy/xstr.h>

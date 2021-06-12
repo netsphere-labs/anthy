@@ -1,7 +1,6 @@
-/*
+/* -*- coding:utf-8 -*-
  * roma kana converter rule structure
  *
- * $Id: rkmap.h,v 1.6 2002/11/05 15:38:58 yusuke Exp $
  */
 
 static const struct rk_rule rk_rule_alphabet[] = 
@@ -398,13 +397,13 @@ static const struct rk_rule rk_rule_hiragana[] =
 	{"vu", "う゛", NULL},
 	{"ve", "う゛ぇ", NULL},
 	{"vo", "う゛ぉ", NULL},
-
-	{"VA", "ヴァ", NULL},   /* Debian系由来？の「ヴ」パッチの動作試験用 */
+/*
+	{"VA", "ヴァ", NULL},   // Debian系由来？の「ヴ」パッチの動作試験用
 	{"VI", "ヴィ", NULL},
 	{"VU", "ヴ", NULL},
 	{"VE", "ヴェ", NULL},
 	{"VO", "ヴォ", NULL},
-
+*/
 	{NULL, NULL, NULL}
 };
 

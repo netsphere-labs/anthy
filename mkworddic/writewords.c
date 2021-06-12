@@ -26,6 +26,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include <anthy/anthy.h>
 #include <anthy/word_dic.h>
 #include "mkdic.h"

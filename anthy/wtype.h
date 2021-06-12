@@ -17,7 +17,7 @@
 #define _wtype_h_included_
 
 /**
- * 品詞 Part Of Speech 
+ * 品詞 Part Of Speech
  */
 #define POS_NONE 0
  /* 名詞 */
@@ -61,7 +61,7 @@
 
 
 /**
- * 活用形 Conjugate Type 
+ * 活用形 Conjugate Type
  */
 #define CT_NONE 0
 #define CT_SYUSI 1
@@ -76,7 +76,7 @@
 
 
 /**
- * 動詞の活用クラス Conjugate Class 
+ * 動詞の活用クラス Conjugate Class
  */
 #define CC_NONE 0
  /* カ行五段 */
@@ -120,7 +120,7 @@
 
 
 /**
- * 副品詞 Class Of Speech 
+ * 副品詞 Class Of Speech
  */
 #define COS_NONE 0
  /* 地名 */
@@ -211,13 +211,13 @@
 
 /* FLAGS */
 #define WF_NONE 0
-/* この動詞は連体詞が名詞化する */
+ /* この動詞は連体詞が名詞化する */
 #define WF_MEISI 1
-/* サ変名詞 */
+ /* サ変名詞 */
 #define WF_SV 2
-/* 自立語、文節のコアとなる */
+ /* 自立語、文節のコアとなる */
 #define WF_INDEP 4
-/* 形容動詞 */
+ /* 形容動詞 */
 #define WF_AJV 8
 
 /* wtype_t中のオフセット */

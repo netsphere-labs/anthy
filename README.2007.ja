@@ -1,14 +1,15 @@
+﻿This document is a historical document.   -*- coding:utf-8-with-signature -*-
+----------------------------------------------
 This document is written in Japanese.
-please read README.en
 
-インストール(及びアンインストール)の方法はINSTALLをお読みください。
+インストール(及びアンインストール)の方法はINSTALL.2006.jaをお読みください。
 
 ******** 注意 ********
 *本ソフトウェアは無保証です
 
 ******** Anthy (かな漢字変換エンジン) ********
 
-Linuxなどで使用されることを主な目的として開発された
+GNU/Linuxなどで使用されることを主な目的として開発された
 かな漢字変換エンジンです。
 
 このパッケージにはかな漢字変換エンジンのライブラリと
@@ -51,15 +52,15 @@ cannadicをメンテナンスされているすぎもと氏に感謝します。
 
 ******** Files and Directories ********
 
-README		このファイル
+README.2007.ja	このファイル
 INSTALL		インストールのやりかた
-DIARY		開発日記(?)
 COPYING		本ソフトウェアの再配布や改変の条件について書いてあります
 AUTHORS		開発者や協力者のみなさまです
 ChangeLog	重要な変更があれば書きます
 NEWS		ユーザにわかるニュースがあれば書いていきます
 alt-cannadic/	alt-cannadicの配布物を同梱しています
 doc/		ドキュメント類
+doc/DIARY	開発日記(?)
 calctrans/      文節クラスの接続行列を計算するコード
 depgraph/	付属語グラフ
 anthy/		各モジュールで共有されるヘッダや

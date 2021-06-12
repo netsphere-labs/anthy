@@ -10,9 +10,20 @@
 
 #include <string.h>
 #include <stdlib.h>
+#ifdef _WIN32
+  #define strdup _strdup
+  #ifdef _MSC_VER
+    #include <malloc.h> // alloca
+  #endif
+#endif
+
 #include "rkconv.h"
 #include "rkhelper.h"
 
+/**
+ * Full-width form.
+ * The full-width form of "~" is U+FF5E FULLWIDTH TILDE. Not U+301C WAVE DASH.
+ */
 static const char* rk_default_symbol[128] = {
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
@@ -30,7 +41,7 @@ static const char* rk_default_symbol[128] = {
   "‘", NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL,
-  NULL, NULL, NULL, "｛", "｜", "｝", "〜", NULL
+  NULL, NULL, NULL, "｛", "｜", "｝", "～", NULL
 };
 
 struct rk_conf_ent {

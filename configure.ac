@@ -11,6 +11,7 @@ m4_define([anthy_version],
 AC_INIT([anthy-unicode], [anthy_version],
         [https://github.com/fujiwarat/anthy-unicode/issues],
         [anthy-unicode])
+AC_CONFIG_AUX_DIR([build-aux])
 
 AM_INIT_AUTOMAKE([1.10])
 AM_CONFIG_HEADER(config.h)
@@ -19,9 +20,10 @@ AC_CONFIG_MACRO_DIR(m4)
 dnl Checks for programs.
 AC_PROG_CC
 AC_PROG_CPP
-AM_PROG_LIBTOOL
-AM_PATH_LISPDIR
+# AM_PROG_LIBTOOL is deprecated.
+LT_INIT
 
+AM_PATH_LISPDIR
 AM_CONDITIONAL(ELISP, test x$lispdir != x)
 
 dnl without emacs. install-lispLISP does mkdir /anthy

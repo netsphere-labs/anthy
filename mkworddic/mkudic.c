@@ -3,10 +3,14 @@
  *
  * Copyright (C) 2003-2005 TABATA Yusuke
  */
+
+#define _CRT_SECURE_NO_WARNINGS
+
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
 
+#include <anthy/anthy.h>
 #include <anthy/matrix.h>
 #include "mkdic.h"
 
