@@ -3,6 +3,7 @@
  * 素性の番号と意味を隠蔽して管理する
  *
  * Copyright (C) 2006-2007 TABATA Yusuke
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  *
  */
 /*
@@ -20,6 +21,7 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -232,6 +234,11 @@ anthy_find_feature_freq(const void *image,
 
   /* 配列にコピーする */
   nr = anthy_feature_list_nr(fl);
+  /* From anthy_feature_list_add(), nr should <= NR_EM_FEATURES.
+   * And i should be < NR_EM_FEATURES for anthy_feature_list_nth()
+   * which accesses fl->u.index[i].
+   */
+  assert(nr <= NR_EM_FEATURES);
   for (i = 0; i < NR_EM_FEATURES + 2; i++) {
     if (i < nr) {
       f[i] = anthy_feature_list_nth(fl, i);

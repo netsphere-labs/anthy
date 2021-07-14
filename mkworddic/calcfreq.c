@@ -1,5 +1,11 @@
-/* ñ������٤�׻����� */
+/* 単語の頻度を計算する
+ *
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
+ */
+
 #include <stdlib.h>
+
+#include <anthy/logger.h>
 #include "mkdic.h"
 
 static int
@@ -16,10 +22,11 @@ count_nr_words(struct yomi_entry_list *yl)
 static struct word_entry **
 make_word_array(struct yomi_entry_list *yl, int nr)
 {
-  struct word_entry **array = malloc(sizeof(struct word_entry *) *
-				    nr);
+  struct word_entry **array;
   int nth = 0;
   struct yomi_entry *ye;
+  if (!(array = malloc(sizeof(struct word_entry *) * nr)))
+    return NULL;
   for (ye = yl->head; ye; ye = ye->next) {
     int i;
     for (i = 0; i < ye->nr_entries; i++) {
@@ -30,7 +37,7 @@ make_word_array(struct yomi_entry_list *yl, int nr)
   return array;
 }
 
-/** qsort�Ѥ���Ӵؿ� */
+/** qsort用の比較関数 */
 static int
 compare_word_entry_by_freq(const void *p1, const void *p2)
 {
@@ -47,7 +54,11 @@ set_freq(struct word_entry **array, int nr)
   percent = percent ? percent : 1;
   for (i = 0; i < nr; i++) {
     struct word_entry *we = array[i];
-    we->freq = 99 - (i / percent);
+    /* Effect よのなかほんとうにべんりになった in test/test.txt
+     * 便利 vs 弁理
+     * べんり #T05*300 便利 #T35*180 弁理 in alt-cannadic/gcanna.ctd
+     */
+    we->freq = (int)(99.0 - ((double)i / percent));
     if (we->freq < 1) {
       we->freq = 1;
     }
@@ -66,7 +77,10 @@ calc_freq(struct yomi_entry_list *yl)
   struct word_entry **we;
   /**/
   nr = count_nr_words(yl);
-  we = make_word_array(yl, nr);
+  if (!(we = make_word_array(yl, nr))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return;
+  }
   /**/
   qsort(we, nr,
 	sizeof(struct word_entry *),

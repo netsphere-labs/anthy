@@ -6,6 +6,7 @@
  * Copyright (C) 2000-2007 TABATA Yusuke
  * Copyright (C) 2005 YOSHIDA Yuichi
  * Copyright (C) 2001-2002 TAKAI Kousuke
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
  * 辞書は読みをindexとし、品詞や変換後の単語(=entry)を検索
@@ -34,20 +35,22 @@
 
 #include <sys/types.h>
 #include <unistd.h>
+#include <assert.h>
+#include <errno.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <errno.h>
-#include <ctype.h>
 
 #include <config.h>
 
 #include <anthy/anthy.h>
-#include <anthy/xstr.h>
-#include <anthy/wtype.h>
+#include <anthy/diclib.h>
+#include <anthy/logger.h>
 #include <anthy/ruleparser.h>
 #include <anthy/word_dic.h>
-#include <anthy/diclib.h>
+#include <anthy/wtype.h>
+#include <anthy/xstr.h>
 #include "mkdic.h"
 
 #define MAX_LINE_LEN 10240
@@ -104,31 +107,32 @@ static void
 open_output_files(void)
 {
   struct file_section *fs;
+  char *tmpdir = getenv("TMPDIR");
+  tmpdir = tmpdir ? strdup (tmpdir) : strdup ("/tmp");
   for (fs = file_array; fs->fpp; fs ++) {
-    char *tmpdir = getenv("TMPDIR");
+    char buf[256];
+    int fd = -1;
+    /* tmpfile()がTMPDIRを見ないため、TMPDIRを指定された場合mkstempを使う。
+     * tmpfile() creates files with predictable names, which is unsafe and
+     * is not recommended.
+     */
     fs->fn = NULL;
-    if (tmpdir) {
-      /* tmpfile()がTMPDIRを見ないため、TMPDIRを指定された場合mkstempを使う。*/
-      char buf[256];
-      int fd = -1;
-      snprintf(buf, sizeof(buf), "%s/mkanthydic.XXXXXX", tmpdir);
-      fd = mkstemp(buf);
-      if (fd == -1) {
-	*(fs->fpp) = NULL;
-      } else {
-	*(fs->fpp) = fdopen(fd, "w+");
-	fs->fn = strdup(buf);
-      }
+    snprintf(buf, sizeof(buf), "%s/mkanthydic.XXXXXX", tmpdir);
+    fd = mkstemp(buf);
+    if (fd == -1) {
+      *(fs->fpp) = NULL;
     } else {
-      *(fs->fpp) = tmpfile();
+      *(fs->fpp) = fdopen(fd, "w+");
+      fs->fn = strdup(buf);
     }
     /**/
     if (!(*(fs->fpp))) {
       fprintf (stderr, "%s: cannot open temporary file: %s\n",
-	       progname, strerror (errno));
+               progname, strerror (errno));
       exit (2);
     }
   }
+  free(tmpdir);
 }
 
 /* fflushする */
@@ -214,6 +218,7 @@ get_entry_from_line(char *buf)
 {
   char *sp;
   sp = strchr(buf, ' ');
+  assert(sp);
   while(*sp == ' ') {
     sp ++;
   }
@@ -275,7 +280,7 @@ push_back_word_entry(struct mkdic_stat *mds,
     s = strdup(word);
   }
   ye->entries[ye->nr_entries].word_utf8 = s;
-  ye->nr_entries ++;
+  ye->nr_entries++;
 }
 
 static int
@@ -432,8 +437,8 @@ static int
 check_same_word(struct yomi_entry *ye, int idx)
 {
   struct word_entry *base = &ye->entries[idx];
-  int i;
-  for (i = idx -1; i >= 0; i--) {
+  int i = idx - 1;
+  if (i >= 0) {
     struct word_entry *cur = &ye->entries[i];
     if (base->raw_freq != cur->raw_freq) {
       return 0;
@@ -535,7 +540,7 @@ find_yomi_entry(struct yomi_entry_list *yl, xstr *index, int create)
   ye->next = yl->head;
   yl->head = ye;
 
-  yl->nr_entries ++;
+  yl->nr_entries++;
 
   return ye;
 }
@@ -563,7 +568,10 @@ mk_yomi_hash(FILE *yomi_hash_out, struct yomi_entry_list *yl)
   unsigned char *hash_array;
   int i;
   struct yomi_entry *ye;
-  hash_array = (unsigned char *)malloc(YOMI_HASH_ARRAY_SIZE);
+  if (!(hash_array = (unsigned char *)malloc(YOMI_HASH_ARRAY_SIZE))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return;
+  }
   for (i = 0; i < YOMI_HASH_ARRAY_SIZE; i++) {
     hash_array[i] = 0;
   }
@@ -574,7 +582,7 @@ mk_yomi_hash(FILE *yomi_hash_out, struct yomi_entry_list *yl)
   fwrite(hash_array, YOMI_HASH_ARRAY_SIZE, 1, yomi_hash_out);
   printf("generated yomi hash bitmap (%d collisions/%d entries)\n",
 	 yomi_hash_collision, yl->nr_valid_entries);
-	 
+  free(hash_array);
 }
 
 static struct adjust_command *
@@ -590,22 +598,20 @@ parse_modify_freq_command (const char        *buf,
   wt = strtok (NULL, " ");
   word = strtok (NULL, " ");
   type_str = strtok (NULL, " ");
-  if (!yomi || !wt || !word || !type_str) {
+  if (!yomi || !wt || !word || !type_str)
     return NULL;
-  }
-  if (!strcmp (type_str, "up")) {
+  if (!strcmp (type_str, "up"))
     type = ADJUST_FREQ_UP;
-  }
-  if (!strcmp (type_str, "down")) {
+  if (!strcmp (type_str, "down"))
     type = ADJUST_FREQ_DOWN;
-  }
-  if (!strcmp (type_str, "kill")) {
+  if (!strcmp (type_str, "kill"))
     type = ADJUST_FREQ_KILL;
-  }
-  if (!type) {
+  if (!type)
+    return NULL;
+  if (!(cmd = malloc (sizeof (struct adjust_command)))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
     return NULL;
   }
-  cmd = malloc (sizeof (struct adjust_command));
   cmd->type = type;
   cmd->yomi = anthy_cstr_to_xstr (yomi, mds->input_encoding);
   cmd->wt = get_wt_name(wt);
@@ -691,8 +697,9 @@ apply_adjust_command(struct yomi_entry_list *yl,
 {
   struct adjust_command *cmd;
   for (cmd = ac_list->next; cmd; cmd = cmd->next) {
-    struct word_entry *we = find_word_entry(yl, cmd->yomi,
-					    cmd->wt, cmd->word);
+    struct word_entry *we;
+    assert(cmd);
+    we = find_word_entry(yl, cmd->yomi, cmd->wt, cmd->word);
     if (!we) {
       char *yomi = anthy_xstr_to_cstr(cmd->yomi, ANTHY_UTF8_ENCODING);
       printf("failed to find target of adjust command (%s, %s, %s)\n",
@@ -732,11 +739,14 @@ sort_word_dict(struct yomi_entry_list *yl)
   struct yomi_entry *ye;
   yl->nr_valid_entries = 0;
   /* 単語を持つ読みだけを yl->ye_arrayに詰め直す */
-  yl->ye_array = malloc(sizeof(struct yomi_entry *) * yl->nr_entries);
+  if (!(yl->ye_array = malloc(sizeof(struct yomi_entry *) * yl->nr_entries))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return;
+  }
   for (i = 0, ye = yl->head; i < yl->nr_entries; i++, ye = ye->next) {
     if (ye->nr_entries > 0) {
       yl->ye_array[yl->nr_valid_entries] = ye;
-      yl->nr_valid_entries ++;
+      yl->nr_valid_entries++;
     }
   }
   /**/
@@ -984,7 +994,10 @@ build_reverse_dict(struct mkdic_stat *mds)
   /* コピーする
    * (元の辞書中のポインタはreallocで動くのでコピーが必要)
    */
-  we_array = malloc(sizeof(struct word_entry )* n);
+  if (!(we_array = malloc(sizeof(struct word_entry )* n))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return;
+  }
   n = 0;
   for (ye = mds->yl.head; ye; ye = ye->next) {
     for (i = 0; i < ye->nr_entries; i++) {
@@ -1041,12 +1054,32 @@ static void
 set_exclude_wtypes(struct mkdic_stat *mds, int nr, char **tokens)
 {
   int i;
+  assert(nr > 0);
   mds->nr_excluded = nr - 1;
-  mds->excluded_wtypes = malloc(sizeof(char *) * (nr - 1));
-  /**/
-  for (i = 1; i < nr; i++) {
-    mds->excluded_wtypes[i - 1] = strdup(tokens[i]);
+  if (nr == 1) {
+    anthy_log(0, "nr == 1 in %s:%d\n", __FILE__, __LINE__);
+    return;
   }
+  if (!(mds->excluded_wtypes = malloc(sizeof(char *) * (nr - 1)))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    mds->nr_excluded = 0;
+    return;
+  }
+  /**/
+  mds->excluded_wtypes[0] = NULL;
+  for (i = 1; i < nr; i++)
+    mds->excluded_wtypes[i - 1] = strdup(tokens[i]);
+}
+
+static void
+free_exclude_wtypes(struct mkdic_stat *mds)
+{
+  int i;
+  for (i = 0; i < mds->nr_excluded; i++) {
+    free (mds->excluded_wtypes[i]);
+  }
+  free (mds->excluded_wtypes);
+  mds->excluded_wtypes = NULL;
 }
 
 static void
@@ -1098,14 +1131,18 @@ show_command(char **tokens, int nr)
 static int
 execute_batch(struct mkdic_stat *mds, const char *fn)
 {
-  int nr;
-  char **tokens;
+  int nr = 0;
+  char **tokens = NULL;
   if (anthy_open_file(fn)) {
     printf("mkanthydic: failed to open %s\n", fn);
     return 1;
   }
   while (!anthy_read_line(&tokens, &nr)) {
-    char *cmd = tokens[0];
+    char *cmd;
+    if (!nr)
+      break;
+    assert(nr > 0);
+    cmd = tokens[0];
     show_command(tokens, nr);
     if (!strcmp(cmd, "read") && nr == 2) {
       read_dict_file(mds, tokens[1]);
@@ -1160,6 +1197,29 @@ init_mds(struct mkdic_stat *mds)
   mds->excluded_wtypes = NULL;
 }
 
+static void
+free_yomi_entry_list(struct yomi_entry_list *yl)
+{
+  struct yomi_entry *ye, *ye_prev;
+  int i;
+
+  free (yl->ye_array);
+  yl->ye_array = NULL;
+  for (i = 0, ye = yl->head; ye && (i < yl->nr_entries); i++) {
+    free (ye->index_xstr->str);
+    free (ye->index_xstr);
+    ye->index_xstr = NULL;
+    free (ye->index_str);
+    ye->index_str = NULL;
+    free (ye->entries);
+    ye->entries = NULL;
+    ye->hash_next = NULL;
+    ye_prev = ye;
+    ye = ye->next;
+    free (ye_prev);
+  }
+}
+
 /* libanthyの使用する部分だけを初期化する */
 static void
 init_libs(void)
@@ -1180,6 +1240,7 @@ main(int argc, char **argv)
   int i;
   char *script_fn = NULL;
   int help_mode = 0;
+  int retval;
 
   anthy_init_wtypes();
   init_libs();
@@ -1200,5 +1261,10 @@ main(int argc, char **argv)
     print_usage();
   }
 
-  return execute_batch(&mds, script_fn);
+  retval = execute_batch(&mds, script_fn);
+  free_yomi_entry_list(&mds.yl);
+  free_exclude_wtypes(&mds);
+  free_uc_dict(mds.ud);
+  mds.ud = NULL;
+  return retval;
 }

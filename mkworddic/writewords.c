@@ -7,6 +7,7 @@
  * output_word_dict()が呼び出される
  *
  * Copyright (C) 2000-2006 TABATA Yusuke
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -126,7 +127,7 @@ static int
 common_len(xstr *s1, xstr *s2)
 {
   int m,i;
-  if (!s1 || !s2) {
+  if ((!s1) || (!s2)) {
     return 0;
   }
   if (s1->len < s2->len) {

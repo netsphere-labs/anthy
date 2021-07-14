@@ -27,6 +27,7 @@ struct input_set *input_set_filter(struct input_set *is,
 void input_set_output_feature_freq(FILE *fp, struct input_set *is);
 /**/
 struct input_line *input_set_get_input_line(struct input_set *is);
+void input_set_free(struct input_set *is);
 
 
 struct int_map *int_map_new(void);

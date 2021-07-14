@@ -4,5 +4,6 @@
 
 void anthy_do_set_logger(void (*)(int , const char*), int lv);
 void anthy_log(int lv, const char *, ...);
+const char * anthy_strerror(int errnum);
 
 #endif

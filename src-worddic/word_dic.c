@@ -5,7 +5,7 @@
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  * Copyright (C) 2005-2006 YOSHIDA Yuichi
- *
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -120,8 +120,17 @@ convert_vu(xstr *xs)
   }
   if (v > 0) {
     xstr *nx = malloc(sizeof(xstr));
+    if (!nx) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      return NULL;
+    }
     nx->len = xs->len + v;
     nx->str = malloc(sizeof(xchar)*nx->len);
+    if (!nx->str) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      free(nx);
+      return NULL;
+    }
     j = 0;
     /* 「ヴ」を「う゛」に変換しつつコピーする */
     for (i = 0; i < xs->len; i++) {
@@ -325,10 +334,17 @@ do_gang_load_dic(xstr *sentence, int is_reverse)
       nr += find_gang_elm(ator, &head, &xs);
     }
   }
-  array = malloc(sizeof(struct gang_elm *) * nr);
+  if (!(array = malloc(sizeof(struct gang_elm *) * nr))) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      return;
+  }
   cur = head.tmp.next;
   for (i = 0; i < nr; i++) {
     array[i] = cur;
+    if (!cur) {
+      anthy_log(0, "gang_elm is null at %dth loop\n", i);
+      break;
+    }
     cur = cur->tmp.next;
   }
   qsort(array, nr, sizeof(struct gang_elm *), gang_elm_compare_func);

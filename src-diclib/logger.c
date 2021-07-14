@@ -1,9 +1,11 @@
 /*
  * ログの出力
  * $Id: logger.c,v 1.8 2002/05/14 13:24:47 yusuke Exp $
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 #include <stdio.h>
 #include <stdarg.h>
+#include <string.h>
 
 #include <anthy/anthy.h>
 #include <anthy/logger.h>
@@ -45,4 +47,25 @@ void
 anthy_set_logger(anthy_logger lg, int level)
 {
   anthy_do_set_logger(lg, level);
+}
+
+const char *
+anthy_strerror (int errnum)
+{
+  const char *msg;
+  static char buf[1024];
+
+#if defined(HAVE_STRERROR_R)
+#  if defined(__GLIBC__) && !((_POSIX_C_SOURCE >= 200112L || _XOPEN_SOURCE >= 600) && ! _GNU_SOURCE)
+      msg = strerror_r (errnum, buf, sizeof (buf));
+#  else
+      strerror_r (errnum, buf, sizeof (buf));
+      msg = buf;
+#  endif /* HAVE_STRERROR_R */
+#else
+      strncpy (buf, strerror (errnum), sizeof (buf));
+      buf[sizeof (buf) - 1] = '\0';
+      msg = buf;
+#endif
+  return msg;
 }

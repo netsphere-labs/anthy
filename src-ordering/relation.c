@@ -2,9 +2,9 @@
  * 文節の関係を処理する
  * Copyright (C) 2006 Higashiyama Masahiko (thanks google summer of code program)
  * Copyright (C) 2002-2007 TABATA Yusuke
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  *
  * anthy_reorder_candidates_by_relation()
- *
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -427,10 +427,8 @@ anthy_relation_init(void)
 {
   corpus_info.corpus_array = anthy_file_dic_get_section("corpus_array");
   corpus_info.corpus_bucket = anthy_file_dic_get_section("corpus_bucket");
-  if (!corpus_info.corpus_array ||
-      !corpus_info.corpus_array) {
+  if (!corpus_info.corpus_array || !corpus_info.corpus_bucket)
     return ;
-  }
   corpus_info.array_size = ntohl(((int *)corpus_info.corpus_array)[1]);
   corpus_info.bucket_size = ntohl(((int *)corpus_info.corpus_bucket)[1]);
   corpus_info.array = &(((int *)corpus_info.corpus_array)[16]);

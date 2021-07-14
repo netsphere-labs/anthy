@@ -1,6 +1,7 @@
 /*
  * Copyright (C) 2000-2007 TABATA Yusuke
  * Copyright (C) 2004-2006 YOSHIDA Yuichi
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
  * 付属語グラフをバイナリ化する
@@ -23,6 +24,7 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -54,7 +56,11 @@ static int nrRules;
 static int 
 get_node_id_by_name(const char *name)
 {
+  struct dep_node *tmp = NULL;
+  char **tmp2 = NULL;
   int i;
+  if (nrNodes > 0)
+    assert(gNodeNames);
   /* 登録済みのものから探す */
   for (i = 0; i < nrNodes; i++) {
     if (!strcmp(name,gNodeNames[i])) {
@@ -62,8 +68,24 @@ get_node_id_by_name(const char *name)
     }
   }
   /* なかったので作る */
-  gNodes = realloc(gNodes, sizeof(struct dep_node)*(nrNodes+1));
-  gNodeNames = realloc(gNodeNames, sizeof(char*)*(nrNodes+1));
+  if (!(tmp = realloc(gNodes, sizeof(struct dep_node)*(nrNodes+1)))) {
+    anthy_log(0, "Could not realloc gNodes.\n");
+    free(gNodes);
+    gNodes = NULL;
+    nrNodes = 0;
+    return 0;
+  }
+  gNodes = tmp;
+  if (!(tmp2 = realloc(gNodeNames, sizeof(char*)*(nrNodes+1)))) {
+    anthy_log(0, "Could not realloc gNodeNames.\n");
+    free(gNodes);
+    gNodes = NULL;
+    free(gNodeNames);
+    gNodeNames = NULL;
+    nrNodes = 0;
+    return 0;
+  }
+  gNodeNames = tmp2;
   gNodes[nrNodes].nr_branch = 0;
   gNodes[nrNodes].branch = 0;
   gNodeNames[nrNodes] = strdup(name);
@@ -78,6 +100,7 @@ find_branch(struct dep_node *node, xstr **strs, int nr_strs)
 {
   struct dep_branch *db;
   int i, j;
+  assert(node);
   /* 同じ遷移条件のブランチを探す */
   for (i = 0; i < node->nr_branch; i++) {
     db = &node->branch[i];
@@ -188,12 +211,15 @@ parse_dep(char **tokens, int nr)
   struct dep_branch *db;
   struct dep_node *dn;
   int nr_strs;
-  xstr **strs = alloca(sizeof(xstr*) * nr);
 
+  assert(gNodes);
+  xstr **strs = alloca(sizeof(xstr*) * nr);
   /* ノードとそのidを確保 */
   id = get_node_id_by_name(tokens[row]);
+  assert(id < nrNodes);
   dn = &gNodes[id];
-  row ++;
+  row++;
+  assert(dn);
 
   nr_strs = 0;
 
@@ -236,9 +262,14 @@ static void
 check_nodes(void)
 {
   int i;
+  if (nrNodes > 0) {
+    assert(gNodes);
+    assert(gNodeNames);
+  }
   for (i = 1; i < nrNodes; i++) {
     if (gNodes[i].nr_branch == 0) {
-      anthy_log(0, "node %s has no branch.\n", gNodeNames);
+      anthy_log(0, "node %s has no branch.\n",
+                gNodeNames ? gNodeNames[i] : "(null)");
     }
   }
 }
@@ -278,12 +309,28 @@ init_depword_tab(void)
 static void
 parse_indep(char **tokens, int nr)
 {
+  struct wordseq_rule *tmp = NULL;
   if (nr < 2) {
     printf("Syntex error in indepword defs"
 	   " :%d.\n", anthy_get_line_number());
     return ;
   }
-  gRules = realloc(gRules, sizeof(struct wordseq_rule)*(nrRules+1));
+  if (!(tmp = realloc(gRules, sizeof(struct wordseq_rule)*(nrRules+1)))) {
+    anthy_log(0, "Could not realloc gRules.\n");
+    /* CPPCHECK_WARNING and CLANG_WARNING are conflicted.
+     * CPPCHECK_WARNING reports: Common realloc mistake:
+     *     'gRules' nulled but not freed upon failure
+     * also CLANG_WARNING reports: Potential leak of memory ponted to by
+     *     'gRules'
+     * On the other hand,
+     * CLANG_WARNING reports: 'gRules' is freed twice.
+     */
+    free(gRules);
+    gRules = NULL;
+    nrRules = 0;
+    return;
+  }
+  gRules= tmp;
 
   /* 行の先頭には品詞の名前が入っている */
   gRules[nrRules].wt = anthy_init_wtype_by_name(tokens[0]);
@@ -295,7 +342,7 @@ parse_indep(char **tokens, int nr)
     printf("%d (%s)\n", nrRules, tokens[0]);
   }
 
-  nrRules ++;
+  nrRules++;
 }
 
 /** 自立語からの遷移表 */
@@ -405,6 +452,11 @@ write_file(const char* file_name)
   FILE* fp = fopen(file_name, "w");
   int* node_offset = malloc(sizeof(int) * nrNodes); /* gNodesのファイル上の位置 */
 
+  if (!fp) {
+    anthy_log(0, "Could not write-open %s.\n", file_name);
+    free(node_offset);
+    return;
+  }
   /* 各ルール */
   write_nl(fp, nrRules);
   for (i = 0; i < nrRules; ++i) {
@@ -414,6 +466,8 @@ write_file(const char* file_name)
 
   write_nl(fp, nrNodes);
 
+  if (nrNodes > 0)
+    assert(gNodes);
   for (i = 0; i < nrNodes; ++i) {
     write_node(fp, &gNodes[i]);
   }

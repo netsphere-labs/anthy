@@ -12,7 +12,7 @@
  * Copyright (C) 2004-2006 YOSHIDA Yuichi
  * Copyright (C) 2000-2007 KMC(Kyoto University Micro Computer Club)
  * Copyright (C) 2001-2002 TAKAI Kosuke, Nobuoka Takahiro
- *
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -202,7 +202,7 @@ int
 anthy_set_string(struct anthy_context *ac, const char *s)
 {
   xstr *xs;
-  int retval;
+  int retval = 0;
 
   if (!ac) {
     return -1;
@@ -227,7 +227,7 @@ anthy_set_string(struct anthy_context *ac, const char *s)
   /**/
   if (!need_reconvert(ac, xs)) {
     /* 普通に変換する */
-    retval = anthy_do_context_set_str(ac, xs, 0);
+    retval |= anthy_do_context_set_str(ac, xs, 0);
   } else {
     /* 漢字やカタカナが混じっていたら再変換してみる */
     struct anthy_conv_stat stat;
@@ -235,7 +235,7 @@ anthy_set_string(struct anthy_context *ac, const char *s)
     int i;
     xstr* hira_xs;
     /* 与えられた文字列に変換をかける */
-    retval = anthy_do_context_set_str(ac, xs, 1);
+    retval |= anthy_do_context_set_str(ac, xs, 1);
 
     /* 各文節の第一候補を取得して平仮名列を得る */
     anthy_get_stat(ac, &stat);
@@ -246,7 +246,7 @@ anthy_set_string(struct anthy_context *ac, const char *s)
     }
     /* 改めて変換を行なう */
     anthy_release_segment_list(ac);
-    retval = anthy_do_context_set_str(ac, hira_xs, 0);
+    retval |= anthy_do_context_set_str(ac, hira_xs, 0);
     anthy_free_xstr(hira_xs);
   }
 

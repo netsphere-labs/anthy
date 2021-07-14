@@ -18,7 +18,9 @@
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  * Copyright (C) 2006 YOSHIDA Yuichi
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -247,10 +249,14 @@ static void
 read_node(struct dep_dic* ddic, struct dep_node* node, int* offset)
 {
   int i;
+  assert(offset);
   node->nr_branch = anthy_dic_ntohl(*(int*)&ddic->file_ptr[*offset]);
   *offset += sizeof(int);
 
-  node->branch = malloc(sizeof(struct dep_branch) * node->nr_branch);
+  if (!(node->branch = malloc(sizeof(struct dep_branch) * node->nr_branch))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    node->nr_branch = 0;
+  }
   for (i = 0; i < node->nr_branch; ++i) {
     read_branch(ddic, &node->branch[i], offset);
   }
@@ -277,7 +283,10 @@ read_file(void)
   offset += sizeof(int);
 
   /* 各ノードを読み込む */
-  ddic.nodes = malloc(sizeof(struct dep_node) * ddic.nrNodes);
+  if (!(ddic.nodes = malloc(sizeof(struct dep_node) * ddic.nrNodes))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    ddic.nrNodes = 0;
+  }
   for (i = 0; i < ddic.nrNodes; ++i) {
     read_node(&ddic, &ddic.nodes[i], &offset);
   }
@@ -313,6 +322,8 @@ anthy_quit_depword_tab(void)
   for (i = 0; i < ddic.nrNodes; i++) {
     struct dep_node* node = &ddic.nodes[i];
     free(node->branch);
+    node->branch = NULL;
   }
   free(ddic.nodes);
+  ddic.nodes = NULL;
 }

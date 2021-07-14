@@ -2,6 +2,7 @@
  * 変換エンジンの内部情報を使うため、意図的に
  * layer violationを放置している。
  *
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 #include <stdio.h>
 #include <string.h>
@@ -77,8 +78,8 @@ do_find_conv_res(struct res_db *db, const char *src, const char *res)
 
   for (cr = db->res_list.next; cr; cr = cr->next) {
     if (((!cr->res_str && !res) ||
-	 !strcmp(cr->res_str, res)) &&
-	!strcmp(cr->src_str, src)) {
+        (cr->res_str && res && !strcmp(cr->res_str, res))) &&
+        (cr->src_str && src && !strcmp(cr->src_str, src))) {
       return cr;
     }
   }
@@ -235,6 +236,7 @@ read_db(struct res_db *db, const char *fn)
   while (fgets(line, 1024, fp)) {
     parse_line(db, line);
   }
+  fclose(fp);
 }
 
 static void
@@ -461,7 +463,7 @@ print_segment_info(int is_negative,
   struct feature_list fl;
   struct cand_ent *ce =  selected_candidate(seg);
   int nr_indep = 0;
-  const char *prefix = get_prefix(is_negative);
+  const char *prefix = NULL;
 
   anthy_feature_list_init(&fl);
   set_features(&fl, prev_seg, seg);

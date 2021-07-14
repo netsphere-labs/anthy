@@ -121,7 +121,7 @@ anthy_path_skip_root (const char *file_name)
 /* anthy_file_test:
  * Copy from g_file_test()
  */
-static int
+int
 anthy_file_test (const char   *filename,
                  AnthyFileTest test)
 {

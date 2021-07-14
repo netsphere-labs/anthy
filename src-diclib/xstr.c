@@ -11,7 +11,7 @@
  *  cstrはCの普通のEUC文字列
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
- *
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -28,6 +28,7 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -35,6 +36,7 @@
 #include "config.h"
 /* for ANTHY_*_ENCODING */
 #include <anthy/anthy.h>
+#include <anthy/logger.h>
 
 #include <anthy/xstr.h>
 #include <anthy/xchar.h>
@@ -217,7 +219,8 @@ anthy_xstr_to_cstr(xstr *s, int encoding)
       l++;
     }
   }
-  p = (char *)malloc(l + 1);
+  if (!(p = (char *)malloc(l + 1)))
+    return NULL;
   p[l] = 0;
   j = 0;
   for (i =  0; i < s->len; i++) {
@@ -240,9 +243,13 @@ anthy_xstr_dup(xstr *s)
 {
   int i;
   xstr *x = (xstr *)malloc(sizeof(xstr));
+  if (!x)
+    return NULL;
   x->len = s->len;
   if (s->len) {
-    x->str = malloc(sizeof(xchar)*s->len);
+    assert(s->str);
+    if (!(x->str = malloc(sizeof(xchar)*s->len)))
+      return x;
   }else{
     x->str = NULL;
   }
@@ -258,8 +265,10 @@ anthy_xstr_dup_str(xstr *s)
   xchar *c;
   int i;
   if (s->len) {
-    c = malloc(sizeof(xchar)*s->len);
-  }else{
+    assert(s->str);
+    if (!(c = malloc(sizeof(xchar)*s->len)))
+      return NULL;
+  } else {
     c = 0;
   }
   for (i = 0; i < s->len; i++) {
@@ -443,8 +452,11 @@ xstr *
 anthy_xstrcat(xstr *s, xstr *a)
 {
   int i, l;
+  xchar *xch;
   if (!s) {
     s = malloc(sizeof(xstr));
+    if (!s)
+      return NULL;
     s->str = NULL;
     s->len = 0;
   }
@@ -457,7 +469,16 @@ anthy_xstrcat(xstr *s, xstr *a)
     return s;
   }
 
+  xch = s->str;
   s->str = realloc(s->str, sizeof(xchar)*l);
+  if (!s->str) {
+    anthy_log(0, "Failed realloc in %s:%d\n", __FILE__, __LINE__);
+    s->str = xch;
+    s->len = l - a->len;
+    return s;
+  }
+  if (a->len)
+    assert(a->str);
   for (i = 0; i < a->len; i ++) {
     s->str[s->len+i] = a->str[i];
   }
@@ -480,14 +501,14 @@ long long
 anthy_xstrtoll(xstr *x)
 {
   xchar c;
-  int i;
+  int i, t = XCT_NONE;
   long long n = 0;/* 数 */
-  if (!x->len || x->len > 16) {
+  if (!x->len || x->len > 16)
     return -1;
-  }
-  if ((!anthy_get_xstr_type(x)) & (XCT_NUM | XCT_WIDENUM)) {
+  for (i = 0; i < x->len; i++)
+    t |= anthy_get_xchar_type(x->str[i]);
+  if (!(t & (XCT_NUM | XCT_WIDENUM)))
     return -1;
-  }
   for (i = 0; i < x->len; i++) {
     c = x->str[i];
     n *= 10;
@@ -503,7 +524,15 @@ anthy_xstr_wide_num_to_num(xstr* src_xs)
 {
   int i;
   xstr *dst_xs;
-  dst_xs = anthy_xstr_dup(src_xs);
+  if (!(dst_xs = anthy_xstr_dup(src_xs))) {
+    anthy_log(0, "Failed anthy_xstr_dup() in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
+  assert(src_xs);
+  if (src_xs->len) {
+    assert(src_xs->str);
+    assert(dst_xs->str);
+  }
   for (i = 0; i < src_xs->len; ++i) {
     dst_xs->str[i] = anthy_xchar_wide_num_to_num(src_xs->str[i]);
   }
@@ -518,6 +547,15 @@ anthy_xstr_hira_to_kata(xstr *src_xs)
   xstr *dst_xs;
   int i, j;
   dst_xs = anthy_xstr_dup(src_xs);
+  if (!dst_xs) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
+  if (dst_xs->len && !dst_xs->str) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    dst_xs->len = 0;
+    return dst_xs;
+  }
 
   for (i = 0 ,j = 0; i < dst_xs->len; i++, j++) {
     /* 「う゛」のチェック */
@@ -553,8 +591,20 @@ anthy_xstr_hira_to_half_kata(xstr *src_xs)
     }
   }
   xs = malloc(sizeof(xstr));
+  if (!xs) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
   xs->len = len;
   xs->str = malloc(sizeof(xchar) * len);
+  if (len) {
+    assert(src_xs->str);
+    if (!xs->str) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      xs->len = 0;
+      return xs;
+    }
+  }
   j = 0;
   for (i = 0; i < src_xs->len; i++) {
     const struct half_kana_table *tab = anthy_find_half_kana(src_xs->str[i]);
@@ -583,6 +633,18 @@ anthy_conv_half_wide(xstr *xs)
     }
   }
   res = anthy_xstr_dup(xs);
+  if (!res) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
+  if (xs->len > 0) {
+    assert(xs->str);
+    if (!res->str) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      res->len = 0;
+      return res;
+    }
+  }
   for (i = 0; i < xs->len; i++) {
     res->str[i] = anthy_lookup_half_wide(xs->str[i]);
   }

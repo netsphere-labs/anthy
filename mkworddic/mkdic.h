@@ -85,6 +85,7 @@ const char *get_wt_name(const char *name);
  * 用例辞書を作る */
 struct uc_dict *create_uc_dict(void);
 void read_uc_file(struct uc_dict *ud, const char *fn);
+void free_uc_dict(struct uc_dict *dict);
 void make_ucdict(FILE *out, struct uc_dict *uc);
 /**/
 

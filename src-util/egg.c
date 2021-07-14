@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2002 The Free Software Initiative of Japan
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  * Author: NIIBE Yutaka
  */
 
@@ -7,11 +8,14 @@
  * ANTHY Low Level Agent
  */
 
+#include <limits.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <anthy/anthy.h>
+#include <anthy/logger.h>
 
 #include "config.h"
 
@@ -126,6 +130,11 @@ begin_conversion (struct context *c, const char *input)
   seg_num = get_number_of_segments (c);
   if (seg_num >= c->sellen) {
     c->sellen *= 2;
+    if (sizeof(int) * c->sellen >= INT_MAX || c->sellen < 0) {
+      anthy_log(0, "Exceed max allocation size: %lu >= %d\n",
+                (unsigned long)sizeof(int) * c->sellen, INT_MAX);
+      return -1;
+    }
     c->selection = realloc (c->selection, c->sellen);
     if (c->selection == NULL) { /* Fatal */
       c->sellen = -1;

@@ -1,4 +1,5 @@
 /* 疎行列のテスト用コード */
+#include <stdlib.h>
 #include <stdio.h>
 #include <anthy/dic.h>
 #include <anthy/diclib.h>
@@ -26,6 +27,9 @@ zero_matrix(void)
   im = mi->image;
   e = anthy_matrix_image_peek(im, 0, 0);
   printf("zero matrix: size=%d (0,0)=%d\n", mi->size, e);
+  free(mi->image);
+  free(mi);
+  anthy_sparse_matrix_free(m);
 }
 
 static void
@@ -61,6 +65,9 @@ dense_matrix(void)
     }
   }
   printf("%d errors in desnse matrix\n", fail);
+  free(mi->image);
+  free(mi);
+  anthy_sparse_matrix_free(m);
 }
 
 int

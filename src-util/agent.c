@@ -6,6 +6,7 @@
  * Funded by IPA未踏ソフトウェア創造事業 2002 2/26
  * Copyright (C) 2001-2002 UGAWA Tomoharu
  * Copyright (C) 2002-2004 TABATA Yusuke,
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
  * *マルチコンテキストの扱いを決めかねている
@@ -23,6 +24,7 @@
 
 #include <anthy/anthy.h>
 #include <anthy/input.h>
+#include <anthy/logger.h>
 
 #include "rkconv.h"
 
@@ -374,9 +376,6 @@ make_hl_command(char *buf)
     cmd->arg[i] = encode_command_arg(p);
   }
   while ((p = strtok(NULL, " \t\r"))) {
-    if (!p) {
-      break;
-    }
     cmd->n_arg++;
     cmd->arg = (char**) realloc(cmd->arg, sizeof(char*) * cmd->n_arg);
     cmd->arg[cmd->n_arg - 1] = encode_command_arg(p);
@@ -516,9 +515,12 @@ proc_connection(void)
     FD_SET(daemon_sock, &rfds);
   }
   max_fd = MAX(conn->rfd, max_fd);
+  assert(conn->rfd >= 0);
   FD_SET(conn->rfd, &rfds);
+  assert(conn->rfd >= 0);
   if (conn->n_wbuf > 0) {
     max_fd = MAX(conn->wfd, max_fd);
+    assert(conn->wfd >= 0);
     FD_SET(conn->wfd, &wfds);
   }
 
@@ -569,7 +571,6 @@ AGAIN:
   }
 
   while (1) {
-
     char* p;
     for (p = conn->rbuf; p < conn->rbuf + conn->n_rbuf; p++) {
       if (*p == '\n') {
@@ -583,11 +584,9 @@ AGAIN:
 	}
       }
     }
-
     if (proc_connection() == -1) {
       return NULL;
     }
-
   }
 }
 
@@ -750,6 +749,10 @@ new_input_context(int id)
 
   ictxl =
     (struct input_context_list*) malloc(sizeof (struct input_context_list));
+  if (!ictxl) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return;
+  }
   ictxl->id = id;
   ictxl->ictx = anthy_input_create_context(config);
   ictxl->next = ictx_list;
@@ -762,6 +765,8 @@ get_current_input_context(void)
   if (ictx_list == NULL)
     new_input_context(0);
 
+  if (!ictx_list)
+    return NULL;
   return ictx_list->ictx;
 }
 
@@ -817,9 +822,16 @@ cmdh_release_input_context(struct command* cmd)
 static void
 cmdh_change_toggle(struct command *cmd)
 {
-  int toggle = cmd->arg[0][0];
+  int toggle;
   int ret;
 
+  assert(cmd->arg);
+  if (!cmd->arg[0]) {
+    anthy_log(0, "cmdh_change_toggle should have one argument.\n");
+    send_error();
+    return;
+  }
+  toggle = cmd->arg[0][0];
   ret = anthy_input_edit_toggle_config(config, toggle);
 
   if (ret != 0) {
@@ -833,6 +845,7 @@ cmdh_change_toggle(struct command *cmd)
 static void
 cmdh_map_clear(struct command *cmd)
 {
+  assert(cmd->arg);
   anthy_input_clear_rk_config(config, atoi(cmd->arg[0]));
   anthy_input_change_config(config);
   send_ok();
@@ -841,6 +854,7 @@ cmdh_map_clear(struct command *cmd)
 static void
 cmdh_set_break_into_roman(struct command *cmd)
 {
+  assert(cmd->arg);
   anthy_input_break_into_roman_config(config, atoi(cmd->arg[0]));
   anthy_input_change_config(config);
   send_ok();
@@ -849,6 +863,7 @@ cmdh_set_break_into_roman(struct command *cmd)
 static void
 cmdh_set_preedit_mode(struct command *cmd)
 {
+  assert(cmd->arg);
   anthy_input_preedit_mode_config(config, atoi(cmd->arg[0]));
   anthy_input_change_config(config);
   send_ok();
@@ -857,10 +872,12 @@ cmdh_set_preedit_mode(struct command *cmd)
 static void
 cmdh_map_edit(struct command* cmd)
 {
-  /* MAP,from,to */
-  int map_no = atoi(cmd->arg[0]);
+  int map_no;
   int ret;
 
+  assert(cmd->arg);
+  /* MAP,from,to */
+  map_no = atoi(cmd->arg[0]);
   ret = anthy_input_edit_rk_config(config, map_no,
 				   cmd->arg[1], cmd->arg[2], NULL);
 
@@ -879,6 +896,7 @@ cmdh_map_select(struct anthy_input_context* ictx,
   char* map_name;
   int map_no;
 
+  assert(cmd->arg);
   map_name = cmd->arg[0];
   if (strcmp(map_name, "alphabet") == 0)
     map_no = ANTHY_INPUT_MAP_ALPHABET;
@@ -906,6 +924,7 @@ cmdh_get_candidate(struct anthy_input_context* ictx,
   struct anthy_input_segment* seg;
   int cand_no;
 
+  assert(cmd->arg);
   cand_no = atoi(cmd->arg[0]);
 
   seg = anthy_input_get_candidate(ictx, cand_no);
@@ -924,6 +943,7 @@ cmdh_select_candidate(struct anthy_input_context* ictx,
   int ret;
   int cand_no;
 
+  assert(cmd->arg);
   cand_no = atoi(cmd->arg[0]);
   ret = anthy_input_select_candidate(ictx, cand_no);
   if (ret < 0) {
@@ -937,20 +957,25 @@ static void
 cmd_shift_arrow(struct anthy_input_context* ictx,
 		struct command* cmd)
 {
-  int lr = atoi(cmd->arg[0]);
+  int lr;
+  assert(cmd->arg);
+  lr = atoi(cmd->arg[0]);
   anthy_input_resize(ictx, lr);
 }
 
 static void
 cmd_arrow(struct anthy_input_context* ictx, struct command* cmd)
 {
-  int lr = atoi(cmd->arg[0]);
+  int lr;
+  assert(cmd->arg);
+  lr = atoi(cmd->arg[0]);
   anthy_input_move(ictx, lr);
 }
 
 static void
 cmd_key(struct anthy_input_context* ictx, struct command* cmd)
 {
+  assert(cmd->arg);
   anthy_input_str(ictx, cmd->arg[0]);
 }
 
@@ -1137,7 +1162,10 @@ main(int argc, char **argv)
     anthy_quit();
   } else {
     config = anthy_input_create_config();
-    conn = (struct connection*) malloc(sizeof(struct connection));
+    if (!(conn = (struct connection*) malloc(sizeof(struct connection)))) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      return 1;
+    }
     conn->rbuf = NULL;
     conn->n_rbuf = 0;
     conn->s_rbuf = 0;

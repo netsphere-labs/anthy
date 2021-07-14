@@ -21,5 +21,6 @@ void corpus_build(struct corpus *c);
 void corpus_dump(struct corpus *c);
 void corpus_write_bucket(FILE *fp, struct corpus *c);
 void corpus_write_array(FILE *fp, struct corpus *c);
+void corpus_free(struct corpus *c);
 
 #endif

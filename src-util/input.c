@@ -5,6 +5,7 @@
  *
  * Funded by IPA未踏ソフトウェア創造事業 2002 1/23
  * Copyright (C) 2001-2002 UGAWA Tomoharu
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmai.com>
  *
  * $Id: input.c,v 1.25 2002/11/16 03:35:21 yusuke Exp $
  *
@@ -21,6 +22,7 @@
 
 #include <anthy/anthy.h>
 #include <anthy/input.h>
+#include <anthy/logger.h>
 
 #include "rkconv.h"
 #include "rkhelper.h"
@@ -332,6 +334,10 @@ cmdh_get_candidate(struct anthy_input_context* ictx, int cand_no)
 
   seg = (struct anthy_input_segment*)
     malloc(sizeof(struct anthy_input_segment));
+  if (!seg) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
   len = anthy_get_segment(ictx->actx, cs->index, cand_no, NULL, 0);
   seg->str = (char*) malloc(len + 1);
   anthy_get_segment(ictx->actx, cs->index, cand_no, seg->str, len + 1);
@@ -394,6 +400,10 @@ do_cmd_push_key(struct anthy_input_context* ictx, const char* str)
 {
   const char* p;
 
+  if (!str) {
+    anthy_log(0, "str should not be null in %s:%d\n", __FILE__, __LINE__);
+    return;
+  }
   for (p = str; *p; p++) {
     if (isspace((int)(unsigned char) *p) && *p != ' ')
       continue;
@@ -551,7 +561,10 @@ cmd_resize(struct anthy_input_context* ictx, int d)
     if (as->next == NULL) {
       struct a_segment* as2;
 
-      as2 = (struct a_segment*) malloc(sizeof(struct a_segment));
+      if (!(as2 = (struct a_segment*) malloc(sizeof(struct a_segment)))) {
+        anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+        break;
+      }
       as2->index = i;
       as2->prev = as;
       as->next = as2;
@@ -773,6 +786,10 @@ anthy_input_create_context(struct anthy_input_config* cfg)
 
   ictx =
     (struct anthy_input_context*) malloc(sizeof(struct anthy_input_context));
+  if (!ictx) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      return NULL;
+  }
   ictx->state = ANTHY_INPUT_ST_NONE;
   ictx->rkctx = rk_context_create(cfg->break_into_roman);
   for (i = 0; i < NR_RKMAP; i++)
@@ -1180,6 +1197,8 @@ alloc_segment(int flag, int len, int noconv_len)
   struct anthy_input_segment *seg;
   seg = (struct anthy_input_segment*)
     malloc(sizeof(struct anthy_input_segment));
+  if (!seg)
+    return NULL;
   seg->flag = flag;
   seg->cand_no = -1;
   seg->nr_cand = -1;
@@ -1207,6 +1226,11 @@ get_edit_mode_preedit(struct anthy_input_context* ictx,
   if (ictx->n_hbuf > 0) {
     *p = alloc_segment(ANTHY_INPUT_SF_EDITING, ictx->n_hbuf + 1,
 		       ictx->n_hbuf);
+    if (!(*p) || !((*p)->str)) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      ictx->n_hbuf = 0;
+      return;
+    }
 
     memcpy((*p)->str, ictx->hbuf, ictx->n_hbuf);
     (*p)->str[ictx->n_hbuf] = '\0';
@@ -1216,7 +1240,11 @@ get_edit_mode_preedit(struct anthy_input_context* ictx,
   if (ictx->cfg->preedit_mode) {
     len = rk_partial_result(ictx->rkctx, NULL, 0);
     if (len > 1) {
-      *p = alloc_segment(ANTHY_INPUT_SF_PENDING, len, len - 1);
+      if (!(*p = alloc_segment(ANTHY_INPUT_SF_PENDING, len, len - 1))) {
+        anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+        pedit->cur_segment = NULL;
+        return;
+      }
 
       rk_partial_result(ictx->rkctx, (*p)->str, len);
       p = &(*p)->next;
@@ -1224,7 +1252,11 @@ get_edit_mode_preedit(struct anthy_input_context* ictx,
   } else {
     len = rk_get_pending_str(ictx->rkctx, NULL, 0);
     if (len > 1) {
-      *p = alloc_segment(ANTHY_INPUT_SF_PENDING, len, len - 1);
+      if (!(*p = alloc_segment(ANTHY_INPUT_SF_PENDING, len, len - 1))) {
+        anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+        pedit->cur_segment = NULL;
+        return;
+      }
 
       rk_get_pending_str(ictx->rkctx, (*p)->str, len);
       p = &(*p)->next;
@@ -1232,7 +1264,11 @@ get_edit_mode_preedit(struct anthy_input_context* ictx,
   }
 
   /* cursor */
-  *p = alloc_segment(ANTHY_INPUT_SF_CURSOR, 0, 0);
+  if (!(*p = alloc_segment(ANTHY_INPUT_SF_CURSOR, 0, 0))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    pedit->cur_segment = NULL;
+    return;
+  }
   pedit->cur_segment = *p;
   p = &(*p)->next;
 
@@ -1241,8 +1277,12 @@ get_edit_mode_preedit(struct anthy_input_context* ictx,
     *p = alloc_segment(ANTHY_INPUT_SF_EDITING,
 		       ictx->n_hbuf_follow + 1,
 		       ictx->n_hbuf_follow);
-    memcpy((*p)->str, ictx->hbuf_follow, ictx->n_hbuf_follow);
-    (*p)->str[ictx->n_hbuf_follow] = '\0';
+    if (!(*p) || !((*p)->str)) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    } else {
+      memcpy((*p)->str, ictx->hbuf_follow, ictx->n_hbuf_follow);
+      (*p)->str[ictx->n_hbuf_follow] = '\0';
+    }
   }
 }
 
@@ -1253,14 +1293,21 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
 
   pedit = (struct anthy_input_preedit*)
     malloc(sizeof(struct anthy_input_preedit));
+  if (!pedit) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
 
   pedit->state = ictx->state;
 
   /* 未コミットの文字列 */
   if (ictx->n_commit > 0) {
-    pedit->commit = (char*) malloc(ictx->n_commit + 1);
-    memcpy(pedit->commit, ictx->commit, ictx->n_commit);
-    pedit->commit[ictx->n_commit] = '\0';
+    if (!(pedit->commit = (char*) malloc(ictx->n_commit + 1))) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    } else {
+      memcpy(pedit->commit, ictx->commit, ictx->n_commit);
+      pedit->commit[ictx->n_commit] = '\0';
+    }
     ictx->n_commit = 0;
   } else {
     pedit->commit = NULL;
@@ -1268,9 +1315,12 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
 
   /* カットバッファの文字列 */
   if(ictx->n_cut > 0) {
-    pedit->cut_buf = (char*) malloc(ictx->n_cut + 1);
-    memcpy(pedit->cut_buf, ictx->cut, ictx->n_cut);
-    pedit->cut_buf[ictx->n_cut] = '\0';
+    if (!(pedit->cut_buf = (char*) malloc(ictx->n_cut + 1))) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    } else {
+      memcpy(pedit->cut_buf, ictx->cut, ictx->n_cut);
+      pedit->cut_buf[ictx->n_cut] = '\0';
+    }
     ictx->n_cut = 0;
   } else {
     pedit->cut_buf = NULL;
@@ -1299,7 +1349,10 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
 				       NTH_UNCONVERTED_CANDIDATE,
 				       NULL, 0);
 	len = anthy_get_segment(ictx->actx, as->index, as->cand, NULL, 0);
-	*p = alloc_segment(ANTHY_INPUT_SF_NONE, len + 1, noconv_len);
+	if (!(*p = alloc_segment(ANTHY_INPUT_SF_NONE, len + 1, noconv_len))) {
+          anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+          return pedit;
+	}
 
 	anthy_get_segment(ictx->actx, as->index, as->cand, (*p)->str, len + 1);
 	(*p)->cand_no = as->cand;
@@ -1324,6 +1377,10 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
 
 	      p = &(*p)->next;
 	      *p = alloc_segment(ANTHY_INPUT_SF_FOLLOWING, len + 1, len);
+	      if (!(*p) || !((*p)->str)) {
+                anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+                break;
+	      }
 	      for (as1 = as->next, s = (*p)->str; as1; as1 = as1->next) {
 		anthy_get_segment(ictx->actx, as1->index,
 				  NTH_UNCONVERTED_CANDIDATE,
@@ -1490,6 +1547,10 @@ anthy_input_create_config(void)
   struct anthy_input_config* cfg;
 
   cfg = (struct anthy_input_config*) malloc(sizeof(struct anthy_input_config));
+  if (!cfg) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
 
   cfg->rk_option = anthy_input_create_rk_option();
   cfg->break_into_roman = 0;

@@ -17,7 +17,7 @@ typedef enum
 /* file_dic.h */
 int anthy_init_file_dic(void);
 void anthy_quit_file_dic(void);
-
+int anthy_file_test(const char   *filename, AnthyFileTest test);
 
 /* xchar.c */
 void anthy_init_xchar_tab(void);

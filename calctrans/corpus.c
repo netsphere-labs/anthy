@@ -3,7 +3,7 @@
  * 現時点では例文をすべて入れているが、そのうちフィルターすることも考えられる
  *
  * Copyright (C) 2007 TABATA Yusuke
- *
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -20,11 +20,13 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
 #include <anthy/corpus.h>
+#include <anthy/logger.h>
 
 #define MAX_NR_VAL 8
 #define BUCKET_SIZE 8192
@@ -95,6 +97,10 @@ struct corpus *
 corpus_new(void)
 {
   struct corpus *c = malloc(sizeof(*c));
+  if (!c) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
   c->nr_node = 0;
   c->array_size = 0;
   c->array = NULL;
@@ -154,7 +160,11 @@ corpus_build_flatten(struct corpus *c)
   int i, j;
   int idx = 0;
   int nr_valid_elms = count_nr_valid_values(c);
-  c->elms = malloc(sizeof(struct element) * nr_valid_elms);
+  assert(c);
+  if (!(c->elms = calloc(nr_valid_elms, sizeof(struct element)))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return;
+  }
   for (i = 0; i < c->nr_node; i++) {
     struct node *nd = &c->array[i];
     if (nd->flags & ELM_INVALID) {
@@ -164,9 +174,8 @@ corpus_build_flatten(struct corpus *c)
       c->elms[idx].val = nd->val[j];
       c->elms[idx].next_idx = -1;
       c->elms[idx].flags = nd->flags;
-      if (j == 0) {
-	c->elms[idx].flags |= ELM_WORD_BORDER;
-      }
+      if (j == 0)
+        c->elms[idx].flags |= ELM_WORD_BORDER;
       c->elms[idx].idx = idx;
       idx++;
     }
@@ -177,7 +186,10 @@ static struct bucket *
 find_bucket(struct corpus *c, int val)
 {
   int i;
-  int h = val % c->nr_buckets;
+  int h;
+  assert(c);
+  assert(c->buckets);
+  h = val % c->nr_buckets;
   for (i = 0; i < MAX_COLLISION; i++) {
     struct bucket *bkt = &c->buckets[h];
     if (bkt->key == val) {
@@ -188,10 +200,10 @@ find_bucket(struct corpus *c, int val)
       return bkt;
     }
     /**/
-    h ++;
+    h++;
     h %= c->nr_buckets;
   }
-  c->bucket_collision ++;
+  c->bucket_collision++;
   return NULL;
 }
 
@@ -199,6 +211,11 @@ static void
 corpus_build_link(struct corpus *c)
 {
   int i;
+  assert(c);
+  if (!(c->elms)) {
+    anthy_log(0, "c->elms should not be null.\n");
+    return;
+  }
   for (i = 0; i < c->nr_values; i++) {
     struct element *elm = &c->elms[i];
     struct bucket *bkt = find_bucket(c, elm->val);
@@ -274,4 +291,15 @@ corpus_write_array(FILE *fp, struct corpus *c)
     fprintf(fp, "%d,%d\n", val,
 	    c->elms[i].next_idx);
   }
+}
+
+void
+corpus_free (struct corpus *c)
+{
+  if (!c)
+    return;
+  free (c->array);
+  free (c->elms);
+  free (c->buckets);
+  free (c);
 }

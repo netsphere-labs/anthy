@@ -22,6 +22,8 @@ AC_PROG_CPP
 AM_PROG_LIBTOOL
 AM_PATH_LISPDIR
 
+AC_CHECK_FUNCS([strerror_r])
+
 AM_CONDITIONAL(ELISP, test x$lispdir != x)
 
 dnl without emacs. install-lispLISP does mkdir /anthy

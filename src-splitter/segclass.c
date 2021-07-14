@@ -1,3 +1,6 @@
+/*
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
+ */
 #include <string.h>
 
 #include <anthy/splitter.h>
@@ -31,7 +34,6 @@ anthy_set_seg_class(struct word_list* wl)
 
   head_pos = wl->head_pos;
   dc = wl->part[PART_DEPWORD].dc;
-  seg_class = SEG_HEAD;
 
   if (wl->part[PART_CORE].len == 0) {
     seg_class = SEG_BUNSETSU;

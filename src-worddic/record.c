@@ -30,18 +30,20 @@
  * Copyright (C) 2000-2006 TABATA Yusuke
  * Copyright (C) 2000-2003 UGAWA Tomoharu
  * Copyright (C) 2001-2002 TAKAI Kosuke
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
  * パーソナリティ""は匿名パーソナリティであり，
  * ファイルへの読み書きは行わない．
  */
-#include <sys/types.h>
-#include <sys/stat.h>
+#include <assert.h>
 #include <errno.h>
-#include <unistd.h>
-#include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "config.h"
 #include <anthy/anthy.h>
@@ -580,6 +582,7 @@ trie_remove(struct trie_root *root, xstr *key,
       r = s;
       s = trie_key_nth_bit(key, r->bit) ? r->r : r->l;
     }
+    assert(pp);
     *pp = (p->r == q) ? p->l : p->r;
     p->l = q->l;
     p->r = q->r;
@@ -1182,13 +1185,20 @@ read_journal_record(struct record_stat* rs)
     fclose(fp);
     return ;
   }
+  errno = 0;
   if (st.st_size < rs->last_update) {
 
     /* ファイルサイズが小さくなっているので、
      * 最初から読み込む */
-    fseek(fp, 0, SEEK_SET);
+    if (fseek(fp, 0, SEEK_SET)) {
+      anthy_log(0, "Failed fseek in %s:%d: %s\n",
+                __FILE__, __LINE__, anthy_strerror(errno));
+    }
   } else {
-    fseek(fp, rs->last_update, SEEK_SET);
+    if (fseek(fp, rs->last_update, SEEK_SET)) {
+      anthy_log(0, "Failed fseek in %s:%d: %s\n",
+                __FILE__, __LINE__, anthy_strerror(errno));
+    }
   }
   rs->journal_timestamp = st.st_mtime;
   while (!feof(fp)) {
@@ -2026,11 +2036,19 @@ setup_filenames(const char *id, struct record_stat *rst)
   /* 基本ファイル */
   rst->base_fn = (char*) malloc(base_len +
 				strlen("/last-record1_"));
+  if (!rst->base_fn) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      return;
+  }
   sprintf(rst->base_fn, "%s/last-record1_%s",
 	  home, id);
   /* 差分ファイル */
   rst->journal_fn = (char*) malloc(base_len +
 				   strlen("/last-record2_"));
+  if (!rst->journal_fn) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      return;
+  }
   sprintf(rst->journal_fn, "%s/last-record2_%s",
 	  home, id);
 }

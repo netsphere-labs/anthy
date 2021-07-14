@@ -2,14 +2,18 @@
  *
  * Copyright (C) 2006 HANAOKA Toshiyuki
  * Copyright (C) 2006-2007 TABATA Yusuke
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  *
  * Special Thanks: Google Summer of Code Program 2006
  *
  */
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+
+#include <anthy/logger.h>
 #include "input_set.h"
 
 #define HASH_SIZE 1024
@@ -75,11 +79,18 @@ add_line(struct input_set *is, int *features, int nr)
 {
   int i, h;
   struct input_line *il;
-  il = malloc(sizeof(struct input_line));
+  if (!(il = malloc(sizeof(struct input_line)))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
   il->nr_features = nr;
-  il->features = malloc(sizeof(int) * nr);
-  for (i = 0; i < nr; i++) {
-    il->features[i] = features[i];
+  if (!(il->features = malloc(sizeof(int) * nr))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    il->nr_features = nr = 0;
+  } else {
+    for (i = 0; i < nr; i++) {
+      il->features[i] = features[i];
+    }
   }
   il->weight = 0;
   il->negative_weight = 0;
@@ -114,9 +125,10 @@ input_set_set_features(struct input_set *is, int *features,
 
   /**/
   il = find_same_line(is, features, nr);
-  if (!il) {
+  if (!il)
     il = add_line(is, features, nr);
-  }
+  if (!il)
+    return;
   /**/
   if (weight > 0) {
     il->weight += weight;
@@ -132,7 +144,10 @@ input_set_create(void)
 {
   int i;
   struct input_set *is;
-  is = malloc(sizeof(struct input_set));
+  if (!(is = malloc(sizeof(struct input_set)))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
   is->lines = NULL;
   /**/
   for (i = 0; i < HASH_SIZE; i++) {
@@ -185,13 +200,46 @@ input_set_output_feature_freq(FILE *fp, struct input_set *is)
   }
 }
 
+static void
+input_line_free (struct input_line **il)
+{
+  assert (il);
+  if (!(*il))
+    return;
+  free ((*il)->features);
+  input_line_free (&((*il)->next_line));
+  free (*il);
+  *il = NULL;
+}
+
+void
+input_set_free (struct input_set *is)
+{
+  int i;
+  if (!is)
+      return;
+  input_line_free (&is->lines);
+  for (i = 0; i < HASH_SIZE; i++)
+    free (is->feature_freq->hash_head[i].next);
+  free (is->feature_freq->hash_head);
+  free (is->feature_freq);
+  free (is);
+}
+
 struct int_map *
 int_map_new(void)
 {
   int i;
   struct int_map *im = malloc(sizeof(struct int_map));
+  if (!im) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
   im->nr = 0;
-  im->hash_head = malloc(sizeof(struct int_map_node) * HASH_SIZE);
+  if (!(im->hash_head = malloc(sizeof(struct int_map_node) * HASH_SIZE))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return im;
+  }
   for (i = 0; i < HASH_SIZE; i++) {
     im->hash_head[i].next = NULL;
   }
@@ -234,17 +282,20 @@ int_map_set(struct int_map *im, int idx, int val)
   int h;
   if (node) {
     node->val = val;
-    return ;
+    return;
   }
   /**/
-  node = malloc(sizeof(struct int_map_node));
+  if (!(node = malloc(sizeof(struct int_map_node)))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return;
+  }
   node->key = idx;
   node->val = val;
   h = node_index(idx);
   node->next = im->hash_head[h].next;
   im->hash_head[h].next = node;
   /**/
-  im->nr ++;
+  im->nr++;
 }
 
 void
@@ -253,6 +304,7 @@ int_map_flatten(struct int_map *im)
   int i;
   struct int_map_node *node;
   int max_n = 0;
+  assert(im->hash_head);
   /* 配列を準備する */
   im->array_size = im->nr * 2;
   im->array = malloc(sizeof(struct int_map_node *) * 

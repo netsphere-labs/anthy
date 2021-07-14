@@ -14,7 +14,7 @@
  * Funded by IPA未踏ソフトウェア創造事業 2001 9/22
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
- * Copyright (C) 2020 Takao Fujiwara
+ * Copyright (C) 2020-2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -31,6 +31,7 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+#include <assert.h>
 #include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -40,6 +41,7 @@
 #include <anthy/anthy.h>
 #include <anthy/diclib.h>
 #include <anthy/dicutil.h>
+#include <anthy/logger.h>
 /**/
 #include <anthy/textdict.h>
 #include <anthy/xstr.h>
@@ -121,16 +123,25 @@ static FILE *
 open_typetab(void)
 {
   FILE *fp;
-  char *fn;
+  char *fn, *tmp;
   fp = fopen(TYPETAB, "r");
   if (fp) {
     return fp;
   }
-  fn = strdup(anthy_dic_util_get_anthydir());
-  fn = realloc(fn, strlen(fn) + strlen(TYPETAB) + 4);
+  if (!(fn = strdup(anthy_dic_util_get_anthydir()))) {
+    anthy_log(0, "Could not find ANTHYDIR in conf file.\n");
+    return NULL;
+  }
+  if (!(tmp = realloc(fn, strlen(fn) + strlen(TYPETAB) + 4))) {
+    anthy_log(0, "Could not realloc TYPETAB.\n");
+    /* free(fn) is freed twice. */
+    return NULL;
+  }
+  fn = tmp;
   strcat(fn, "/");
   strcat(fn, TYPETAB);
   fp = fopen(fn, "r");
+  free(fn);
   return fp;
 }
 
@@ -142,11 +153,27 @@ open_usage_file(void)
   fp = fopen(USAGE_TEXT, "r");
   if (!fp) {
     /* インストールされたものを使用 */
-    char *fn;
-    fn = strdup(anthy_dic_util_get_anthydir());
-    fn = realloc(fn, strlen(fn) + strlen(USAGE_TEXT) + 10);
+    char *fn = NULL, *tmp;
+    if (!(fn = strdup(anthy_dic_util_get_anthydir()))) {
+      anthy_log(0, "Could not find ANTHYDIR in conf file.\n");
+      return NULL;
+    }
+    if (!(tmp = realloc(fn, strlen(fn) + strlen(USAGE_TEXT) + 10))) {
+      anthy_log(0, "Could not realloc USAGE_TEXT.\n");
+      /* CPPCHECK_WARNING and CLANG_WARNING are conflicted.
+       * CPPCHECK_WARNING reports: Common realloc mistake:
+       *     'fn' nulled but not freed upon failure
+       * also CLANG_WARNING reports: Potential leak of memory ponted to by 'fn'
+       * On the other hand,
+       * CLANG_WARNING reports: 'fn' is freed twice.
+       */
+      free(fn);
+      return NULL;
+    }
+    fn = tmp;
     strcat(fn, "/" USAGE_TEXT);
     fp = fopen(fn, "r");
+    free(fn);
   }
   return fp;
 }
@@ -263,7 +290,10 @@ read_typetab_var(struct var *head, FILE *fp, int table)
     return -1;
   }
 
-  v = malloc(sizeof(struct var));
+  if (!(v = malloc(sizeof(struct var)))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return -1;
+  }
   if (encoding == ANTHY_EUC_JP_ENCODING && table) {
     /* UTF-8 */
     v->var_name = anthy_conv_utf8_to_euc(var);
@@ -279,6 +309,22 @@ read_typetab_var(struct var *head, FILE *fp, int table)
   head->next = v;
 
   return 0;
+}
+
+static void
+free_typetab_var (struct var *head)
+{
+  struct var *v = head;
+  while (v) {
+    struct var *prev;
+    free (v->var_name);
+    free (v->val);
+    prev = v;
+    v = v->next;
+    /* head is not allocated */
+    if (prev != head)
+      free (prev);
+  }
 }
 
 static int
@@ -315,6 +361,7 @@ read_typetab(void)
     exit(1);
   }
   while (!read_typetab_entry(fp));
+  fclose(fp);
 }
 
 static struct trans_tab *
@@ -416,13 +463,16 @@ find_wt(void)
   struct var v;
   struct trans_tab *t;
   v.next = 0;
+  memset(&v, 0, sizeof(struct var));
   while(!read_typetab_var(&v, fp_in, 0));
   for (t = trans_tab_list.next; t; t = t->next) {
     if (var_list_subset_p(&t->var_list, &v) &&
-	var_list_subset_p(&v, &t->var_list)) {
+        var_list_subset_p(&v, &t->var_list)) {
+      free_typetab_var(&v);
       return t->type_name;
     }
   }
+  free_typetab_var(&v);
   return NULL;
 }
 
@@ -493,17 +543,29 @@ load_text_dic (void)
     return;
   }
   do {
-    yomi = strdup (anthy_priv_dic_get_index (buf, LINE_SIZE));
+    if (!(yomi = strdup (anthy_priv_dic_get_index (buf, LINE_SIZE)))) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      continue;
+    }
     if (*yomi == '#') {
       free (yomi);
       continue;
     }
     if (!dict_head) {
-      d = dict_head = calloc (sizeof (struct dict_entry), 1);
+      if (!(d = dict_head = calloc (sizeof (struct dict_entry), 1))) {
+        anthy_log(0, "Failed calloc in %s:%d\n", __FILE__, __LINE__);
+        free(yomi);
+        break;
+      }
     } else {
-      d->next = calloc (sizeof (struct dict_entry), 1);
+      if (!(d->next = calloc (sizeof (struct dict_entry), 1))) {
+        anthy_log(0, "Failed calloc in %s:%d\n", __FILE__, __LINE__);
+        free(yomi);
+        break;
+      }
       d = d->next;
     }
+    assert(d);
     d->yomi = yomi;
     d->word = strdup (anthy_priv_dic_get_word (buf, LINE_SIZE));
     d->wtype = strdup (anthy_priv_dic_get_wtype (buf, LINE_SIZE));

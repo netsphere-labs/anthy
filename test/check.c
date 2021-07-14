@@ -1,6 +1,8 @@
 /* リリース前のチェックを行う */
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <time.h>
 #include <anthy/anthy.h>
 #include <anthy/xstr.h>
 
@@ -48,7 +50,7 @@ test1(void)
 {
   anthy_context_t ac;
   char buf[100];
-  xstr *xs;
+  xstr *xs, *xs2;
   ac = anthy_create_context();
   if (!ac) {
     printf("failed to create context\n");
@@ -71,9 +73,27 @@ test1(void)
   }
   anthy_release_context(ac);
   xs = anthy_cstr_to_xstr("あいうえおがぎぐげご", ANTHY_UTF8_ENCODING);
-  xs = anthy_xstr_hira_to_half_kata(xs);
-  anthy_putxstrln(xs);
+  xs2 = anthy_xstr_hira_to_half_kata(xs);
+  anthy_putxstrln(xs2);
+  anthy_free_xstr(xs);
+  anthy_free_xstr(xs2);
   return 0;
+}
+
+/* compliant_rand:
+ * dont_call: "rand" should not be used for security-related applications,
+ * because linear congruential algorithms are too easy to break
+ * but we don't need the strict randoms here.
+ */
+static long int
+compliant_rand(void)
+{
+  struct timespec ts = { 0, };
+  if (!timespec_get (&ts, TIME_UTC)) {
+    printf("Failed timespec_get\n");
+    assert(0);
+  }
+  return ts.tv_nsec;
 }
 
 static int
@@ -92,8 +112,8 @@ shake_test(const char *str)
     int nth, rsz;
     struct anthy_conv_stat cs;
     anthy_get_stat(ac, &cs);
-    nth = rand() % cs.nr_segment;
-    rsz = (rand() % 3) - 1;
+    nth = compliant_rand() % cs.nr_segment;
+    rsz = (compliant_rand() % 3) - 1;
     anthy_resize_segment(ac, nth, rsz);
   }
   anthy_release_context(ac);

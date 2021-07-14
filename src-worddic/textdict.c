@@ -1,5 +1,7 @@
 /*
  * ソートされたテキストから検索を行う
+ *
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -16,6 +18,8 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+#include <assert.h>
+#include <errno.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -177,10 +181,12 @@ anthy_textdict_delete_line(struct textdict *td, int offset)
   }
   len = strlen(buf);
   fclose(fp);
-  update_mapping(td);
-  if (!td->mapping) {
+  if (update_mapping(td))
     return -1;
-  }
+  /* anthy_mmap() should make td->ptr if td->mapping is not null
+   * in update_mapping().
+   */
+  assert(td->ptr);
   size = anthy_mmap_size(td->mapping);
   memmove(&td->ptr[offset], &td->ptr[offset+len], size - offset - len);
   unmap(td);
@@ -188,7 +194,11 @@ anthy_textdict_delete_line(struct textdict *td, int offset)
     unlink(td->fn);
     return 0;
   }
-  truncate(td->fn, size - len);
+  errno = 0;
+  if (truncate(td->fn, size - len)) {
+    anthy_log(0, "Failed truncate in %s:%d: %s\n",
+              __FILE__, __LINE__, strerror(errno));
+  }
   return 0;
 }
 
@@ -198,13 +208,16 @@ anthy_textdict_insert_line(struct textdict *td, int offset,
 {
   int len = strlen(line);
   int size;
-  if (!td) {
+  if (!td)
     return -1;
-  }
-  if (expand_file(td, len)) {
+  if (expand_file(td, len))
     return -1;
-  }
-  update_mapping(td);
+  if (update_mapping(td))
+    return -1;
+  /* anthy_mmap() should make td->ptr if td->mapping is not null
+   * in update_mapping().
+   */
+  assert(td->ptr);
   size = anthy_mmap_size(td->mapping);
   memmove(&td->ptr[offset+len], &td->ptr[offset], size - offset - len);
   memcpy(&td->ptr[offset], line, len);
