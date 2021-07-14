@@ -1,6 +1,23 @@
 This document is written in Japanese.
 please read README.en
 
+Anthy Unicode は Anthy がもはやメンテされていないため、Anthy から分岐した
+もう一つの Anthy プロジェクトです。
+私(Takao Fujiwara)は、Yusuke Tabata さんと連絡を取り、私が
+Anthy Unicode を管理することで合意しました。
+
+Anthy Unicode の目的は:
+1. 内部コードを EUC-JP から UTF-8 への変更
+2. ユーザーファイルを $HOME/.anthy から $XDG_CONFIG_HOME/anthy への移行
+3. 新たな和暦の管理
+4. 用語変換の向上
+
+霞(kasumi)を Anthy Unicode と動作させたい場合、Kasumi Unicode が利用可能です:
+https://github.com/fujiwarat/kasumi-unicode
+Kasumi Unicode は、$XDG_CONFIG_HOME/anthy にアクセスできますし、GTK3 も
+サポートしています。
+
+
 インストール(及びアンインストール)の方法はINSTALLをお読みください。
 
 ******** 注意 ********
