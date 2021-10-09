@@ -1,6 +1,9 @@
 Anthy -- Japanese Kana-Kanji Conversion Engine Library
 						-*- mode:reStructuredText -*-
 
+See https://www.nslabs.jp/patch.rhtml
+分岐したDebian版とFedora版のマージを目指す。
+
 What's Anthy?
 =============
 
