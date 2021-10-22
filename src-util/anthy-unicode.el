@@ -11,28 +11,28 @@
 
 ;;; Commentary:
 ;;
-;; かな漢字変換エンジン Anthyを emacsから使うためのプログラム
-;; Anthyライブラリを使うためのコマンドanthy-agentを起動して、
-;; anthy-agentとパイプで通信をすることによって変換の動作を行う
+;; かな漢字変換エンジン Anthy を emacs から使うためのプログラム
+;; Anthy ライブラリを使うためのコマンド anthy-agent-unicode を起動して、
+;; anthy-agent-unicode とパイプで通信をすることによって変換の動作を行う
 ;;
 ;;
 ;; Funded by IPA未踏ソフトウェア創造事業 2001 10/10
 ;;
-;; 開発はemacs21.2上で行っていてminor-mode
-;; もしくはleimとしても使用できる
+;; 開発は emacs21.2 上で行っていて minor-mode
+;; もしくは leim としても使用できる
 ;; (set-input-method 'japanese-anthy)
 ;;
-;; emacs19(mule),20,21,xemacsで動作する
+;; emacs19(mule),20,21,xemacs で動作する
 ;;
 ;;
-;; 2003-08-24 XEmacs の候補選択モードバグに対応(suzuki)
+;; 2003-08-24 XEmacs の候補選択モードバグに対応 (suzuki)
 ;;
 ;; 2001-11-16 EUC-JP -> ISO-2022-JP
 ;;
 ;; TODO
-;;  候補選択モードで候補をいっきに次のページにいかないようにする(2chスレ78)
-;;  minibuffferの扱い
-;;  isearch対応
+;;  候補選択モードで候補をいっきに次のページにいかないようにする (2chスレ78)
+;;  minibufffer の扱い
+;;  isearch 対応
 ;;
 ;; 用語
 ;;  commit 文字列を確定すること
@@ -60,12 +60,12 @@
     (setq anthy-accept-timeout 1))
 
 (defconst anthy-working-buffer " *anthy*")
-(defvar anthy-agent-process nil
-  "anthy-agentのプロセス")
+(defvar anthy-agent-unicode-process nil
+  "anthy-agent-unicodeのプロセス")
 (defvar anthy-use-hankaku-kana t)
 ;;
-(defvar anthy-agent-command-list '("anthy-agent")
-  "anthy-agentのPATH名")
+(defvar anthy-agent-unicode-command-list '("anthy-agent-unicode")
+  "anthy-agent-unicodeのPATH 名")
 
 ;; face
 (defvar anthy-highlight-face nil)
@@ -111,7 +111,7 @@
       (define-key map [backspace] 'anthy-insert)
       (setq anthy-preedit-keymap map)))
 
-;; anthy-agentに送る際にキーをエンコードするためのテーブル
+;; anthy-agent-unicode に送る際にキーをエンコードするためのテーブル
 (defvar anthy-keyencode-alist
   '((1 . "(ctrl A)") ;; \C-a
     (2 . "(left)") ;; \C-b
@@ -144,7 +144,7 @@
     ((right) . "(right)")
     ((left) . "(left)")
     ((up) . "(up)"))
-  "キーのイベントをanthy-agentに送るための対応表")
+  "キーのイベントをanthy-agent-unicodeに送るための対応表")
 
 ;; モードラインの文字列
 (defvar anthy-mode-line-string-alist
@@ -223,7 +223,7 @@
   "プロセスの状態が変化したら参照を消して，次に再起動できるようにする"
   (message "%s" stat)
   (anthy-mode-off)
-  (setq anthy-agent-process nil))
+  (setq anthy-agent-unicode-process nil))
 
 ;;; status
 (defun anthy-update-mode-line ()
@@ -719,16 +719,16 @@
 (defun anthy-do-invoke-agent (cmd)
   (if (and (stringp anthy-personality)
 	   (> (length anthy-personality) 0))
-      (start-process "anthy-agent"
+      (start-process "anthy-agent-unicode"
 		     anthy-working-buffer
 		     cmd
 		     (concat " --personality=" anthy-personality))
-    (start-process "anthy-agent"
+    (start-process "anthy-agent-unicode"
 		   anthy-working-buffer
 		   cmd)))
 ;;
 (defun anthy-invoke-agent ()
-  (let ((list anthy-agent-command-list)
+  (let ((list anthy-agent-unicode-command-list)
 	(proc nil))
     (while (and list (not proc))
       (setq proc 
@@ -742,31 +742,31 @@
 ;;
 (defun anthy-check-agent ()
   ;; check and do invoke
-  (if (not anthy-agent-process)
+  (if (not anthy-agent-unicode-process)
       (let
 	  ((proc (anthy-invoke-agent)))
-	(if anthy-agent-process
-	    (kill-process anthy-agent-process))
-	(setq anthy-agent-process proc)
-	(process-query-on-exist-flag proc)
-	(if anthy-xemacs
-	    (if (coding-system-p (find-coding-system 'euc-japan))
-		(set-process-coding-system proc 'euc-japan 'euc-japan))
-	  (cond ((coding-system-p 'euc-japan)
-		 (set-process-coding-system proc 'euc-japan 'euc-japan))
-		((coding-system-p '*euc-japan*)
-		 (set-process-coding-system proc '*euc-japan* '*euc-japan*))))
+	(if anthy-agent-unicode-process
+	    (kill-process anthy-agent-unicode-process))
+	(setq anthy-agent-unicode-process proc)
+	(set-process-query-on-exit-flag proc nil)
+;;	(if anthy-xemacs
+;;	    (if (coding-system-p (find-coding-system 'euc-japan))
+;;		(set-process-coding-system proc 'euc-japan 'euc-japan))
+;;	  (cond ((coding-system-p 'euc-japan)
+;;		 (set-process-coding-system proc 'euc-japan 'euc-japan))
+;;		((coding-system-p '*euc-japan*)
+;;		 (set-process-coding-system proc '*euc-japan* '*euc-japan*))))
 	(set-process-sentinel proc 'anthy-process-sentinel))))
 ;;
 (defun anthy-do-send-recv-command (cmd)
-  (if (not anthy-agent-process)
+  (if (not anthy-agent-unicode-process)
       (anthy-check-agent))
   (let ((old-buffer (current-buffer)))
     (unwind-protect
 	(progn
 	  (set-buffer anthy-working-buffer)
 	  (erase-buffer)
-	  (process-send-string anthy-agent-process cmd)
+	  (process-send-string anthy-agent-unicode-process cmd)
 	  (while (= (buffer-size) 0)
 	    (accept-process-output nil 0 anthy-accept-timeout))
 	  (read (buffer-string)))
