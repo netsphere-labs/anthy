@@ -149,7 +149,7 @@ static int daemon_sock = -1;
 static int anonymous;
 static int egg;
 static char *personality;
-int use_utf8;
+int use_eucjp;
 
 static char *
 encode_command_arg(char *a)
@@ -1116,8 +1116,8 @@ parse_args(int argc, char **argv)
       egg = 1;
     } else if (!strncmp("--personality=", str, 14)) {
       personality = &str[14];
-    } else if (!strcmp("--utf8", str)) {
-      use_utf8 = 1;
+    } else if (!strcmp("--eucjp", str)) {
+      use_eucjp = 1;
     } else if (i < argc - 1) {
       char *arg = argv[i+1];
       if (!strcmp("--dir", str)) {

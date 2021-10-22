@@ -75,6 +75,19 @@ int anthy_input_errno;
 
 #define is_eucchar(s)  (((s)[0] & 0x80) && ((s)[1] & 0x80))
 
+static int utf8_char_len(char *str) {
+  int len = 0;
+  if ((*str & 0x80) == 0x00) {
+    len = 1;
+  } else if ((*str & 0xe0) == 0xc0) {
+    len = 2;
+  } else if ((*str & 0xf0) == 0xe0) {
+    len = 3;
+  } else if ((*str & 0xf8) == 0xf0) {
+    len = 4;
+  }
+  return len;
+}
 
 struct anthy_input_config {
   struct rk_option* rk_option;
@@ -233,7 +246,7 @@ enter_conv_state(struct anthy_input_context* ictx)
 
   ictx->enum_cand_count = 0;
   ictx->actx = anthy_create_context();
-  anthy_context_set_encoding(ictx->actx, ANTHY_EUC_JP_ENCODING);
+  anthy_context_set_encoding(ictx->actx, ANTHY_UTF8_ENCODING);
   if (!ictx->actx) {
     enter_none_state(ictx);
     anthy_input_errno = AIE_NOMEM;
@@ -434,8 +447,13 @@ cmd_move_cursor(struct anthy_input_context* ictx, int d)
       return;
     for (p = ictx->hbuf_follow;
 	 p < ictx->hbuf_follow + ictx->n_hbuf_follow && d > 0; p++, d--) {
-      if (p < ictx->hbuf_follow + ictx->n_hbuf_follow - 1 && is_eucchar(p))
+      if (p < ictx->hbuf_follow + ictx->n_hbuf_follow - 3 && utf8_char_len(p) == 4) {
+	p += 3;
+      } else if (p < ictx->hbuf_follow + ictx->n_hbuf_follow - 2 && utf8_char_len(p) == 3) {
+	p += 2;
+      } else if (p < ictx->hbuf_follow + ictx->n_hbuf_follow - 1 && utf8_char_len(p) == 2) {
 	p++;
+      }
     }
     len = p - ictx->hbuf_follow;
     ensure_buffer(&ictx->hbuf, &ictx->s_hbuf, ictx->n_hbuf + len);
@@ -450,8 +468,13 @@ cmd_move_cursor(struct anthy_input_context* ictx, int d)
       return;
     for (p = ictx->hbuf + ictx->n_hbuf;
 	 p > ictx->hbuf && d < 0; p--, d++) {
-      if (p - 1 > ictx->hbuf && is_eucchar(p - 2))
+      if (p - 3 > ictx->hbuf && utf8_char_len(p - 4) == 4) {
+	p -= 3;
+      } else if (p - 2 > ictx->hbuf && utf8_char_len(p - 3) == 3) {
+	p -= 2;
+      } else if (p - 1 > ictx->hbuf && utf8_char_len(p - 2) == 2) {
 	p--;
+      }
     }
     len = (ictx->hbuf + ictx->n_hbuf) - p;
     ensure_buffer(&ictx->hbuf_follow, &ictx->s_hbuf_follow,
@@ -490,7 +513,11 @@ cmd_backspace(struct anthy_input_context* ictx)
       do_cmd_push_key(ictx,buf);
       free(buf);
     } else {
-      if (ictx->n_hbuf >= 2 && is_eucchar(ictx->hbuf + ictx->n_hbuf - 2)) {
+      if (ictx->n_hbuf >= 4 && utf8_char_len(ictx->hbuf + ictx->n_hbuf - 4) == 4) {
+	ictx->n_hbuf -= 4;
+      } else if (ictx->n_hbuf >= 3 && utf8_char_len(ictx->hbuf + ictx->n_hbuf - 3) == 3) {
+	ictx->n_hbuf -= 3;
+      } else if (ictx->n_hbuf >= 2 && utf8_char_len(ictx->hbuf + ictx->n_hbuf - 2) == 2) {
 	ictx->n_hbuf -= 2;
       } else if (ictx->n_hbuf >= 1) {
 	ictx->n_hbuf--;
@@ -514,7 +541,15 @@ cmd_delete(struct anthy_input_context* ictx)
   if (ictx->n_hbuf_follow <= 0)
     return;
 
-  len = ictx->n_hbuf_follow >= 2 && is_eucchar(ictx->hbuf_follow) ? 2 : 1;
+  if (ictx->n_hbuf_follow >= 4 && utf8_char_len(ictx->hbuf_follow) == 4) {
+    len = 4;
+  } else if (ictx->n_hbuf_follow >= 3 && utf8_char_len(ictx->hbuf_follow) == 3) {
+    len = 3;
+  } else if (ictx->n_hbuf_follow >= 2 && utf8_char_len(ictx->hbuf_follow) == 2) {
+    len = 2;
+  } else {
+    len = 1;
+  }
 
   if (ictx->n_hbuf_follow <= len)
     ictx->n_hbuf_follow = 0;

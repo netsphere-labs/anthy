@@ -39,7 +39,7 @@ struct context {
 #define MAX_CONTEXT 16
 static struct context contexts[MAX_CONTEXT];
 
-extern int use_utf8;
+extern int use_eucjp;
 
 #define INITIAL_BUFLEN 512
 #define INITIAL_SELLEN 128
@@ -73,7 +73,9 @@ new_context (void)
 	c->selection = NULL;
 	return -1;
       }
-      if (use_utf8) {
+      if (use_eucjp) {
+	anthy_context_set_encoding(c->ac, ANTHY_EUC_JP_ENCODING);
+      } else {
 	anthy_context_set_encoding(c->ac, ANTHY_UTF8_ENCODING);
       }
 
