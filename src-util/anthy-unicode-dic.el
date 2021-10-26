@@ -1,4 +1,4 @@
-;; anthy-dic.el -- Anthy
+;; anthy-unicode-dic.el -- Anthy
 
 ;; Copyright (C) 2001 - 2005
 ;; Author: Yusuke Tabata<yusuke@w5.dion.ne.jp>
@@ -125,8 +125,8 @@
 	  ((= cat 4)
 	   (setq param (anthy-dic-get-av-category word))))
     (if param
-	(setq res (anthy-add-word yomi 1 word param)))
+	(setq res (anthy-add-word yomi 500 word param)))
     (if res
 	(message (concat word "(" yomi ")を登録しました")))))
 
-(provide 'anthy-dic)
+(provide 'anthy-unicode-dic)

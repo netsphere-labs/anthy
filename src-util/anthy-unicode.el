@@ -1,6 +1,8 @@
-;;; anthy.el -- Anthy
+;;; anthy-unicode.el -- Anthy
 
 ;; Copyright (C) 2001 - 2007 KMC(Kyoto University Micro Computer Club)
+;; Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
+;; Copyright (c) 2021 Red Hat, Inc.
 
 ;; Author: Yusuke Tabata<yusuke@kmc.gr.jp>
 ;;         Tomoharu Ugawa
@@ -28,6 +30,7 @@
 ;; 2003-08-24 XEmacs の候補選択モードバグに対応 (suzuki)
 ;;
 ;; 2001-11-16 EUC-JP -> ISO-2022-JP
+;; 2021-10-26 ISO-2022-JP -> UTF-8
 ;;
 ;; TODO
 ;;  候補選択モードで候補をいっきに次のページにいかないようにする (2chスレ78)
@@ -860,26 +863,26 @@
 ;;
 ;; leim の inactivate
 ;;
-(defun anthy-leim-inactivate ()
+(defun anthy-unicode-leim-inactivate ()
   (setq anthy-leim-active-p nil)
   (anthy-update-mode))
 ;;
 ;; leim の activate
 ;;
-(defun anthy-leim-activate (&optional name)
-  (setq deactivate-current-input-method-function 'anthy-leim-inactivate)
+(defun anthy-unicode-leim-activate (&optional name)
+  (setq deactivate-current-input-method-function 'anthy-unicode-leim-inactivate)
   (setq anthy-leim-active-p t)
   (anthy-update-mode)
   (when (eq (selected-window) (minibuffer-window))
-    (add-hook 'minibuffer-exit-hook 'anthy-leim-exit-from-minibuffer)))
+    (add-hook 'minibuffer-exit-hook 'anthy-unicode-leim-exit-from-minibuffer)))
 
 ;;
 ;; emacsのバグ避けらしいです
 ;;
-(defun anthy-leim-exit-from-minibuffer ()
+(defun anthy-unicode-leim-exit-from-minibuffer ()
   (deactivate-input-method)
   (when (<= (minibuffer-depth) 1)
-    (remove-hook 'minibuffer-exit-hook 'anthy-leim-exit-from-minibuffer)))
+    (remove-hook 'minibuffer-exit-hook 'anthy-unicode-leim-exit-from-minibuffer)))
 
 ;;
 ;; Emacs / XEmacs コンパチブルな last-command-char
@@ -901,10 +904,10 @@
 ;;
 ;;
 ;(global-set-key [(meta escape)] 'anthy-mode)
-(provide 'anthy)
+(provide 'anthy-unicode)
 
-(require 'anthy-dic)
-(require 'anthy-conf)
+(require 'anthy-unicode-dic)
+(require 'anthy-unicode-conf)
 
 ;; is it ok for i18n?
 (set-language-info "Japanese" 'input-method "japanese-anthy")

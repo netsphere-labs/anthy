@@ -1,9 +1,9 @@
-;; anthy-kyuri.el
+;; anthy-unicode-kyuri.el
 
 ;; Copyright (C) 2005
 ;; Author: Yukihiro Matsumoto <matz@ruby-lang.org>
 
-(require 'anthy)
+(require 'anthy-unicode)
 
 (setq anthy-kyuri-mode-hiragana-map
   '(

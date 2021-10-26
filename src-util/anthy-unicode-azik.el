@@ -1,10 +1,10 @@
-;; anthy-azik.el
+;; anthy-unicode-azik.el
 
 ;; Copyright (C) 2004
 ;; Author: Yutaka Hara<yhara@kmc.gr.jp>
 
 ;; add following 2 lines to ~/.emacs
-;; (load-library "anthy-azik")
+;; (load-library "anthy-unicode-azik")
 ;; (anthy-azik-mode)
 ;;
 

@@ -1,4 +1,4 @@
-;; anthy-conf.el -- Anthy
+;; anthy-unicode-conf.el -- Anthy
 
 
 ;; Copyright (C) 2002
@@ -119,4 +119,4 @@
        " BREAK_INTO_ROMAN 1\n"
      " BREAK_INTO_ROMAN 0\n")))
 
-(provide 'anthy-conf)
+(provide 'anthy-unicode-conf)

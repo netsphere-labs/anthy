@@ -1,4 +1,4 @@
-;; anthy-isearch.el -- Anthy
+;; anthy-unicode-isearch.el -- Anthy
 
 ;; Copyright (C) 2003
 ;; Author: Yusuke Tabata <yusuke@cherbim.icw.co.jp>
@@ -11,7 +11,7 @@
 ;; most of the code is stolen from SKK.
 ;; for Emacs-21
 
-(require 'anthy)
+(require 'anthy-unicode)
 
 (defvar anthy-isearch-mode-map nil)
 
