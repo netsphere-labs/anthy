@@ -74,7 +74,8 @@
 (defvar anthy-highlight-face nil)
 (defvar anthy-underline-face nil)
 (copy-face 'highlight 'anthy-highlight-face)
-(set-face-underline 'anthy-highlight-face t)
+(if (not (featurep 'xemacs))
+    (set-face-underline 'anthy-highlight-face t))
 (copy-face 'underline 'anthy-underline-face)
 
 ;;
