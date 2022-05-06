@@ -451,7 +451,7 @@ anthy_get_nth_segment(struct segment_list *sl, int n)
       n < 0) {
     return NULL;
   }
-  for (i = 0, se = sl->list_head.next; i < n; i++, se = se->next);
+  for (i = 0, se = sl->list_head.next; (i < n) && se; i++, se = se->next);
   return se;
 }
 
@@ -499,6 +499,17 @@ get_change_state(struct anthy_context *ac)
   int i;
   for (i = 0; i < ac->seg_list.nr_segments; i++) {
     struct seg_ent *s = anthy_get_nth_segment(&ac->seg_list, i);
+    if (!ac->split_info.ce) {
+      anthy_log(0, "ac->split_info.ce is NULL %s:%d\n", __FILE__, __LINE__);
+      resize = 1;
+      break;
+    }
+    if (!s) {
+      anthy_log(0, "ac->seg_list %dth entry is NULL %s:%d\n",
+                i, __FILE__, __LINE__);
+      resize = 1;
+      continue;
+    }
     if (ac->split_info.ce[s->from].initial_seg_len != s->len) {
       resize = 1;
     }
@@ -538,6 +549,11 @@ write_history(int                   fd,
     struct seg_ent *s = anthy_get_nth_segment(&ac->seg_list, i);
     char *c;
     /**/
+    if (!s) {
+      anthy_log(0, "ac->seg_list %dth entry is NULL %s:%d\n",
+                i, __FILE__, __LINE__);
+      continue;
+    }
     if (s->committed < 0) {
       dprintf(fd, "?|");
       continue ;
@@ -647,9 +663,11 @@ print_segment(struct seg_ent *e)
 {
   int i;
 
+  assert(e);
   anthy_putxstr(&e->str);
   printf("(");
   for ( i = 0 ; i < e->nr_cands ; i++) {
+    assert(e->cands);
     anthy_print_candidate(e->cands[i]);
     printf(",");
   }
