@@ -46,7 +46,7 @@ static int dic_init_count;
 
 /* 辞書 */
 /* 全personalityで共有されるファイル辞書 */
-static struct word_dic *master_dic_file;
+static struct word_dic *main_dic_file;
 
 /* 各パーソナリティごとの辞書 */
 struct mem_dic *anthy_current_personal_dic_cache;/* キャッシュ */
@@ -89,7 +89,7 @@ anthy_cache_get_seq_ent(xstr *xs, int is_reverse)
 int
 anthy_dic_check_word_relation(int from, int to)
 {
-  return anthy_word_dic_check_word_relation(master_dic_file, from, to);
+  return anthy_word_dic_check_word_relation(main_dic_file, from, to);
 }
 
 static seq_ent_t
@@ -349,7 +349,7 @@ do_gang_load_dic(xstr *sentence, int is_reverse)
   }
   qsort(array, nr, sizeof(struct gang_elm *), gang_elm_compare_func);
   /**/
-  anthy_gang_fill_seq_ent(master_dic_file, array, nr, is_reverse);
+  anthy_gang_fill_seq_ent(main_dic_file, array, nr, is_reverse);
   /**/
   scan_misc_dic(array, nr, is_reverse);
   /* 個人辞書から読む */
@@ -769,8 +769,8 @@ anthy_init_dic(void)
   anthy_init_features();
 
   anthy_init_word_dic();
-  master_dic_file = anthy_create_word_dic();
-  if (!master_dic_file) {
+  main_dic_file = anthy_create_word_dic();
+  if (!main_dic_file) {
     anthy_log(0, "Failed to create file dic.\n");
     return -1;
   }
