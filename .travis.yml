@@ -7,7 +7,7 @@ dist: focal
 
 branches:
   only:
-  - master
+  - main
 
 arch:
   - amd64
