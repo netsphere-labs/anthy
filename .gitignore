@@ -3,6 +3,7 @@
 #
 aclocal.m4
 autom4te.cache/*
+
 compile
 config.guess
 config.sub
@@ -20,3 +21,11 @@ m4/*
 *~
 *.bak
 
+# mingw
+Makefile
+.deps
+*.o
+.libs
+*.exe
+*.lo
+*.la
