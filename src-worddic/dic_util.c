@@ -17,6 +17,7 @@
  * Funded by IPA未踏ソフトウェア創造事業 2001 10/24
  *
  * Copyright (C) 2001-2007 TABATA Yusuke
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  *
  */
 /*
@@ -34,6 +35,7 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+#include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
@@ -41,9 +43,10 @@
 #include <anthy/anthy.h>
 #include <anthy/conf.h>
 #include <anthy/dic.h>
-#include <anthy/texttrie.h>
-#include <anthy/textdict.h>
 #include <anthy/dicutil.h>
+#include <anthy/logger.h>
+#include <anthy/textdict.h>
+#include <anthy/texttrie.h>
 
 #include "dic_main.h"
 #include "dic_personality.h"
@@ -291,6 +294,10 @@ anthy_priv_dic_get_index(char *buf, int len)
   } else {
     src_buf = strdup(src_buf);
   }
+  if (!src_buf) {
+    anthy_log(0, "Failed src_buf != NULL in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
   /* 最初の空白か\0までをコピーする */
   for (i = 0; src_buf[i] && src_buf[i] != ' '; i++) {
     if (i >= len - 1) {
@@ -356,6 +363,7 @@ anthy_priv_dic_get_word(char *buf, int len)
   }
   /* 品詞の後ろにある単語を取り出す */
   s = strchr(v, ' ');
+  assert(s);
   s++;
   if (!word_iterator.in_tt && dic_util_encoding == ANTHY_EUC_JP_ENCODING) {
     s = anthy_conv_utf8_to_euc(s);
@@ -441,6 +449,10 @@ find_same_word(char *idx_buf, const char *yomi,
 	       const char *word, const char *wt_name, int yomi_len)
 {
   int found = 0;
+  if (!idx_buf) {
+    anthy_log(0, "Failed idx_buf != NULL in %s:%d\n", __FILE__, __LINE__);
+    return found;
+  }
   sprintf(idx_buf, "%s%s ",
 	  encoding_prefix(dic_util_encoding),
 	  yomi);
@@ -456,6 +468,13 @@ find_same_word(char *idx_buf, const char *yomi,
       break;
     }
     /* texttrieにアクセスして、見出語以外も一致しているかをチェック */
+    /* 単語を読み出して登録
+     * GCC 11.0.1 reports double-'free' of 'v'
+     * in case statement with "-Wanalyzer-double-free" option
+     * but 'v' is always allocated newly.
+     */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wanalyzer-double-free"
     v = anthy_trie_find(anthy_private_tt_dic, idx_buf);
     if (v) {
       found = dup_word_check(v, word, wt_name);
@@ -464,6 +483,7 @@ find_same_word(char *idx_buf, const char *yomi,
 	break;
       }
     }
+#pragma GCC diagnostic pop
   } while (anthy_trie_find_next_key(anthy_private_tt_dic,
 				    idx_buf, yomi_len + 12));
 
@@ -565,9 +585,7 @@ do_search(FILE *fp, const char *word)
       continue;
     }
     if (!strncasecmp(buf, word, len)) {
-      if (res) {
-	free(res);
-      }
+      free(res);
       res = strdup(buf);
     }
   }

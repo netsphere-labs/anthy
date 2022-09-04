@@ -22,5 +22,6 @@ void anthy_sparse_matrix_make_matrix(struct sparse_matrix *m);
 struct matrix_image *anthy_matrix_image_new(struct sparse_matrix *s);
 /* 行列イメージにアクセスするAPI(配列はnetwork byte order) */
 int anthy_matrix_image_peek(int *im, int row, int col);
+void anthy_sparse_matrix_free(struct sparse_matrix *m);
 
 #endif

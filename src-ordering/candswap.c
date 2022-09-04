@@ -8,9 +8,13 @@
  *  自立語部:「田端」->「田畑」
  *    の二つのエントリを追加する
  *
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
+ *
  */
 #include <stdlib.h>
+#include <stdio.h>
 
+#include <anthy/logger.h>
 #include <anthy/record.h>
 #include <anthy/segment.h>
 /* for OCHAIRE_SCORE */
@@ -106,10 +110,22 @@ prepare_swap_candidate(xstr *target)
   }
 
   if (!anthy_xstrcmp(target, n)) {
+    int i;
+    char buff[256];
     /* 第一候補 -> xs -> n で n = 第一候補のループ */
-    anthy_select_row(target, 0);
+    if (anthy_select_row(target, 0)) {
+      for (i = 0; i < 3 && i < target->len; i++)
+        sprintf (buff + i * 6, "%04X, ", target->str[i]);
+      anthy_log(0, "No current selection or Could not find %s in %s:%d.\n",
+                buff, __FILE__, __LINE__);
+    }
     anthy_release_row();
-    anthy_select_row(xs, 0);
+    if (anthy_select_row(xs, 0)) {
+      for (i = 0; i < 3 && i < xs->len; i++)
+        sprintf (buff + i * 6, "%04X, ", xs->str[i]);
+      anthy_log(0, "No current selection or Could not find %s in %s:%d.\n",
+                buff, __FILE__, __LINE__);
+    }
     anthy_release_row();
     /* 第一候補 -> xs を消して、交換の必要は無し */
     return NULL;
@@ -157,7 +173,8 @@ proc_swap_candidate_indep(struct seg_ent *se)
   }
 
   /**/
-  anthy_select_section("INDEPPAIR", 1);
+  if (anthy_select_section("INDEPPAIR", 1))
+    anthy_log(0, "Failed to save INDEPPAIR in %s:%d.\n", __FILE__, __LINE__);
   xs = prepare_swap_candidate(&key);
   free(key.str);
   if (!xs) {

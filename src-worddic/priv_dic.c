@@ -5,6 +5,7 @@
  * 未知語を自動的に学習して管理するAPIも持つ。
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -21,6 +22,7 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+#include <errno.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <dirent.h>
@@ -34,6 +36,7 @@
 #include <anthy/anthy.h>
 #include <anthy/alloc.h>
 #include <anthy/dic.h>
+#include <anthy/diclib.h>
 #include <anthy/record.h>
 #include <anthy/dicutil.h>
 #include <anthy/conf.h>
@@ -43,6 +46,7 @@
 #include <anthy/word_dic.h>
 #include "dic_main.h"
 #include "dic_ent.h"
+#include <src-diclib/diclib_inner.h>
 
 /* 個人辞書 */
 struct text_trie *anthy_private_tt_dic;
@@ -81,17 +85,26 @@ anthy_get_user_dir(int is_old)
 
   if (is_old) {
     hd = anthy_conf_get_str("HOME");
-    old_anthy_private_dir = malloc(strlen(hd) + 10);
+    if (!(old_anthy_private_dir = malloc(strlen(hd) + 10))) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      return NULL;
+    }
     sprintf(old_anthy_private_dir, "%s/.anthy", hd);
     return old_anthy_private_dir;
   }
   xdg = anthy_conf_get_str("XDG_CONFIG_HOME");
   if (xdg && xdg[0]) {
-    anthy_private_dir = malloc(strlen(xdg) + 10);
+    if (!(anthy_private_dir = malloc(strlen(xdg) + 10))) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      return NULL;
+    }
     sprintf(anthy_private_dir, "%s/anthy", xdg);
   } else {
     hd = anthy_conf_get_str("HOME");
-    anthy_private_dir = malloc(strlen(hd) + 15);
+    if (!(anthy_private_dir = malloc(strlen(hd) + 15))) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      return NULL;
+    }
     sprintf(anthy_private_dir, "%s/.config/anthy", hd);
   }
   return anthy_private_dir;
@@ -101,20 +114,18 @@ anthy_get_user_dir(int is_old)
 void
 anthy_check_user_dir(void)
 {
-  struct stat st;
   const char *dn = anthy_get_user_dir(0);
-  if (stat(dn, &st) || !S_ISDIR(st.st_mode)) {
+  /* Use anthy_file_test() and anthy_mkdir_with_parents() since
+   * chmod() after stat() causes a a time-of-check, * time-of-use race
+   * condition (TOCTOU).
+   */
+  if (!anthy_file_test (dn, ANTHY_FILE_TEST_EXISTS | ANTHY_FILE_TEST_IS_DIR)) {
     int r;
-    /*fprintf(stderr, "Anthy: Failed to open anthy directory(%s).\n", dn);*/
-    r = mkdir(dn, S_IRWXU);
+    errno = 0;
+    r = anthy_mkdir_with_parents(dn, S_IRWXU);
     if (r == -1){
-      anthy_log(0, "Failed to create profile directory\n");
-      return ;
-    }
-    /*fprintf(stderr, "Anthy: Created\n");*/
-    r = chmod(dn, S_IRUSR | S_IWUSR | S_IXUSR);
-    if (r == -1) {
-      anthy_log(0, "But failed to change permission.\n");
+      anthy_log(0, "Failed to create profile directory: %s\n", strerror(errno));
+      return;
     }
   }
 }
@@ -237,12 +248,15 @@ copy_words_from_tt(struct seq_ent *seq, xstr *xs,
     tt_dic = old_anthy_private_tt_dic;
   else
     tt_dic = anthy_private_tt_dic;
-  if (!tt_dic) {
-    return ;
-  }
+  if (!tt_dic)
+    return;
   key = anthy_xstr_to_cstr(xs, encoding);
   key_len = strlen(key);
-  key_buf = malloc(key_len + 12);
+  if (!(key_buf = malloc(key_len + 12))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    free(key);
+    return;
+  }
   /* 辞書中には各単語が「見出し XXXX」(XXXXはランダムな文字列)を
    * キーとして保存されているので列挙する
    */
@@ -254,12 +268,19 @@ copy_words_from_tt(struct seq_ent *seq, xstr *xs,
       /* 「見出し 」で始まっていないので対象外 */
       break;
     }
-    /* 単語を読み出して登録 */
+    /* 単語を読み出して登録
+     * GCC 11.0.1 reports double-'free' of 'v'
+     * in case statement with "-Wanalyzer-double-free" option
+     * but 'v' is always allocated newly.
+     */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wanalyzer-double-free"
     v = anthy_trie_find(tt_dic, key_buf);
     if (v) {
       add_to_seq_ent(v, encoding, seq);
     }
     free(v);
+#pragma GCC diagnostic pop
     /**/
   } while (anthy_trie_find_next_key(tt_dic,
 				    key_buf, key_len + 8));

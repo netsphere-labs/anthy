@@ -2,6 +2,7 @@
  * 用例辞書を作る
  *
  * Copyright (C) 2003-2005 TABATA Yusuke
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 
 #define _CRT_SECURE_NO_WARNINGS
@@ -10,7 +11,7 @@
 #include <string.h>
 #include <stdio.h>
 
-#include <anthy/anthy.h>
+#include <anthy/logger.h>
 #include <anthy/matrix.h>
 #include "mkdic.h"
 
@@ -58,7 +59,10 @@ commit_uc(struct uc_dict *dict, int x, int y)
   if (x < 0 || y < 0) {
     return ;
   }
-  uc = malloc(sizeof(struct use_case));
+  if (!(uc = malloc(sizeof(struct use_case)))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return;
+  }
   uc->id[0] = x;
   uc->id[1] = y;
   /**/
@@ -72,6 +76,10 @@ struct uc_dict *
 create_uc_dict(void)
 {
   struct uc_dict *dict = malloc(sizeof(struct uc_dict));
+  if (!dict) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
 
   dict->uc_head.next = NULL;
   dict->nr_ucs = 0;
@@ -124,6 +132,22 @@ read_uc_file(struct uc_dict *dict, const char *fn)
     }
     off ++;
   }
+  fclose(uc_file);
+}
+
+void
+free_uc_dict(struct uc_dict *dict)
+{
+  struct use_case *uc, *prev_uc;
+
+  if (!dict)
+    return;
+  for (uc = dict->uc_head.next; uc; ) {
+    prev_uc = uc;
+    uc = uc->next;
+    free (prev_uc);
+  }
+  free (dict);
 }
 
 /* 用例辞書をファイルに書き出す */
@@ -152,5 +176,7 @@ make_ucdict(FILE *uc_out, struct uc_dict *dict)
   } else {
     printf("udic: no use examples.\n");
   }
-
+  anthy_sparse_matrix_free(sm);
+  free(mi->image);
+  free(mi);
 }

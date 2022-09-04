@@ -5,7 +5,7 @@
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
  * Copyright (C) 2005-2006 YOSHIDA Yuichi
- *
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -47,7 +47,7 @@ static int dic_init_count;
 
 /* 辞書 */
 /* 全personalityで共有されるファイル辞書 */
-static struct word_dic *master_dic_file;
+static struct word_dic *main_dic_file;
 
 /* 各パーソナリティごとの辞書 */
 struct mem_dic *anthy_current_personal_dic_cache;/* キャッシュ */
@@ -90,7 +90,7 @@ anthy_cache_get_seq_ent(xstr *xs, int is_reverse)
 int
 anthy_dic_check_word_relation(int from, int to)
 {
-  return anthy_word_dic_check_word_relation(master_dic_file, from, to);
+  return anthy_word_dic_check_word_relation(main_dic_file, from, to);
 }
 
 static seq_ent_t
@@ -121,8 +121,17 @@ convert_vu(xstr *xs)
   }
   if (v > 0) {
     xstr *nx = malloc(sizeof(xstr));
+    if (!nx) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      return NULL;
+    }
     nx->len = xs->len + v;
     nx->str = malloc(sizeof(xchar)*nx->len);
+    if (!nx->str) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      free(nx);
+      return NULL;
+    }
     j = 0;
     /* 「ヴ」を「う゛」に変換しつつコピーする */
     for (i = 0; i < xs->len; i++) {
@@ -326,15 +335,22 @@ do_gang_load_dic(xstr *sentence, int is_reverse)
       nr += find_gang_elm(ator, &head, &xs);
     }
   }
-  array = malloc(sizeof(struct gang_elm *) * nr);
+  if (!(array = malloc(sizeof(struct gang_elm *) * nr))) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      return;
+  }
   cur = head.tmp.next;
   for (i = 0; i < nr; i++) {
     array[i] = cur;
+    if (!cur) {
+      anthy_log(0, "gang_elm is null at %dth loop\n", i);
+      break;
+    }
     cur = cur->tmp.next;
   }
   qsort(array, nr, sizeof(struct gang_elm *), gang_elm_compare_func);
   /**/
-  anthy_gang_fill_seq_ent(master_dic_file, array, nr, is_reverse);
+  anthy_gang_fill_seq_ent(main_dic_file, array, nr, is_reverse);
   /**/
   scan_misc_dic(array, nr, is_reverse);
   /* 個人辞書から読む */
@@ -757,8 +773,8 @@ anthy_init_dic(void)
   anthy_init_features();
 
   anthy_init_word_dic();
-  master_dic_file = anthy_create_word_dic();
-  if (!master_dic_file) {
+  main_dic_file = anthy_create_word_dic();
+  if (!main_dic_file) {
     anthy_log(0, "Failed to create file dic.\n");
     return -1;
   }

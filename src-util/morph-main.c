@@ -23,6 +23,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include <anthy/anthy.h>
+#include <anthy/xstr.h>
 /* for print_context_info() */
 #include <anthy/convdb.h>
 
@@ -34,7 +35,7 @@ static void read_file(struct test_context *tc, const char *fn);
 extern void anthy_reload_record(void);
 
 int verbose;
-int use_utf8;
+static int use_utf8 = 1;
 
 /**/
 static void
@@ -42,7 +43,9 @@ init_test_context(struct test_context *tc)
 {
   tc->ac = anthy_create_context();
   anthy_set_reconversion_mode(tc->ac, ANTHY_RECONVERT_ALWAYS);
-  if (use_utf8) {
+  if (!use_utf8) {
+    anthy_context_set_encoding(tc->ac, ANTHY_EUC_JP_ENCODING);
+  } else {
     anthy_context_set_encoding(tc->ac, ANTHY_UTF8_ENCODING);
   }
   anthy_reload_record();
@@ -123,6 +126,8 @@ parse_args(int argc, char **argv)
     char *arg = argv[i];
     if (!strcmp(arg, "--utf8")) {
       use_utf8 = 1;
+    } else if (!strcmp(arg, "--eucjp")) {
+      use_utf8 = 0;
     } else if (arg[i] == '-') {
       print_usage();
     }
@@ -140,6 +145,11 @@ main(int argc, char **argv)
 
   /*read_file(&tc, "index.txt");*/
   parse_args(argc, argv);
+  if (!use_utf8) {
+    anthy_xstr_set_print_encoding(ANTHY_EUC_JP_ENCODING);
+  } else {
+    anthy_xstr_set_print_encoding(ANTHY_UTF8_ENCODING);
+  }
 
   nr = 0;
   for (i = 1; i < argc; i++) {

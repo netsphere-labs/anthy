@@ -18,7 +18,7 @@
  *
  * Copyright (C) 2005-2006 YOSHIDA Yuichi
  * Copyright (C) 2006-2007 TABATA Yusuke
- *
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -40,8 +40,9 @@
 #include <stdlib.h>
 #include <sys/stat.h>
 
-#include <anthy/xstr.h>
 #include <anthy/diclib.h>
+#include <anthy/logger.h>
+#include <anthy/xstr.h>
 
 #define SECTION_ALIGNMENT 64
 #define DIC_NAME "anthy.dic"
@@ -64,9 +65,10 @@ static int
 get_file_size(const char* fn)
 {
   struct stat st;
-  if (stat(fn, &st) < 0) {
+  if (!fn)
     return -1;
-  }
+  if (stat(fn, &st) < 0)
+    return -1;
   return (st.st_size + SECTION_ALIGNMENT - 1) & (-SECTION_ALIGNMENT);
 }
 
@@ -74,6 +76,10 @@ static char *
 get_file_name(const char *prefix, struct header_entry* entry)
 {
   char *fn = malloc(strlen(prefix) + strlen(entry->file_name) + 4);
+  if (!fn) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
   sprintf(fn, "%s/%s", prefix, entry->file_name);
   return fn;
 }
@@ -157,6 +163,8 @@ write_contents(FILE* fp, const char *prefix,
     FILE* in_fp;
     char *fn = get_file_name(prefix, &entries[i]);
 
+    if (!fn)
+      break;
     in_fp = fopen(fn, "r");
     if (in_fp == NULL) {
       printf("failed to open %s\n", fn);

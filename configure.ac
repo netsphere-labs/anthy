@@ -18,12 +18,15 @@ AM_CONFIG_HEADER(config.h)
 AC_CONFIG_MACRO_DIR(m4)
 
 dnl Checks for programs.
+AS_VERSION
 AC_PROG_CC
 AC_PROG_CPP
 # AM_PROG_LIBTOOL is deprecated.
 LT_INIT
 
 AM_PATH_LISPDIR
+AC_CHECK_FUNCS([strerror_r])
+
 AM_CONDITIONAL(ELISP, test x$lispdir != x)
 
 dnl without emacs. install-lispLISP does mkdir /anthy
@@ -39,7 +42,9 @@ AC_OUTPUT(Makefile
  src-splitter/Makefile src-ordering/Makefile
  src-main/Makefile src-util/Makefile
  anthy/Makefile
- depgraph/Makefile mkanthydic/Makefile mkworddic/Makefile
+ depgraph/Makefile
+ m4/Makefile
+ mkanthydic/Makefile mkworddic/Makefile
  mkworddic/dict.args test/Makefile
  alt-cannadic/Makefile
  doc/Makefile calctrans/Makefile

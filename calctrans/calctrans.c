@@ -14,6 +14,7 @@
  *
  * Copyright (C) 2006 HANAOKA Toshiyuki
  * Copyright (C) 2006-2007 TABATA Yusuke
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  *
  */
 /*
@@ -31,17 +32,19 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+#include <assert.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <math.h>
 
 #include <anthy/anthy.h>
-#include <anthy/xstr.h>
-#include <anthy/feature_set.h>
-#include <anthy/diclib.h>
-#include "input_set.h"
 #include <anthy/corpus.h>
+#include <anthy/diclib.h>
+#include <anthy/feature_set.h>
+#include <anthy/logger.h>
+#include <anthy/xstr.h>
+#include "input_set.h"
 
 #define FEATURE_SET_SIZE NR_EM_FEATURES
 
@@ -155,7 +158,7 @@ static void
 parse_indep(struct input_info *m, struct sentence_info *sinfo,
 	    char *line, char *buf, int error_class)
 {
-  struct array features;
+  struct array features = { 0, };
   char *s;
   int weight = 1;
   /**/
@@ -341,6 +344,7 @@ dump_features(FILE *ofp, struct input_set *is)
   for (i = 0; i < nr; i++) {
     dump_line(ofp, lines[i]);
   }
+  free(lines);
 }
 
 static void
@@ -372,7 +376,8 @@ convert_line(FILE *ofp, char *buf)
 }
 
 static void
-convert_file(FILE *ifp)
+convert_file(FILE       *ifp,
+             const char *ifn)
 {
   char buf[1024];
   FILE *ofp = NULL;
@@ -400,6 +405,10 @@ convert_file(FILE *ifp)
 	write_nl(ofp, 0);
       }
     } else {
+      if (!ofp) {
+        anthy_log(0, "section could not found in %s\n", ifn);
+        continue;
+      }
       convert_line(ofp, buf);
     }
   }
@@ -420,7 +429,7 @@ convert_data(int nr_fn, char **fns)
       fprintf(stderr, "failed to open (%s)\n", fns[i]);
       continue;
     }
-    convert_file(ifp);
+    convert_file(ifp, fns[i]);
     fclose(ifp);
   }
 }
@@ -468,7 +477,10 @@ static void
 string_pool_sort(struct string_pool *sp)
 {
   int idx, h;
-  sp->array = malloc(sizeof(struct string_node *) * sp->nr);
+  if (!(sp->array = malloc(sizeof(struct string_node *) * sp->nr))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return;
+  }
   for (idx = 0, h = 0; h < STRING_HASH_SIZE; h++) {
     struct string_node *node;
     for (node = sp->hash[h].next_hash; node; node = node->next_hash) {
@@ -494,6 +506,7 @@ static unsigned int
 string_hash(const unsigned char *str)
 {
   unsigned int h = 0;
+  assert(str);
   while (*str) {
     h += *str;
     h *= 13;
@@ -526,10 +539,20 @@ static void
 flush_extract_stat(struct extract_stat *es, struct string_pool *sp)
 {
   int i;
+  assert(es);
+  if (es->nr > 0)
+    assert(es->info);
   for (i = 0; i < es->nr; i++) {
     if (es->info[i].valid) {
       struct string_node *node;
       node = find_string_node(sp, es->info[i].indep);
+      if (!node) {
+        anthy_log(0, "Failed malloc at %d/%d in %s:%d\n",
+                  i, es->nr, __FILE__, __LINE__);
+        free(es->info[i].indep);
+        es->info[i].indep = NULL;
+        continue;
+      }
       if (node->key == 0) {
 	xstr *xs = anthy_cstr_to_xstr(node->str, ANTHY_EUC_JP_ENCODING);
 	node->key = anthy_xstr_hash(xs);
@@ -585,6 +608,8 @@ static void
 fill_missed_word(struct extract_stat *es, char *buf)
 {
   char *c = get_indep_part(buf);
+  assert(es);
+  assert(es->info);
   if (!c) {
     return ;
   }
@@ -669,6 +694,10 @@ proc_corpus(int nr_fn, char **fns, FILE *ofp)
   fprintf(stderr, " %d sentences\n", m->nr_sentences);
   fprintf(stderr, " %d connections\n", m->nr_connections);
   fprintf(stderr, " %d segments\n", m->nr_connections - m->nr_sentences);
+  input_set_free(m->seg_is);
+  input_set_free(m->cand_is);
+  corpus_free(m->indep_corpus);
+  free(m);
 }
 
 int
@@ -682,7 +711,10 @@ main(int argc, char **argv)
   int extract = 0;
 
   ofp = NULL;
-  input_files = malloc(sizeof(char *) * argc);
+  if (!(input_files = malloc(sizeof(char *) * argc))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return 1;
+  }
   
   for (i = 1; i < argc; i++) {
     char *arg = argv[i];
@@ -700,15 +732,17 @@ main(int argc, char **argv)
       extract = 1;
     } else {
       input_files[nr_input] = arg;
-      nr_input ++;
+      nr_input++;
     }
   }
   if (extract) {
     printf(" -- extracting missed words\n");
-    if (!ofp) {
+    if (!ofp)
       ofp = stdout;
-    }
     extract_word(nr_input, input_files, ofp);
+    free(input_files);
+    if (ofp != stdout)
+      fclose(ofp);
     return 0;
   }
   if (ofp) {
@@ -720,6 +754,7 @@ main(int argc, char **argv)
     printf(" -- converting dictionary from text to binary form\n");
     convert_data(nr_input, input_files);
   }
+  free(input_files);
 
   return 0;
 }

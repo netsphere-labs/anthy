@@ -4,7 +4,7 @@
  * *将来的には一つのファイルを複数の目的にmapすることも考慮
  *
  * Copyright (C) 2005 TABATA Yusuke
- *
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -89,7 +89,11 @@ anthy_mmap(const char *fn, int wr)
   }
 
   /* mmapに成功したので情報を返す */
-  m = malloc(sizeof(struct filemapping));
+  if (!(m = malloc(sizeof(struct filemapping)))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    munmap(ptr, st.st_size);
+    return NULL;
+  }
   m->size = st.st_size;
   m->ptr = ptr;
   m->wr = wr;

@@ -8,6 +8,7 @@
  *
  * Funded by IPA未踏ソフトウェア創造事業 2001 10/29
  * Copyright (C) 2000-2007 TABATA Yusuke
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  *
  * $Id: context.c,v 1.26 2002/11/17 14:45:47 yusuke Exp $
  */
@@ -26,16 +27,20 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+#include <assert.h>
+#include <fcntl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
 #include <anthy/anthy.h>
 #include <anthy/alloc.h>
+#include <anthy/logger.h>
 #include <anthy/record.h>
 #include <anthy/ordering.h>
 #include <anthy/splitter.h>
@@ -81,10 +86,15 @@ release_segment(struct seg_ent *s)
       anthy_release_cand_ent(s->cands[i]);
     }
     free (s->cands);
+    s->cands = NULL;
   }
-  if (s->mw_array) {
-    free(s->mw_array);
-  }
+  free(s->mw_array);
+  s->mw_array = NULL;
+  s->best_mw = NULL;
+  s->str.str = NULL;
+  s->str.len = 0;
+  s->next = NULL;
+  s->prev = NULL;
   free(s);
 
 }
@@ -96,12 +106,13 @@ pop_back_seg_ent(struct anthy_context *c)
   struct seg_ent *s;
   s = c->seg_list.list_head.prev;
   if (s == &c->seg_list.list_head) {
-    return ;
+    return;
   }
   s->prev->next = s->next;
   s->next->prev = s->prev;
+  c->seg_list.list_head.prev = s->next->prev;
   release_segment(s);
-  c->seg_list.nr_segments --;
+  c->seg_list.nr_segments--;
 }
 
 
@@ -174,7 +185,10 @@ create_segment(struct anthy_context *ac, int from, int len,
 	       struct meta_word* best_mw)
 {
   struct seg_ent* s;
-  s = (struct seg_ent *)malloc(sizeof(struct seg_ent));
+  if (!(s = (struct seg_ent *)malloc(sizeof(struct seg_ent)))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
   s->str.str = &ac->str.str[from];
   s->str.len = len;
   s->from = from;
@@ -191,6 +205,7 @@ create_segment(struct anthy_context *ac, int from, int len,
 static void
 push_back_segment(struct anthy_context *ac, struct seg_ent *se)
 {
+  assert(se);
   se->next = &ac->seg_list.list_head;
   se->prev = ac->seg_list.list_head.prev;
   ac->seg_list.list_head.prev->next = se;
@@ -236,7 +251,10 @@ anthy_do_create_context(int encoding)
     return NULL;
   }
 
-  ac = (struct anthy_context *)anthy_smalloc(context_ator);
+  if (!(ac = (struct anthy_context *)anthy_smalloc(context_ator))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
   ac->str.str = NULL;
   ac->str.len = 0;
   ac->seg_list.nr_segments = 0;
@@ -383,15 +401,20 @@ anthy_do_resize_segment(struct anthy_context *ac,
 
   /* resizeが可能か検査する */
   if (nth >= ac->seg_list.nr_segments) {
-    return ;
+    return;
   }
   index = get_nth_segment_index(ac, nth);
   len = get_nth_segment_len(ac, nth);
   if (index + len + resize > ac->str.len) {
-    return ;
+    return;
   }
   if (len + resize < 1) {
-    return ;
+    return;
+  }
+  if (index < 0) {
+    anthy_log(0, "Wrong segment index for %dth %s:%d\n",
+              nth, __FILE__, __LINE__);
+    return;
   }
 
   /* nth以降のseg_entを解放する */
@@ -428,7 +451,7 @@ anthy_get_nth_segment(struct segment_list *sl, int n)
       n < 0) {
     return NULL;
   }
-  for (i = 0, se = sl->list_head.next; i < n; i++, se = se->next);
+  for (i = 0, se = sl->list_head.next; (i < n) && se; i++, se = se->next);
   return se;
 }
 
@@ -454,7 +477,7 @@ anthy_do_set_prediction_str(struct anthy_context *ac, xstr* xs)
     }
   }
 
-  prediction->str.str = (xchar*)malloc(sizeof(xchar*)*(xs->len+1));
+  prediction->str.str = (xchar*)malloc(sizeof(xchar) * (xs->len + 1));
   anthy_xstrcpy(&prediction->str, xs);
   prediction->str.str[xs->len]=0;
 
@@ -476,6 +499,17 @@ get_change_state(struct anthy_context *ac)
   int i;
   for (i = 0; i < ac->seg_list.nr_segments; i++) {
     struct seg_ent *s = anthy_get_nth_segment(&ac->seg_list, i);
+    if (!ac->split_info.ce) {
+      anthy_log(0, "ac->split_info.ce is NULL %s:%d\n", __FILE__, __LINE__);
+      resize = 1;
+      break;
+    }
+    if (!s) {
+      anthy_log(0, "ac->seg_list %dth entry is NULL %s:%d\n",
+                i, __FILE__, __LINE__);
+      resize = 1;
+      continue;
+    }
     if (ac->split_info.ce[s->from].initial_seg_len != s->len) {
       resize = 1;
     }
@@ -497,30 +531,36 @@ get_change_state(struct anthy_context *ac)
 }
 
 static void
-write_history(FILE *fp, struct anthy_context *ac)
+write_history(int                   fd,
+              struct anthy_context *ac)
 {
   int i;
   /* 読み */
-  fprintf(fp, "|");
+  dprintf(fd, "|");
   for (i = 0; i < ac->seg_list.nr_segments; i++) {
     struct seg_ent *s = anthy_get_nth_segment(&ac->seg_list, i);
     char *c = anthy_xstr_to_cstr(&s->str, ANTHY_EUC_JP_ENCODING);
-    fprintf(fp, "%s|", c);
+    dprintf(fd, "%s|", c);
     free(c);
   }
-  fprintf(fp, " |");
+  dprintf(fd, " |");
   /* 結果 */
   for (i = 0; i < ac->seg_list.nr_segments; i++) {
     struct seg_ent *s = anthy_get_nth_segment(&ac->seg_list, i);
     char *c;
     /**/
+    if (!s) {
+      anthy_log(0, "ac->seg_list %dth entry is NULL %s:%d\n",
+                i, __FILE__, __LINE__);
+      continue;
+    }
     if (s->committed < 0) {
-      fprintf(fp, "?|");
+      dprintf(fd, "?|");
       continue ;
     }
     c = anthy_xstr_to_cstr(&s->cands[s->committed]->str,
 			   ANTHY_EUC_JP_ENCODING);
-    fprintf(fp, "%s|", c);
+    dprintf(fd, "%s|", c);
     free(c);
   }
 }
@@ -528,28 +568,37 @@ write_history(FILE *fp, struct anthy_context *ac)
 void
 anthy_save_history(const char *fn, struct anthy_context *ac)
 {
-  FILE *fp;
+  int fd;
   struct stat st;
   if (!fn) {
-    return ;
+    return;
   }
-  fp = fopen(fn, "a");
-  if (!fp) {
-    return ;
+  /* TOCTOU: Use fchmod() and fstat(). chmod() after stat() can cause a
+   * time-of-check, time-of-use race condition.
+   */
+  errno = 0;
+  fd = open(fn, O_RDWR | O_CREAT | O_APPEND, S_IRUSR | S_IWUSR);
+  if (fd == -1) {
+    anthy_log(0, "Failed to open %s: %s\n", fn, anthy_strerror(errno));
+    return;
   }
-  if (stat(fn, &st) ||
+  if (fstat(fd, &st) ||
       st.st_size > HISTORY_FILE_LIMIT) {
-    fclose(fp);
-    return ;
+    close(fd);
+    return;
   }
   /**/
-  fprintf(fp, "anthy-%s ", anthy_get_version_string());
-  fprintf(fp, "%s ", get_change_state(ac));
-  write_history(fp, ac);
-  fprintf(fp, "\n");
-  fclose(fp);
+  dprintf(fd, "anthy-%s ", anthy_get_version_string());
+  dprintf(fd, "%s ", get_change_state(ac));
+  write_history(fd, ac);
+  dprintf(fd, "\n");
   /**/
-  chmod(fn, S_IREAD | S_IWRITE);
+  errno = 0;
+  if (fchmod(fd, S_IREAD | S_IWRITE)) {
+    anthy_log(0, "Failed chmod in %s:%d: %s\n",
+              __FILE__, __LINE__, anthy_strerror(errno));
+  }
+  close(fd);
 }
 
 /** 候補を表示する */
@@ -614,9 +663,11 @@ print_segment(struct seg_ent *e)
 {
   int i;
 
+  assert(e);
   anthy_putxstr(&e->str);
   printf("(");
   for ( i = 0 ; i < e->nr_cands ; i++) {
+    assert(e->cands);
     anthy_print_candidate(e->cands[i]);
     printf(",");
   }
@@ -674,7 +725,10 @@ anthy_do_set_personality(const char *id)
   if (!id || strchr(id, '/')) {
     return -1;
   }
-  current_personality = strdup(id);
+  if (!(current_personality = strdup(id))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return -1;
+  }
   anthy_dic_set_personality(current_personality);
   return 0;
 }

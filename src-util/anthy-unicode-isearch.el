@@ -12,7 +12,7 @@
 ;; most of the code is stolen from SKK.
 ;; for Emacs-21
 
-(require 'anthy)
+(require 'anthy-unicode)
 
 (defvar anthy-isearch-mode-map nil)
 

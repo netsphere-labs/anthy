@@ -3,15 +3,22 @@ SUBDIRS =
 
 # Files
 # Dictionary utilities
-ELISP_FILES = anthy.el anthy-dic.el anthy-conf.el leim-list.el \
- anthy-isearch.el anthy-azik.el anthy-kyuri.el
-EXTRA_DIST = $(ELISP_FILES) typetab dic-tool-usage.txt anthy.i
+ELISP_FILES = anthy-unicode.el anthy-unicode-azik.el anthy-unicode-conf.el \
+    anthy-unicode-dic.el anthy-unicode-isearch.el anthy-unicode-kyuri.el \
+    leim-list.el \
+    $(NULL)
+EXTRA_DIST = $(ELISP_FILES) \
+    typetab dic-tool-input dic-tool-result dic-tool-usage.txt anthy.i \
+    $(NULL)
 bin_PROGRAMS = \
     anthy-dic-tool-unicode \
     anthy-agent-unicode \
     anthy-morphological-analyzer-unicode \
     $(NULL)
-ELCFILES = anthy.elc anthy-dic.elc anthy-azik.elc anthy-conf.elc anthy-isearch.elc anthy-kyuri.elc leim-list.elc
+ELCFILES = anthy-unicode.elc anthy-unicode-azik.elc anthy-unicode-conf.elc \
+    anthy-unicode-dic.elc anthy-unicode-isearch.elc anthy-unicode-kyuri.elc \
+    leim-list.elc \
+    $(NULL)
 if ELISP
 lisp_LISP = $(ELISP_FILES)
 endif

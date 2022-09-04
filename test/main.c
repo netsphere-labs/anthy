@@ -16,6 +16,7 @@
  * Copyright (C) 2000-2006 TABATA Yusuke
  * Copyright (C) 2004-2006 YOSHIDA Yuichi
  * Copyright (C) 2001-2002 TAKAI Kosuke
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  *
  */
 
@@ -40,7 +41,7 @@
 
 /* テストデータとなる変換前の文字列 */
 #define TESTDATA "test.txt"
-const char *testdata = SRCDIR "/" TESTDATA;
+static char *testdata; /* = SRCDIR "/" TESTDATA */
 
 /* 変換後の文字列が妥当かどうかをチェックするためのデータ */
 #define EXPDATA "test.exp"
@@ -151,6 +152,7 @@ parse_args(struct condition *cond, int argc, char **argv)
 {
   int i;
   char *arg;
+  testdata = strdup(SRCDIR "/" TESTDATA);
   for (i = 1; i < argc; i++) {
     arg = argv[i];
     if (!strncmp(arg, "--", 2)) {
@@ -195,6 +197,7 @@ parse_args(struct condition *cond, int argc, char **argv)
       } else {
 	char *buf = alloca(strlen(SRCDIR)+strlen(arg) + 10);
 	sprintf(buf, SRCDIR "/%s.txt", arg);
+	free(testdata);
 	testdata = strdup(buf);
       }
     }
@@ -306,6 +309,7 @@ save_db(const char *fn, struct res_db *db)
   for (cr = db->res_list.next; cr; cr = cr->next) {
     dump_res(fp, cr);
   }
+  fclose(fp);
 }
 
 static void
@@ -316,7 +320,8 @@ ask_results(struct res_db *db)
     if (cr->check == CHK_UNKNOWN && cr->used == 1) {
       char buf[256];
       printf("%s -> %s (y/n/d/q)\n", cr->src_str, cr->res_str);
-      fgets(buf, 256, stdin);
+      if (!fgets(buf, 256, stdin))
+        printf("Failed fgets in %s:%d\n", __FILE__, __LINE__);
       if (buf[0] == 'y') {
 	cr->check = CHK_OK;
       } else if (buf[0] == 'n') {
@@ -376,7 +381,7 @@ main(int argc,char **argv)
   int line = 1;
 
   cur_input.serial = 0;
-  cur_input.str = 0;
+  cur_input.str = NULL;
   init_condition(&cond);
 
   parse_args(&cond, argc, argv);
@@ -392,6 +397,7 @@ main(int argc,char **argv)
     printf("failed to open %s.\n", testdata);
     return 0;
   }
+  free(testdata);
   
   ac = init_lib(cond.use_utf8);
 
@@ -408,6 +414,9 @@ main(int argc,char **argv)
     }
     line++;
   }
+  fclose(fp);
+  free(cur_input.str);
+  cur_input.str = NULL;
 
   anthy_release_context(ac);
   anthy_quit();

@@ -7,11 +7,15 @@
  * $Id: rkconv.c,v 1.16 2002/11/16 03:35:21 yusuke Exp $
  *
  * Copyright (C) 2001-2002 UGAWA Tomoharu
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  *
  */
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#include <anthy/logger.h>
 
 #include "rkconv.h"
 
@@ -193,7 +197,7 @@ rk_slr_closure_create(struct rk_rule_set* rs,
     struct rk_rule* r;
     int c;
     r = rs->rules + i;
-    if (pflen > 0 && strncmp(prefix, r->lhs, pflen) != 0)
+    if (pflen > 0 && strncmp(prefix ? prefix : "", r->lhs, pflen) != 0)
       continue;
 
     c = r->lhs[pflen] & 0x7f;
@@ -341,9 +345,13 @@ rk_convert_iterative(struct rk_conv_context* cc, int c,
 static void
 brk_roman_init(struct rk_conv_context *rkctx)
 {
-  rkctx->brk_roman= (struct break_roman *)malloc(sizeof(struct break_roman));
-  rkctx->brk_roman->pending=NULL;
-  rkctx->brk_roman->pending_size=0;
+  rkctx->brk_roman = (struct break_roman *)malloc(sizeof(struct break_roman));
+  if (!rkctx->brk_roman) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return;
+  }
+  rkctx->brk_roman->pending = NULL;
+  rkctx->brk_roman->pending_size = 0;
 }
 
 static void
@@ -354,10 +362,10 @@ brk_roman_free(struct rk_conv_context *rkctx)
   if(!br)
     return;
 
-  if (br->pending) {
-    free(br->pending);
-  }
+  free(br->pending);
+  br->pending = NULL;
   free(br);
+  rkctx->brk_roman = NULL;
 }
 
 
@@ -374,8 +382,7 @@ brk_roman_save_pending(struct rk_conv_context *rkctx)
 
   if(br->pending_size < len){
     br->pending_size=len;
-    if(br->pending)
-      free(br->pending);
+    free(br->pending);
     br->pending=(char *)malloc(len);
   }
 
@@ -386,7 +393,12 @@ brk_roman_save_pending(struct rk_conv_context *rkctx)
 static void
 brk_roman_set_decided_len(struct rk_conv_context *rkctx,int len)
 {
-  struct break_roman *br=rkctx->brk_roman;
+  struct break_roman *br;
+  if (!rkctx) {
+    anthy_log(0, "Failed rkctx != NULL in %s:%d\n", __FILE__, __LINE__);
+    return;
+  }
+  br=rkctx->brk_roman;
 
   if(!br)
     return;
@@ -447,6 +459,10 @@ int
 rk_push_key(struct rk_conv_context* cc, int c)
 {
   int increased_length;
+  if (!cc) {
+    anthy_log(0, "Failed cc != NULL in %s:%d\n", __FILE__, __LINE__);
+    return -1;
+  }
   c &= 0x7f;
   if (cc->cur_state == NULL)
     return -1;
@@ -527,6 +543,10 @@ rk_select_map(struct rk_conv_context* cc, struct rk_map* map)
 {
   struct rk_map* old_map;
 
+  if (!cc) {
+    anthy_log(0, "Failed cc != NULL in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
   cc->old_map_no = cc->map_no;
   old_map = cc->map;
   if (old_map) {
@@ -557,6 +577,10 @@ rk_get_pending_str(struct rk_conv_context* cc, char* buf, int size)
 
   if (size <= 0)
     return strlen(p) + 1;
+  if (!buf) {
+    anthy_log(0, "Failed buf != NULL in %s:%d\n", __FILE__, __LINE__);
+    return 0;
+  }
 
   q = buf;
   end = buf + size - 1;
@@ -588,6 +612,7 @@ rk_register_map(struct rk_conv_context* cc, int mapn, struct rk_map* map)
 void
 rk_select_registered_map(struct rk_conv_context* cc, int mapn)
 {
+  assert(cc);
   if (0 <= mapn && mapn < 0 + MAX_MAP_PALETTE) {
     rk_select_map(cc, cc->map_palette[mapn]);
     cc->map_no = mapn;
@@ -663,7 +688,6 @@ rk_sort_rule(const struct rk_rule *src)
  ERROR:
   rules[i].lhs = NULL;
   rk_rules_free(rules);
-  free(rules);
   return NULL;
 }
 

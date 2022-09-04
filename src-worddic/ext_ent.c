@@ -5,6 +5,7 @@
  *
  * Copyright (C) 2001-2005 TABATA Yusuke
  * Copyright (C) 2004-2005 YOSHIDA Yuichi
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  *
  */
 /*
@@ -25,13 +26,14 @@
 
 #define _CRT_SECURE_NO_WARNINGS
 
+#include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
-#include <assert.h>
 
 #include <anthy/anthy.h> /* for ANTHY_*_ENCODING */
 #include <anthy/conf.h>
+#include <anthy/logger.h>
 #include <anthy/xstr.h>
 #include <anthy/xchar.h>
 #include "dic_main.h"
@@ -206,6 +208,8 @@ compose_num_component(xstr *xs, long long num)
 {
   int n[4],i;
   int a[4] = { 0 , KJ_10, KJ_100, KJ_1000};
+  xstr *tmp;
+   assert(xs);
   for (i = 0; i < 4; i++) {
     n[i] = num-(num/10)*10;
     num /= 10;
@@ -214,14 +218,17 @@ compose_num_component(xstr *xs, long long num)
   for (i = 3; i > 0; i--) {
     if (n[i] > 0) {
       if (n[i] > 1) {
-	anthy_xstrappend(xs, get_kj_num(n[i]));
+        tmp = anthy_xstrappend(xs, get_kj_num(n[i]));
+	assert(tmp == xs);
       }
-      anthy_xstrappend(xs, a[i]);
+      tmp = anthy_xstrappend(xs, a[i]);
+      assert(tmp == xs);
     }
   }
   /* 1の位 */
   if (n[0]) {
-    anthy_xstrappend(xs, get_kj_num(n[0]));
+    tmp = anthy_xstrappend(xs, get_kj_num(n[0]));
+    assert(tmp == xs);
   }
 }
 
@@ -344,16 +351,20 @@ gen_separated_num(long long num, xstr *dest, int full)
 
   /* 桁数を数える */
   for (tmp = num; tmp != 0; tmp /= 10) {
-    width ++;
+    width++;
   }
   /* 点の数 */
   dot_count = (width - 1) / 3;
   /* 格納するのに必要な文字列を用意する */
   dest->len = dot_count + width;
-  dest->str = malloc(sizeof(xchar)*dest->len);
+  if (!(dest->str = malloc(sizeof(xchar)*dest->len))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    dest->len = 0;
+    return -1;
+  }
 
   /* 右の桁から順に決めていく */
-  for (i = 0, pos = dest->len - 1; i < width; i++, pos --) {
+  for (i = 0, (pos = dest->len - 1) && (pos >= 0); i < width; i++, pos--) {
     int n = num % 10;
     /* カンマを追加 */
     if (i > 0 && (i % 3) == 0) {
@@ -362,7 +373,11 @@ gen_separated_num(long long num, xstr *dest, int full)
       } else {
 	dest->str[pos] = ',';
       }
-      pos --;
+      pos--;
+    }
+    if (pos < 0) {
+      anthy_log(0, "pos %d < 0 in %s:%d\n", pos, __FILE__, __LINE__);
+      break;
     }
     if (full) {
       /* 全角数字 */
@@ -401,7 +416,12 @@ anthy_get_nth_dic_ent_str_of_ext_ent(seq_ent_t se, xstr *xs,
   if (anthy_get_xstr_type(xs) & (XCT_NUM|XCT_WIDENUM)) {
     long long num = anthy_xstrtoll(xs);
     const int base_ents = get_nr_num_ents(num); /* ３桁郵便番号への対応 */
-    /* 漢数字、アラビア数字、全角半角切替え */
+    /* 漢数字、アラビア数字、全角半角切替え
+     * GCC 11.0.1 reports this statement may fall through because of no break
+     * in case statement with "-Wimplicit-fallthrough" option.
+     */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
     switch(nth) {
     case 1:
       /* 全角半角を入れ換えたもの */
@@ -436,6 +456,7 @@ anthy_get_nth_dic_ent_str_of_ext_ent(seq_ent_t se, xstr *xs,
       }
       break;
     }
+#pragma GCC diagnostic pop
     return -1;
   }
   return 0;

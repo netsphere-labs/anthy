@@ -11,7 +11,7 @@ EXTRA_DIST = \
 
 SRCDIR = src-diclib src-worddic src-splitter src-ordering src-main src-util
 
-SUBDIRS = $(SRCDIR) anthy depgraph mkworddic calctrans mkanthydic doc test alt-cannadic
+SUBDIRS = $(SRCDIR) anthy depgraph mkworddic calctrans mkanthydic doc test alt-cannadic m4
 
 sysconf_DATA = anthy-unicode.conf
 
@@ -19,6 +19,8 @@ pkgconfigdir = $(libdir)/pkgconfig
 pkgconfig_DATA = anthy-unicode.pc
 
 MOSTLYCLEANFILES = core
+
+PREV_DATE=20190412
 
 update_params:
 	make -C calctrans update_params
@@ -33,4 +35,15 @@ update_params2:
 dist-hook:
 	if test -d .git ; then \
 	    git log --name-status --date=iso > $(distdir)/ChangeLog ; \
+	    PREV_MICRO_VERSION=`expr $(PACKAGE_VERSION_MICRO) - 1`; \
+	    PREV_VERSION=\
+"$(PACKAGE_VERSION_MAJOR).$(PACKAGE_VERSION_MINOR).$(PACKAGE_VERSION_MICRO).$(PREV_DATE)"; \
+	    echo "Changes in $(PACKAGE_NAME) $(PACKAGE_VERSION)" \
+	        > $(distdir)/NEWS; \
+	    echo "" >> $(distdir)/NEWS; \
+	    git shortlog $$PREV_VERSION...$(PACKAGE_VERSION) \
+	        >> $(distdir)/NEWS; \
+	    echo "" >> $(distdir)/NEWS; \
+	    git log $$PREV_VERSION...$(PACKAGE_VERSION) --reverse \
+	        --pretty=format:'%s (%an) %h' >> $(distdir)/NEWS; \
 	fi

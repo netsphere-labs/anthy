@@ -9,7 +9,7 @@
  * Copyright (C) 2006-2007 TABATA Yusuke
  * Copyright (C) 2004-2006 YOSHIDA Yuichi
  * Copyright (C) 2006 HANAOKA Toshiyuki
- *
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -37,17 +37,19 @@
  * (2) グラフを後ろ(右)からたどって最適なパスを求める
  *
  */
+#include <assert.h>
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <math.h>
 
 #include <anthy/alloc.h>
-#include <anthy/xstr.h>
+#include <anthy/diclib.h>
+#include <anthy/feature_set.h>
+#include <anthy/logger.h>
 #include <anthy/segclass.h>
 #include <anthy/splitter.h>
-#include <anthy/feature_set.h>
-#include <anthy/diclib.h>
+#include <anthy/xstr.h>
 #include "wordborder.h"
 
 static float anthy_normal_length = 20.0; /* 文節の期待される長さ */
@@ -82,6 +84,7 @@ struct lattice_info {
   struct splitter_context *sc;
   /* ノードのアロケータ */
   allocator node_allocator;
+  int lattice_node_len;
 };
 
 /*
@@ -210,6 +213,8 @@ get_transition_probability(struct lattice_node *node)
   probability = calc_probability(node->seg_class, &features);
   anthy_feature_list_free(&features);
 
+  if (!(node->mw))
+      return probability;
   /* 文節の形に対する評価 */
   probability *= get_form_bias(node->mw);
   return probability;
@@ -223,9 +228,15 @@ alloc_lattice_info(struct splitter_context *sc, int size)
   info->sc = sc;
   info->lattice_node_list = (struct node_list_head*)
     malloc((size + 1) * sizeof(struct node_list_head));
-  for (i = 0; i < size + 1; i++) {
-    info->lattice_node_list[i].head = NULL;
-    info->lattice_node_list[i].nr_nodes = 0;
+  if (!(info->lattice_node_list)) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    info->lattice_node_len = 0;
+  } else {
+    info->lattice_node_len = size + 1;
+    for (i = 0; i < size + 1; i++) {
+      info->lattice_node_list[i].head = NULL;
+      info->lattice_node_list[i].nr_nodes = 0;
+    }
   }
   info->node_allocator = anthy_create_allocator(sizeof(struct lattice_node),
 						NULL);
@@ -235,6 +246,7 @@ alloc_lattice_info(struct splitter_context *sc, int size)
 static void
 calc_node_parameters(struct lattice_node *node)
 {
+  assert(node);
   /* 対応するmetawordが無い場合は文頭と判断する */
   node->seg_class = node->mw ? node->mw->seg_class : SEG_HEAD;
 
@@ -345,6 +357,8 @@ cmp_node(struct lattice_node *lhs, struct lattice_node *rhs)
   }
 
   /* 最後に遷移確率を見る */
+  assert(lhs);
+  assert(rhs);
   if (lhs->adjusted_probability > rhs->adjusted_probability) {
     return 1;
   } else if (lhs->adjusted_probability < rhs->adjusted_probability) {
@@ -368,11 +382,16 @@ push_node(struct lattice_info* info, struct lattice_node* new_node,
     print_lattice_node(info, new_node);
   }
 
+  assert(position >= 0);
+  if (position >= info->lattice_node_len) {
+    anthy_log(0, "info->lattice_node_list[%d] is not allocated\n", position);
+    return;
+  }
   /* 先頭のnodeが無ければ無条件に追加 */
   node = info->lattice_node_list[position].head;
   if (!node) {
     info->lattice_node_list[position].head = new_node;
-    info->lattice_node_list[position].nr_nodes ++;
+    info->lattice_node_list[position].nr_nodes++;
     return;
   }
 
@@ -406,7 +425,7 @@ push_node(struct lattice_info* info, struct lattice_node* new_node,
 
   /* 最後のノードの後ろに追加 */
   node->next = new_node;
-  info->lattice_node_list[position].nr_nodes ++;
+  info->lattice_node_list[position].nr_nodes++;
 }
 
 /* 一番確率の低いノードを消去する*/
@@ -418,6 +437,10 @@ remove_min_node(struct lattice_info *info, struct node_list_head *node_list)
   struct lattice_node* min_node = node;
   struct lattice_node* previous_min_node = NULL;
 
+  if (!min_node) {
+      anthy_log(0, "No min_node\n");
+      return;
+  }
   /* 一番確率の低いノードを探す */
   while (node) {
     if (cmp_node(node, min_node) < 0) {
@@ -435,7 +458,7 @@ remove_min_node(struct lattice_info *info, struct node_list_head *node_list)
     node_list->head = min_node->next;
   }
   release_lattice_node(info, min_node);
-  node_list->nr_nodes --;
+  node_list->nr_nodes--;
 }
 
 /* いわゆるビタビアルゴリズムを使用して経路を選ぶ */
@@ -446,6 +469,10 @@ choose_path(struct lattice_info* info, int to)
   struct lattice_node* node;
   struct lattice_node* best_node = NULL;
   int last = to;
+  if (last >= info->lattice_node_len) {
+    anthy_log(0, "info->lattice_node_list[%d] is not allocated\n", last);
+    return;
+  }
   while (!info->lattice_node_list[last].head) {
     /* 最後の文字まで遷移していなかったら後戻り */
     --last;
@@ -492,6 +519,11 @@ build_graph(struct lattice_info* info, int from, int to)
    * indexからの遷移が入っているのではない
    */
 
+  if (to >= info->lattice_node_len || from < 0) {
+    anthy_log(0, "info->lattice_node_list[%d] is not allocated: %d\n",
+    to, from);
+    return;
+  }
   /* 全ての遷移を左から試す */
   for (i = from; i < to; ++i) {
     for (left_node = info->lattice_node_list[i].head; left_node;

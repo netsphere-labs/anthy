@@ -44,6 +44,7 @@
  *   image[2+image[0] ~ 2+image[0]+image[1]-1] : hashed row array
  *
  * Copyright (C) 2005 TABATA Yusuke
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  *
  */
 /*
@@ -61,6 +62,7 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -68,6 +70,7 @@
 #include <anthy/diclib.h>
 /* public APIs */
 #include <anthy/matrix.h>
+#include <anthy/logger.h>
 
 /* maximum length allowed for hash chain */
 #define MAX_FAILURE 50
@@ -117,6 +120,8 @@ sparse_array_new(void)
   a->head.next = NULL;
   a->head.orig_next = NULL;
   a->head.index = -1;
+  a->head.ptr = NULL;
+  a->head.value = 0;
   /**/
   a->array_len = 0;
   a->array = NULL;
@@ -185,7 +190,10 @@ sparse_array_try_make_array(struct sparse_array *s)
   struct list_elm *e;
   /* initialize */
   free(s->array);
-  s->array = malloc(sizeof(struct array_elm) * s->array_len);
+  if (!(s->array = malloc(sizeof(struct array_elm) * s->array_len))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return 1;
+  }
   for (i = 0; i < s->array_len; i++) {
     s->array[i].index = -1;
   }
@@ -196,6 +204,7 @@ sparse_array_try_make_array(struct sparse_array *s)
     int n = 0;
     do {
       int h = hash(e->index, s->array_len, n);
+      assert((h >= 0) && (h < s->array_len));
       if (s->array[h].index == -1) {
 	/* find unused element in this array */
 	ok = 1;
@@ -204,7 +213,7 @@ sparse_array_try_make_array(struct sparse_array *s)
 	s->array[h].ptr = e->ptr;
       } else {
 	/* collision */
-	n ++;
+	n++;
 	if (n > MAX_FAILURE) {
 	  /* too much collision */
 	  return 1;
@@ -249,7 +258,7 @@ sparse_array_get(struct sparse_array *s, int index, struct array_elm *arg)
       }
     }
   } else {
-    struct list_elm *e = e = s->head.next;
+    struct list_elm *e = s->head.next;
     while (e) {
       if (e->index == index) {
 	arg->value = e->value;
@@ -292,6 +301,32 @@ sparse_array_get_ptr(struct sparse_array *s, int index)
   return NULL;
 }
 
+static void
+sparse_array_free (struct sparse_array **array)
+{
+  struct list_elm *e;
+
+  assert(array);
+  if (!(*array))
+    return;
+  free ((*array)->array);
+  (*array)->array = NULL;
+  for (e = (*array)->head.next; e;) {
+    struct list_elm *next = e->next;
+    struct sparse_array *sub = e->ptr;
+    sparse_array_free (&sub);
+    e->ptr = NULL;
+    e->next = NULL;
+    free (e);
+    e = next;
+  }
+  (*array)->head.next = NULL;
+  if (!(*array))
+    return;
+  free (*array);
+  *array = NULL;
+}
+
 /**/
 struct sparse_matrix {
   /**/
@@ -330,7 +365,7 @@ find_row(struct sparse_matrix *m, int row, int create)
   /* allocate a new row */
   a = sparse_array_new();
   sparse_array_set(m->row_array, row, 0, a);
-  m->nr_rows ++;
+  m->nr_rows++;
   return a;
 }
 
@@ -349,11 +384,10 @@ int
 anthy_sparse_matrix_get_int(struct sparse_matrix *m, int row, int column)
 {
   struct sparse_array *a;
-  struct list_elm *e;
+  struct list_elm *e = NULL;
   a = find_row(m, row, 1);
-  if (!a) {
+  if (!a)
     return 0;
-  }
   for (e = &a->head; e; e = e->next) {
     if (e->index == column) {
       return e->value;
@@ -391,6 +425,14 @@ anthy_sparse_matrix_make_matrix(struct sparse_matrix *m)
 }
 
 /* API */
+void
+anthy_sparse_matrix_free (struct sparse_matrix *m)
+{
+  sparse_array_free (&m->row_array);
+  free (m);
+}
+
+/* API */
 struct matrix_image *
 anthy_matrix_image_new(struct sparse_matrix *s)
 {
@@ -398,15 +440,24 @@ anthy_matrix_image_new(struct sparse_matrix *s)
   int i;
   int offset;
   /**/
-  mi = malloc(sizeof(struct matrix_image));
+  assert(s && s->row_array);
+  if (!(mi = malloc(sizeof(struct matrix_image)))) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      return NULL;
+  }
   mi->size = 2 + s->row_array->array_len * 2 + s->array_length * 2;
-  mi->image = malloc(sizeof(int) * mi->size);
+  if (!(mi->image = malloc(sizeof(int) * mi->size))) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      free(mi);
+      return NULL;
+  }
   mi->image[0] = s->row_array->array_len;
   mi->image[1] = s->array_length;
   /* row index */
   offset = 2;
   for (i = 0; i < s->row_array->array_len; i++) {
     struct array_elm *ae;
+    assert(s->row_array->array);
     ae = &s->row_array->array[i];
     mi->image[offset + i*2] = ae->index;
     mi->image[offset + i*2 + 1] = ae->value;
@@ -417,6 +468,7 @@ anthy_matrix_image_new(struct sparse_matrix *s)
     struct array_elm *ae;
     struct sparse_array *sa;
     int j;
+    assert(s->row_array->array);
     ae = &s->row_array->array[i];
     if (ae->index == -1) {
       continue;
@@ -426,7 +478,10 @@ anthy_matrix_image_new(struct sparse_matrix *s)
       continue;
     }
     for (j = 0; j < sa->array_len; j++) {
-      struct array_elm *cell = &sa->array[j];
+      struct array_elm *cell;
+      assert(sa->array);
+      cell = &sa->array[j];
+      assert(cell);
       mi->image[offset] = cell->index;
       if (cell->index == -1) {
 	mi->image[offset + 1] = -1;

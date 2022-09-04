@@ -3,6 +3,7 @@
  * 汎用のファイル読み込みモジュール
  *
  * Copyright (C) 2000-2006 TABATA Yusuke
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  *
  */
 /*
@@ -21,6 +22,7 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 #include <ctype.h>
+#include <limits.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -137,9 +139,11 @@ get_token_in(struct line_stat *ls)
   }
   /* トークンが始まるまで空白を読み飛ばす */
   do {
+    /* tainted cc should be sanitized */
+    cc = 0;
     esc = mygetc(&cc);
-  } while (cc > 0 && myisblank(cc) && esc == 0);
-  if (cc == -1) {
+  } while (cc != EOF && cc > 0 && cc < INT_MAX && myisblank(cc) && esc == 0);
+  if (cc == EOF) {
     return NULL;
   }
   if (cc == '\n'){
@@ -209,7 +213,8 @@ proc_include(void)
     anthy_log(0, "Syntax error in include directive.\n");
     return ;
   }
-  if (g_ps.cur_fpp > MAX_INCLUDE_DEPTH - 1) {
+  /* (i + 1) should < MAX_INCLUDE_DEPTH for g_ps.fp_stack[i + 1] */
+  if (g_ps.cur_fpp >= MAX_INCLUDE_DEPTH - 1) {
     anthy_log(0, "Too deep include.\n");
     return ;
   }

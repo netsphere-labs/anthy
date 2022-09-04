@@ -4,6 +4,7 @@
  * 変数の関係に注意
  *
  * Copyright (C) 2000-2007 TABATA Yusuke
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -20,6 +21,7 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+#include <assert.h>
 #include <unistd.h>
 #include <pwd.h>
 #include <time.h>
@@ -89,7 +91,13 @@ get_subst(const char *s)
       strchr(s, '}')) {
     struct val_ent *val;
     char *var = strdup(&s[2]);
-    char *k = strchr(var, '}');
+    char *k;
+    if (!var) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      return NULL;
+    }
+    k = strchr(var, '}');
+    assert(k);
     *k = 0;
     val = find_val_ent(var);
     free(var);
@@ -125,7 +133,10 @@ expand_string(const char *s)
   struct expand_buf eb;
   char *res;
   eb.size = 256;
-  eb.buf = malloc(eb.size);
+  if (!(eb.buf = malloc(eb.size))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
   eb.cur = eb.buf;
   eb.len = 0;
 
@@ -139,13 +150,14 @@ expand_string(const char *s)
       eb.cur += len;
       eb.len += len;
       s = strchr(s, '}');
-      s ++;
+      assert(s);
+      s++;
     } else {
       *eb.cur = *s;
       /**/
-      eb.cur ++;
+      eb.cur++;
       s++;
-      eb.len ++;
+      eb.len++;
     }
     /**/
     ensure_buffer(&eb, 256);

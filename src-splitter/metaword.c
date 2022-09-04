@@ -10,6 +10,7 @@
  * Copyright (C) 2000-2006 TABATA Yusuke
  * Copyright (C) 2004-2006 YOSHIDA Yuichi
  * Copyright (C) 2000-2003 UGAWA Tomoharu
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -462,10 +463,15 @@ try_combine_number(struct splitter_context *sc,
     /* #NNは対象外 */
     if (scos2 == SCOS_NONE) return;
     /*
-       左mwの種類によって、後ろにつくことができる右mwの種類が変わる
-       例えば一〜九の後ろには万〜九万、億〜九億しかつくことができないが、
-       十〜九十の後ろには、あわせて一〜九などもつくことができる
+     * 左mwの種類によって、後ろにつくことができる右mwの種類が変わる
+     * 例えば一〜九の後ろには万〜九万、億〜九億しかつくことができないが、
+     * 十〜九十の後ろには、あわせて一〜九などもつくことができる
+     * 漢数字、アラビア数字、全角半角切替え
+     * GCC 11.0.1 reports this statement may fall through because of no break
+     * in case statement with "-Wimplicit-fallthrough" option.
      */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wimplicit-fallthrough"
     switch (scos1) {
     case SCOS_N1:
       if (scos2 == SCOS_N1) return; /* 後ろに一〜九がついてはいけない */
@@ -482,6 +488,7 @@ try_combine_number(struct splitter_context *sc,
     default:
       return;
     }
+#pragma GCC diagnostic pop
 
     if (recursive) {
       combined_mw = anthy_do_cons_metaword(sc, MW_NUMBER, mw1, mw2);
@@ -569,9 +576,6 @@ make_dummy_metaword(struct splitter_context *sc, int from,
   n->from = from;
   n->len = len;
   n->score = 3 * score * len / orig_len;
-  if (mw) {
-    mw->nr_parts = 0;
-  }
   anthy_commit_meta_word(sc, n);
 }
 
@@ -695,8 +699,10 @@ make_ochaire_metaword_all(struct splitter_context *sc)
       len = key->len;
 
       make_ochaire_metaword(sc, i, len);
-      /* 今回見つかった meta_word の次の文字から始める */
-      i += len - 1;
+      /* 今回見つかった meta_word の次の文字から始める
+       * `i` should not be touched if `break` is called.
+       */
+      /* i += len - 1; */
       break;
     }
   }

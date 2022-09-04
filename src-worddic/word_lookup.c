@@ -14,7 +14,7 @@
  * Copyright (C) 2000-2007 TABATA Yusuke
  * Copyright (C) 2005-2006 YOSHIDA Yuichi
  * Copyright (C) 2001-2002 TAKAI Kosuke
- *
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -333,6 +333,7 @@ add_compound_ent(struct seq_ent *seq, struct wt_stat *ws,
 static void
 init_wt_stat(struct wt_stat *ws, char *line)
 {
+  memset(&ws->wt, 0, sizeof(wtype_t));
   ws->wt_name = NULL;
   ws->freq = 0;
   ws->feature = 0;
@@ -342,7 +343,7 @@ init_wt_stat(struct wt_stat *ws, char *line)
   ws->encoding = ANTHY_EUC_JP_ENCODING;
   if (*(ws->line) == 'u') {
     ws->encoding = ANTHY_UTF8_ENCODING;
-    ws->line ++;
+    ws->line++;
   }
 }
 
@@ -372,7 +373,7 @@ fill_dic_ent(char *line, struct seq_ent *seq,
       ws.offset += add_dic_ent(seq, &ws, yomi,
 			       is_reverse);
       if (ws.order_bonus > 0) {
-	ws.order_bonus --;
+	ws.order_bonus--;
       }
     }
     if (ws.line[ws.offset] == ' ') {

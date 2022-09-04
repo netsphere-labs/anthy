@@ -31,7 +31,7 @@
  *  anthy_trie_print_array()
  *
  * Copyright (C) 2005-2006 TABATA Yusuke
- *
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1gmail.com>
  */
 /*
   This library is free software; you can redistribute it and/or
@@ -49,17 +49,20 @@
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
 /* open & mmap */
-#include <unistd.h>
-#include <sys/types.h>
-#include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <unistd.h>
 /**/
+#include <assert.h>
+#include <ctype.h>
+#include <errno.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <ctype.h>
-#include <anthy/texttrie.h>
 #include <anthy/filemap.h>
+#include <anthy/texttrie.h>
+#include <anthy/logger.h>
 #include "dic_main.h"
 
 /* configs */
@@ -224,9 +227,10 @@ path_setup(struct path *path, const char *key, int len, int *buf)
   path->len = 0;
   path->cur = 0;
   /**/
-  while (*p) {
+  assert(p);
+  while ((*p) && (path->len < path->max_len)) {
     path->path[path->len] = p[0] * 256 + p[1];
-    path->len ++;
+    path->len++;
     p++;
     if (p[0]) {
       p++;
@@ -288,7 +292,7 @@ encode_super(struct cell *c, char *buf)
   buf += sput_int(buf, c->u.super.root_cell);
   buf += sput_int(buf, c->u.super.first_unused);
   buf += sput_int(buf, c->u.super.serial);
-  buf += sput_int(buf, LINE_LEN);
+  sput_int(buf, LINE_LEN);
 }
 
 static void
@@ -299,7 +303,7 @@ encode_node(struct cell *c, char *buf)
   buf += sput_int(buf, c->u.node.parent);
   buf += sput_int(buf, c->u.node.next);
   buf += sput_int(buf, c->u.node.child);
-  buf += sput_int(buf, c->u.node.body);
+  sput_int(buf, c->u.node.body);
 }
 
 static void
@@ -316,7 +320,7 @@ static void
 encode_unused(struct cell *c, char *buf)
 {
   buf += sprintf(buf, "-next=");
-  buf += sput_int(buf, c->u.next_unused);
+  sput_int(buf, c->u.next_unused);
 }
 
 static void
@@ -378,7 +382,11 @@ write_back_cell(struct text_trie *tt, struct cell *c, int idx)
   if (anthy_mmap_is_writable(tt->mapping)) {
     memcpy(&tt->ptr[idx*LINE_LEN], buf, LINE_LEN);
   } else {
-    fseek(tt->wfp, idx*LINE_LEN, SEEK_SET);
+    errno = 0;
+    if (fseek(tt->wfp, idx*LINE_LEN, SEEK_SET)) {
+      anthy_log(0, "Failed fseek in %s:%d: %s\n",
+                __FILE__, __LINE__, anthy_strerror(errno));
+    }
     fwrite(buf, LINE_LEN, 1, tt->wfp);
     fflush(tt->wfp);
   }
@@ -442,7 +450,7 @@ decode_super(struct cell *c, char *buf)
   buf = sget_int(buf, &c->u.super.size);
   buf = sget_int(buf, &c->u.super.root_cell);
   buf = sget_int(buf, &c->u.super.first_unused);
-  buf = sget_int(buf, &c->u.super.serial);
+  sget_int(buf, &c->u.super.serial);
   return 0;
 }
 
@@ -451,7 +459,7 @@ decode_unuse(struct cell *c, char *buf)
 {
   c->type = TT_UNUSED;
   buf = pass_str(buf, "-next=");
-  buf = sget_int(buf, &c->u.next_unused);
+  sget_int(buf, &c->u.next_unused);
   return 0;
 }
 
@@ -464,7 +472,7 @@ decode_node(struct cell *c, char *buf)
   buf = sget_int(buf, &c->u.node.parent);
   buf = sget_int(buf, &c->u.node.next);
   buf = sget_int(buf, &c->u.node.child);
-  buf = sget_int(buf, &c->u.node.body);
+  sget_int(buf, &c->u.node.body);
   return 0;
 }
 
@@ -507,6 +515,11 @@ decode_nth_cell(struct text_trie *tt, struct cell *c, int nth)
       (nth + 1)) {
     return NULL;
   }
+  /* GCC 11.0.1 reports dereference of NULL 'buf'
+   * in case statement with "-Wanalyzer-null-dereference" option.
+   */
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wanalyzer-null-dereference"
   buf = &tt->ptr[nth*LINE_LEN];
 
   res = -1;
@@ -533,6 +546,7 @@ decode_nth_cell(struct text_trie *tt, struct cell *c, int nth)
     /*printf("decode fail (nth=%d::%s).\n", nth, buf);*/
     ;
   }
+#pragma GCC diagnostic pop
   if (res) {
     c->type = TT_UNUSED;
   }
@@ -606,7 +620,11 @@ set_file_size(struct text_trie *tt, int len)
     return 0;
   }
   if (cur_size > size) {
-    truncate(tt->fn, size);
+    errno = 0;
+    if (truncate(tt->fn, size)) {
+      anthy_log(0, "Failed truncate in %s:%d: %s\n",
+                __FILE__, __LINE__, strerror(errno));
+    }
   } else {
     err = expand_file(tt, (size - cur_size) / LINE_LEN);
     if (!err) {
@@ -817,7 +835,10 @@ static struct text_trie *
 alloc_tt(const char *fn, FILE *wfp)
 {
   struct text_trie *tt;
-  tt = malloc(sizeof(struct text_trie));
+  if (!(tt = malloc(sizeof(struct text_trie)))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
   tt->fatal = 0;
   tt->wfp = wfp;
   tt->valid_super = 0;
@@ -1018,7 +1039,11 @@ trie_search_rec(struct text_trie *tt, struct path *p,
 		int parent_idx, int create)
 {
   int child_idx;
-  int key = p->path[p->cur];
+  int key;
+  assert(p);
+  assert(p->path);
+  assert((p->cur < p->max_len) && (p->cur >= 0));
+  key = p->path[p->cur];
   /* special case */
   if (p->cur == p->len) {
     return parent_idx;
@@ -1459,7 +1484,7 @@ disconnect(struct text_trie *tt, int parent_idx, int target_idx)
     /* not 1st child */
     int child_idx = parent_cell.u.node.child;
     while (child_idx) {
-      struct cell cur;
+      struct cell cur = { 0, };
       if (!decode_nth_cell(tt, &cur, child_idx)) {
 	return ;
       }

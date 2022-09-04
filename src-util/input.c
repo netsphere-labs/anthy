@@ -5,6 +5,7 @@
  *
  * Funded by IPA未踏ソフトウェア創造事業 2002 1/23
  * Copyright (C) 2001-2002 UGAWA Tomoharu
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmai.com>
  *
  */
 
@@ -23,6 +24,7 @@
 
 #include <anthy/anthy.h>
 #include <anthy/input.h>
+#include <anthy/logger.h>
 
 #include "rkconv.h"
 #include "rkhelper.h"
@@ -78,6 +80,19 @@ int anthy_input_errno;
 
 #define is_eucchar(s)  (((s)[0] & 0x80) && ((s)[1] & 0x80))
 
+static int utf8_char_len(char *str) {
+  int len = 0;
+  if ((*str & 0x80) == 0x00) {
+    len = 1;
+  } else if ((*str & 0xe0) == 0xc0) {
+    len = 2;
+  } else if ((*str & 0xf0) == 0xe0) {
+    len = 3;
+  } else if ((*str & 0xf8) == 0xf0) {
+    len = 4;
+  }
+  return len;
+}
 
 struct anthy_input_config {
   struct rk_option* rk_option;
@@ -244,7 +259,7 @@ enter_conv_state(struct anthy_input_context* ictx)
 
   ictx->enum_cand_count = 0;
   ictx->actx = anthy_create_context();
-  anthy_context_set_encoding(ictx->actx, ANTHY_EUC_JP_ENCODING);
+  anthy_context_set_encoding(ictx->actx, ANTHY_UTF8_ENCODING);
   if (!ictx->actx) {
     enter_none_state(ictx);
     anthy_input_errno = AIE_NOMEM;
@@ -350,8 +365,10 @@ cmdh_get_candidate(struct anthy_input_context* ictx, int cand_no)
 
   seg = (struct anthy_input_segment*)
         malloc(sizeof(struct anthy_input_segment));
-  if (!seg)
+  if (!seg) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
     return NULL;
+  }
 
   len = anthy_get_segment(ictx->actx, cs->index, cand_no, NULL, 0);
   seg->str = (char*) malloc(len + 1);
@@ -415,6 +432,10 @@ do_cmd_push_key(struct anthy_input_context* ictx, const char* str)
 {
   const char* p;
 
+  if (!str) {
+    anthy_log(0, "str should not be null in %s:%d\n", __FILE__, __LINE__);
+    return;
+  }
   for (p = str; *p; p++) {
     if (isspace((int)(unsigned char) *p) && *p != ' ')
       continue;
@@ -445,8 +466,13 @@ cmd_move_cursor(struct anthy_input_context* ictx, int d)
       return;
     for (p = ictx->hbuf_follow;
 	 p < ictx->hbuf_follow + ictx->n_hbuf_follow && d > 0; p++, d--) {
-      if (p < ictx->hbuf_follow + ictx->n_hbuf_follow - 1 && is_eucchar(p))
+      if (p < ictx->hbuf_follow + ictx->n_hbuf_follow - 3 && utf8_char_len(p) == 4) {
+	p += 3;
+      } else if (p < ictx->hbuf_follow + ictx->n_hbuf_follow - 2 && utf8_char_len(p) == 3) {
+	p += 2;
+      } else if (p < ictx->hbuf_follow + ictx->n_hbuf_follow - 1 && utf8_char_len(p) == 2) {
 	p++;
+      }
     }
     len = p - ictx->hbuf_follow;
     ensure_buffer(&ictx->hbuf, &ictx->s_hbuf, ictx->n_hbuf + len);
@@ -461,8 +487,13 @@ cmd_move_cursor(struct anthy_input_context* ictx, int d)
       return;
     for (p = ictx->hbuf + ictx->n_hbuf;
 	 p > ictx->hbuf && d < 0; p--, d++) {
-      if (p - 1 > ictx->hbuf && is_eucchar(p - 2))
+      if (p - 3 > ictx->hbuf && utf8_char_len(p - 4) == 4) {
+	p -= 3;
+      } else if (p - 2 > ictx->hbuf && utf8_char_len(p - 3) == 3) {
+	p -= 2;
+      } else if (p - 1 > ictx->hbuf && utf8_char_len(p - 2) == 2) {
 	p--;
+      }
     }
     len = (ictx->hbuf + ictx->n_hbuf) - p;
     ensure_buffer(&ictx->hbuf_follow, &ictx->s_hbuf_follow,
@@ -501,7 +532,11 @@ cmd_backspace(struct anthy_input_context* ictx)
       do_cmd_push_key(ictx,buf);
       free(buf);
     } else {
-      if (ictx->n_hbuf >= 2 && is_eucchar(ictx->hbuf + ictx->n_hbuf - 2)) {
+      if (ictx->n_hbuf >= 4 && utf8_char_len(ictx->hbuf + ictx->n_hbuf - 4) == 4) {
+	ictx->n_hbuf -= 4;
+      } else if (ictx->n_hbuf >= 3 && utf8_char_len(ictx->hbuf + ictx->n_hbuf - 3) == 3) {
+	ictx->n_hbuf -= 3;
+      } else if (ictx->n_hbuf >= 2 && utf8_char_len(ictx->hbuf + ictx->n_hbuf - 2) == 2) {
 	ictx->n_hbuf -= 2;
       } else if (ictx->n_hbuf >= 1) {
 	ictx->n_hbuf--;
@@ -525,7 +560,15 @@ cmd_delete(struct anthy_input_context* ictx)
   if (ictx->n_hbuf_follow <= 0)
     return;
 
-  len = ictx->n_hbuf_follow >= 2 && is_eucchar(ictx->hbuf_follow) ? 2 : 1;
+  if (ictx->n_hbuf_follow >= 4 && utf8_char_len(ictx->hbuf_follow) == 4) {
+    len = 4;
+  } else if (ictx->n_hbuf_follow >= 3 && utf8_char_len(ictx->hbuf_follow) == 3) {
+    len = 3;
+  } else if (ictx->n_hbuf_follow >= 2 && utf8_char_len(ictx->hbuf_follow) == 2) {
+    len = 2;
+  } else {
+    len = 1;
+  }
 
   if (ictx->n_hbuf_follow <= len)
     ictx->n_hbuf_follow = 0;
@@ -572,7 +615,10 @@ cmd_resize(struct anthy_input_context* ictx, int d)
     if (as->next == NULL) {
       struct a_segment* as2;
 
-      as2 = (struct a_segment*) malloc(sizeof(struct a_segment));
+      if (!(as2 = (struct a_segment*) malloc(sizeof(struct a_segment)))) {
+        anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+        break;
+      }
       as2->index = i;
       as2->prev = as;
       as->next = as2;
@@ -794,8 +840,10 @@ anthy_input_create_context(struct anthy_input_config* cfg)
 
   ictx =
     (struct anthy_input_context*) malloc(sizeof(struct anthy_input_context));
-  if (!ictx)
+  if (!ictx) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
     return NULL;
+  }
 
   ictx->state = ANTHY_INPUT_ST_NONE;
   ictx->rkctx = rk_context_create(cfg->break_into_roman);
@@ -1236,6 +1284,11 @@ get_edit_mode_preedit(struct anthy_input_context* ictx,
   if (ictx->n_hbuf > 0) {
     *p = alloc_segment(ANTHY_INPUT_SF_EDITING, ictx->n_hbuf + 1,
 		       ictx->n_hbuf);
+    if (!(*p) || !((*p)->str)) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      ictx->n_hbuf = 0;
+      return;
+    }
 
     memcpy((*p)->str, ictx->hbuf, ictx->n_hbuf);
     (*p)->str[ictx->n_hbuf] = '\0';
@@ -1245,7 +1298,11 @@ get_edit_mode_preedit(struct anthy_input_context* ictx,
   if (ictx->cfg->preedit_mode) {
     len = rk_partial_result(ictx->rkctx, NULL, 0);
     if (len > 1) {
-      *p = alloc_segment(ANTHY_INPUT_SF_PENDING, len, len - 1);
+      if (!(*p = alloc_segment(ANTHY_INPUT_SF_PENDING, len, len - 1))) {
+        anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+        pedit->cur_segment = NULL;
+        return;
+      }
 
       rk_partial_result(ictx->rkctx, (*p)->str, len);
       p = &(*p)->next;
@@ -1253,7 +1310,11 @@ get_edit_mode_preedit(struct anthy_input_context* ictx,
   } else {
     len = rk_get_pending_str(ictx->rkctx, NULL, 0);
     if (len > 1) {
-      *p = alloc_segment(ANTHY_INPUT_SF_PENDING, len, len - 1);
+      if (!(*p = alloc_segment(ANTHY_INPUT_SF_PENDING, len, len - 1))) {
+        anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+        pedit->cur_segment = NULL;
+        return;
+      }
 
       rk_get_pending_str(ictx->rkctx, (*p)->str, len);
       p = &(*p)->next;
@@ -1261,7 +1322,11 @@ get_edit_mode_preedit(struct anthy_input_context* ictx,
   }
 
   /* cursor */
-  *p = alloc_segment(ANTHY_INPUT_SF_CURSOR, 0, 0);
+  if (!(*p = alloc_segment(ANTHY_INPUT_SF_CURSOR, 0, 0))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    pedit->cur_segment = NULL;
+    return;
+  }
   pedit->cur_segment = *p;
   p = &(*p)->next;
 
@@ -1270,8 +1335,12 @@ get_edit_mode_preedit(struct anthy_input_context* ictx,
     *p = alloc_segment(ANTHY_INPUT_SF_EDITING,
 		       ictx->n_hbuf_follow + 1,
 		       ictx->n_hbuf_follow);
-    memcpy((*p)->str, ictx->hbuf_follow, ictx->n_hbuf_follow);
-    (*p)->str[ictx->n_hbuf_follow] = '\0';
+    if (!(*p) || !((*p)->str)) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    } else {
+      memcpy((*p)->str, ictx->hbuf_follow, ictx->n_hbuf_follow);
+      (*p)->str[ictx->n_hbuf_follow] = '\0';
+    }
   }
 }
 
@@ -1281,17 +1350,22 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
   struct anthy_input_preedit* pedit;
 
   pedit = (struct anthy_input_preedit*)
-    malloc(sizeof(struct anthy_input_preedit));
-  if (!pedit)
+          malloc(sizeof(struct anthy_input_preedit));
+  if (!pedit) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
     return NULL;
+  }
 
   pedit->state = ictx->state;
 
   /* 未コミットの文字列 */
   if (ictx->n_commit > 0) {
-    pedit->commit = (char*) malloc(ictx->n_commit + 1);
-    memcpy(pedit->commit, ictx->commit, ictx->n_commit);
-    pedit->commit[ictx->n_commit] = '\0';
+    if (!(pedit->commit = (char*) malloc(ictx->n_commit + 1))) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    } else {
+      memcpy(pedit->commit, ictx->commit, ictx->n_commit);
+      pedit->commit[ictx->n_commit] = '\0';
+    }
     ictx->n_commit = 0;
   } else {
     pedit->commit = NULL;
@@ -1299,9 +1373,12 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
 
   /* カットバッファの文字列 */
   if(ictx->n_cut > 0) {
-    pedit->cut_buf = (char*) malloc(ictx->n_cut + 1);
-    memcpy(pedit->cut_buf, ictx->cut, ictx->n_cut);
-    pedit->cut_buf[ictx->n_cut] = '\0';
+    if (!(pedit->cut_buf = (char*) malloc(ictx->n_cut + 1))) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    } else {
+      memcpy(pedit->cut_buf, ictx->cut, ictx->n_cut);
+      pedit->cut_buf[ictx->n_cut] = '\0';
+    }
     ictx->n_cut = 0;
   } else {
     pedit->cut_buf = NULL;
@@ -1330,7 +1407,10 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
 				       NTH_UNCONVERTED_CANDIDATE,
 				       NULL, 0);
 	len = anthy_get_segment(ictx->actx, as->index, as->cand, NULL, 0);
-	*p = alloc_segment(ANTHY_INPUT_SF_NONE, len + 1, noconv_len);
+	if (!(*p = alloc_segment(ANTHY_INPUT_SF_NONE, len + 1, noconv_len))) {
+          anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+          return pedit;
+	}
 
 	anthy_get_segment(ictx->actx, as->index, as->cand, (*p)->str, len + 1);
 	(*p)->cand_no = as->cand;
@@ -1355,6 +1435,10 @@ anthy_input_get_preedit(struct anthy_input_context* ictx)
 
 	      p = &(*p)->next;
 	      *p = alloc_segment(ANTHY_INPUT_SF_FOLLOWING, len + 1, len);
+	      if (!(*p) || !((*p)->str)) {
+                anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+                break;
+	      }
 	      for (as1 = as->next, s = (*p)->str; as1; as1 = as1->next) {
 		anthy_get_segment(ictx->actx, as1->index,
 				  NTH_UNCONVERTED_CANDIDATE,
@@ -1521,8 +1605,10 @@ anthy_input_create_config(void)
   struct anthy_input_config* cfg;
 
   cfg = (struct anthy_input_config*) malloc(sizeof(struct anthy_input_config));
-  if (!cfg)
+  if (!cfg) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
     return NULL;
+  }
 
   cfg->rk_option = anthy_input_create_rk_option();
   cfg->break_into_roman = 0;

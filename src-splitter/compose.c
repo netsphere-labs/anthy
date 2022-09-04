@@ -13,6 +13,7 @@
  * Copyright (C) 2000-2005 TABATA Yusuke
  * Copyright (C) 2004-2005 YOSHIDA Yuichi
  * Copyright (C) 2002 UGAWA Tomoharu
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  *
  */
 /*
@@ -30,11 +31,13 @@
   License along with this library; if not, write to the Free Software
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307  USA
  */
+#include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #include <anthy/dic.h>
+#include <anthy/logger.h>
 #include <anthy/splitter.h>
 #include <anthy/segment.h>
 #include "wordborder.h"
@@ -44,7 +47,10 @@ static struct cand_ent *
 alloc_cand_ent(void)
 {
   struct cand_ent *ce;
-  ce = (struct cand_ent *)malloc(sizeof(struct cand_ent));
+  if (!(ce = (struct cand_ent *)malloc(sizeof(struct cand_ent)))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return NULL;
+  }
   ce->nr_words = 0;
   ce->elm = NULL;
   ce->mw = NULL;
@@ -61,18 +67,22 @@ dup_candidate(struct cand_ent *ce)
 {
   struct cand_ent *ce_new;
   int i;
-  ce_new = alloc_cand_ent();
+  if (!(ce_new = alloc_cand_ent()))
+    return NULL;
   ce_new->nr_words = ce->nr_words;
   ce_new->str.len = ce->str.len;
   ce_new->str.str = anthy_xstr_dup_str(&ce->str);
-  ce_new->elm = malloc(sizeof(struct cand_elm)*ce->nr_words);
+  if (!(ce_new->elm = malloc(sizeof(struct cand_elm)*ce->nr_words))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    ce_new->nr_words = 0;
+  }
   ce_new->flag = ce->flag;
   ce_new->core_elm_index = ce->core_elm_index;
   ce_new->mw = ce->mw;
   ce_new->score = ce->score;
   ce_new->dep_word_hash = ce->dep_word_hash;
 
-  for (i = 0 ; i < ce->nr_words ; i++) {
+  for (i = 0 ; i < ce_new->nr_words ; i++) {
     ce_new->elm[i] = ce->elm[i];
   }
   return ce_new;
@@ -83,9 +93,16 @@ static void
 push_back_candidate(struct seg_ent *seg, struct cand_ent *ce)
 {
   /* seg_entに候補ceを追加 */
+  struct cand_ent **cands = seg->cands;
   seg->nr_cands++;
   seg->cands = (struct cand_ent **)
     realloc(seg->cands, sizeof(struct cand_ent *) * seg->nr_cands);
+  if (!seg->cands) {
+    anthy_log(0, "Failed realloc in %s:%d\n", __FILE__, __LINE__);
+    seg->cands = cands;
+    seg->nr_cands--;
+    return;
+  }
   seg->cands[seg->nr_cands - 1] = ce;
   /**/
   if (anthy_splitter_debug_flags() & SPLITTER_DEBUG_CAND) {
@@ -142,6 +159,9 @@ enum_candidates(struct seg_ent *seg,
     }
     return 1;
   }
+  /* ce->nr_words == ce->mw->nr_parts from make_candidate_from_simple_metaword()
+   */
+  assert(n < ce->nr_words);
 
   p = anthy_get_nr_dic_ents(ce->elm[n].se, &ce->elm[n].str);
 
@@ -159,7 +179,11 @@ enum_candidates(struct seg_ent *seg,
 
       yomi.len = ce->elm[n].str.len;
       yomi.str = &seg->str.str[from];
-      cand = dup_candidate(ce);
+      if (!(cand = dup_candidate(ce))) {
+        anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+        return 0;
+      }
+      assert(n < cand->nr_words);
       anthy_get_nth_dic_ent_str(cand->elm[n].se,
 				&yomi, i, &word);
       cand->elm[n].nth = i;
@@ -182,7 +206,11 @@ enum_candidates(struct seg_ent *seg,
     xstr xs;
     xs.len = ce->elm[n].str.len;
     xs.str = &seg->str.str[from];
-    cand = dup_candidate(ce);
+    if (!(cand = dup_candidate(ce))) {
+      anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+      return 0;
+    }
+    assert(n < cand->nr_words);
     cand->elm[n].nth = -1;
     cand->elm[n].id = -1;
     anthy_xstrcat(&cand->str, &xs);
@@ -285,19 +313,21 @@ make_cand_elem_from_word_list(struct seg_ent *se,
       /* 長さの無いpartは無視する */
       continue;
     }
-    if (i == PART_CORE) {
-      ce->core_elm_index = i + index;
-    }
     core_xs.str = &se->str.str[from];
     core_xs.len = part->len;
     if (i == PART_DEPWORD) {
       ce->dep_word_hash = anthy_dep_word_hash(&core_xs);
     }
-    ce->elm[i + index].se = anthy_get_seq_ent_from_xstr(&core_xs, is_reverse);
-    ce->elm[i + index].str.str = core_xs.str;
-    ce->elm[i + index].str.len = core_xs.len;
-    ce->elm[i + index].wt = part->wt;
-    ce->elm[i + index].ratio = RATIO_BASE * wl->len;
+    if ((i + index) < ce->nr_words) {
+      if (i == PART_CORE)
+        ce->core_elm_index = i + index;
+      assert(ce->elm);
+      ce->elm[i + index].se = anthy_get_seq_ent_from_xstr(&core_xs, is_reverse);
+      ce->elm[i + index].str.str = core_xs.str;
+      ce->elm[i + index].str.len = core_xs.len;
+      ce->elm[i + index].wt = part->wt;
+      ce->elm[i + index].ratio = RATIO_BASE * wl->len;
+    }
     from += part->len;
   }
 }
@@ -320,7 +350,10 @@ make_candidate_from_simple_metaword(struct seg_ent *se,
   ce->nr_words = mw->nr_parts;
   ce->str.str = NULL;
   ce->str.len = 0;
-  ce->elm = calloc(sizeof(struct cand_elm),ce->nr_words);
+  if (!(ce->elm = calloc(sizeof(struct cand_elm),ce->nr_words))) {
+    anthy_log(0, "Failed calloc in %s:%d\n", __FILE__, __LINE__);
+    ce->nr_words = 0;
+  }
   ce->mw = mw;
   ce->score = 0;
 
@@ -351,12 +384,19 @@ make_candidate_from_combined_metaword(struct seg_ent *se,
   struct cand_ent *ce;
 
   /* 複数(1も含む)の単語で構成される文節に単語を割当てていく */
-  ce = alloc_cand_ent();
+  if (!(ce = alloc_cand_ent())) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return;
+  }
   ce->nr_words = mw->nr_parts;
   ce->score = 0;
   ce->str.str = NULL;
   ce->str.len = 0;
-  ce->elm = calloc(sizeof(struct cand_elm),ce->nr_words);
+  if (!(ce->elm = calloc(sizeof(struct cand_elm),ce->nr_words))) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    free(ce);
+    return;
+  }
   ce->mw = top_mw;
 
   /* 接頭辞, 自立語部, 接尾辞, 付属語 */
@@ -408,7 +448,10 @@ proc_splitter_info(struct seg_ent *se,
     /* 連文節の葉 */
     {
       struct cand_ent *ce;
-      ce = alloc_cand_ent();
+      if (!(ce = alloc_cand_ent())) {
+        anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+        break;
+      }
       ce->str.str = anthy_xstr_dup_str(&mw->cand_hint);
       ce->str.len = mw->cand_hint.len;
       ce->flag = CEF_COMPOUND;
@@ -424,7 +467,10 @@ proc_splitter_info(struct seg_ent *se,
     /* metawordを持たない候補文字列が
        直接に指定された */
       struct cand_ent *ce;
-      ce = alloc_cand_ent();
+      if (!(ce = alloc_cand_ent())) {
+        anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+        break;
+      }
       ce->str.str = anthy_xstr_dup_str(&mw->cand_hint);
       ce->str.len = mw->cand_hint.len;
       ce->mw = top_mw;

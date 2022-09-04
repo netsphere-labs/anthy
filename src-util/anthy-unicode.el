@@ -2,6 +2,8 @@
 ;;; anthy.el -- Anthy
 
 ;; Copyright (C) 2001 - 2007 KMC(Kyoto University Micro Computer Club)
+;; Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
+;; Copyright (c) 2021 Red Hat, Inc.
 
 ;; Author: Yusuke Tabata<yusuke@kmc.gr.jp>
 ;;         Tomoharu Ugawa
@@ -12,9 +14,9 @@
 
 ;;; Commentary:
 ;;
-;; かな漢字変換エンジン Anthyを emacsから使うためのプログラム
-;; Anthyライブラリを使うためのコマンドanthy-agentを起動して、
-;; anthy-agentとパイプで通信をすることによって変換の動作を行う
+;; かな漢字変換エンジン Anthy を emacs から使うためのプログラム
+;; Anthy ライブラリを使うためのコマンド anthy-agent (-anthy-agent-unicode) を起動して、
+;; anthy-agent とパイプで通信をすることによって変換の動作を行う
 ;;
 ;;
 ;; Funded by IPA未踏ソフトウェア創造事業 2001 10/10
@@ -29,6 +31,7 @@
 ;; 2003-08-24 XEmacs の候補選択モードバグに対応(suzuki)
 ;;
 ;; 2001-11-16 EUC-JP -> ISO-2022-JP
+;; 2021-10-26 ISO-2022-JP -> UTF-8
 ;;
 ;; TODO
 ;;  候補選択モードで候補をいっきに次のページにいかないようにする(2chスレ78)
@@ -72,7 +75,8 @@
 (defvar anthy-highlight-face nil)
 (defvar anthy-underline-face nil)
 (copy-face 'highlight 'anthy-highlight-face)
-(set-face-underline 'anthy-highlight-face t)
+(if (not (featurep 'xemacs))
+    (set-face-underline 'anthy-highlight-face t))
 (copy-face 'underline 'anthy-underline-face)
 
 ;;
@@ -112,7 +116,7 @@
       (define-key map [backspace] 'anthy-insert)
       (setq anthy-preedit-keymap map)))
 
-;; anthy-agentに送る際にキーをエンコードするためのテーブル
+;; anthy-agent (anthy-agent-unicode) に送る際にキーをエンコードするためのテーブル
 (defvar anthy-keyencode-alist
   '((1 . "(ctrl A)") ;; \C-a
     (2 . "(left)") ;; \C-b
@@ -224,7 +228,7 @@
   "プロセスの状態が変化したら参照を消して，次に再起動できるようにする"
   (message "%s" stat)
   (anthy-mode-off)
-  (setq anthy-agent-process nil))
+  (setq anthy-agent-unicode-process nil))
 
 ;;; status
 (defun anthy-update-mode-line ()
@@ -720,16 +724,16 @@
 (defun anthy-do-invoke-agent (cmd)
   (if (and (stringp anthy-personality)
 	   (> (length anthy-personality) 0))
-      (start-process "anthy-agent"
+      (start-process "anthy-agent-unicode"
 		     anthy-working-buffer
 		     cmd
 		     (concat " --personality=" anthy-personality))
-    (start-process "anthy-agent"
+    (start-process "anthy-agent-unicode"
 		   anthy-working-buffer
 		   cmd)))
 ;;
 (defun anthy-invoke-agent ()
-  (let ((list anthy-agent-command-list)
+  (let ((list anthy-agent-unicode-command-list)
 	(proc nil))
     (while (and list (not proc))
       (setq proc 
@@ -743,31 +747,31 @@
 ;;
 (defun anthy-check-agent ()
   ;; check and do invoke
-  (if (not anthy-agent-process)
+  (if (not anthy-agent-unicode-process)
       (let
 	  ((proc (anthy-invoke-agent)))
-	(if anthy-agent-process
-	    (kill-process anthy-agent-process))
-	(setq anthy-agent-process proc)
-	(process-query-on-exist-flag proc)
-	(if anthy-xemacs
-	    (if (coding-system-p (find-coding-system 'euc-japan))
-		(set-process-coding-system proc 'euc-japan 'euc-japan))
-	  (cond ((coding-system-p 'euc-japan)
-		 (set-process-coding-system proc 'euc-japan 'euc-japan))
-		((coding-system-p '*euc-japan*)
-		 (set-process-coding-system proc '*euc-japan* '*euc-japan*))))
+	(if anthy-agent-unicode-process
+	    (kill-process anthy-agent-unicode-process))
+	(setq anthy-agent-unicode-process proc)
+	(set-process-query-on-exit-flag proc nil)
+;;	(if anthy-xemacs
+;;	    (if (coding-system-p (find-coding-system 'euc-japan))
+;;		(set-process-coding-system proc 'euc-japan 'euc-japan))
+;;	  (cond ((coding-system-p 'euc-japan)
+;;		 (set-process-coding-system proc 'euc-japan 'euc-japan))
+;;		((coding-system-p '*euc-japan*)
+;;		 (set-process-coding-system proc '*euc-japan* '*euc-japan*))))
 	(set-process-sentinel proc 'anthy-process-sentinel))))
 ;;
 (defun anthy-do-send-recv-command (cmd)
-  (if (not anthy-agent-process)
+  (if (not anthy-agent-unicode-process)
       (anthy-check-agent))
   (let ((old-buffer (current-buffer)))
     (unwind-protect
 	(progn
 	  (set-buffer anthy-working-buffer)
 	  (erase-buffer)
-	  (process-send-string anthy-agent-process cmd)
+	  (process-send-string anthy-agent-unicode-process cmd)
 	  (while (= (buffer-size) 0)
 	    (accept-process-output nil 0 anthy-accept-timeout))
 	  (read (buffer-string)))
@@ -861,26 +865,26 @@
 ;;
 ;; leim の inactivate
 ;;
-(defun anthy-leim-inactivate ()
+(defun anthy-unicode-leim-inactivate ()
   (setq anthy-leim-active-p nil)
   (anthy-update-mode))
 ;;
 ;; leim の activate
 ;;
-(defun anthy-leim-activate (&optional name)
-  (setq deactivate-current-input-method-function 'anthy-leim-inactivate)
+(defun anthy-unicode-leim-activate (&optional name)
+  (setq deactivate-current-input-method-function 'anthy-unicode-leim-inactivate)
   (setq anthy-leim-active-p t)
   (anthy-update-mode)
   (when (eq (selected-window) (minibuffer-window))
-    (add-hook 'minibuffer-exit-hook 'anthy-leim-exit-from-minibuffer)))
+    (add-hook 'minibuffer-exit-hook 'anthy-unicode-leim-exit-from-minibuffer)))
 
 ;;
 ;; emacsのバグ避けらしいです
 ;;
-(defun anthy-leim-exit-from-minibuffer ()
+(defun anthy-unicode-leim-exit-from-minibuffer ()
   (deactivate-input-method)
   (when (<= (minibuffer-depth) 1)
-    (remove-hook 'minibuffer-exit-hook 'anthy-leim-exit-from-minibuffer)))
+    (remove-hook 'minibuffer-exit-hook 'anthy-unicode-leim-exit-from-minibuffer)))
 
 ;;
 ;; Emacs / XEmacs コンパチブルな last-command-char
@@ -902,10 +906,10 @@
 ;;
 ;;
 ;(global-set-key [(meta escape)] 'anthy-mode)
-(provide 'anthy)
+(provide 'anthy-unicode)
 
-(require 'anthy-dic)
-(require 'anthy-conf)
+(require 'anthy-unicode-dic)
+(require 'anthy-unicode-conf)
 
 ;; is it ok for i18n?
 (set-language-info "Japanese" 'input-method "japanese-anthy")

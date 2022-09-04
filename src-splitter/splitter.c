@@ -13,6 +13,7 @@
  * Copyright (C) 2004 YOSHIDA Yuichi
  * Copyright (C) 2000-2004 TABATA Yusuke
  * Copyright (C) 2000-2001 UGAWA Tomoharu
+ * Copyright (C) 2021 Takao Fujiwara <takao.fujiwara1@gmail.com>
  *
  */
 /*
@@ -104,6 +105,10 @@ alloc_char_ent(const xstr* xs, struct splitter_context *sc)
     free(sc->ce);
   sc->ce = (struct char_ent*)
     malloc(sizeof(struct char_ent)*(xs->len + 1));
+  if (!sc->ce) {
+    anthy_log(0, "Failed malloc in %s:%d\n", __FILE__, __LINE__);
+    return;
+  }
   for (i = 0; i <= xs->len; i++) {
     sc->ce[i].c = &xs->str[i];
     sc->ce[i].seg_border = 0;
@@ -316,6 +321,7 @@ anthy_init_splitter(void)
   /* 付属語グラフの初期化 */
   if (anthy_init_depword_tab()) {
     anthy_log(0, "Failed to init dependent word table.\n");
+    anthy_quit_depword_tab();
     return -1;
   }
   /**/

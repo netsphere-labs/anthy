@@ -37,13 +37,13 @@
 			      anthy-dic-util-command "--append"))
     (if proc
 	(progn
-	  (if anthy-xemacs
-	      (if (coding-system-p (find-coding-system 'euc-japan))
-		  (set-process-coding-system proc 'euc-japan 'euc-japan))
-	    (cond ((coding-system-p 'euc-japan)
-		   (set-process-coding-system proc 'euc-japan 'euc-japan))
-		  ((coding-system-p '*euc-japan*)
-		   (set-process-coding-system proc '*euc-japan* '*euc-japan*))))
+;;	  (if anthy-xemacs
+;;	      (if (coding-system-p (find-coding-system 'euc-japan))
+;;		  (set-process-coding-system proc 'euc-japan 'euc-japan))
+;;	    (cond ((coding-system-p 'euc-japan)
+;;		   (set-process-coding-system proc 'euc-japan 'euc-japan))
+;;		  ((coding-system-p '*euc-japan*)
+;;		   (set-process-coding-system proc '*euc-japan* '*euc-japan*))))
 	  (process-send-string proc
 			       (concat yomi " " (int-to-string freq) " " word "\n"))
 	  (process-send-string proc
@@ -68,11 +68,12 @@
     (setq res (cons `("格助詞接続" ,kaku) res))
     res))
 
+;; string-to-int 廃止 Emacs 26
 (defun anthy-dic-get-special-noun-category (word)
   (let 
       ((res '())
-       (cat (string-to-int
-	     (read-from-minibuffer "1:人名 2:地名: "))))
+       (cat (floor (string-to-number
+		     (read-from-minibuffer "1:人名 2:地名: ")))))
     (cond ((= cat 1)
 	   (setq res '(("品詞" "人名"))))
 	  ((= cat 2)
@@ -114,9 +115,9 @@
     (and (string= word "")
 	 (setq word (read-from-minibuffer "単語(語幹のみ): ")))
     (setq yomi (read-from-minibuffer (concat "読み (" word "): ")))
-    (setq cat (string-to-int
-	       (read-from-minibuffer
-		"カテゴリー 1:一般名詞 2:その他の名詞 3:形容詞 4:副詞: ")))
+    (setq cat (floor (string-to-number
+		       (read-from-minibuffer
+			"カテゴリー 1:一般名詞 2:その他の名詞 3:形容詞 4:副詞: "))))
     (cond ((= cat 1)
 	   (setq param (anthy-dic-get-noun-category word)))
 	  ((= cat 2)
@@ -126,7 +127,7 @@
 	  ((= cat 4)
 	   (setq param (anthy-dic-get-av-category word))))
     (if param
-	(setq res (anthy-add-word yomi 1 word param)))
+	(setq res (anthy-add-word yomi 500 word param)))
     (if res
 	(message (concat word "(" yomi ")を登録しました")))))
 
