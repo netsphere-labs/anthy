@@ -1,10 +1,14 @@
+# -*- coding:utf-8 -*-
 
 # automake/autoconf files
 #
 aclocal.m4
 autom4te.cache/*
 
-build-aux/missing
+# build-aux/ltmain.sh は libtool のバージョンに敏感。autoreconf する環境で
+# /usr/share/libtool/build-aux/ltmain.sh ファイルを単にコピーすること
+build-aux/ltmain.sh
+
 Makefile.in
 config.h.in
 configure
