@@ -24,6 +24,7 @@ AC_MSG_CHECKING([for native Win32])
 case "$host" in
   *-*-mingw*)
     native_win32=yes
+    LDFLAGS="$LDFLAGS -no-undefined"
     ;;
   *)
     native_win32=no

@@ -1,5 +1,5 @@
-Build and Installation of Anthy
-							-*- text -*-
+﻿Build and Installation of Anthy
+							-*- mode:rst -*-
 
 From source tar ball
 --------------------
@@ -12,10 +12,11 @@ As with other packages, you just have to do
 
 (Before install, you might need to become root.)
 
-On MinGW, you have to add --prefix <real path> option;
+On MinGW, you have to add `--prefix` <real path> option;
 
-  $ ./configure --prefix=d:/git-sdk-64/mingw32 --enable-maintainer-mode --disable-static
-
+```
+  $ ./configure --prefix=d:/git-sdk-64/mingw64 --enable-maintainer-mode --disable-static
+```
 
 
 From Git repository
@@ -28,4 +29,20 @@ Libtool, Automake, Autoconf are required.
   $ make
   $ make install
 
--- 
+
+
+Edit the config file: /etc/anthy-conf (UNIX) or /mingw64/etc/anthy-conf (MinGW)
+
+```
+# /mingw64/etc/anthy-conf
+
+prefix c:/git-sdk-64/mingw64
+datarootdir ${prefix}/share
+datadir ${datarootdir}
+ANTHYDIR ${datarootdir}/anthy/
+DIC_FILE ${datarootdir}/anthy/anthy.dic
+ZIPDICT ${datarootdir}/anthy/zipcode.t
+```
+
+`anthy-agent` プログラムを実行. 標準入力で入力バッファを更新。
+●●Windows ではまだ動かない.

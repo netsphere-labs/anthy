@@ -6,8 +6,11 @@ aclocal.m4
 autom4te.cache/*
 
 # build-aux/ltmain.sh は libtool のバージョンに敏感。autoreconf する環境で
+# ./autogen.sh スクリプトを動かし, 
 # /usr/share/libtool/build-aux/ltmain.sh ファイルを単にコピーすること
 build-aux/ltmain.sh
+build-aux/compile
+build-aux/depcomp
 
 Makefile.in
 config.h.in
