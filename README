@@ -6,14 +6,15 @@ See https://www.nslabs.jp/patch.rhtml
 目標1. 分岐したDebian版とFedora版のマージ
   長らくメンテナンスされてきたのは Debian 版だが, Fedora 版は原作者 Yusuke Tabata 氏のヴァージョンから fork しなおしている。修正点も相互に異なっていて、どちらかへの片寄せは簡単ではない。
 
-  ブランチ          元のリポジトリ
-  ---------------   ------------------------
-  upstream_master   https://salsa.debian.org/debian/anthy/  'master' branch
-  anthy-unicode     https://github.com/fujiwarat/anthy-unicode/  'main' branch
+  | ブランチ         | 元のリポジトリ                                             |
+  | ---------------  | -----------------------------------------------------      |
+  | upstream_master  | https://salsa.debian.org/debian/anthy/  'master' branch    |
+  | anthy-unicode    | https://github.com/fujiwarat/anthy-unicode/  'main' branch |
 
 目標2. ライセンスの整理
-  Debian 版には GPLv3, LGPLv3, LGPLv2 の 3つの LICENSE ファイルが添付されているが、トリプルライセンスなのかどうか意図が不明 (そうではない)。Fedora 版は LGPLv2 と GPLv2 の mix になっている。
-  元々の意図は, Anthy には LGPL が適用され, 辞書ファイルである alt-cannadic には GPL が適用されるということだった。これを雑に一つのパッケージにまとめたのが不味い。現代の流儀だと, Anthy パッケージと, alt-cannadic から Anthy 形式の辞書を作るパッケージの二つに分割し、前者には LGPL を適用するのが意図をきちんと反映することになるだろう。
+  Debian 版には GPLv3, LGPLv3, LGPLv2 の 3つの LICENSE ファイルが添付されているが、トリプルライセンスなのかどうか意図が不明。このファイルの下の方, Licensing セクションとも矛盾している。Fedora 版は LGPLv2 と GPLv2 の mix になっている。
+  元々のヴァージョンでは, Anthy には LGPLv2 が適用され, 辞書ファイルである alt-cannadic には GPLv2 が適用されていた。これを雑に一つのパッケージにまとめていたのが不味い。Debian 版はさらに混乱して、誤って (LGPL ではなく) GPLv3 を添付したのだろう (でないと下の記述と合わない).
+  現代の流儀だと, Anthy パッケージと, alt-cannadic から Anthy 形式の辞書を作るパッケージの二つに分割し、前者には LGPL を適用するのが意図をきちんと反映することになる。Debian 由来のコードを含むので, LGPLv3 (LGPLv2 ではなく) か.
 
 目標3. Windows へのポーティング
   GUI ではないのにべったり UNIX に依存している. ポータブルなコードに修正する。
