@@ -519,7 +519,7 @@ dt_cmp (const char *line, struct dispatch_table *d)
 static char line[MAX_LINE];
 
 
-#ifndef _WIN32
+//#ifndef _WIN32
 void
 egg_main (void)
 {
@@ -555,4 +555,4 @@ egg_main (void)
       say_unknown ();
   }
 }
-#endif // !_WIN32
+//#endif // !_WIN32

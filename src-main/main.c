@@ -89,7 +89,7 @@ anthy_init(void)
   }
 
   /* 各サブシステムを順に初期化する */
-  if (anthy_init_dic()) {
+  if (anthy_init_dic()) { // src-worddic/word_dic.c
     anthy_log(0, "Failed to initialize dictionary.\n");
     return -1;
   }
@@ -284,7 +284,7 @@ anthy_get_stat(struct anthy_context *ac, struct anthy_conv_stat *s)
 }
 
 /**
- * (API) 文節の状態の取得 
+ * (API) 文節の状態の取得
  * @param [out] s  returned stat.
  * @return If found, 0. If not found, -1
  */
@@ -293,7 +293,7 @@ anthy_get_segment_stat(struct anthy_context *ac, int n,
 		       struct anthy_segment_stat *s)
 {
   assert(s);
-  
+
   struct seg_ent *seg;
   seg = anthy_get_nth_segment(&ac->seg_list, n);
   if (seg) {

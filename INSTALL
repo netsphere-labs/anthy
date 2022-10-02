@@ -44,5 +44,33 @@ DIC_FILE ${datarootdir}/anthy/anthy.dic
 ZIPDICT ${datarootdir}/anthy/zipcode.t
 ```
 
-`anthy-agent` プログラムを実行. 標準入力で入力バッファを更新。
-●●Windows ではまだ動かない.
+`anthy-agent --egg` プログラムを実行. 標準入力で入力バッファを更新。
+
+●●Windows ではまだ動かない. [2022-10-02] 単漢字変換しか認識していない? まず辞書を調査.
+
+```
+$ anthy-agent.exe --egg
+CONFFILE = c:/git-sdk-64/mingw64/etc/anthy-conf
+DIC_FILE = c:/git-sdk-64/mingw64/share/anthy/anthy.dic
+Init Anthy OK
+Anthy (Version 0.4) [] : Nice to meet you.
+NEW-CONTEXT INPUT=#18 OUTPUT=#18
++OK 0
+CONVERT 0 わたしのなまえはなかのです。
++DATA 0 0 14
+18 話 わ
+23 多 た
+154 市 し
+10 野 の
+10 名 な
+17 真 ま
+29 重 え
+35 は は
+10 名 な
+109 課 か
+10 野 の
+5 出 で
+23 数 す
+3 . 。
+```
+

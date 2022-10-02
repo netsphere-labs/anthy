@@ -1161,18 +1161,20 @@ main(int argc, char **argv)
     printf("Failed to init anthy\n");
     exit(1);
   }
+  printf("Init Anthy OK\n");
   if (anonymous) {
     anthy_input_set_personality("");
+            // src-util/input.c -> src-main/context.c -> src-worddic/word_dic.c
   } else if (personality) {
     anthy_input_set_personality(personality);
   }
 
   if (egg) {
-#ifndef _WIN32
+    //#ifndef _WIN32
     egg_main();
-#else
-    egg_windows();
-#endif
+    //#else
+    //    egg_windows();
+    //#endif
     anthy_quit();
     return 0;
   }

@@ -191,6 +191,7 @@ read_conf_file(void)
   FILE *fp;
   char buf[1024];
   fn = anthy_conf_get_str("CONFFILE");
+  printf("CONFFILE = %s\n", fn);
   fp = fopen(fn, "r"); // text mode.
   if (!fp){
     anthy_log(0, "Failed to open %s\n", fn);

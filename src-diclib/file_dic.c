@@ -42,12 +42,12 @@ void*
 anthy_file_dic_get_section(const char* section_name)
 {
   assert(section_name);
-    
+
   int i;
   char* head = (char *)fdic.ptr;
   int* p = (int*)head;
   int entry_num = anthy_dic_ntohl(*p++);
-  
+
   for (i = 0; i < entry_num; ++i) {
     int hash_offset = anthy_dic_ntohl(*p++);
     int key_len =  anthy_dic_ntohl(*p++);
@@ -80,7 +80,7 @@ anthy_mmap (const char *fn)
   LARGE_INTEGER st;
 #endif
   void *ptr;
-  
+
 #ifndef _WIN32
   fd = open (fn, O_RDONLY);
   if (fd == -1) {
@@ -164,6 +164,7 @@ anthy_init_file_dic(void)
 {
   const char *fn;
   fn = anthy_conf_get_str("DIC_FILE");
+  printf("DIC_FILE = %s\n", fn);
   if (!fn) {
     anthy_log(0, "dictionary is not specified.\n");
     return -1;
@@ -189,4 +190,3 @@ anthy_quit_file_dic(void)
   fdic.hMap = INVALID_HANDLE_VALUE;
 #endif
 }
-
