@@ -1,11 +1,11 @@
 #                                               -*- Autoconf -*-
 dnl Process this file with autoconf to produce a configure script.
 
-AC_INIT([anthy],[0.4])
+AC_INIT([anthy],[0.4],[hisashi dot horikawa at gmail dot com])
 AC_CONFIG_AUX_DIR([build-aux])
 AC_CONFIG_SRCDIR([src-main/main.c])
 AM_INIT_AUTOMAKE([foreign])
-AC_CONFIG_HEADERS(config.h)
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIRS([m4])
 
 AM_MAINTAINER_MODE
@@ -40,7 +40,9 @@ dnl dirty hack to avoid it.
 test -n "$lispdir" || lispdir="/tmp"
 lispdir="$lispdir/anthy"
 
-test -z "$GCC" || CFLAGS="$CFLAGS -Wextra -Wall -Wformat-security -Wcast-align -Wwrite-strings -Wstrict-prototypes -pedantic -Wno-long-long -fstack-protector-strong -fstack-clash-protection"
+# ICE with -fstack-clash-protection. gcc 10.2 on mingw.
+# -Wformat=2 includes -Wformat-security
+test -z "$GCC" || CFLAGS="$CFLAGS -std=c11 -Wextra -Wall -Wshadow -Wformat=2 -Wformat-truncation -Wundef -fno-common -Wcast-align -Wwrite-strings -Wstrict-prototypes -Wno-unused-parameter -fstack-protector-strong "
 
 AC_CONFIG_FILES([Makefile
  src-diclib/Makefile src-worddic/Makefile 
