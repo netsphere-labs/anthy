@@ -280,7 +280,7 @@ dump_dic(void)
   do {
     char idx[100], wt[100], w[100];
     int freq;
-    if (anthy_priv_dic_get_index(idx, 100) &&
+    if (anthy_priv_dic_get_index(idx, 100) && // src-worddic/dic_util.c
 	anthy_priv_dic_get_wtype(wt, 100) &&
 	anthy_priv_dic_get_word(w, 100)) {
       struct trans_tab *t;
